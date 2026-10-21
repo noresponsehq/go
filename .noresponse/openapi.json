@@ -1,0 +1,3767 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "NoResponse API",
+    "version": "1",
+    "summary": "Server-side signup and gateway risk assessment: a recommendation, polling and signed webhooks.",
+    "description": "Assess a signup or gateway event, poll a pending assessment, page through an account's history, record what you later learned, and rotate your API key. Every response carries X-Request-ID; every error is an RFC 9457 problem document. Keep the API key on your server.",
+    "license": {
+      "name": "Apache-2.0",
+      "identifier": "Apache-2.0"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.noresponse.org",
+      "description": "Production"
+    }
+  ],
+  "security": [
+    {
+      "apiKey": []
+    }
+  ],
+  "x-noresponse-retries": {
+    "strategy": "backoff",
+    "backoff": {
+      "initialInterval": 500,
+      "maxInterval": 8000,
+      "maxElapsedTime": 30000,
+      "exponent": 2
+    },
+    "statusCodes": [
+      "408",
+      "429",
+      "5XX"
+    ],
+    "retryConnectionErrors": true
+  },
+  "tags": [
+    {
+      "name": "assessments",
+      "description": "Signup and gateway assessments."
+    },
+    {
+      "name": "keys",
+      "description": "Your own API keys."
+    }
+  ],
+  "paths": {
+    "/v1/assessments": {
+      "post": {
+        "operationId": "createAssessment",
+        "x-noresponse-group": "assessments",
+        "x-noresponse-name-override": "create",
+        "tags": [
+          "assessments"
+        ],
+        "summary": "Assess identifiers for a signup or gateway decision.",
+        "description": "Returns within the deadline (500 ms at most) with a complete, partial or pending assessment: 200 carries complete or partial, 202 carries pending with Location and Retry-After. A pending answer has no recommendation; apply your own fallback for pending, 429, 503 or a timeout. Requires the assess scope. Idempotency-Key is required and is bound to the body for 24 hours: the same key with the same body replays the latest assessment with Idempotent-Replayed: true and starts no new work; the same key with a different body answers 409 idempotency_key_reused. response_mode defaults to standard; detailed needs the detailed scope.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssessmentRequest"
+              },
+              "examples": {
+                "minimal": {
+                  "value": {
+                    "account_id": "acct_7f3a9c",
+                    "identifiers": {
+                      "email": "new.user@example.com"
+                    }
+                  }
+                },
+                "full": {
+                  "value": {
+                    "account_id": "acct_7f3a9c",
+                    "identifiers": {
+                      "email": "new.user@example.com",
+                      "username": "new_user_42",
+                      "phone": "+447700900123"
+                    },
+                    "policy_context": {
+                      "flow": "signup",
+                      "region": "GB"
+                    },
+                    "request_id": "req-2026-10-14-0001",
+                    "deadline_ms": 300
+                  }
+                },
+                "name_and_ip": {
+                  "value": {
+                    "account_id": "acct_8412",
+                    "identifiers": {
+                      "email": "jane.doe@example.com",
+                      "username": "janedoe",
+                      "phone": "+14155550123",
+                      "name": "Jane A. Doe",
+                      "ip": "73.162.18.45"
+                    },
+                    "policy_context": {
+                      "flow": "signup",
+                      "region": "US"
+                    },
+                    "request_id": "req_01",
+                    "deadline_ms": 500,
+                    "response_mode": "standard"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/AssessmentSettled"
+          },
+          "202": {
+            "$ref": "#/components/responses/AssessmentPending"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/TenantForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/IdempotencyConflict"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/v1/assessments/{assessment_id}": {
+      "get": {
+        "operationId": "getAssessment",
+        "x-noresponse-group": "assessments",
+        "x-noresponse-name-override": "get",
+        "tags": [
+          "assessments"
+        ],
+        "summary": "Poll the authoritative assessment of one assessment.",
+        "description": "Returns the highest assessment_version. Requires the assess or history scope. While status is pending, or partial with a source still running, the response carries Retry-After; poll no faster than it says. Another tenant's assessment, an unknown or expired assessment and a malformed assessment_id all answer 404 not_found. response_mode=detailed needs the detailed scope.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/AssessmentId"
+          },
+          {
+            "name": "response_mode",
+            "in": "query",
+            "required": false,
+            "description": "Optional standard or separately authorised detailed customer view; raw is rejected.",
+            "schema": {
+              "$ref": "#/components/schemas/ResponseMode",
+              "default": "standard"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/AssessmentPolled"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/TenantForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/IdempotencyConflict"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/v1/assessments/{assessment_id}/outcomes": {
+      "post": {
+        "operationId": "recordAssessmentOutcome",
+        "x-noresponse-group": "assessments",
+        "x-noresponse-name-override": "recordOutcome",
+        "tags": [
+          "assessments"
+        ],
+        "summary": "Report what was later learned about an assessed account.",
+        "description": "Records what you later learned about an assessed account: confirmed_abuse, account_takeover and chargeback report abuse; false_positive and legitimate withdraw your earlier report; unknown is recorded only. Outcomes are append-only and the latest one wins. Requires the assess scope. Idempotency-Key is required and handled as on POST /v1/assessments: a retry with the same key and body answers the same record with Idempotent-Replayed: true; a different body answers 409. An unknown, expired or foreign assessment answers 404 not_found.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/AssessmentId"
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssessmentOutcomeRequest"
+              },
+              "examples": {
+                "abuse": {
+                  "value": {
+                    "outcome": "confirmed_abuse",
+                    "observed_at": "2026-10-20T05:00:00Z",
+                    "external_ref": "case-123",
+                    "notes": "Card testing from this account; closed by trust and safety."
+                  }
+                },
+                "withdrawn": {
+                  "value": {
+                    "outcome": "false_positive"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "$ref": "#/components/responses/OutcomeRecorded"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidOutcome"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/TenantForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/IdempotencyConflict"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/v1/assessments/query": {
+      "post": {
+        "operationId": "queryAccountAssessments",
+        "x-noresponse-group": "assessments",
+        "x-noresponse-name-override": "query",
+        "tags": [
+          "assessments"
+        ],
+        "summary": "Page through one account's unexpired assessments.",
+        "description": "History is a POST with account_id in the body so an account identifier stays out of URLs and access logs. Requires the history scope. Read-only and safe to retry. Newest first, each at its latest assessment_version. An account with no assessments answers 200 with empty items. The cursor is opaque and bound to your tenant and the account; a tampered or expired cursor answers 400 invalid_cursor. response_mode=detailed needs the detailed scope.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssessmentQuery"
+              },
+              "examples": {
+                "firstPage": {
+                  "value": {
+                    "account_id": "acct_7f3a9c",
+                    "limit": 20
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/AssessmentList"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidHistoryQuery"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/TenantForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/IdempotencyConflict"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ],
+        "x-noresponse-pagination": {
+          "type": "cursor",
+          "inputs": [
+            {
+              "name": "cursor",
+              "in": "requestBody",
+              "type": "cursor"
+            }
+          ],
+          "outputs": {
+            "nextCursor": "$.next_cursor"
+          }
+        }
+      }
+    },
+    "/v1/keys/rotate": {
+      "post": {
+        "operationId": "rotateApiKey",
+        "x-noresponse-group": "keys",
+        "x-noresponse-name-override": "rotate",
+        "tags": [
+          "keys"
+        ],
+        "summary": "Rotate the API key that signs the request.",
+        "description": "Mints a new key with the same scopes as the key that signs the request and returns it once. The presented key keeps working for overlap_seconds (default 24 hours, from 60 seconds to 7 days), then answers 401. A key accepts one rotation: rotating again with a key already in its overlap answers 409 key_rotation_in_progress, so rotate with the new key. Rotation is not idempotent: a retry after a lost answer mints another key.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/KeyRotationRequest"
+              },
+              "examples": {
+                "one_hour": {
+                  "value": {
+                    "overlap_seconds": 3600
+                  }
+                },
+                "default": {
+                  "value": {}
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/KeyRotated"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidKeyRotation"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/TenantForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/KeyRotationInProgress"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ],
+        "x-noresponse-retries": {
+          "strategy": "none"
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "apiKey": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Your API key, sent as `Authorization: Bearer <key>`. Keys are opaque, scoped (assess, history, webhooks, and optionally detailed) and identify one tenant. Rotate with POST /v1/keys/rotate. A missing, malformed, revoked or expired key answers 401; a key without the operation's scope answers 403."
+      }
+    },
+    "schemas": {
+      "Assessment": {
+        "description": "One assessment of one account, as POST /v1/assessments, GET /v1/assessments/{assessment_id} and the assessment.updated webhook return it. status says whether it is final (complete), usable with a source still running (partial) or not yet usable (pending). risk and recommendation are present for complete and partial; assessment_url is present for pending. Keep the highest assessment_version.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schema_version",
+          "assessment_id",
+          "account_id",
+          "status",
+          "confidence",
+          "incomplete_sources",
+          "policy_version",
+          "policy_basis",
+          "assessment_version",
+          "created_at",
+          "updated_at",
+          "expires_at",
+          "timing"
+        ],
+        "properties": {
+          "schema_version": {
+            "const": "1",
+            "description": "Version of the body shape."
+          },
+          "assessment_id": {
+            "type": "string",
+            "pattern": "^asm_[0-9A-HJKMNP-TV-Z]{26}$",
+            "description": "Opaque, server-assigned assessment id: 'asm_' and a 26-character Crockford base32 ULID. Unique within the tenant; another tenant's assessment id answers 404."
+          },
+          "account_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:|-]{0,127}$",
+            "description": "Your own opaque identifier for the account being checked, scoped to your tenant. Use an id you mint, with no direct identifier (email, phone, name or national id) in it. '|' is accepted so an Auth0 user id such as 'auth0|64abc' passes unchanged; '@', '+', '$' and whitespace are refused, as is a JWT; a hex digest such as a SHA-256 is allowed. It travels only in request bodies."
+          },
+          "request_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+            "description": "An optional provider correlation id, echoed back. It is not an idempotency key. Refuses an exact-shape JWT or a bare 40, 64 or 128 character hex digest; a UUID is accepted."
+          },
+          "status": {
+            "$ref": "#/components/schemas/Status"
+          },
+          "recommendation": {
+            "$ref": "#/components/schemas/Recommendation"
+          },
+          "confidence": {
+            "$ref": "#/components/schemas/Confidence"
+          },
+          "risk": {
+            "$ref": "#/components/schemas/Risk"
+          },
+          "signals": {
+            "type": "array",
+            "maxItems": 256,
+            "items": {
+              "$ref": "#/components/schemas/Signal"
+            },
+            "description": "Detailed view only (response_mode=detailed, which needs the detailed scope): a standard answer omits signals[], and a detailed one always carries it, possibly empty. The body does not name its mode, so that rule is the serving gate's; the schema states the half it can: an answer with risk.details is a detailed view and carries signals[]. At most one signal per (type, source_id, identifier)."
+          },
+          "incomplete_sources": {
+            "type": "array",
+            "maxItems": 256,
+            "items": {
+              "$ref": "#/components/schemas/IncompleteSource"
+            },
+            "description": "The lanes that did not settle, each listed once with a reason; lanes, not sources. In a detailed view a lane is listed exactly when one of its signals did not settle; a standard view carries no signals to match."
+          },
+          "policy_version": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9._-]{0,63}(\\+t[1-9][0-9]{0,8})?$",
+            "description": "Version of the hand-authored heuristic weights that produced the recommendation, for example 'risk-2026-10.7'. A tenant threshold override adds a +t<N> suffix, e.g. 'risk-2026-10.7+t3'."
+          },
+          "policy_basis": {
+            "const": "heuristic_unvalidated",
+            "description": "Labels the v0 policy as hand-authored and not statistically validated."
+          },
+          "assessment_version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000,
+            "description": "Monotonic revision of this assessment. 1 on the synchronous answer; each material change while the assessment is served (an async continuation settling a source, a change of recommendation, confidence or status) increments it. Expiry does not increment it: an expired assessment is gone, not revised, and the expiry webhook carries the last served version."
+          },
+          "created_at": {
+            "type": "string",
+            "description": "When the assessment was created. Fixed for the life of the assessment: every revision carries the same created_at."
+          },
+          "updated_at": {
+            "type": "string"
+          },
+          "expires_at": {
+            "type": "string",
+            "description": "After this instant the assessment is no longer served: GET /v1/assessments/{assessment_id} answers 404 and it leaves the account history. It is created_at plus your retention period at creation (default and maximum 365 days) and is fixed per record: a later revision keeps it, and a new assessment for the same account starts its own clock. If you later shorten retention, the effective expiry becomes created_at plus the shorter of the two periods."
+          },
+          "assessment_url": {
+            "type": "string",
+            "maxLength": 64,
+            "pattern": "^/v1/assessments/asm_[0-9A-HJKMNP-TV-Z]{26}$",
+            "description": "Server-relative path of the authoritative assessment, GET /v1/assessments/{assessment_id}."
+          },
+          "timing": {
+            "$ref": "#/components/schemas/AssessmentTiming"
+          }
+        }
+      },
+      "AssessmentList": {
+        "description": "Body of the 200 answer to POST /v1/assessments/query: one page of the calling tenant's unexpired assessments for one account, newest first, each at its latest assessment_version. Every item's account_id equals the page's. An assessment past its expires_at is not listed. next_cursor is present only when another page exists.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schema_version",
+          "account_id",
+          "items",
+          "retention_days"
+        ],
+        "properties": {
+          "schema_version": {
+            "const": "1",
+            "description": "Version of the body shape."
+          },
+          "account_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:|-]{0,127}$",
+            "description": "Your own opaque identifier for the account being checked, scoped to your tenant. Use an id you mint, with no direct identifier (email, phone, name or national id) in it. '|' is accepted so an Auth0 user id such as 'auth0|64abc' passes unchanged; '@', '+', '$' and whitespace are refused, as is a JWT; a hex digest such as a SHA-256 is allowed. It travels only in request bodies."
+          },
+          "items": {
+            "type": "array",
+            "maxItems": 50,
+            "items": {
+              "$ref": "#/components/schemas/Assessment"
+            }
+          },
+          "next_cursor": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256,
+            "pattern": "^[A-Za-z0-9_-]+$",
+            "description": "Opaque cursor for the next page, bound to your tenant and the account_id it was issued for. Pass it back unchanged in the next query; a tampered, foreign or expired cursor answers 400 invalid_cursor."
+          },
+          "retention_days": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 365,
+            "default": 365,
+            "description": "Your current retention period, so a consumer knows how far back history reaches. Every item expires no later than its created_at plus this many days."
+          }
+        }
+      },
+      "AssessmentOutcome": {
+        "description": "The 202 answer of POST /v1/assessments/{assessment_id}/outcomes. A replay with the same Idempotency-Key and body answers the same record.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "assessment_id",
+          "outcome",
+          "received_at"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^out_[0-9A-HJKMNP-TV-Z]{26}$",
+            "description": "Opaque, server-assigned id of one recorded outcome: 'out_' and a 26-character Crockford base32 ULID. Unique within the tenant."
+          },
+          "assessment_id": {
+            "type": "string",
+            "pattern": "^asm_[0-9A-HJKMNP-TV-Z]{26}$",
+            "description": "Opaque, server-assigned assessment id: 'asm_' and a 26-character Crockford base32 ULID. Unique within the tenant; another tenant's assessment id answers 404."
+          },
+          "outcome": {
+            "$ref": "#/components/schemas/Outcome"
+          },
+          "received_at": {
+            "type": "string",
+            "description": "When NoResponse first recorded the outcome."
+          }
+        }
+      },
+      "AssessmentOutcomeRequest": {
+        "description": "POST /v1/assessments/{assessment_id}/outcomes body: what the provider later learned about the account it assessed. The assessment is named by the path and the tenant by the API key, so neither is a body member. Idempotency-Key is required and binds the body as it does on POST /v1/assessments.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "outcome"
+        ],
+        "properties": {
+          "outcome": {
+            "$ref": "#/components/schemas/Outcome"
+          },
+          "observed_at": {
+            "type": "string",
+            "description": "When the provider observed the outcome. Defaults to when NoResponse received it."
+          },
+          "external_ref": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+            "description": "Your own opaque reference for the outcome, such as a case or ticket id. Stored as given and not interpreted; keep direct identifiers out of it."
+          },
+          "notes": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500,
+            "description": "Free text for your own records, at most 500 characters. Stored only; it is left out of scoring and answers. Keep personal data out of it. Control characters other than tab and line breaks are refused."
+          }
+        }
+      },
+      "AssessmentQuery": {
+        "description": "POST /v1/assessments/query body. account_id travels in the body rather than the URL path so a provider value that turns out to hold personal data is not written to access logs, proxies or browser history. Read-only: no Idempotency-Key. An account with no unexpired assessments answers 200 with empty items.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "account_id"
+        ],
+        "properties": {
+          "account_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:|-]{0,127}$",
+            "description": "Your own opaque identifier for the account being checked, scoped to your tenant. Use an id you mint, with no direct identifier (email, phone, name or national id) in it. '|' is accepted so an Auth0 user id such as 'auth0|64abc' passes unchanged; '@', '+', '$' and whitespace are refused, as is a JWT; a hex digest such as a SHA-256 is allowed. It travels only in request bodies."
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 50,
+            "default": 20
+          },
+          "cursor": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256,
+            "pattern": "^[A-Za-z0-9_-]+$",
+            "description": "next_cursor from the previous page, unchanged. Opaque, MAC'd and bound to the tenant and account_id."
+          },
+          "response_mode": {
+            "$ref": "#/components/schemas/ResponseMode",
+            "description": "standard returns the consolidated risk response; detailed adds merged provider-neutral facts when the key has detailed scope. There is no raw mode.",
+            "default": "standard"
+          }
+        }
+      },
+      "AssessmentRequest": {
+        "description": "POST /v1/assessments body. At least one of email, username or phone is required; name and ip only refine an assessment. No field carries a password, hash, token or breach value, and unknown members are refused. The email local part is kept as received and only the domain is lower-cased; the username is compared case-insensitively; the phone is strict E.164 and is assessed asynchronously. The whole body is capped at 32768 bytes. client_context holds bounded hints from the signup client; auth_context holds normalised claims from a session your backend has verified. Raw tokens are refused.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "account_id",
+          "identifiers"
+        ],
+        "properties": {
+          "account_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:|-]{0,127}$",
+            "description": "Your own opaque identifier for the account being checked, scoped to your tenant. Use an id you mint, with no direct identifier (email, phone, name or national id) in it. '|' is accepted so an Auth0 user id such as 'auth0|64abc' passes unchanged; '@', '+', '$' and whitespace are refused, as is a JWT; a hex digest such as a SHA-256 is allowed. It travels only in request bodies."
+          },
+          "identifiers": {
+            "$ref": "#/components/schemas/AssessmentRequestIdentifiers",
+            "description": "At least one of email, username or phone. name and ip refine the match and travel beside a lookup identifier; a body with only name or ip is refused with 400."
+          },
+          "policy_context": {
+            "$ref": "#/components/schemas/AssessmentRequestPolicyContext"
+          },
+          "request_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+            "description": "An optional provider correlation id, echoed back. It is not an idempotency key. Refuses an exact-shape JWT or a bare 40, 64 or 128 character hex digest; a UUID is accepted."
+          },
+          "deadline_ms": {
+            "type": "integer",
+            "minimum": 50,
+            "maximum": 500,
+            "description": "Optional tighter budget, 50 to 500 ms, measured from the moment the request reaches NoResponse. Absent means the 500 ms ceiling; a value above it is refused with 400 rather than clamped."
+          },
+          "response_mode": {
+            "$ref": "#/components/schemas/ResponseMode",
+            "description": "standard returns the consolidated risk response; detailed adds merged provider-neutral facts when the key has detailed scope. There is no raw mode.",
+            "default": "standard"
+          },
+          "client_context": {
+            "$ref": "#/components/schemas/AssessmentRequestClientContext",
+            "description": "Optional context observed by your signup client. The server parses these hints into coarse features, leaves raw user_agent and opaque ids out of every answer, and weighs a mismatch with the other evidence."
+          },
+          "auth_context": {
+            "$ref": "#/components/schemas/AuthContext"
+          }
+        }
+      },
+      "AssessmentRequestClientContext": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Optional context observed by your signup client. The server parses these hints into coarse features, leaves raw user_agent and opaque ids out of every answer, and weighs a mismatch with the other evidence.",
+        "properties": {
+          "timezone": {
+            "type": "string",
+            "maxLength": 64,
+            "pattern": "^(?:UTC|[A-Za-z_]+(?:/[A-Za-z0-9_+.-]+)+)$",
+            "description": "IANA time-zone name such as Europe/London or America/Los_Angeles. Fixed numeric offsets are not accepted."
+          },
+          "locale": {
+            "type": "string",
+            "maxLength": 35,
+            "pattern": "^[A-Za-z]{2,8}(?:-[A-Za-z0-9]{1,8})*$",
+            "description": "BCP 47 locale, for example en-AU. Treat as a presentation hint, not a nationality signal."
+          },
+          "platform": {
+            "$ref": "#/components/schemas/Platform",
+            "description": "Client platform. Closed vocabulary keeps integrations stable."
+          },
+          "app_version": {
+            "type": "string",
+            "maxLength": 32,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._+-]{0,31}$",
+            "description": "Customer application version, without build metadata that contains secrets."
+          },
+          "user_agent": {
+            "type": "string",
+            "maxLength": 512,
+            "description": "The raw User-Agent header of the signup request, at most 512 characters. It is parsed into coarse features and left out of every answer."
+          },
+          "device_id": {
+            "type": "string",
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+            "description": "Tenant-scoped opaque identifier your application mints and rotates when the account or device changes. Send an id of your own, not a hardware fingerprint."
+          },
+          "session_id": {
+            "type": "string",
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+            "description": "Opaque signup session identifier. It is used for tenant-scoped velocity and replay checks only."
+          },
+          "form_duration_ms": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 86400000,
+            "description": "Elapsed time from form start to submit. Values below three seconds are a weak automation hint, weighed with the other evidence."
+          },
+          "client_observed_at": {
+            "type": "string",
+            "maxLength": 64,
+            "description": "RFC 3339 timestamp observed by the client. Server ingress time remains authoritative; a large clock skew is only a low-confidence feature."
+          }
+        }
+      },
+      "AssessmentRequestIdentifiers": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "email": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 254,
+            "pattern": "^[^\\s@<>\\x00-\\x1f\\x7f-\\x9f­؜᠎​-‏‪-‮⁠-⁤⁦-⁯﻿￹-￻]{1,64}@(?:[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?\\.)+[A-Za-z]{2,63}$",
+            "description": "One address: a 1 to 64 character local part without whitespace, angle brackets, control or invisible characters, '@', and a domain with a letter TLD. Send an internationalised domain in punycode. Nothing is trimmed. The local part keeps its case and the domain is lower-cased; no alias rewriting ('+tag', dots or provider heuristics) is applied."
+          },
+          "username": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^[^\\s\\x00-\\x1f\\x7f-\\x9f­؜᠎​-‏‪-‮⁠-⁤⁦-⁯﻿￹-￻]{1,64}$",
+            "description": "The handle the account is signing up with: 1 to 64 characters, no whitespace, control or invisible characters, and not a credential hash or token. Echoed as received; compared case-insensitively."
+          },
+          "phone": {
+            "type": "string",
+            "minLength": 9,
+            "maxLength": 16,
+            "pattern": "^\\+[1-9][0-9]{7,14}$",
+            "description": "Strict E.164: '+', then 8 to 15 digits, the first not 0, with no separators. Phone evidence is gathered asynchronously, so a phone-only request answers 202 pending and the phone is listed in incomplete_sources on the synchronous answer."
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[^\\x00-\\x1f\\x7f-\\x9f­؜᠎​-‏‪-‮⁠-⁤⁦-⁯﻿￹-￻]{1,128}$",
+            "description": "The full name as the user typed it, 1 to 128 characters with no control or invisible characters. It is used only to match names in the evidence."
+          },
+          "ip": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 39,
+            "pattern": "^(?:(?:25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])(?:\\.(?:25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])){3}|[0-9a-f]{0,4}(?::[0-9a-f]{0,4}){2,7})$",
+            "description": "The signup's client IP address: an IPv4 dotted quad without leading zeros, or an IPv6 address in its RFC 5952 text form (lower case, no leading zeros, the longest zero run compressed). Send an IPv4 client as a dotted quad, not IPv4-mapped. No zone, port or prefix. The server refuses a non-canonical IPv6 spelling, and every private, loopback, link-local, multicast, documentation or otherwise reserved address (the IANA special-purpose registries), with 400: only a public address says anything about a signup."
+          }
+        },
+        "description": "At least one of email, username or phone. name and ip refine the match and travel beside a lookup identifier; a body with only name or ip is refused with 400."
+      },
+      "AssessmentRequestPolicyContext": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "flow": {
+            "$ref": "#/components/schemas/Flow",
+            "description": "The provider flow the assessment gates. Absent means signup."
+          },
+          "region": {
+            "type": "string",
+            "pattern": "^[A-Z]{2}$",
+            "description": "ISO 3166-1 alpha-2 region of the signup, as the provider determines it."
+          }
+        }
+      },
+      "AssessmentTiming": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "deadline_ms",
+          "elapsed_ms"
+        ],
+        "properties": {
+          "deadline_ms": {
+            "type": "integer",
+            "minimum": 50,
+            "maximum": 500,
+            "description": "The budget the server applied to the synchronous answer."
+          },
+          "elapsed_ms": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 600000,
+            "description": "Server time from HTTP ingress to this revision of the assessment."
+          }
+        }
+      },
+      "AssuranceLevel": {
+        "type": "string",
+        "enum": [
+          "unknown",
+          "low",
+          "medium",
+          "high"
+        ],
+        "description": "Provider or OIDC assurance level, when the customer has mapped one."
+      },
+      "AuthContext": {
+        "description": "Normalised claims from a session your backend has already verified with WorkOS, Clerk, Auth0 or any OIDC provider. Pass the output of the SDK's auth adapters, not a raw token.",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "provider": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9._-]{1,31}$",
+            "description": "Lowercase provider slug. WorkOS, Clerk and Auth0 have first-class adapters; every other provider uses a customer-specific OIDC slug. Provider brand is metadata; it does not change risk by itself."
+          },
+          "issuer": {
+            "type": "string",
+            "maxLength": 256,
+            "pattern": "^https://[^\\s]+$",
+            "description": "The verified token issuer, normally the provider's HTTPS issuer URL."
+          },
+          "audience": {
+            "type": "string",
+            "maxLength": 256,
+            "pattern": "^[A-Za-z0-9._:/-]{1,256}$",
+            "description": "The verified audience/resource identifier used by the customer's API. Use audiences when the provider emits multiple values."
+          },
+          "audiences": {
+            "type": "array",
+            "maxItems": 8,
+            "items": {
+              "type": "string",
+              "maxLength": 256,
+              "pattern": "^[A-Za-z0-9._:/-]{1,256}$"
+            },
+            "description": "All verified audience/resource identifiers from an OAuth or OIDC token. The first value may also be copied to audience for simple integrations."
+          },
+          "subject": {
+            "type": "string",
+            "maxLength": 256,
+            "pattern": "^[A-Za-z0-9._:@/|+=~-]{1,256}$",
+            "description": "The verified stable subject identifier (`sub`), opaque to NoResponse."
+          },
+          "session_id": {
+            "type": "string",
+            "maxLength": 256,
+            "pattern": "^[A-Za-z0-9._:@/|+=~-]{1,256}$",
+            "description": "The verified session identifier (`sid` or provider equivalent)."
+          },
+          "organization_id": {
+            "type": "string",
+            "maxLength": 256,
+            "pattern": "^[A-Za-z0-9._:@/|+=~-]{1,256}$",
+            "description": "The active organization or workspace identifier, when the provider issued one."
+          },
+          "tenant_id": {
+            "type": "string",
+            "maxLength": 256,
+            "pattern": "^[A-Za-z0-9._:@/|+=~-]{1,256}$",
+            "description": "The provider tenant identifier, when distinct from organization_id."
+          },
+          "token_id": {
+            "type": "string",
+            "maxLength": 256,
+            "pattern": "^[A-Za-z0-9._:@/|+=~-]{1,256}$",
+            "description": "The verified token identifier (`jti`), used for replay and rotation correlation."
+          },
+          "issued_at": {
+            "type": "string",
+            "maxLength": 64,
+            "description": "Verified token issue time (`iat`)."
+          },
+          "expires_at": {
+            "type": "string",
+            "maxLength": 64,
+            "description": "Verified token expiry (`exp`)."
+          },
+          "session_created_at": {
+            "type": "string",
+            "maxLength": 64,
+            "description": "Creation time of the provider session from the verified backend session record (for example Clerk Session.createdAt or WorkOS Session.created_at). This is separate from token issuance and auth_time."
+          },
+          "auth_time": {
+            "type": "string",
+            "maxLength": 64,
+            "description": "Verified end-user authentication time (`auth_time`), when present."
+          },
+          "account_created_at": {
+            "type": "string",
+            "maxLength": 64,
+            "description": "Account creation time from the customer's verified provider record, when available."
+          },
+          "email_verified": {
+            "type": "boolean",
+            "description": "Whether the customer's provider asserts that the email identifier was verified."
+          },
+          "phone_verified": {
+            "type": "boolean",
+            "description": "Whether the customer's provider asserts that the phone identifier was verified."
+          },
+          "assurance_level": {
+            "$ref": "#/components/schemas/AssuranceLevel",
+            "description": "Provider or OIDC assurance level, when the customer has mapped one."
+          },
+          "impersonated": {
+            "type": "boolean",
+            "description": "Whether the verified session is acting on behalf of another subject."
+          },
+          "transport": {
+            "$ref": "#/components/schemas/Transport",
+            "description": "Where the customer derived this context. Backend is the trusted integration path; browser values are treated as weak hints.",
+            "default": "backend"
+          },
+          "verified": {
+            "type": "boolean",
+            "description": "Whether the customer completed signature, issuer, audience and expiry validation before calling NoResponse. False contexts are accepted only as weak hints."
+          },
+          "mfa": {
+            "$ref": "#/components/schemas/AuthContextMfa",
+            "description": "Normalized multi-factor evidence from a verified provider session."
+          },
+          "roles": {
+            "type": "array",
+            "maxItems": 32,
+            "items": {
+              "type": "string",
+              "maxLength": 64,
+              "pattern": "^[A-Za-z0-9._:@/-]{1,64}$"
+            },
+            "description": "Bounded role slugs from the verified provider; roles do not change risk by themselves."
+          },
+          "scopes": {
+            "type": "array",
+            "maxItems": 32,
+            "items": {
+              "type": "string",
+              "maxLength": 64,
+              "pattern": "^[A-Za-z0-9._:@/-]{1,64}$"
+            },
+            "description": "Bounded scopes from the verified access token; scopes do not change risk by themselves."
+          }
+        },
+        "required": [
+          "provider",
+          "issuer",
+          "subject",
+          "verified"
+        ]
+      },
+      "AuthContextMfa": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "present": {
+            "type": "boolean"
+          },
+          "methods": {
+            "type": "array",
+            "maxItems": 8,
+            "items": {
+              "type": "string",
+              "maxLength": 32,
+              "pattern": "^[A-Za-z0-9._:-]{1,32}$"
+            }
+          },
+          "age_seconds": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 315360000
+          }
+        },
+        "description": "Normalized multi-factor evidence from a verified provider session."
+      },
+      "AuthenticationError": {
+        "description": "HTTP 401 problem document.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Problem"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "status": {
+                "const": 401
+              },
+              "code": {
+                "$ref": "#/components/schemas/AuthenticationErrorCode"
+              }
+            }
+          }
+        ]
+      },
+      "AuthenticationErrorCode": {
+        "type": "string",
+        "enum": [
+          "unauthorized"
+        ],
+        "description": "Machine codes an HTTP 401 answer can carry."
+      },
+      "BadRequestError": {
+        "description": "HTTP 400 problem document.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Problem"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "status": {
+                "const": 400
+              },
+              "code": {
+                "$ref": "#/components/schemas/BadRequestErrorCode"
+              }
+            }
+          }
+        ]
+      },
+      "BadRequestErrorCode": {
+        "type": "string",
+        "enum": [
+          "invalid_request",
+          "invalid_idempotency_key",
+          "invalid_cursor"
+        ],
+        "description": "Machine codes an HTTP 400 answer can carry."
+      },
+      "Band": {
+        "enum": [
+          "low",
+          "medium",
+          "high",
+          "critical"
+        ],
+        "description": "low 0-29, medium 30-59, high 60-84, critical 85-100."
+      },
+      "Breach": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "kind",
+          "matched_on"
+        ],
+        "description": "One breach table that matched, detailed view only. name is the catalogue's display name for the table's site, not the upstream provider. No member carries a record, value, password or hash.",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "domain": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 253,
+            "pattern": "^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\\.)+[a-z]{2,63}$",
+            "description": "The breached site's domain, lower case. Absent when the table has none (a credential list, for example)."
+          },
+          "category": {
+            "type": "string",
+            "pattern": "^[a-z0-9_]{1,64}$",
+            "description": "The table's category from its name, lower case (social, gaming, combolist, ...)."
+          },
+          "kind": {
+            "$ref": "#/components/schemas/BreachKind"
+          },
+          "year": {
+            "type": "integer",
+            "minimum": 1970,
+            "maximum": 2100,
+            "description": "A breach table's date year."
+          },
+          "month": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 12,
+            "description": "Absent when only the year is known."
+          },
+          "matched_on": {
+            "$ref": "#/components/schemas/BreachSelector"
+          },
+          "exposed": {
+            "type": "array",
+            "maxItems": 11,
+            "items": {
+              "$ref": "#/components/schemas/BreachExposed"
+            }
+          }
+        }
+      },
+      "BreachExposed": {
+        "enum": [
+          "email",
+          "username",
+          "name",
+          "password",
+          "password_hash",
+          "phone",
+          "address",
+          "dob",
+          "ip",
+          "payment",
+          "security_qa"
+        ],
+        "description": "The kind of data a breach table held beside the identifier. password means a plaintext password was present and password_hash means a hash, salt or token was present. The value itself is not stored or returned; the schema has no member for one."
+      },
+      "BreachKind": {
+        "enum": [
+          "site_breach",
+          "credential_list",
+          "stealer_log",
+          "scrape",
+          "hacking_forum",
+          "abuse_service",
+          "darkweb_site"
+        ],
+        "description": "Who is in the table: site_breach, a site's own users; credential_list, a combolist or compilation; stealer_log, malware or botnet victims; scrape; hacking_forum, a criminal hacking, cracking or carding community; abuse_service, the customers of DDoS-for-hire, account generators, dump or card shops, darknet markets, stalkerware or breach-lookup services; darkweb_site, an onion site of unknown purpose."
+      },
+      "BreachSelector": {
+        "enum": [
+          "email",
+          "username",
+          "ip"
+        ],
+        "description": "The submitted identifier a breach table matched on: email or username. Phone and name are not breach selectors."
+      },
+      "BreachSummary": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "found"
+        ],
+        "description": "Breach facts for one selector. found is the one required member: false is a definite 'in no breach table'. Every other member is optional, and absent makes no claim. No member carries a breach value, password or hash, and unknown members are refused. truncated means the value matched more tables or records than the lookup keeps, so absence-based claims (a missing name match, for example) are withheld; a truncated result is always found.",
+        "properties": {
+          "found": {
+            "type": "boolean"
+          },
+          "breach_count": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Distinct breach tables the value appears in."
+          },
+          "first_year": {
+            "type": "integer",
+            "minimum": 1970,
+            "maximum": 2100,
+            "description": "Year of the oldest dated table."
+          },
+          "last_year": {
+            "type": "integer",
+            "minimum": 1970,
+            "maximum": 2100,
+            "description": "Year of the newest dated table."
+          },
+          "exposed": {
+            "type": "array",
+            "maxItems": 11,
+            "items": {
+              "$ref": "#/components/schemas/BreachExposed"
+            },
+            "description": "The union of data kinds the matching tables held, without the values."
+          },
+          "in_credential_lists": {
+            "type": "boolean",
+            "description": "The value is in a credential_list or stealer_log table."
+          },
+          "recent_password_exposure": {
+            "type": "boolean",
+            "description": "A plaintext password sat next to the value in a table dated two years ago or less, or the value is in a stealer_log table."
+          },
+          "truncated": {
+            "type": "boolean"
+          }
+        }
+      },
+      "Confidence": {
+        "enum": [
+          "low",
+          "medium",
+          "high",
+          "unavailable"
+        ],
+        "description": "Ordinal confidence in the recommendation under the current policy: low, medium, high or unavailable."
+      },
+      "ConflictError": {
+        "description": "HTTP 409 problem document.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Problem"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "status": {
+                "const": 409
+              },
+              "code": {
+                "$ref": "#/components/schemas/ConflictErrorCode"
+              }
+            }
+          }
+        ]
+      },
+      "ConflictErrorCode": {
+        "type": "string",
+        "enum": [
+          "idempotency_key_reused",
+          "key_rotation_in_progress"
+        ],
+        "description": "Machine codes an HTTP 409 answer can carry."
+      },
+      "Consistency": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Cross-identifier agreement, computed from facts only. Every member is optional; absent makes no claim.",
+        "properties": {
+          "name": {
+            "$ref": "#/components/schemas/ConsistencyValue",
+            "description": "The submitted name against breach names and caller-ID names."
+          },
+          "phone": {
+            "$ref": "#/components/schemas/ConsistencyValue",
+            "description": "The submitted phone against numbers found next to the email in breach records."
+          },
+          "ip": {
+            "$ref": "#/components/schemas/ConsistencyValue",
+            "description": "The submitted IP against IPs found next to the email or username in breach records."
+          },
+          "country": {
+            "$ref": "#/components/schemas/Country",
+            "description": "IP country, phone country, breach countries and policy_context.region together."
+          }
+        }
+      },
+      "ConsistencyValue": {
+        "enum": [
+          "match",
+          "partial",
+          "mismatch",
+          "unknown"
+        ],
+        "description": "How a submitted identifier agrees with what the evidence holds for the other identifiers. unknown is a definite 'cannot tell' (for example a truncated or too-common breach result); absent means the comparison was not made."
+      },
+      "Country": {
+        "enum": [
+          "consistent",
+          "mismatch",
+          "unknown"
+        ],
+        "description": "IP country, phone country, breach countries and policy_context.region together."
+      },
+      "FailureReason": {
+        "enum": [
+          "timed_out",
+          "rate_limited",
+          "blocked",
+          "source_error",
+          "unavailable",
+          "deferred",
+          "insufficient_evidence"
+        ],
+        "description": "Why a signal or source did not produce a definite found/not_found. timed_out means the source missed the request deadline; a continuation may still settle it. deferred means the (source, identifier) pair is async-only and was not attempted on the synchronous path; a continuation settles it."
+      },
+      "Flow": {
+        "enum": [
+          "signup",
+          "login",
+          "recovery",
+          "profile_change"
+        ],
+        "description": "The provider flow the assessment gates. Absent means signup."
+      },
+      "Freshness": {
+        "enum": [
+          "fresh",
+          "stale",
+          "unknown"
+        ],
+        "description": "Freshness class of the evidence behind a signal. unknown whenever no evidence was obtained."
+      },
+      "IdentifierKind": {
+        "enum": [
+          "email",
+          "username",
+          "phone",
+          "ip"
+        ],
+        "description": "Which submitted identifier a signal concerns. ip is a selector of breach_exposure only."
+      },
+      "IncompleteReason": {
+        "enum": [
+          "timed_out",
+          "rate_limited",
+          "blocked",
+          "source_error",
+          "unavailable",
+          "deferred"
+        ],
+        "description": "Why a lane did not settle. deferred means the lane is asynchronous and still running; a continuation settles it. timed_out means the lane missed its deadline. insufficient_evidence is a settled inconclusive signal rather than an incomplete lane."
+      },
+      "IncompleteSource": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "lane",
+          "reason"
+        ],
+        "description": "One evidence lane that did not settle, and why. It names a lane, not a source. A lane that missed its deadline is timed_out rather than not_found.",
+        "properties": {
+          "lane": {
+            "$ref": "#/components/schemas/Lane"
+          },
+          "reason": {
+            "$ref": "#/components/schemas/IncompleteReason"
+          }
+        }
+      },
+      "IpSummary": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Facts about the submitted IP from the offline database and this tenant's own recent assessments. Every member is optional; absent makes no claim.",
+        "properties": {
+          "country": {
+            "type": "string",
+            "pattern": "^[A-Z]{2}$",
+            "description": "ISO 3166-1 alpha-2 country of the address."
+          },
+          "type": {
+            "$ref": "#/components/schemas/IpSummaryType",
+            "description": "The address's network type."
+          },
+          "seen_in_tenant": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Assessments in this tenant with the same IP in the last 24 hours, this one included. A count only."
+          }
+        }
+      },
+      "IpSummaryType": {
+        "enum": [
+          "residential",
+          "hosting",
+          "vpn",
+          "proxy",
+          "tor",
+          "mobile",
+          "unknown"
+        ],
+        "description": "The address's network type."
+      },
+      "KeyRotation": {
+        "description": "The 201 answer of POST /v1/keys/rotate: the new key, shown once, and when the key that was presented stops working. The new key has the scopes of the presented key.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "key",
+          "key_id",
+          "scopes",
+          "created_at",
+          "previous_key_id",
+          "previous_key_expires_at"
+        ],
+        "properties": {
+          "key": {
+            "type": "string",
+            "pattern": "^nrk_[0-7][0-9A-HJKMNP-TV-Z]{25}_[A-Za-z0-9_-]{42}[AEIMQUYcgkosw048]$",
+            "description": "The new credential, nrk_<key id>_<secret>. It is shown only in this answer; store it now."
+          },
+          "key_id": {
+            "type": "string",
+            "pattern": "^[0-7][0-9A-HJKMNP-TV-Z]{25}$",
+            "description": "The public id of the new key."
+          },
+          "scopes": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "enum": [
+                "assess",
+                "history",
+                "webhooks",
+                "detailed"
+              ]
+            },
+            "description": "The scopes of the new key: those of the presented key."
+          },
+          "created_at": {
+            "type": "string"
+          },
+          "previous_key_id": {
+            "type": "string",
+            "pattern": "^[0-7][0-9A-HJKMNP-TV-Z]{25}$",
+            "description": "The id of the key that signed this request."
+          },
+          "previous_key_expires_at": {
+            "type": "string",
+            "description": "When the previous key stops authenticating. Until then both keys work."
+          }
+        }
+      },
+      "KeyRotationRequest": {
+        "description": "POST /v1/keys/rotate body. The tenant and the key being rotated are the API key that signs the request, so neither is a body member. An empty object takes the default overlap.",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "overlap_seconds": {
+            "type": "integer",
+            "minimum": 60,
+            "maximum": 604800,
+            "description": "How long the presented key keeps working beside the new one, from 60 seconds to 7 days. Default 86400 (24 hours). At the end of the overlap the presented key stops authenticating."
+          }
+        }
+      },
+      "Lane": {
+        "enum": [
+          "accounts",
+          "phone",
+          "breach",
+          "ip"
+        ],
+        "description": "An evidence lane: accounts (account presence for email and username), phone, breach and ip."
+      },
+      "LineType": {
+        "enum": [
+          "mobile",
+          "voip",
+          "landline",
+          "toll_free",
+          "other"
+        ]
+      },
+      "NotFoundError": {
+        "description": "HTTP 404 problem document.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Problem"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "status": {
+                "const": 404
+              },
+              "code": {
+                "$ref": "#/components/schemas/NotFoundErrorCode"
+              }
+            }
+          }
+        ]
+      },
+      "NotFoundErrorCode": {
+        "type": "string",
+        "enum": [
+          "not_found"
+        ],
+        "description": "Machine codes an HTTP 404 answer can carry."
+      },
+      "Outcome": {
+        "enum": [
+          "confirmed_abuse",
+          "account_takeover",
+          "chargeback",
+          "false_positive",
+          "legitimate",
+          "unknown"
+        ],
+        "description": "What the provider later learned about the assessed account. confirmed_abuse, account_takeover and chargeback report abuse; false_positive and legitimate withdraw an earlier abuse report of this tenant for the assessment; unknown is recorded only. Outcomes are append-only and the latest one recorded for an assessment wins."
+      },
+      "PermissionDeniedError": {
+        "description": "HTTP 403 problem document.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Problem"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "status": {
+                "const": 403
+              },
+              "code": {
+                "$ref": "#/components/schemas/PermissionDeniedErrorCode"
+              }
+            }
+          }
+        ]
+      },
+      "PermissionDeniedErrorCode": {
+        "type": "string",
+        "enum": [
+          "tenant_forbidden"
+        ],
+        "description": "Machine codes an HTTP 403 answer can carry."
+      },
+      "PhoneEnrichment": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "fields"
+        ],
+        "properties": {
+          "fields": {
+            "$ref": "#/components/schemas/PhoneEnrichmentFields"
+          }
+        },
+        "description": "Facts about the number only: line type, carrier and country. The upstream provider, its scores and its verdicts stay internal."
+      },
+      "PhoneEnrichmentFields": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "phone": {
+            "type": "string",
+            "maxLength": 8192
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 8192
+          },
+          "carrier": {
+            "type": "string",
+            "maxLength": 8192
+          },
+          "line_type": {
+            "type": "string",
+            "maxLength": 8192
+          },
+          "entity_type": {
+            "type": "string",
+            "maxLength": 8192
+          },
+          "country_code": {
+            "type": "string",
+            "maxLength": 8192
+          },
+          "country": {
+            "type": "string",
+            "maxLength": 8192
+          },
+          "state": {
+            "type": "string",
+            "maxLength": 8192
+          },
+          "city": {
+            "type": "string",
+            "maxLength": 8192
+          },
+          "location": {
+            "type": "string",
+            "maxLength": 8192
+          },
+          "national_format": {
+            "type": "string",
+            "maxLength": 8192
+          },
+          "job_title": {
+            "type": "string",
+            "maxLength": 8192
+          },
+          "company_name": {
+            "type": "string",
+            "maxLength": 8192
+          },
+          "email": {
+            "type": "string",
+            "maxLength": 8192
+          },
+          "website": {
+            "type": "string",
+            "maxLength": 8192
+          },
+          "first_call_at": {
+            "type": "string",
+            "maxLength": 8192
+          },
+          "last_call_at": {
+            "type": "string",
+            "maxLength": 8192
+          },
+          "matched_name": {
+            "type": "string",
+            "maxLength": 8192
+          },
+          "alternate_names": {
+            "type": "array",
+            "maxItems": 1024,
+            "items": {
+              "type": [
+                "string",
+                "number",
+                "boolean",
+                "object",
+                "array"
+              ]
+            }
+          },
+          "name_candidates": {
+            "type": "array",
+            "maxItems": 1024,
+            "items": {
+              "type": [
+                "string",
+                "number",
+                "boolean",
+                "object",
+                "array"
+              ]
+            }
+          },
+          "timezones": {
+            "type": "array",
+            "maxItems": 1024,
+            "items": {
+              "type": [
+                "string",
+                "number",
+                "boolean",
+                "object",
+                "array"
+              ]
+            }
+          },
+          "emails": {
+            "type": "array",
+            "maxItems": 1024,
+            "items": {
+              "type": [
+                "string",
+                "number",
+                "boolean",
+                "object",
+                "array"
+              ]
+            }
+          },
+          "websites": {
+            "type": "array",
+            "maxItems": 1024,
+            "items": {
+              "type": [
+                "string",
+                "number",
+                "boolean",
+                "object",
+                "array"
+              ]
+            }
+          },
+          "locations": {
+            "type": "array",
+            "maxItems": 1024,
+            "items": {
+              "type": [
+                "string",
+                "number",
+                "boolean",
+                "object",
+                "array"
+              ]
+            }
+          },
+          "social_profiles": {
+            "type": "array",
+            "maxItems": 1024,
+            "items": {
+              "type": [
+                "string",
+                "number",
+                "boolean",
+                "object",
+                "array"
+              ]
+            }
+          },
+          "report_count": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "tag_count": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "total_calls": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "calls_60_days": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "reports_60_days": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "searches_60_days": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "comment_count": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "names_count": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "spam_report_count": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      },
+      "Platform": {
+        "enum": [
+          "web",
+          "ios",
+          "android",
+          "other"
+        ],
+        "description": "Client platform. Closed vocabulary keeps integrations stable."
+      },
+      "Problem": {
+        "description": "RFC 9457 problem document returned by every error response, with a stable machine code and the request id.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "type",
+          "title",
+          "status",
+          "detail",
+          "code",
+          "request_id"
+        ],
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "status": {
+            "type": "integer",
+            "minimum": 400,
+            "maximum": 599
+          },
+          "detail": {
+            "type": "string"
+          },
+          "instance": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "invalid_params": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProblemInvalidParam"
+            }
+          }
+        }
+      },
+      "ProblemInvalidParam": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "field",
+          "reason"
+        ],
+        "properties": {
+          "field": {
+            "type": "string",
+            "minLength": 1
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          },
+          "example": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "RateLimitError": {
+        "description": "HTTP 429 problem document.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Problem"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "status": {
+                "const": 429
+              },
+              "code": {
+                "$ref": "#/components/schemas/RateLimitErrorCode"
+              }
+            }
+          }
+        ]
+      },
+      "RateLimitErrorCode": {
+        "type": "string",
+        "enum": [
+          "rate_limited"
+        ],
+        "description": "Machine codes an HTTP 429 answer can carry."
+      },
+      "ReasonCode": {
+        "enum": [
+          "no_digital_footprint",
+          "voip_number",
+          "disposable_email",
+          "new_email",
+          "spam_reports",
+          "fraud_flag",
+          "identity_mismatch",
+          "country_mismatch",
+          "proxy_ip",
+          "seen_before",
+          "shared_ip",
+          "many_recent_signups",
+          "established_accounts",
+          "aged_identity",
+          "breach_name_match",
+          "breach_cooccurrence",
+          "breach_name_mismatch",
+          "breach_phone_mismatch",
+          "recent_password_exposure",
+          "credential_list_exposure",
+          "abuse_ecosystem_member",
+          "no_breach_history",
+          "automation_fast_submit",
+          "client_clock_skew",
+          "bot_or_automation",
+          "auth_email_verified",
+          "auth_phone_verified",
+          "auth_mfa_recent",
+          "auth_new_session",
+          "auth_new_account",
+          "auth_impersonated",
+          "context_timezone_mismatch",
+          "context_locale_mismatch",
+          "context_line_country_mismatch",
+          "prior_abuse_link"
+        ],
+        "description": "A stable reason code. New codes may appear; ignore any you do not know."
+      },
+      "ReasonIdentifier": {
+        "enum": [
+          "email",
+          "username",
+          "phone",
+          "name",
+          "ip",
+          "context"
+        ],
+        "description": "The submitted identifier or client context field a reason concerns; absent when it concerns the whole assessment. Client context is a claimed hint, not a device fingerprint."
+      },
+      "Recommendation": {
+        "enum": [
+          "allow",
+          "step_up",
+          "review"
+        ],
+        "description": "The recommended action: allow, step_up or review. Your application applies it."
+      },
+      "ResponseMode": {
+        "enum": [
+          "standard",
+          "detailed"
+        ],
+        "description": "standard returns the consolidated risk response; detailed adds merged provider-neutral facts when the key has detailed scope. There is no raw mode."
+      },
+      "Risk": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "score",
+          "band",
+          "recommendation",
+          "confidence",
+          "policy_version",
+          "policy_basis",
+          "reasons",
+          "coverage"
+        ],
+        "description": "The one risk decision for this event. score is 0 (safe) to 100 (risky): the sum of the weights of the reasons that fired, clamped to 0 to 100, from hand-set versioned weights. Every answer with a recommendation carries it, and the top-level recommendation equals risk.recommendation. It names no source or provider.",
+        "properties": {
+          "score": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "band": {
+            "$ref": "#/components/schemas/Band",
+            "description": "low 0-29, medium 30-59, high 60-84, critical 85-100."
+          },
+          "recommendation": {
+            "$ref": "#/components/schemas/Recommendation"
+          },
+          "confidence": {
+            "$ref": "#/components/schemas/RiskConfidence",
+            "description": "How much of the planned evidence answered; it says nothing about risk."
+          },
+          "policy_version": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9._-]{0,63}(\\+t[1-9][0-9]{0,8})?$",
+            "description": "Version of the hand-authored heuristic weights that produced the recommendation, for example 'risk-2026-10.7'. A tenant threshold override adds a +t<N> suffix, e.g. 'risk-2026-10.7+t3'."
+          },
+          "policy_basis": {
+            "const": "heuristic_unvalidated",
+            "description": "Labels the v0 policy as hand-authored and not statistically validated."
+          },
+          "reasons": {
+            "type": "array",
+            "maxItems": 32,
+            "description": "Every reason that fired, highest weight first. The weights sum to score before clamping.",
+            "items": {
+              "$ref": "#/components/schemas/RiskReason"
+            }
+          },
+          "summary": {
+            "$ref": "#/components/schemas/RiskSummary",
+            "description": "A few typed facts per identifier. Every fact is optional: absent means the evidence did not answer and makes no claim, while false or 0 is a definite answer. Lanes that do not exist yet leave their members absent."
+          },
+          "coverage": {
+            "$ref": "#/components/schemas/RiskCoverage",
+            "description": "Sources counted by state, not named."
+          },
+          "details": {
+            "$ref": "#/components/schemas/RiskDetails",
+            "description": "Detailed view only (response_mode=detailed, which needs the detailed scope); a standard answer leaves it out. Merged observations without provider, source, origin, raw breach record, value or score."
+          }
+        }
+      },
+      "RiskConfidence": {
+        "enum": [
+          "low",
+          "medium",
+          "high"
+        ],
+        "description": "How much of the planned evidence answered; it says nothing about risk."
+      },
+      "RiskCoverage": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "answered",
+          "failed",
+          "pending"
+        ],
+        "description": "Sources counted by state, not named.",
+        "properties": {
+          "answered": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Sources that gave a definite answer."
+          },
+          "failed": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Sources that could not answer."
+          },
+          "pending": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Sources still being asked."
+          }
+        }
+      },
+      "RiskDetails": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Detailed view only (response_mode=detailed, which needs the detailed scope); a standard answer leaves it out. Merged observations without provider, source, origin, raw breach record, value or score.",
+        "properties": {
+          "phone_names": {
+            "type": "array",
+            "maxItems": 32,
+            "items": {
+              "$ref": "#/components/schemas/RiskDetailsPhoneName"
+            }
+          },
+          "breaches": {
+            "type": "array",
+            "maxItems": 50,
+            "items": {
+              "$ref": "#/components/schemas/Breach"
+            },
+            "description": "The matching breach tables, newest first, at most 50."
+          },
+          "breach_names": {
+            "type": "array",
+            "maxItems": 32,
+            "description": "Names found next to the identifiers in breach records, merged, with the number of distinct tables each was seen in.",
+            "items": {
+              "$ref": "#/components/schemas/RiskDetailsBreachName"
+            }
+          }
+        }
+      },
+      "RiskDetailsBreachName": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "value",
+          "seen_in"
+        ],
+        "properties": {
+          "value": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "seen_in": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      },
+      "RiskDetailsPhoneName": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "value",
+          "seen_by"
+        ],
+        "properties": {
+          "value": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "seen_by": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      },
+      "RiskReason": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "code",
+          "weight"
+        ],
+        "properties": {
+          "code": {
+            "$ref": "#/components/schemas/ReasonCode",
+            "description": "A stable reason code. New codes may appear; ignore any you do not know."
+          },
+          "weight": {
+            "type": "integer",
+            "minimum": -100,
+            "maximum": 100
+          },
+          "identifier": {
+            "$ref": "#/components/schemas/ReasonIdentifier"
+          }
+        }
+      },
+      "RiskSummary": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "phone": {
+            "$ref": "#/components/schemas/RiskSummaryPhone"
+          },
+          "email": {
+            "$ref": "#/components/schemas/RiskSummaryEmail"
+          },
+          "username": {
+            "$ref": "#/components/schemas/RiskSummaryUsername"
+          },
+          "ip": {
+            "$ref": "#/components/schemas/IpSummary"
+          },
+          "consistency": {
+            "$ref": "#/components/schemas/Consistency"
+          }
+        },
+        "description": "A few typed facts per identifier. Every fact is optional: absent means the evidence did not answer and makes no claim, while false or 0 is a definite answer. Lanes that do not exist yet leave their members absent."
+      },
+      "RiskSummaryEmail": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "disposable": {
+            "type": "boolean"
+          },
+          "accounts_found": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Accounts found for the email."
+          },
+          "breach": {
+            "$ref": "#/components/schemas/BreachSummary",
+            "description": "Breach facts for the email. Replaces the boolean breached."
+          }
+        }
+      },
+      "RiskSummaryPhone": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "line_type": {
+            "$ref": "#/components/schemas/LineType"
+          },
+          "country": {
+            "type": "string",
+            "pattern": "^[A-Z]{2}$"
+          },
+          "report_count": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Highest report count any source gave for the number."
+          },
+          "carrier": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "description": "Carrier-network metadata from privately weighted sources; not upstream provider attribution."
+          }
+        }
+      },
+      "RiskSummaryUsername": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "accounts_found": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Accounts found for the username."
+          },
+          "breach": {
+            "$ref": "#/components/schemas/BreachSummary",
+            "description": "Breach facts for the username."
+          }
+        }
+      },
+      "Signal": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "type",
+          "identifier",
+          "outcome",
+          "source_id",
+          "freshness"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^[a-z][a-z0-9_]{0,63}$",
+            "description": "Signal kind, for example account_presence or breach_exposure. New kinds may appear; ignore any you do not know."
+          },
+          "identifier": {
+            "$ref": "#/components/schemas/IdentifierKind"
+          },
+          "outcome": {
+            "$ref": "#/components/schemas/SignalOutcome"
+          },
+          "source_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9_.-]{0,63}$",
+            "description": "Opaque, tenant-scoped projection of the source that produced a signal. It stays stable for your tenant while the projection key is unchanged and reveals no upstream provider, feed, breach table or source record."
+          },
+          "reason": {
+            "$ref": "#/components/schemas/FailureReason"
+          },
+          "evidence_ref": {
+            "type": "string",
+            "pattern": "^evr_[0-9A-HJKMNP-TV-Z]{26}$",
+            "description": "Opaque pointer to evidence NoResponse holds for this signal. It carries no breach value, credential or page body."
+          },
+          "observed_at": {
+            "type": "string",
+            "description": "When the evidence was first observed."
+          },
+          "last_checked_at": {
+            "type": "string",
+            "description": "When the source was last queried for this identifier."
+          },
+          "freshness": {
+            "$ref": "#/components/schemas/Freshness"
+          },
+          "enrichment": {
+            "$ref": "#/components/schemas/PhoneEnrichment",
+            "description": "Only present for a found phone signal. Curated facts about the number, without raw upstream documents or the provider's identity, scores or verdicts; follows normal record retention and deletion."
+          }
+        }
+      },
+      "SignalOutcome": {
+        "enum": [
+          "found",
+          "not_found",
+          "inconclusive",
+          "blocked",
+          "unavailable"
+        ],
+        "description": "Per-signal outcome. A source that timed out, was blocked or errored reports blocked, unavailable or inconclusive with a reason and is listed in incomplete_sources; not_found is a definite absence."
+      },
+      "Status": {
+        "enum": [
+          "complete",
+          "partial",
+          "pending"
+        ],
+        "description": "complete: final; nothing is still running. A lane that failed or missed its 10 s deadline stays listed in incomplete_sources, and confidence is lower. partial: a recommendation exists and at least one lane is still running or did not settle (see incomplete_sources). pending: nothing usable before the deadline; no recommendation yet, poll or wait for the webhook."
+      },
+      "Transport": {
+        "type": "string",
+        "enum": [
+          "backend",
+          "browser"
+        ],
+        "description": "Where the customer derived this context. Backend is the trusted integration path; browser values are treated as weak hints."
+      }
+    },
+    "parameters": {
+      "IdempotencyKey": {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "description": "Opaque client key, 16 to 128 characters of [A-Za-z0-9._:-] (a UUID or ULID fits). Scoped to the tenant principal and bound to the canonical body for 24 hours.",
+        "schema": {
+          "type": "string",
+          "minLength": 16,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9._:-]{16,128}$"
+        }
+      },
+      "AssessmentId": {
+        "name": "assessment_id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^asm_[0-9A-HJKMNP-TV-Z]{26}$",
+          "description": "Opaque, server-assigned assessment id: 'asm_' and a 26-character Crockford base32 ULID. Unique within the tenant; another tenant's assessment id answers 404."
+        },
+        "description": "Path segment, matched case-sensitively. A value that does not match the assessment_id shape answers 404, not 400."
+      }
+    },
+    "responses": {
+      "AssessmentSettled": {
+        "description": "A complete or partial assessment.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "Idempotent-Replayed": {
+            "description": "Present and true when this answer replays an earlier request with the same Idempotency-Key and body: the body is the latest assessment of the assessment that request created.",
+            "schema": {
+              "type": "string",
+              "const": "true"
+            },
+            "required": false
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Assessment"
+            },
+            "examples": {
+              "complete": {
+                "value": {
+                  "schema_version": "1",
+                  "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+                  "account_id": "acct_7f3a9c",
+                  "request_id": "req-2026-10-14-0001",
+                  "policy_version": "heuristic-2026-10.1",
+                  "policy_basis": "heuristic_unvalidated",
+                  "assessment_version": 2,
+                  "created_at": "2026-10-14T09:00:00.000Z",
+                  "updated_at": "2026-10-14T09:00:00.412Z",
+                  "expires_at": "2027-10-14T09:00:00.000Z",
+                  "timing": {
+                    "deadline_ms": 300,
+                    "elapsed_ms": 287
+                  },
+                  "status": "complete",
+                  "recommendation": "step_up",
+                  "confidence": "medium",
+                  "signals": [
+                    {
+                      "type": "account_presence",
+                      "identifier": "email",
+                      "outcome": "found",
+                      "source_id": "github",
+                      "evidence_ref": "evr_01JA2Z8K6Q4V7W9XBCDEFGHJKN",
+                      "observed_at": "2026-10-14T09:00:00.210Z",
+                      "last_checked_at": "2026-10-14T09:00:00.210Z",
+                      "freshness": "fresh"
+                    },
+                    {
+                      "type": "account_presence",
+                      "identifier": "username",
+                      "outcome": "not_found",
+                      "source_id": "gitlab",
+                      "last_checked_at": "2026-10-14T09:00:00.190Z",
+                      "freshness": "fresh"
+                    },
+                    {
+                      "type": "breach_exposure",
+                      "identifier": "email",
+                      "outcome": "found",
+                      "source_id": "breach.corpus",
+                      "evidence_ref": "evr_01JA2Z8K6Q4V7W9XBCDEFGHJKP",
+                      "observed_at": "2025-03-02T00:00:00Z",
+                      "last_checked_at": "2026-10-14T09:00:00.150Z",
+                      "freshness": "stale"
+                    }
+                  ],
+                  "incomplete_sources": []
+                }
+              },
+              "partial": {
+                "value": {
+                  "schema_version": "1",
+                  "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+                  "account_id": "acct_7f3a9c",
+                  "request_id": "req-2026-10-14-0001",
+                  "policy_version": "heuristic-2026-10.1",
+                  "policy_basis": "heuristic_unvalidated",
+                  "assessment_version": 1,
+                  "created_at": "2026-10-14T09:00:00.000Z",
+                  "updated_at": "2026-10-14T09:00:00.412Z",
+                  "expires_at": "2027-10-14T09:00:00.000Z",
+                  "timing": {
+                    "deadline_ms": 300,
+                    "elapsed_ms": 287
+                  },
+                  "status": "partial",
+                  "recommendation": "allow",
+                  "confidence": "low",
+                  "signals": [
+                    {
+                      "type": "account_presence",
+                      "identifier": "email",
+                      "outcome": "found",
+                      "source_id": "github",
+                      "evidence_ref": "evr_01JA2Z8K6Q4V7W9XBCDEFGHJKN",
+                      "observed_at": "2026-10-14T09:00:00.210Z",
+                      "last_checked_at": "2026-10-14T09:00:00.210Z",
+                      "freshness": "fresh"
+                    },
+                    {
+                      "type": "account_presence",
+                      "identifier": "username",
+                      "outcome": "not_found",
+                      "source_id": "gitlab",
+                      "last_checked_at": "2026-10-14T09:00:00.190Z",
+                      "freshness": "fresh"
+                    },
+                    {
+                      "type": "account_presence",
+                      "identifier": "phone",
+                      "outcome": "unavailable",
+                      "source_id": "phone_src_04",
+                      "reason": "deferred",
+                      "freshness": "unknown"
+                    }
+                  ],
+                  "incomplete_sources": [
+                    {
+                      "lane": "phone",
+                      "reason": "deferred"
+                    }
+                  ],
+                  "assessment_url": "/v1/assessments/asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+                }
+              },
+              "standard": {
+                "value": {
+                  "schema_version": "1",
+                  "assessment_id": "asm_01JB3C4D5E6F7G8H9JKMNPQRST",
+                  "account_id": "acct_8412",
+                  "request_id": "req_01",
+                  "status": "complete",
+                  "recommendation": "allow",
+                  "confidence": "high",
+                  "risk": {
+                    "score": 0,
+                    "band": "low",
+                    "recommendation": "allow",
+                    "confidence": "high",
+                    "policy_version": "risk-2026-10.3",
+                    "policy_basis": "heuristic_unvalidated",
+                    "reasons": [
+                      {
+                        "code": "voip_number",
+                        "weight": 25,
+                        "identifier": "phone"
+                      },
+                      {
+                        "code": "breach_cooccurrence",
+                        "weight": -10,
+                        "identifier": "phone"
+                      },
+                      {
+                        "code": "breach_name_match",
+                        "weight": -15,
+                        "identifier": "name"
+                      },
+                      {
+                        "code": "established_accounts",
+                        "weight": -15,
+                        "identifier": "email"
+                      },
+                      {
+                        "code": "aged_identity",
+                        "weight": -25,
+                        "identifier": "email"
+                      }
+                    ],
+                    "summary": {
+                      "email": {
+                        "disposable": false,
+                        "accounts_found": 6,
+                        "breach": {
+                          "found": true,
+                          "breach_count": 7,
+                          "first_year": 2013,
+                          "last_year": 2021,
+                          "exposed": [
+                            "email",
+                            "name",
+                            "password",
+                            "phone",
+                            "ip"
+                          ],
+                          "in_credential_lists": false,
+                          "recent_password_exposure": false,
+                          "truncated": false
+                        }
+                      },
+                      "username": {
+                        "accounts_found": 3,
+                        "breach": {
+                          "found": false,
+                          "truncated": false
+                        }
+                      },
+                      "phone": {
+                        "line_type": "voip",
+                        "country": "US",
+                        "report_count": 0
+                      },
+                      "ip": {
+                        "country": "US",
+                        "type": "residential",
+                        "seen_in_tenant": 1
+                      },
+                      "consistency": {
+                        "name": "match",
+                        "phone": "match",
+                        "ip": "unknown",
+                        "country": "consistent"
+                      }
+                    },
+                    "coverage": {
+                      "answered": 14,
+                      "failed": 1,
+                      "pending": 0
+                    }
+                  },
+                  "incomplete_sources": [],
+                  "policy_version": "risk-2026-10.3",
+                  "policy_basis": "heuristic_unvalidated",
+                  "assessment_version": 3,
+                  "created_at": "2026-10-18T11:00:00.000Z",
+                  "updated_at": "2026-10-18T11:00:04.000Z",
+                  "expires_at": "2027-10-18T11:00:00.000Z",
+                  "timing": {
+                    "deadline_ms": 500,
+                    "elapsed_ms": 4000
+                  }
+                }
+              },
+              "detailed": {
+                "value": {
+                  "schema_version": "1",
+                  "assessment_id": "asm_01JB3C4D5E6F7G8H9JKMNPQRST",
+                  "account_id": "acct_8412",
+                  "request_id": "req_01",
+                  "status": "complete",
+                  "recommendation": "allow",
+                  "confidence": "high",
+                  "risk": {
+                    "score": 10,
+                    "band": "low",
+                    "recommendation": "allow",
+                    "confidence": "high",
+                    "policy_version": "risk-2026-10.3",
+                    "policy_basis": "heuristic_unvalidated",
+                    "reasons": [
+                      {
+                        "code": "voip_number",
+                        "weight": 25,
+                        "identifier": "phone"
+                      },
+                      {
+                        "code": "breach_name_match",
+                        "weight": -15,
+                        "identifier": "name"
+                      }
+                    ],
+                    "summary": {
+                      "email": {
+                        "disposable": false,
+                        "accounts_found": 1,
+                        "breach": {
+                          "found": true,
+                          "breach_count": 2,
+                          "first_year": 2016,
+                          "last_year": 2019,
+                          "exposed": [
+                            "email",
+                            "password",
+                            "password_hash"
+                          ],
+                          "in_credential_lists": true,
+                          "truncated": false
+                        }
+                      },
+                      "phone": {
+                        "line_type": "voip",
+                        "country": "US"
+                      },
+                      "consistency": {
+                        "name": "match"
+                      }
+                    },
+                    "coverage": {
+                      "answered": 4,
+                      "failed": 0,
+                      "pending": 0
+                    },
+                    "details": {
+                      "phone_names": [
+                        {
+                          "value": "Jane Doe",
+                          "seen_by": 3
+                        }
+                      ],
+                      "breaches": [
+                        {
+                          "name": "Collection #1",
+                          "category": "combolist",
+                          "kind": "credential_list",
+                          "year": 2019,
+                          "matched_on": "email",
+                          "exposed": [
+                            "email",
+                            "password"
+                          ]
+                        },
+                        {
+                          "name": "LinkedIn",
+                          "domain": "linkedin.com",
+                          "category": "social",
+                          "kind": "site_breach",
+                          "year": 2016,
+                          "month": 5,
+                          "matched_on": "email",
+                          "exposed": [
+                            "email",
+                            "password_hash"
+                          ]
+                        }
+                      ],
+                      "breach_names": [
+                        {
+                          "value": "Jane Doe",
+                          "seen_in": 2
+                        }
+                      ]
+                    }
+                  },
+                  "signals": [
+                    {
+                      "type": "account_presence",
+                      "identifier": "email",
+                      "outcome": "found",
+                      "source_id": "src_3f9a1c",
+                      "evidence_ref": "evr_01JB3C4D5E6F7G8H9JKMNPQRSV",
+                      "observed_at": "2026-10-18T11:00:00.180Z",
+                      "last_checked_at": "2026-10-18T11:00:00.180Z",
+                      "freshness": "fresh"
+                    },
+                    {
+                      "type": "breach_exposure",
+                      "identifier": "email",
+                      "outcome": "found",
+                      "source_id": "src_8d27e4",
+                      "evidence_ref": "evr_01JB3C4D5E6F7G8H9JKMNPQRSW",
+                      "observed_at": "2026-10-18T11:00:01.900Z",
+                      "last_checked_at": "2026-10-18T11:00:01.900Z",
+                      "freshness": "fresh"
+                    },
+                    {
+                      "type": "account_presence",
+                      "identifier": "phone",
+                      "outcome": "found",
+                      "source_id": "src_51b0d7",
+                      "evidence_ref": "evr_01JB3C4D5E6F7G8H9JKMNPQRSX",
+                      "observed_at": "2026-10-18T11:00:03.700Z",
+                      "last_checked_at": "2026-10-18T11:00:03.700Z",
+                      "freshness": "fresh"
+                    }
+                  ],
+                  "incomplete_sources": [],
+                  "policy_version": "risk-2026-10.3",
+                  "policy_basis": "heuristic_unvalidated",
+                  "assessment_version": 2,
+                  "created_at": "2026-10-18T11:00:00.000Z",
+                  "updated_at": "2026-10-18T11:00:04.000Z",
+                  "expires_at": "2027-10-18T11:00:00.000Z",
+                  "timing": {
+                    "deadline_ms": 500,
+                    "elapsed_ms": 4000
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "AssessmentPending": {
+        "description": "Nothing usable before the deadline. No recommendation yet; poll Location or wait for the webhook.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "Idempotent-Replayed": {
+            "description": "Present and true when this answer replays an earlier request with the same Idempotency-Key and body: the body is the latest assessment of the assessment that request created.",
+            "schema": {
+              "type": "string",
+              "const": "true"
+            },
+            "required": false
+          },
+          "Location": {
+            "description": "The polling URI of the assessment, /v1/assessments/{assessment_id}.",
+            "schema": {
+              "type": "string",
+              "maxLength": 64,
+              "pattern": "^/v1/assessments/asm_[0-9A-HJKMNP-TV-Z]{26}$",
+              "description": "Server-relative path of the authoritative assessment, GET /v1/assessments/{assessment_id}."
+            },
+            "required": true
+          },
+          "Retry-After": {
+            "description": "Whole seconds to wait before polling or retrying. Required on 202, 429 and 503.",
+            "schema": {
+              "type": "string",
+              "pattern": "^(?:[1-9]|[1-9][0-9]|[1-9][0-9]{2}|[12][0-9]{3}|3[0-5][0-9]{2}|3600)$",
+              "description": "Whole decimal seconds; wait at least this long."
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Assessment"
+            },
+            "examples": {
+              "pending": {
+                "value": {
+                  "schema_version": "1",
+                  "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+                  "account_id": "acct_7f3a9c",
+                  "request_id": "req-2026-10-14-0001",
+                  "policy_version": "heuristic-2026-10.1",
+                  "policy_basis": "heuristic_unvalidated",
+                  "assessment_version": 2,
+                  "created_at": "2026-10-14T09:00:00.000Z",
+                  "updated_at": "2026-10-14T09:00:00.412Z",
+                  "expires_at": "2027-10-14T09:00:00.000Z",
+                  "timing": {
+                    "deadline_ms": 300,
+                    "elapsed_ms": 301
+                  },
+                  "status": "pending",
+                  "confidence": "unavailable",
+                  "signals": [
+                    {
+                      "type": "account_presence",
+                      "identifier": "email",
+                      "outcome": "unavailable",
+                      "source_id": "github",
+                      "reason": "timed_out",
+                      "freshness": "unknown"
+                    },
+                    {
+                      "type": "breach_exposure",
+                      "identifier": "email",
+                      "outcome": "unavailable",
+                      "source_id": "breach.corpus",
+                      "reason": "timed_out",
+                      "freshness": "unknown"
+                    }
+                  ],
+                  "incomplete_sources": [
+                    {
+                      "lane": "accounts",
+                      "reason": "timed_out"
+                    },
+                    {
+                      "lane": "breach",
+                      "reason": "timed_out"
+                    }
+                  ],
+                  "assessment_url": "/v1/assessments/asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+                }
+              }
+            }
+          }
+        }
+      },
+      "AssessmentPolled": {
+        "description": "The latest assessment_version. Retry-After is present while a source is still continuing.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "Retry-After": {
+            "description": "Whole seconds to wait before polling or retrying. Required on 202, 429 and 503.",
+            "schema": {
+              "type": "string",
+              "pattern": "^(?:[1-9]|[1-9][0-9]|[1-9][0-9]{2}|[12][0-9]{3}|3[0-5][0-9]{2}|3600)$",
+              "description": "Whole decimal seconds; wait at least this long."
+            },
+            "required": false
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Assessment"
+            },
+            "examples": {
+              "complete": {
+                "value": {
+                  "schema_version": "1",
+                  "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+                  "account_id": "acct_7f3a9c",
+                  "request_id": "req-2026-10-14-0001",
+                  "policy_version": "heuristic-2026-10.1",
+                  "policy_basis": "heuristic_unvalidated",
+                  "assessment_version": 2,
+                  "created_at": "2026-10-14T09:00:00.000Z",
+                  "updated_at": "2026-10-14T09:00:00.412Z",
+                  "expires_at": "2027-10-14T09:00:00.000Z",
+                  "timing": {
+                    "deadline_ms": 300,
+                    "elapsed_ms": 287
+                  },
+                  "status": "complete",
+                  "recommendation": "step_up",
+                  "confidence": "medium",
+                  "signals": [
+                    {
+                      "type": "account_presence",
+                      "identifier": "email",
+                      "outcome": "found",
+                      "source_id": "github",
+                      "evidence_ref": "evr_01JA2Z8K6Q4V7W9XBCDEFGHJKN",
+                      "observed_at": "2026-10-14T09:00:00.210Z",
+                      "last_checked_at": "2026-10-14T09:00:00.210Z",
+                      "freshness": "fresh"
+                    },
+                    {
+                      "type": "account_presence",
+                      "identifier": "username",
+                      "outcome": "not_found",
+                      "source_id": "gitlab",
+                      "last_checked_at": "2026-10-14T09:00:00.190Z",
+                      "freshness": "fresh"
+                    },
+                    {
+                      "type": "breach_exposure",
+                      "identifier": "email",
+                      "outcome": "found",
+                      "source_id": "breach.corpus",
+                      "evidence_ref": "evr_01JA2Z8K6Q4V7W9XBCDEFGHJKP",
+                      "observed_at": "2025-03-02T00:00:00Z",
+                      "last_checked_at": "2026-10-14T09:00:00.150Z",
+                      "freshness": "stale"
+                    }
+                  ],
+                  "incomplete_sources": []
+                }
+              },
+              "partial": {
+                "value": {
+                  "schema_version": "1",
+                  "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+                  "account_id": "acct_7f3a9c",
+                  "request_id": "req-2026-10-14-0001",
+                  "policy_version": "heuristic-2026-10.1",
+                  "policy_basis": "heuristic_unvalidated",
+                  "assessment_version": 1,
+                  "created_at": "2026-10-14T09:00:00.000Z",
+                  "updated_at": "2026-10-14T09:00:00.412Z",
+                  "expires_at": "2027-10-14T09:00:00.000Z",
+                  "timing": {
+                    "deadline_ms": 300,
+                    "elapsed_ms": 287
+                  },
+                  "status": "partial",
+                  "recommendation": "allow",
+                  "confidence": "low",
+                  "signals": [
+                    {
+                      "type": "account_presence",
+                      "identifier": "email",
+                      "outcome": "found",
+                      "source_id": "github",
+                      "evidence_ref": "evr_01JA2Z8K6Q4V7W9XBCDEFGHJKN",
+                      "observed_at": "2026-10-14T09:00:00.210Z",
+                      "last_checked_at": "2026-10-14T09:00:00.210Z",
+                      "freshness": "fresh"
+                    },
+                    {
+                      "type": "account_presence",
+                      "identifier": "username",
+                      "outcome": "not_found",
+                      "source_id": "gitlab",
+                      "last_checked_at": "2026-10-14T09:00:00.190Z",
+                      "freshness": "fresh"
+                    },
+                    {
+                      "type": "account_presence",
+                      "identifier": "phone",
+                      "outcome": "unavailable",
+                      "source_id": "phone_src_04",
+                      "reason": "deferred",
+                      "freshness": "unknown"
+                    }
+                  ],
+                  "incomplete_sources": [
+                    {
+                      "lane": "phone",
+                      "reason": "deferred"
+                    }
+                  ],
+                  "assessment_url": "/v1/assessments/asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+                }
+              },
+              "pending": {
+                "value": {
+                  "schema_version": "1",
+                  "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+                  "account_id": "acct_7f3a9c",
+                  "request_id": "req-2026-10-14-0001",
+                  "policy_version": "heuristic-2026-10.1",
+                  "policy_basis": "heuristic_unvalidated",
+                  "assessment_version": 2,
+                  "created_at": "2026-10-14T09:00:00.000Z",
+                  "updated_at": "2026-10-14T09:00:00.412Z",
+                  "expires_at": "2027-10-14T09:00:00.000Z",
+                  "timing": {
+                    "deadline_ms": 300,
+                    "elapsed_ms": 301
+                  },
+                  "status": "pending",
+                  "confidence": "unavailable",
+                  "signals": [
+                    {
+                      "type": "account_presence",
+                      "identifier": "email",
+                      "outcome": "unavailable",
+                      "source_id": "github",
+                      "reason": "timed_out",
+                      "freshness": "unknown"
+                    },
+                    {
+                      "type": "breach_exposure",
+                      "identifier": "email",
+                      "outcome": "unavailable",
+                      "source_id": "breach.corpus",
+                      "reason": "timed_out",
+                      "freshness": "unknown"
+                    }
+                  ],
+                  "incomplete_sources": [
+                    {
+                      "lane": "accounts",
+                      "reason": "timed_out"
+                    },
+                    {
+                      "lane": "breach",
+                      "reason": "timed_out"
+                    }
+                  ],
+                  "assessment_url": "/v1/assessments/asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+                }
+              },
+              "standard": {
+                "value": {
+                  "schema_version": "1",
+                  "assessment_id": "asm_01JB3C4D5E6F7G8H9JKMNPQRST",
+                  "account_id": "acct_8412",
+                  "request_id": "req_01",
+                  "status": "complete",
+                  "recommendation": "allow",
+                  "confidence": "high",
+                  "risk": {
+                    "score": 0,
+                    "band": "low",
+                    "recommendation": "allow",
+                    "confidence": "high",
+                    "policy_version": "risk-2026-10.3",
+                    "policy_basis": "heuristic_unvalidated",
+                    "reasons": [
+                      {
+                        "code": "voip_number",
+                        "weight": 25,
+                        "identifier": "phone"
+                      },
+                      {
+                        "code": "breach_cooccurrence",
+                        "weight": -10,
+                        "identifier": "phone"
+                      },
+                      {
+                        "code": "breach_name_match",
+                        "weight": -15,
+                        "identifier": "name"
+                      },
+                      {
+                        "code": "established_accounts",
+                        "weight": -15,
+                        "identifier": "email"
+                      },
+                      {
+                        "code": "aged_identity",
+                        "weight": -25,
+                        "identifier": "email"
+                      }
+                    ],
+                    "summary": {
+                      "email": {
+                        "disposable": false,
+                        "accounts_found": 6,
+                        "breach": {
+                          "found": true,
+                          "breach_count": 7,
+                          "first_year": 2013,
+                          "last_year": 2021,
+                          "exposed": [
+                            "email",
+                            "name",
+                            "password",
+                            "phone",
+                            "ip"
+                          ],
+                          "in_credential_lists": false,
+                          "recent_password_exposure": false,
+                          "truncated": false
+                        }
+                      },
+                      "username": {
+                        "accounts_found": 3,
+                        "breach": {
+                          "found": false,
+                          "truncated": false
+                        }
+                      },
+                      "phone": {
+                        "line_type": "voip",
+                        "country": "US",
+                        "report_count": 0
+                      },
+                      "ip": {
+                        "country": "US",
+                        "type": "residential",
+                        "seen_in_tenant": 1
+                      },
+                      "consistency": {
+                        "name": "match",
+                        "phone": "match",
+                        "ip": "unknown",
+                        "country": "consistent"
+                      }
+                    },
+                    "coverage": {
+                      "answered": 14,
+                      "failed": 1,
+                      "pending": 0
+                    }
+                  },
+                  "incomplete_sources": [],
+                  "policy_version": "risk-2026-10.3",
+                  "policy_basis": "heuristic_unvalidated",
+                  "assessment_version": 3,
+                  "created_at": "2026-10-18T11:00:00.000Z",
+                  "updated_at": "2026-10-18T11:00:04.000Z",
+                  "expires_at": "2027-10-18T11:00:00.000Z",
+                  "timing": {
+                    "deadline_ms": 500,
+                    "elapsed_ms": 4000
+                  }
+                }
+              },
+              "detailed": {
+                "value": {
+                  "schema_version": "1",
+                  "assessment_id": "asm_01JB3C4D5E6F7G8H9JKMNPQRST",
+                  "account_id": "acct_8412",
+                  "request_id": "req_01",
+                  "status": "complete",
+                  "recommendation": "allow",
+                  "confidence": "high",
+                  "risk": {
+                    "score": 10,
+                    "band": "low",
+                    "recommendation": "allow",
+                    "confidence": "high",
+                    "policy_version": "risk-2026-10.3",
+                    "policy_basis": "heuristic_unvalidated",
+                    "reasons": [
+                      {
+                        "code": "voip_number",
+                        "weight": 25,
+                        "identifier": "phone"
+                      },
+                      {
+                        "code": "breach_name_match",
+                        "weight": -15,
+                        "identifier": "name"
+                      }
+                    ],
+                    "summary": {
+                      "email": {
+                        "disposable": false,
+                        "accounts_found": 1,
+                        "breach": {
+                          "found": true,
+                          "breach_count": 2,
+                          "first_year": 2016,
+                          "last_year": 2019,
+                          "exposed": [
+                            "email",
+                            "password",
+                            "password_hash"
+                          ],
+                          "in_credential_lists": true,
+                          "truncated": false
+                        }
+                      },
+                      "phone": {
+                        "line_type": "voip",
+                        "country": "US"
+                      },
+                      "consistency": {
+                        "name": "match"
+                      }
+                    },
+                    "coverage": {
+                      "answered": 4,
+                      "failed": 0,
+                      "pending": 0
+                    },
+                    "details": {
+                      "phone_names": [
+                        {
+                          "value": "Jane Doe",
+                          "seen_by": 3
+                        }
+                      ],
+                      "breaches": [
+                        {
+                          "name": "Collection #1",
+                          "category": "combolist",
+                          "kind": "credential_list",
+                          "year": 2019,
+                          "matched_on": "email",
+                          "exposed": [
+                            "email",
+                            "password"
+                          ]
+                        },
+                        {
+                          "name": "LinkedIn",
+                          "domain": "linkedin.com",
+                          "category": "social",
+                          "kind": "site_breach",
+                          "year": 2016,
+                          "month": 5,
+                          "matched_on": "email",
+                          "exposed": [
+                            "email",
+                            "password_hash"
+                          ]
+                        }
+                      ],
+                      "breach_names": [
+                        {
+                          "value": "Jane Doe",
+                          "seen_in": 2
+                        }
+                      ]
+                    }
+                  },
+                  "signals": [
+                    {
+                      "type": "account_presence",
+                      "identifier": "email",
+                      "outcome": "found",
+                      "source_id": "src_3f9a1c",
+                      "evidence_ref": "evr_01JB3C4D5E6F7G8H9JKMNPQRSV",
+                      "observed_at": "2026-10-18T11:00:00.180Z",
+                      "last_checked_at": "2026-10-18T11:00:00.180Z",
+                      "freshness": "fresh"
+                    },
+                    {
+                      "type": "breach_exposure",
+                      "identifier": "email",
+                      "outcome": "found",
+                      "source_id": "src_8d27e4",
+                      "evidence_ref": "evr_01JB3C4D5E6F7G8H9JKMNPQRSW",
+                      "observed_at": "2026-10-18T11:00:01.900Z",
+                      "last_checked_at": "2026-10-18T11:00:01.900Z",
+                      "freshness": "fresh"
+                    },
+                    {
+                      "type": "account_presence",
+                      "identifier": "phone",
+                      "outcome": "found",
+                      "source_id": "src_51b0d7",
+                      "evidence_ref": "evr_01JB3C4D5E6F7G8H9JKMNPQRSX",
+                      "observed_at": "2026-10-18T11:00:03.700Z",
+                      "last_checked_at": "2026-10-18T11:00:03.700Z",
+                      "freshness": "fresh"
+                    }
+                  ],
+                  "incomplete_sources": [],
+                  "policy_version": "risk-2026-10.3",
+                  "policy_basis": "heuristic_unvalidated",
+                  "assessment_version": 2,
+                  "created_at": "2026-10-18T11:00:00.000Z",
+                  "updated_at": "2026-10-18T11:00:04.000Z",
+                  "expires_at": "2027-10-18T11:00:00.000Z",
+                  "timing": {
+                    "deadline_ms": 500,
+                    "elapsed_ms": 4000
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "AssessmentList": {
+        "description": "One page of the account's unexpired assessments.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/AssessmentList"
+            },
+            "examples": {
+              "page": {
+                "value": {
+                  "schema_version": "1",
+                  "account_id": "acct_7f3a9c",
+                  "items": [
+                    {
+                      "schema_version": "1",
+                      "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+                      "account_id": "acct_7f3a9c",
+                      "request_id": "req-2026-10-14-0001",
+                      "policy_version": "heuristic-2026-10.1",
+                      "policy_basis": "heuristic_unvalidated",
+                      "assessment_version": 2,
+                      "created_at": "2026-10-14T09:00:00.000Z",
+                      "updated_at": "2026-10-14T09:00:00.412Z",
+                      "expires_at": "2027-10-14T09:00:00.000Z",
+                      "timing": {
+                        "deadline_ms": 300,
+                        "elapsed_ms": 287
+                      },
+                      "status": "complete",
+                      "recommendation": "step_up",
+                      "confidence": "medium",
+                      "signals": [
+                        {
+                          "type": "account_presence",
+                          "identifier": "email",
+                          "outcome": "found",
+                          "source_id": "github",
+                          "evidence_ref": "evr_01JA2Z8K6Q4V7W9XBCDEFGHJKN",
+                          "observed_at": "2026-10-14T09:00:00.210Z",
+                          "last_checked_at": "2026-10-14T09:00:00.210Z",
+                          "freshness": "fresh"
+                        },
+                        {
+                          "type": "account_presence",
+                          "identifier": "username",
+                          "outcome": "not_found",
+                          "source_id": "gitlab",
+                          "last_checked_at": "2026-10-14T09:00:00.190Z",
+                          "freshness": "fresh"
+                        },
+                        {
+                          "type": "breach_exposure",
+                          "identifier": "email",
+                          "outcome": "found",
+                          "source_id": "breach.corpus",
+                          "evidence_ref": "evr_01JA2Z8K6Q4V7W9XBCDEFGHJKP",
+                          "observed_at": "2025-03-02T00:00:00Z",
+                          "last_checked_at": "2026-10-14T09:00:00.150Z",
+                          "freshness": "stale"
+                        }
+                      ],
+                      "incomplete_sources": []
+                    },
+                    {
+                      "schema_version": "1",
+                      "assessment_id": "asm_01JA2Z9Y3R5T6V7W8X9ZABCDEF",
+                      "account_id": "acct_7f3a9c",
+                      "request_id": "req-2026-10-01-0007",
+                      "policy_version": "heuristic-2026-10.1",
+                      "policy_basis": "heuristic_unvalidated",
+                      "assessment_version": 2,
+                      "created_at": "2026-10-01T12:00:00Z",
+                      "updated_at": "2026-10-01T12:00:05Z",
+                      "expires_at": "2027-10-01T12:00:00.000Z",
+                      "timing": {
+                        "deadline_ms": 300,
+                        "elapsed_ms": 287
+                      },
+                      "status": "complete",
+                      "recommendation": "allow",
+                      "confidence": "high",
+                      "signals": [
+                        {
+                          "type": "account_presence",
+                          "identifier": "username",
+                          "outcome": "not_found",
+                          "source_id": "gitlab",
+                          "last_checked_at": "2026-10-14T09:00:00.190Z",
+                          "freshness": "fresh"
+                        }
+                      ],
+                      "incomplete_sources": []
+                    }
+                  ],
+                  "next_cursor": "eyJiIjoiY2hrXzAxIn0",
+                  "retention_days": 365
+                }
+              }
+            }
+          }
+        }
+      },
+      "InvalidRequest": {
+        "description": "The body is not JSON or does not match the request schema (an unknown member, no identifier, a malformed or oversized identifier, deadline_ms above 500), or Idempotency-Key is missing or malformed. invalid_params names the offending fields without their values.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/BadRequestError"
+            }
+          }
+        }
+      },
+      "Unauthorized": {
+        "description": "No API key, or one that is malformed, unknown, revoked or expired.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "WWW-Authenticate": {
+            "schema": {
+              "type": "string",
+              "const": "Bearer realm=\"noresponse-assessments\""
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/AuthenticationError"
+            }
+          }
+        }
+      },
+      "TenantForbidden": {
+        "description": "The API key is valid but may not use this operation: it lacks the operation's scope, or its tenant is not entitled or is suspended.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/PermissionDeniedError"
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "No unexpired assessment with this id for the calling tenant, or a malformed assessment_id.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/NotFoundError"
+            }
+          }
+        }
+      },
+      "IdempotencyConflict": {
+        "description": "The Idempotency-Key was already used by this tenant, within 24 hours, with a different body. A reuse with the same body is not a conflict, even while the first request is in flight: it replays the latest assessment.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/ConflictError"
+            }
+          }
+        }
+      },
+      "RateLimited": {
+        "description": "The tenant's rate or concurrency limit is exhausted. Retry-After says when to retry; the provider applies its own fallback meanwhile.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "Retry-After": {
+            "description": "Whole seconds to wait before polling or retrying. Required on 202, 429 and 503.",
+            "schema": {
+              "type": "string",
+              "pattern": "^(?:[1-9]|[1-9][0-9]|[1-9][0-9]{2}|[12][0-9]{3}|3[0-5][0-9]{2}|3600)$",
+              "description": "Whole decimal seconds; wait at least this long."
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/RateLimitError"
+            }
+          }
+        }
+      },
+      "InvalidHistoryQuery": {
+        "description": "The body does not match the query schema, or the cursor is invalid, belongs to another tenant or account, or has expired.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/BadRequestError"
+            }
+          }
+        }
+      },
+      "OutcomeRecorded": {
+        "description": "The outcome was recorded. A replay of the same Idempotency-Key and body answers the record the first request created, with Idempotent-Replayed: true. Nothing is polled afterwards.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "Idempotent-Replayed": {
+            "description": "Present and true when this answer replays an earlier request with the same Idempotency-Key and body: the body is the record that request created.",
+            "schema": {
+              "type": "string",
+              "const": "true"
+            },
+            "required": false
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/AssessmentOutcome"
+            },
+            "examples": {
+              "recorded": {
+                "value": {
+                  "id": "out_01JA2ZC0Q1R2S3T4V5W6X7Y8Z9",
+                  "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+                  "outcome": "confirmed_abuse",
+                  "received_at": "2026-10-20T05:00:02.000Z"
+                }
+              }
+            }
+          }
+        }
+      },
+      "InvalidOutcome": {
+        "description": "The body is not JSON or does not match the outcome schema (an unknown outcome or member, over-long notes, an observed_at that is not an RFC 3339 time), or Idempotency-Key is missing or malformed. invalid_params names the offending fields without their values.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/BadRequestError"
+            }
+          }
+        }
+      },
+      "KeyRotated": {
+        "description": "The new key, shown once. Both keys authenticate until previous_key_expires_at; after it only the new key does.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/KeyRotation"
+            },
+            "examples": {
+              "rotated": {
+                "value": {
+                  "key": "nrk_01JA2ZC0Q1R2S3T4V5W6X7Y8Z9_0123456789abcdefghijklmnopqrstuvwxyzABCDEFA",
+                  "key_id": "01JA2ZC0Q1R2S3T4V5W6X7Y8Z9",
+                  "scopes": [
+                    "assess",
+                    "history"
+                  ],
+                  "created_at": "2026-10-21T09:00:00.000Z",
+                  "previous_key_id": "01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+                  "previous_key_expires_at": "2026-10-22T09:00:00.000Z"
+                }
+              }
+            }
+          }
+        }
+      },
+      "KeyRotationInProgress": {
+        "description": "The presented key was already rotated and is still in its overlap window. Rotate with the new key; the new key's own rotation is not affected.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/ConflictError"
+            }
+          }
+        }
+      },
+      "InvalidKeyRotation": {
+        "description": "The body is not JSON or does not match the request schema (an unknown member, or overlap_seconds outside 60 to 604800). invalid_params names the offending fields without their values.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/BadRequestError"
+            }
+          }
+        }
+      }
+    }
+  }
+}

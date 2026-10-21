@@ -1,0 +1,76 @@
+{
+  "description": "How verified provider claims become auth_context. Every SDK adapter is emitted from this table (sdks/tools/generate_auth_adapters.py) and must produce the exact JSON in auth-context-vectors.json. A claim that is missing, of the wrong type, out of range or fails its kind maps to absent, never to a stronger assurance; only issuer and subject are required, and an adapter refuses to build a context without them.",
+  "version": 1,
+  "rules": {
+    "claims": "A claim path is a list of keys. A key that is not an object at that depth makes the claim absent. No listed claim name contains a dot.",
+    "id": "The first claim whose value is a string that matches its kind. Anything else is skipped.",
+    "list": "Items come from an array of strings or from one string split by `split`. Items that do not match the kind are dropped, the list is cut at `max`, and the first claim that yields at least one item wins. A claim of any other type is skipped.",
+    "time": "A number in 0 to 253402300799 (a NumericDate) becomes RFC 3339 UTC in whole seconds, the fraction truncated. A string is kept only when it matches the time kind (RFC 3339 with an upper-case T and Z). Anything else is absent.",
+    "bool": "Only a JSON boolean counts; the strings \"true\" and \"false\" are skipped.",
+    "actor": "True when the claim is an object with a non-empty string `sub` or `email` (RFC 8693 act), or a non-empty string. Any other value, including an empty object, is false. The result is always sent, false included.",
+    "mfa_factor_age": "claim[index] must be a JSON number from 0 to `maxSeconds` / `unitSeconds`; the context gets mfa {present: true, age_seconds: trunc(value * unitSeconds)}. A negative value (Clerk -1 is no second factor), a non-number, a missing index or an out-of-range value gives no mfa.",
+    "mfa_methods": "The claim must be an array. Strings that match the kind are kept, up to `max`. present is true when any kept value equals `mfaValue` ignoring case; methods lists the kept values except those equal to an `ignore` value ignoring case. No methods gives no mfa, so a password-only amr sends nothing.",
+    "overrides": "A key in overrides replaces the mapped value, false and empty included. A null override is ignored. Overrides are written by the caller from verified records and are not filtered.",
+    "audience": "audience defaults to the first mapped audience, or to the first item of an audiences override, when the context has audiences and no audience override.",
+    "constants": "Sent on every context.",
+    "split": "`whitespace` splits on runs of space, tab, CR, LF, FF and VT; `comma_whitespace` also splits on commas; `none` keeps a string whole. Empty pieces never match a kind."
+  },
+  "kinds": {
+    "id": {"pattern": "[A-Za-z0-9._:@/|+=~-]+", "maxLength": 256},
+    "audience": {"pattern": "[A-Za-z0-9._:/-]+", "maxLength": 256},
+    "role": {"pattern": "[A-Za-z0-9._:@/-]+", "maxLength": 64},
+    "method": {"pattern": "[A-Za-z0-9._:-]+", "maxLength": 32},
+    "issuer": {"pattern": "https://[\\x21-\\x7e]+", "maxLength": 256},
+    "time": {"pattern": "[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:([0-5][0-9]|60)(\\.[0-9]+)?(Z|[+-]([01][0-9]|2[0-3]):[0-5][0-9])", "maxLength": 64}
+  },
+  "slug": "[a-z0-9][a-z0-9._-]{1,31}",
+  "constants": {"verified": true, "transport": "backend"},
+  "base": {
+    "issuer": {"op": "id", "kind": "issuer", "claims": ["iss"], "required": true},
+    "subject": {"op": "id", "kind": "id", "claims": ["sub"], "required": true},
+    "audiences": {"op": "list", "kind": "audience", "claims": ["aud"], "split": "whitespace", "max": 8},
+    "issued_at": {"op": "time", "claims": ["iat"]},
+    "expires_at": {"op": "time", "claims": ["exp"]},
+    "auth_time": {"op": "time", "claims": ["auth_time"]},
+    "session_id": {"op": "id", "kind": "id", "claims": ["sid"]},
+    "token_id": {"op": "id", "kind": "id", "claims": ["jti"]}
+  },
+  "providers": {
+    "workos": {
+      "notes": "AuthKit access token: org_id, role, permissions, sid; act holds the impersonator. aud is read as for any OIDC token; client_id is not an audience. Contact verification comes from the user record via overrides.",
+      "fields": {
+        "organization_id": {"op": "id", "kind": "id", "claims": ["org_id"]},
+        "roles": {"op": "list", "kind": "role", "claims": ["roles", "role"], "split": "whitespace", "max": 32},
+        "scopes": {"op": "list", "kind": "role", "claims": ["permissions"], "split": "whitespace", "max": 32},
+        "impersonated": {"op": "actor", "claims": ["act"]}
+      }
+    },
+    "clerk": {
+      "notes": "Session token v2 puts the organization in o {id, rol, per} and factor ages in fva [first, second] minutes; v1 used org_id, org_role and org_permissions. iat is a 60-second refresh clock, so it is never sent as issued_at; session age is the session_created_at override. act marks impersonation.",
+      "disable": ["issued_at"],
+      "fields": {
+        "organization_id": {"op": "id", "kind": "id", "claims": ["o.id", "org_id"]},
+        "roles": {"op": "list", "kind": "role", "claims": ["o.rol", "org_role"], "split": "none", "max": 32},
+        "scopes": {"op": "list", "kind": "role", "claims": ["o.per", "org_permissions"], "split": "comma_whitespace", "max": 32},
+        "impersonated": {"op": "actor", "claims": ["act"]},
+        "mfa": {"op": "mfa_factor_age", "claim": "fva", "index": 1, "unitSeconds": 60, "maxSeconds": 315360000}
+      }
+    },
+    "auth0": {
+      "notes": "ID token, userinfo or normalised session claims; not an opaque access token. amr lists methods, and only the value mfa proves a second factor. org_id is set when an organization signed in. Contact verification is read from email_verified and phone_number_verified only.",
+      "fields": {
+        "organization_id": {"op": "id", "kind": "id", "claims": ["org_id"]},
+        "scopes": {"op": "list", "kind": "role", "claims": ["scope", "permissions"], "split": "whitespace", "max": 32},
+        "email_verified": {"op": "bool", "claims": ["email_verified"]},
+        "phone_verified": {"op": "bool", "claims": ["phone_number_verified"]},
+        "impersonated": {"op": "actor", "claims": ["act"]},
+        "mfa": {"op": "mfa_methods", "kind": "method", "claim": "amr", "max": 8, "mfaValue": "mfa", "ignore": ["pwd"]}
+      }
+    },
+    "oidc": {
+      "notes": "Any other provider: base claims only, under a lowercase slug the customer chooses. Every other fact comes from overrides.",
+      "slugArgument": true,
+      "fields": {}
+    }
+  }
+}

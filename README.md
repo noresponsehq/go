@@ -1,72 +1,36 @@
-# noresponse
+# NoResponse Go SDK
 
-Developer-friendly & type-safe Go SDK specifically catered to leverage *noresponse* API.
+The Go client for the [NoResponse API](https://docs.noresponse.org): assess a signup or gateway event, wait for a pending result, page through an account's history, record what you later learned and verify webhooks.
 
+Call it from your server only. The API key must never reach a browser or an app.
 
-<br /><br />
-> [!IMPORTANT]
-> This SDK is not yet ready for production use. Delete this section before > publishing to a package manager.
+## Install
 
-<!-- Start Summary [summary] -->
-## Summary
-
-NoResponse API: Server-side signup and gateway risk assessment: a recommendation, polling and signed webhooks.
-
-Assess a signup or gateway event, poll a pending assessment, page through an account's history, record what you later learned, and rotate your API key. Every response carries X-Request-ID; every error is an RFC 9457 problem document. Keep the API key on your server.
-<!-- End Summary [summary] -->
-
-<!-- Start Table of Contents [toc] -->
-## Table of Contents
-<!-- $toc-max-depth=2 -->
-* [noresponse](#noresponse)
-  * [SDK Installation](#sdk-installation)
-  * [SDK Example Usage](#sdk-example-usage)
-  * [Authentication](#authentication)
-  * [Available Resources and Operations](#available-resources-and-operations)
-  * [Pagination](#pagination)
-  * [Retries](#retries)
-  * [Error Handling](#error-handling)
-  * [Server Selection](#server-selection)
-  * [Custom HTTP Client](#custom-http-client)
-* [Development](#development)
-  * [Maturity](#maturity)
-  * [Contributions](#contributions)
-
-<!-- End Table of Contents [toc] -->
-
-<!-- Start SDK Installation [installation] -->
-## SDK Installation
-
-To add the SDK as a dependency to your project:
-```bash
+```sh
 go get github.com/noresponsehq/go/v2
 ```
-<!-- End SDK Installation [installation] -->
 
-<!-- Start SDK Example Usage [usage] -->
-## SDK Example Usage
+Go 1.24 or later.
 
-### Example
+## Quick start
 
 ```go
 package main
 
 import (
 	"context"
-	noresponse "github.com/noresponsehq/go/v2"
-	"github.com/noresponsehq/go/v2/models/components"
+	"fmt"
 	"log"
 	"os"
+
+	noresponse "github.com/noresponsehq/go/v2"
+	"github.com/noresponsehq/go/v2/models/components"
 )
 
 func main() {
-	ctx := context.Background()
+	client := noresponse.NewClient(os.Getenv("NORESPONSE_API_KEY"))
 
-	s := noresponse.New(
-		noresponse.WithSecurity(os.Getenv("NORESPONSE_API_KEY")),
-	)
-
-	res, err := s.Assessments.Create(ctx, "<value>", components.AssessmentRequest{
+	res, err := client.Assessments.Create(context.Background(), noresponse.NewIdempotencyKey(), components.AssessmentRequest{
 		AccountID: "acct_7f3a9c",
 		Identifiers: components.AssessmentRequestIdentifiers{
 			Email: noresponse.Pointer("new.user@example.com"),
@@ -75,412 +39,139 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	if res != nil {
-		// handle response
+
+	assessment := res.Result
+	if assessment.Status == components.StatusPending {
+		// No recommendation yet. Apply your own fallback, then wait for the
+		// webhook or call noresponse.WaitForAssessment.
+		return
 	}
+	fmt.Println(*assessment.Recommendation, assessment.Risk.Score)
 }
-
 ```
-<!-- End SDK Example Usage [usage] -->
 
-<!-- Start Authentication [security] -->
-## Authentication
+`NewClient` reads nothing from the environment itself; pass the key. `noresponse.New()` with no key option reads `NORESPONSE_API_KEY`.
 
-### Per-Client Security Schemes
+The recommendation is `allow`, `step_up` or `review`. It is advice: your application decides what to do. A `pending` assessment has no recommendation, and a 429, a 503 or a timeout also needs your own fallback.
 
-This SDK supports the following security scheme globally:
+Every method takes a `context.Context` first. Cancelling it cancels the request and any retry wait.
 
-| Name     | Type | Scheme      | Environment Variable |
-| -------- | ---- | ----------- | -------------------- |
-| `APIKey` | http | HTTP Bearer | `NORESPONSE_API_KEY` |
+## Methods
 
-You can configure it using the `WithSecurity` option when initializing the SDK client instance. For example:
+| Call | Does |
+|---|---|
+| `client.Assessments.Create(ctx, idempotencyKey, request)` | Assess identifiers. Returns 200 (complete or partial) or 202 (pending) as `res.Result`. |
+| `client.Assessments.Get(ctx, assessmentID, nil)` | Fetch the latest version of one assessment. |
+| `client.Assessments.RecordOutcome(ctx, assessmentID, idempotencyKey, request)` | Report what you later learned, for example `components.OutcomeConfirmedAbuse`. |
+| `client.Assessments.Query(ctx, query)` | One page of an account's history. `res.Next()` fetches the next page. |
+| `noresponse.AllAssessments(ctx, client, query)` | Range over every page of an account's history. |
+| `noresponse.WaitForAssessment(ctx, client, assessmentID, nil)` | Poll until the assessment is no longer pending, honouring `Retry-After`. |
+| `noresponse.ConstructEvent(payload, headers, secrets)` | Verify a webhook delivery and return the typed event. |
+| `client.Keys.Rotate(ctx, request)` | Rotate the API key that signs the request. |
+
+Each response carries `Headers` (including `X-Request-ID`) and `Result`.
+
+## Idempotency keys
+
+`Create` and `RecordOutcome` require an idempotency key. The same key with the same body replays the stored answer and starts no new work. The same key with a different body is a 409. Use `noresponse.NewIdempotencyKey()` and store the key beside the signup so a retry after a crash sends the same one.
+
+## Errors
+
+Every failure is an `error` you can inspect with `errors.As`. Problem documents from the API are typed and carry the request id:
+
 ```go
-package main
+_, err := client.Assessments.Get(ctx, id, nil)
 
-import (
-	"context"
-	noresponse "github.com/noresponsehq/go/v2"
-	"github.com/noresponsehq/go/v2/models/components"
-	"log"
-	"os"
+var notFound *apierrors.NotFoundError
+var limited *apierrors.RateLimitError
+var other *apierrors.APIStatusError
+switch {
+case errors.As(err, &notFound):
+	log.Println("no such assessment, request", notFound.RequestID)
+case errors.As(err, &limited):
+	log.Println("rate limited, request", limited.RequestID)
+case errors.As(err, &other):
+	log.Println("HTTP", other.StatusCode)
+case err != nil:
+	log.Fatal(err) // network failure or cancelled context
+}
+```
+
+The typed errors are `BadRequestError` (400), `AuthenticationError` (401), `PermissionDeniedError` (403), `NotFoundError` (404), `ConflictError` (409) and `RateLimitError` (429), all in `github.com/noresponsehq/go/v2/models/apierrors`. Any other status is an `*apierrors.APIStatusError`.
+
+## Retries and timeouts
+
+The client retries 408, 429, 5xx and connection errors with exponential backoff and jitter: 500 ms first, 8 s at most, 30 s in total. The same idempotency key is sent each time, so a retry never repeats work. Change it for every call or for one:
+
+```go
+client := noresponse.NewClient(key,
+	noresponse.WithTimeout(10*time.Second),
+	noresponse.WithRetryConfig(retry.Config{
+		Strategy:              "backoff",
+		Backoff:               &retry.BackoffStrategy{InitialInterval: 200, MaxInterval: 2000, Exponent: 2, MaxElapsedTime: 5000}, // milliseconds
+		RetryConnectionErrors: true,
+	}),
 )
 
-func main() {
-	ctx := context.Background()
+res, err := client.Assessments.Get(ctx, id, nil, operations.WithRetries(retry.Config{Strategy: "none"}))
+```
 
-	s := noresponse.New(
-		noresponse.WithSecurity(os.Getenv("NORESPONSE_API_KEY")),
-	)
+## Paging
 
-	res, err := s.Assessments.Create(ctx, "<value>", components.AssessmentRequest{
-		AccountID: "acct_7f3a9c",
-		Identifiers: components.AssessmentRequestIdentifiers{
-			Email: noresponse.Pointer("new.user@example.com"),
-		},
-	})
+```go
+query := components.AssessmentQuery{AccountID: "acct_7f3a9c"}
+for assessment, err := range noresponse.AllAssessments(ctx, client, query) {
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
-	if res != nil {
-		// handle response
-	}
+	fmt.Println(assessment.AssessmentID, assessment.Status)
 }
-
 ```
-<!-- End Authentication [security] -->
 
-<!-- Start Available Resources and Operations [operations] -->
-## Available Resources and Operations
+## Webhooks
 
-<details open>
-<summary>Available methods</summary>
+Pass the raw request body. Re-encoding parsed JSON breaks the signature.
 
-### [Assessments](docs/sdks/assessments/README.md)
-
-* [Create](docs/sdks/assessments/README.md#create) - Assess identifiers for a signup or gateway decision.
-* [Get](docs/sdks/assessments/README.md#get) - Poll the authoritative assessment of one assessment.
-* [RecordOutcome](docs/sdks/assessments/README.md#recordoutcome) - Report what was later learned about an assessed account.
-* [Query](docs/sdks/assessments/README.md#query) - Page through one account's unexpired assessments.
-
-### [Keys](docs/sdks/keys/README.md)
-
-* [Rotate](docs/sdks/keys/README.md#rotate) - Rotate the API key that signs the request.
-
-</details>
-<!-- End Available Resources and Operations [operations] -->
-
-<!-- Start Pagination [pagination] -->
-## Pagination
-
-Some of the endpoints in this SDK support pagination. To use pagination, you make your SDK calls as usual, but the
-returned response object will have a `Next` method that can be called to pull down the next group of results. If the
-return value of `Next` is `nil`, then there are no more pages to be fetched.
-
-Here's an example of one such pagination call:
 ```go
-package main
+secrets := map[string]string{"whk_example0001": os.Getenv("NORESPONSE_WEBHOOK_SECRET")}
 
-import (
-	"context"
-	noresponse "github.com/noresponsehq/go/v2"
-	"github.com/noresponsehq/go/v2/models/components"
-	"log"
-	"os"
-)
-
-func main() {
-	ctx := context.Background()
-
-	s := noresponse.New(
-		noresponse.WithSecurity(os.Getenv("NORESPONSE_API_KEY")),
-	)
-
-	res, err := s.Assessments.Query(ctx, components.AssessmentQuery{
-		AccountID: "acct_7f3a9c",
-	})
+http.HandleFunc("/webhooks/noresponse", func(w http.ResponseWriter, r *http.Request) {
+	payload, err := io.ReadAll(http.MaxBytesReader(w, r.Body, 1<<20))
 	if err != nil {
-		log.Fatal(err)
+		http.Error(w, "unreadable body", http.StatusBadRequest)
+		return
 	}
-	if res != nil {
-		for {
-			// handle items
-
-			res, err = res.Next()
-
-			if err != nil {
-				// handle error
-			}
-
-			if res == nil {
-				break
-			}
-		}
-	}
-}
-
-```
-<!-- End Pagination [pagination] -->
-
-<!-- Start Retries [retries] -->
-## Retries
-
-Some of the endpoints in this SDK support retries. If you use the SDK without any configuration, it will fall back to the default retry strategy provided by the API. However, the default retry strategy can be overridden on a per-operation basis, or across the entire SDK.
-
-To change the default retry strategy for a single API call, simply provide a `retry.Config` object to the call by using the `WithRetries` option:
-```go
-package main
-
-import (
-	"context"
-	noresponse "github.com/noresponsehq/go/v2"
-	"github.com/noresponsehq/go/v2/models/components"
-	"github.com/noresponsehq/go/v2/retry"
-	"log"
-	"models/operations"
-	"os"
-)
-
-func main() {
-	ctx := context.Background()
-
-	s := noresponse.New(
-		noresponse.WithSecurity(os.Getenv("NORESPONSE_API_KEY")),
-	)
-
-	res, err := s.Assessments.Create(ctx, "<value>", components.AssessmentRequest{
-		AccountID: "acct_7f3a9c",
-		Identifiers: components.AssessmentRequestIdentifiers{
-			Email: noresponse.Pointer("new.user@example.com"),
-		},
-	}, operations.WithRetries(
-		retry.Config{
-			Strategy: "backoff",
-			Backoff: &retry.BackoffStrategy{
-				InitialInterval: 1,
-				MaxInterval:     50,
-				Exponent:        1.1,
-				MaxElapsedTime:  100,
-			},
-			RetryConnectionErrors: false,
-		}))
+	event, err := noresponse.ConstructEvent(payload, r.Header, secrets)
 	if err != nil {
-		log.Fatal(err)
+		http.Error(w, "invalid signature", http.StatusBadRequest)
+		return
 	}
-	if res != nil {
-		// handle response
+	switch data := event.Data.(type) {
+	case *components.Assessment:
+		// The full assessment, as Get returns it.
+	case *noresponse.AssessmentExpired:
+		// Delete what you hold for data.AssessmentID.
+	case *noresponse.EndpointVerification:
+		body, err := noresponse.VerificationResponse(event)
+		if err != nil {
+			http.Error(w, "invalid verification", http.StatusBadRequest)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		_ = json.NewEncoder(w).Encode(body)
+		return
 	}
-}
-
+	w.WriteHeader(http.StatusNoContent)
+})
 ```
 
-If you'd like to override the default retry strategy for all operations that support retries, you can use the `WithRetryConfig` option at SDK initialization:
-```go
-package main
+Deliveries arrive at least once and unordered. Deduplicate on `event.ID` and keep the highest `AssessmentVersion` per assessment.
 
-import (
-	"context"
-	noresponse "github.com/noresponsehq/go/v2"
-	"github.com/noresponsehq/go/v2/models/components"
-	"github.com/noresponsehq/go/v2/retry"
-	"log"
-	"os"
-)
+## Other options
 
-func main() {
-	ctx := context.Background()
+`noresponse.WithServerURL`, `noresponse.WithClient` (any `Do(*http.Request)` implementation) and `noresponse.WithSecuritySource` (a key fetched per call, for rotation) are available on both `New` and `NewClient`.
 
-	s := noresponse.New(
-		noresponse.WithRetryConfig(
-			retry.Config{
-				Strategy: "backoff",
-				Backoff: &retry.BackoffStrategy{
-					InitialInterval: 1,
-					MaxInterval:     50,
-					Exponent:        1.1,
-					MaxElapsedTime:  100,
-				},
-				RetryConnectionErrors: false,
-			}),
-		noresponse.WithSecurity(os.Getenv("NORESPONSE_API_KEY")),
-	)
 
-	res, err := s.Assessments.Create(ctx, "<value>", components.AssessmentRequest{
-		AccountID: "acct_7f3a9c",
-		Identifiers: components.AssessmentRequestIdentifiers{
-			Email: noresponse.Pointer("new.user@example.com"),
-		},
-	})
-	if err != nil {
-		log.Fatal(err)
-	}
-	if res != nil {
-		// handle response
-	}
-}
+## Changes since 2.0.0
 
-```
-<!-- End Retries [retries] -->
-
-<!-- Start Error Handling [errors] -->
-## Error Handling
-
-Handling errors in this SDK should largely match your expectations. All operations return a response object or an error, they will never return both.
-
-By Default, an API error will return `apierrors.APIStatusError`. When custom error responses are specified for an operation, the SDK may also return their associated error. You can refer to respective *Errors* tables in SDK docs for more details on possible error types for each operation.
-
-For example, the `Create` function may return the following errors:
-
-| Error Type                      | Status Code | Content Type             |
-| ------------------------------- | ----------- | ------------------------ |
-| apierrors.BadRequestError       | 400         | application/problem+json |
-| apierrors.AuthenticationError   | 401         | application/problem+json |
-| apierrors.PermissionDeniedError | 403         | application/problem+json |
-| apierrors.NotFoundError         | 404         | application/problem+json |
-| apierrors.ConflictError         | 409         | application/problem+json |
-| apierrors.RateLimitError        | 429         | application/problem+json |
-| apierrors.APIStatusError        | 4XX, 5XX    | \*/\*                    |
-
-### Example
-
-```go
-package main
-
-import (
-	"context"
-	"errors"
-	noresponse "github.com/noresponsehq/go/v2"
-	"github.com/noresponsehq/go/v2/models/apierrors"
-	"github.com/noresponsehq/go/v2/models/components"
-	"log"
-	"os"
-)
-
-func main() {
-	ctx := context.Background()
-
-	s := noresponse.New(
-		noresponse.WithSecurity(os.Getenv("NORESPONSE_API_KEY")),
-	)
-
-	res, err := s.Assessments.Create(ctx, "<value>", components.AssessmentRequest{
-		AccountID: "acct_7f3a9c",
-		Identifiers: components.AssessmentRequestIdentifiers{
-			Email: noresponse.Pointer("new.user@example.com"),
-		},
-	})
-	if err != nil {
-
-		var e *apierrors.BadRequestError
-		if errors.As(err, &e) {
-			// handle error
-			log.Fatal(e.Error())
-		}
-
-		var e *apierrors.AuthenticationError
-		if errors.As(err, &e) {
-			// handle error
-			log.Fatal(e.Error())
-		}
-
-		var e *apierrors.PermissionDeniedError
-		if errors.As(err, &e) {
-			// handle error
-			log.Fatal(e.Error())
-		}
-
-		var e *apierrors.NotFoundError
-		if errors.As(err, &e) {
-			// handle error
-			log.Fatal(e.Error())
-		}
-
-		var e *apierrors.ConflictError
-		if errors.As(err, &e) {
-			// handle error
-			log.Fatal(e.Error())
-		}
-
-		var e *apierrors.RateLimitError
-		if errors.As(err, &e) {
-			// handle error
-			log.Fatal(e.Error())
-		}
-
-		var e *apierrors.APIStatusError
-		if errors.As(err, &e) {
-			// handle error
-			log.Fatal(e.Error())
-		}
-	}
-}
-
-```
-<!-- End Error Handling [errors] -->
-
-<!-- Start Server Selection [server] -->
-## Server Selection
-
-### Override Server URL Per-Client
-
-The default server can be overridden globally using the `WithServerURL(serverURL string)` option when initializing the SDK client instance. For example:
-```go
-package main
-
-import (
-	"context"
-	noresponse "github.com/noresponsehq/go/v2"
-	"github.com/noresponsehq/go/v2/models/components"
-	"log"
-	"os"
-)
-
-func main() {
-	ctx := context.Background()
-
-	s := noresponse.New(
-		noresponse.WithServerURL("https://api.noresponse.org"),
-		noresponse.WithSecurity(os.Getenv("NORESPONSE_API_KEY")),
-	)
-
-	res, err := s.Assessments.Create(ctx, "<value>", components.AssessmentRequest{
-		AccountID: "acct_7f3a9c",
-		Identifiers: components.AssessmentRequestIdentifiers{
-			Email: noresponse.Pointer("new.user@example.com"),
-		},
-	})
-	if err != nil {
-		log.Fatal(err)
-	}
-	if res != nil {
-		// handle response
-	}
-}
-
-```
-<!-- End Server Selection [server] -->
-
-<!-- Start Custom HTTP Client [http-client] -->
-## Custom HTTP Client
-
-The Go SDK makes API calls that wrap an internal HTTP client. The requirements for the HTTP client are very simple. It must match this interface:
-
-```go
-type HTTPClient interface {
-	Do(req *http.Request) (*http.Response, error)
-}
-```
-
-The built-in `net/http` client satisfies this interface and a default client based on the built-in is provided by default. To replace this default with a client of your own, you can implement this interface yourself or provide your own client configured as desired. Here's a simple example, which adds a client with a 30 second timeout.
-
-```go
-import (
-	"net/http"
-	"time"
-
-	"github.com/noresponsehq/go/v2"
-)
-
-var (
-	httpClient = &http.Client{Timeout: 30 * time.Second}
-	sdkClient  = noresponse.New(noresponse.WithClient(httpClient))
-)
-```
-
-This can be a convenient way to configure timeouts, cookies, proxies, custom headers, and other low-level configuration.
-<!-- End Custom HTTP Client [http-client] -->
-
-<!-- Placeholder for Future NoResponse SDK Sections -->
-
-# Development
-
-## Maturity
-
-This SDK is in beta, and there may be breaking changes between versions without a major version update. Therefore, we recommend pinning usage
-to a specific package version. This way, you can install the same version each time without breaking changes unless you are intentionally
-looking for the latest version.
-
-## Contributions
-
-While we value open-source contributions to this SDK, this library is generated programmatically. Any manual changes added to internal files will be overwritten on the next generation. 
-We look forward to hearing your feedback. Feel free to open a PR or an issue with a proof of concept and we'll do our best to include it in a future release. 
+No name was renamed. New in the root package: `NewClient`, `WithAPIKey` (the same as `WithSecurity`), `NewIdempotencyKey` and `AllAssessments`. The module now needs Go 1.24, where 2.0.0 declared Go 1.26.8.

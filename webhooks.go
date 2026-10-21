@@ -251,7 +251,8 @@ var assessmentRequired = requiredJSONFields(reflect.TypeFor[components.Assessmen
 
 func requiredJSONFields(t reflect.Type) []string {
 	var names []string
-	for field := range t.Fields() {
+	for i := range t.NumField() {
+		field := t.Field(i)
 		tag := field.Tag.Get("json")
 		name, options, _ := strings.Cut(tag, ",")
 		if name == "" || name == "-" || strings.Contains(options, "omitzero") || strings.Contains(options, "omitempty") {

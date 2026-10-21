@@ -3,3 +3,7 @@
 /webhooks_test.go
 /wait.go
 /wait_test.go
+/client.go
+/client_test.go
+/example_test.go
+/README.md

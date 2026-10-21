@@ -1,5 +1,5 @@
 {
-  "description": "Cross-SDK vectors for the auth_context claim mappers (Go FromXClaims, TypeScript fromX, Python from_x). Each case runs the same verified claims and overrides through the named helper (any provider other than workos, clerk and auth0 uses the generic OIDC helper with that slug); the JSON every SDK sends must equal expect exactly. Rules the vectors pin: contact verification comes from token claims only for Auth0 (email_verified and phone_number_verified), from overrides for every provider; a NumericDate is written as RFC 3339 in whole UTC seconds, the fraction truncated; string claims split on whitespace (OAuth scope, RFC 6749 section 3.3), and Clerk permissions also on commas; Clerk's role is one slug; Clerk never sends issued_at from iat (a 60-second refresh clock; session age is the session_created_at override); Auth0 amr lists every method except pwd, and an amr of only pwd sends no mfa; the first-class adapters always send impersonated, false included; an override replaces the mapped value, false included.",
+  "description": "Cross-SDK vectors for the auth_context claim mappers (Go FromXClaims, TypeScript fromX, Python from_x). Each case runs the same verified claims and overrides through the named helper (any provider other than workos, clerk and auth0 uses the generic OIDC helper with that slug); the JSON every SDK sends must equal expect exactly. Rules the vectors pin: contact verification comes from token claims only for Auth0 (email_verified and phone_number_verified), from overrides for every provider; a NumericDate is written as RFC 3339 in whole UTC seconds, the fraction truncated; string claims split on whitespace (OAuth scope, RFC 6749 section 3.3), and Clerk permissions also on commas; Clerk's role is one slug; Clerk never sends issued_at from iat (a 60-second refresh clock; session age is the session_created_at override); Auth0 amr lists every method except pwd, and an amr of only pwd sends no mfa; the first-class adapters always send impersonated, false included; an override replaces the mapped value, false included. Unknown, mistyped, out-of-range and out-of-contract claims map to absent, never to a stronger assurance: a case with \"error\": true must be refused (a TypeError, ValueError or the language's equivalent) because issuer or subject is missing or invalid or the provider slug is not a lowercase slug; Clerk fva counts only a numeric second factor from 0 to ten years of minutes; Auth0 amr counts only an array of strings; a time string must be RFC 3339; and token claims never set assurance_level.",
   "cases": [
     {
       "name": "workos full token with user-record overrides",
@@ -98,6 +98,384 @@
       "claims": {"iss": "https://customidp.example", "sub": "user_1", "email_verified": true, "phone_verified": true, "phone_number_verified": true},
       "overrides": {},
       "expect": {"provider": "customidp", "issuer": "https://customidp.example", "subject": "user_1", "verified": true, "transport": "backend"}
+    },
+    {
+      "name": "workos client_id is not an audience and aud is read as for any token",
+      "provider": "workos",
+      "claims": {"iss": "https://workos.example", "sub": "user_1", "client_id": "client_01", "aud": ["client_01", "api://signup"], "org_id": "org_w"},
+      "overrides": {},
+      "expect": {"provider": "workos", "issuer": "https://workos.example", "subject": "user_1", "verified": true, "transport": "backend", "audience": "client_01", "audiences": ["client_01", "api://signup"], "organization_id": "org_w", "impersonated": false}
+    },
+    {
+      "name": "workos client_id alone sends no audience",
+      "provider": "workos",
+      "claims": {"iss": "https://workos.example", "sub": "user_1", "client_id": "client_01"},
+      "overrides": {},
+      "expect": {"provider": "workos", "issuer": "https://workos.example", "subject": "user_1", "verified": true, "transport": "backend", "impersonated": false}
+    },
+    {
+      "name": "workos act as a string marks impersonation",
+      "provider": "workos",
+      "claims": {"iss": "https://workos.example", "sub": "user_1", "act": "support@example.com"},
+      "overrides": {},
+      "expect": {"provider": "workos", "issuer": "https://workos.example", "subject": "user_1", "verified": true, "transport": "backend", "impersonated": true}
+    },
+    {
+      "name": "workos act with an email object marks impersonation",
+      "provider": "workos",
+      "claims": {"iss": "https://workos.example", "sub": "user_1", "act": {"email": "support@example.com"}},
+      "overrides": {},
+      "expect": {"provider": "workos", "issuer": "https://workos.example", "subject": "user_1", "verified": true, "transport": "backend", "impersonated": true}
+    },
+    {
+      "name": "workos empty act does not mark impersonation",
+      "provider": "workos",
+      "claims": {"iss": "https://workos.example", "sub": "user_1", "act": {}, "role": "member"},
+      "overrides": {},
+      "expect": {"provider": "workos", "issuer": "https://workos.example", "subject": "user_1", "verified": true, "transport": "backend", "roles": ["member"], "impersonated": false}
+    },
+    {
+      "name": "workos null act is not impersonation",
+      "provider": "workos",
+      "claims": {"iss": "https://workos.example", "sub": "user_1", "act": null},
+      "overrides": {},
+      "expect": {"provider": "workos", "issuer": "https://workos.example", "subject": "user_1", "verified": true, "transport": "backend", "impersonated": false}
+    },
+    {
+      "name": "workos numeric act is not impersonation",
+      "provider": "workos",
+      "claims": {"iss": "https://workos.example", "sub": "user_1", "act": 1},
+      "overrides": {},
+      "expect": {"provider": "workos", "issuer": "https://workos.example", "subject": "user_1", "verified": true, "transport": "backend", "impersonated": false}
+    },
+    {
+      "name": "workos empty roles list falls back to the role claim",
+      "provider": "workos",
+      "claims": {"iss": "https://workos.example", "sub": "user_1", "roles": [], "role": "owner", "permissions": "a:b c:d"},
+      "overrides": {},
+      "expect": {"provider": "workos", "issuer": "https://workos.example", "subject": "user_1", "verified": true, "transport": "backend", "roles": ["owner"], "scopes": ["a:b", "c:d"], "impersonated": false}
+    },
+    {
+      "name": "clerk act carries the impersonator and o carries the organization",
+      "provider": "clerk",
+      "claims": {"iss": "https://clerk.example", "sub": "user_5", "sid": "sess_5", "v": 2, "fva": [3, -1], "o": {"id": "org_5", "slg": "acme", "rol": "admin", "per": "read,write", "fpm": "3"}, "act": {"iss": "https://dashboard.clerk.com", "sid": "sess_imp", "sub": "user_imp"}},
+      "overrides": {},
+      "expect": {"provider": "clerk", "issuer": "https://clerk.example", "subject": "user_5", "verified": true, "transport": "backend", "session_id": "sess_5", "organization_id": "org_5", "roles": ["admin"], "scopes": ["read", "write"], "impersonated": true}
+    },
+    {
+      "name": "clerk sid inside act is not the session id",
+      "provider": "clerk",
+      "claims": {"iss": "https://clerk.example", "sub": "user_5", "act": {"sub": "user_imp", "sid": "sess_imp"}},
+      "overrides": {},
+      "expect": {"provider": "clerk", "issuer": "https://clerk.example", "subject": "user_5", "verified": true, "transport": "backend", "impersonated": true}
+    },
+    {
+      "name": "clerk non-object o falls back to the v1 organization claims",
+      "provider": "clerk",
+      "claims": {"iss": "https://clerk.example", "sub": "user_5", "o": "org_x", "org_id": "org_v1", "org_role": "org:member"},
+      "overrides": {},
+      "expect": {"provider": "clerk", "issuer": "https://clerk.example", "subject": "user_5", "verified": true, "transport": "backend", "organization_id": "org_v1", "roles": ["org:member"], "impersonated": false}
+    },
+    {
+      "name": "clerk fva with strings sends no mfa",
+      "provider": "clerk",
+      "claims": {"iss": "https://clerk.example", "sub": "user_5", "fva": ["7", "5"]},
+      "overrides": {},
+      "expect": {"provider": "clerk", "issuer": "https://clerk.example", "subject": "user_5", "verified": true, "transport": "backend", "impersonated": false}
+    },
+    {
+      "name": "clerk fva with a boolean or null second factor sends no mfa",
+      "provider": "clerk",
+      "claims": {"iss": "https://clerk.example", "sub": "user_5", "fva": [7, true]},
+      "overrides": {},
+      "expect": {"provider": "clerk", "issuer": "https://clerk.example", "subject": "user_5", "verified": true, "transport": "backend", "impersonated": false}
+    },
+    {
+      "name": "clerk fva that is not an array sends no mfa",
+      "provider": "clerk",
+      "claims": {"iss": "https://clerk.example", "sub": "user_5", "fva": 5},
+      "overrides": {},
+      "expect": {"provider": "clerk", "issuer": "https://clerk.example", "subject": "user_5", "verified": true, "transport": "backend", "impersonated": false}
+    },
+    {
+      "name": "clerk fva with a negative age other than -1 sends no mfa",
+      "provider": "clerk",
+      "claims": {"iss": "https://clerk.example", "sub": "user_5", "fva": [7, -5]},
+      "overrides": {},
+      "expect": {"provider": "clerk", "issuer": "https://clerk.example", "subject": "user_5", "verified": true, "transport": "backend", "impersonated": false}
+    },
+    {
+      "name": "clerk fva above ten years sends no mfa",
+      "provider": "clerk",
+      "claims": {"iss": "https://clerk.example", "sub": "user_5", "fva": [7, 1000000000]},
+      "overrides": {},
+      "expect": {"provider": "clerk", "issuer": "https://clerk.example", "subject": "user_5", "verified": true, "transport": "backend", "impersonated": false}
+    },
+    {
+      "name": "clerk fva of exactly ten years is kept",
+      "provider": "clerk",
+      "claims": {"iss": "https://clerk.example", "sub": "user_5", "fva": [7, 5256000]},
+      "overrides": {},
+      "expect": {"provider": "clerk", "issuer": "https://clerk.example", "subject": "user_5", "verified": true, "transport": "backend", "mfa": {"present": true, "age_seconds": 315360000}, "impersonated": false}
+    },
+    {
+      "name": "clerk fva with one item sends no mfa",
+      "provider": "clerk",
+      "claims": {"iss": "https://clerk.example", "sub": "user_5", "fva": [7]},
+      "overrides": {},
+      "expect": {"provider": "clerk", "issuer": "https://clerk.example", "subject": "user_5", "verified": true, "transport": "backend", "impersonated": false}
+    },
+    {
+      "name": "clerk a first factor alone is not mfa",
+      "provider": "clerk",
+      "claims": {"iss": "https://clerk.example", "sub": "user_5", "fva": [0, -1]},
+      "overrides": {},
+      "expect": {"provider": "clerk", "issuer": "https://clerk.example", "subject": "user_5", "verified": true, "transport": "backend", "impersonated": false}
+    },
+    {
+      "name": "clerk over-long and invalid permissions are dropped",
+      "provider": "clerk",
+      "claims": {"iss": "https://clerk.example", "sub": "user_5", "o": {"id": "org_5", "rol": "bad role", "per": "ok,bad!perm,ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp,fine"}},
+      "overrides": {},
+      "expect": {"provider": "clerk", "issuer": "https://clerk.example", "subject": "user_5", "verified": true, "transport": "backend", "organization_id": "org_5", "scopes": ["ok", "fine"], "impersonated": false}
+    },
+    {
+      "name": "auth0 aud as a string and as an array",
+      "provider": "auth0",
+      "claims": {"iss": "https://tenant.auth0.com/", "sub": "auth0|1", "aud": ["https://example-api/", "https://tenant.auth0.com/userinfo"]},
+      "overrides": {},
+      "expect": {"provider": "auth0", "issuer": "https://tenant.auth0.com/", "subject": "auth0|1", "verified": true, "transport": "backend", "audience": "https://example-api/", "audiences": ["https://example-api/", "https://tenant.auth0.com/userinfo"], "impersonated": false}
+    },
+    {
+      "name": "auth0 numeric and object aud are absent",
+      "provider": "auth0",
+      "claims": {"iss": "https://tenant.auth0.com/", "sub": "auth0|1", "aud": [5, {"x": "y"}, null]},
+      "overrides": {},
+      "expect": {"provider": "auth0", "issuer": "https://tenant.auth0.com/", "subject": "auth0|1", "verified": true, "transport": "backend", "impersonated": false}
+    },
+    {
+      "name": "auth0 org_id maps to organization_id",
+      "provider": "auth0",
+      "claims": {"iss": "https://tenant.auth0.com/", "sub": "auth0|1", "org_id": "org_9ybsU1dN2dKfDkBi", "org_name": "acme"},
+      "overrides": {},
+      "expect": {"provider": "auth0", "issuer": "https://tenant.auth0.com/", "subject": "auth0|1", "verified": true, "transport": "backend", "organization_id": "org_9ybsU1dN2dKfDkBi", "impersonated": false}
+    },
+    {
+      "name": "auth0 org_id with characters outside the contract is absent",
+      "provider": "auth0",
+      "claims": {"iss": "https://tenant.auth0.com/", "sub": "auth0|1", "org_id": "org with space"},
+      "overrides": {},
+      "expect": {"provider": "auth0", "issuer": "https://tenant.auth0.com/", "subject": "auth0|1", "verified": true, "transport": "backend", "impersonated": false}
+    },
+    {
+      "name": "auth0 amr with mfa matches ignoring case",
+      "provider": "auth0",
+      "claims": {"iss": "https://tenant.auth0.com/", "sub": "auth0|1", "amr": ["PWD", "MFA", "otp"]},
+      "overrides": {},
+      "expect": {"provider": "auth0", "issuer": "https://tenant.auth0.com/", "subject": "auth0|1", "verified": true, "transport": "backend", "mfa": {"present": true, "methods": ["MFA", "otp"]}, "impersonated": false}
+    },
+    {
+      "name": "auth0 amr that is a string is absent",
+      "provider": "auth0",
+      "claims": {"iss": "https://tenant.auth0.com/", "sub": "auth0|1", "amr": "mfa"},
+      "overrides": {},
+      "expect": {"provider": "auth0", "issuer": "https://tenant.auth0.com/", "subject": "auth0|1", "verified": true, "transport": "backend", "impersonated": false}
+    },
+    {
+      "name": "auth0 amr with non-string and invalid items keeps only valid methods",
+      "provider": "auth0",
+      "claims": {"iss": "https://tenant.auth0.com/", "sub": "auth0|1", "amr": [5, null, "mfa", "has space", "mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm", "sms"]},
+      "overrides": {},
+      "expect": {"provider": "auth0", "issuer": "https://tenant.auth0.com/", "subject": "auth0|1", "verified": true, "transport": "backend", "mfa": {"present": true, "methods": ["mfa", "sms"]}, "impersonated": false}
+    },
+    {
+      "name": "auth0 amr of only invalid items is absent",
+      "provider": "auth0",
+      "claims": {"iss": "https://tenant.auth0.com/", "sub": "auth0|1", "amr": ["mfa mfa", 7]},
+      "overrides": {},
+      "expect": {"provider": "auth0", "issuer": "https://tenant.auth0.com/", "subject": "auth0|1", "verified": true, "transport": "backend", "impersonated": false}
+    },
+    {
+      "name": "auth0 amr is capped at eight methods",
+      "provider": "auth0",
+      "claims": {"iss": "https://tenant.auth0.com/", "sub": "auth0|1", "amr": ["a1", "a2", "a3", "a4", "a5", "a6", "a7", "a8", "mfa"]},
+      "overrides": {},
+      "expect": {"provider": "auth0", "issuer": "https://tenant.auth0.com/", "subject": "auth0|1", "verified": true, "transport": "backend", "mfa": {"present": false, "methods": ["a1", "a2", "a3", "a4", "a5", "a6", "a7", "a8"]}, "impersonated": false}
+    },
+    {
+      "name": "auth0 contact verification strings are not booleans",
+      "provider": "auth0",
+      "claims": {"iss": "https://tenant.auth0.com/", "sub": "auth0|1", "email_verified": "true", "phone_number_verified": 1},
+      "overrides": {},
+      "expect": {"provider": "auth0", "issuer": "https://tenant.auth0.com/", "subject": "auth0|1", "verified": true, "transport": "backend", "impersonated": false}
+    },
+    {
+      "name": "auth0 acr and unknown claims never raise assurance",
+      "provider": "auth0",
+      "claims": {"iss": "https://tenant.auth0.com/", "sub": "auth0|1", "acr": "http://schemas.openid.net/pape/policies/2007/06/multi-factor", "assurance_level": "high", "mfa": {"present": true}},
+      "overrides": {},
+      "expect": {"provider": "auth0", "issuer": "https://tenant.auth0.com/", "subject": "auth0|1", "verified": true, "transport": "backend", "impersonated": false}
+    },
+    {
+      "name": "a malformed time string is absent",
+      "provider": "customidp",
+      "claims": {"iss": "https://idp.example", "sub": "user_1", "iat": "yesterday", "exp": "2030-01-01T00:00:00+02:00", "auth_time": "2030-01-01"},
+      "overrides": {},
+      "expect": {"provider": "customidp", "issuer": "https://idp.example", "subject": "user_1", "verified": true, "transport": "backend", "expires_at": "2030-01-01T00:00:00+02:00"}
+    },
+    {
+      "name": "negative, huge and boolean times are absent",
+      "provider": "customidp",
+      "claims": {"iss": "https://idp.example", "sub": "user_1", "iat": -1, "exp": 253402300800, "auth_time": true},
+      "overrides": {},
+      "expect": {"provider": "customidp", "issuer": "https://idp.example", "subject": "user_1", "verified": true, "transport": "backend"}
+    },
+    {
+      "name": "the last representable second and the epoch are kept",
+      "provider": "customidp",
+      "claims": {"iss": "https://idp.example", "sub": "user_1", "iat": 0, "exp": 253402300799},
+      "overrides": {},
+      "expect": {"provider": "customidp", "issuer": "https://idp.example", "subject": "user_1", "verified": true, "transport": "backend", "issued_at": "1970-01-01T00:00:00Z", "expires_at": "9999-12-31T23:59:59Z"}
+    },
+    {
+      "name": "a fractional time truncates",
+      "provider": "customidp",
+      "claims": {"iss": "https://idp.example", "sub": "user_1", "iat": 1700000000.999},
+      "overrides": {},
+      "expect": {"provider": "customidp", "issuer": "https://idp.example", "subject": "user_1", "verified": true, "transport": "backend", "issued_at": "2023-11-14T22:13:20Z"}
+    },
+    {
+      "name": "oidc claims of the wrong type are absent",
+      "provider": "customidp",
+      "claims": {"iss": "https://idp.example", "sub": "user_1", "sid": 5, "jti": ["a"], "aud": 7, "org_id": "org_1"},
+      "overrides": {},
+      "expect": {"provider": "customidp", "issuer": "https://idp.example", "subject": "user_1", "verified": true, "transport": "backend"}
+    },
+    {
+      "name": "oidc identifiers with characters outside the contract are absent",
+      "provider": "customidp",
+      "claims": {"iss": "https://idp.example", "sub": "user_1", "sid": "has space", "jti": "jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj"},
+      "overrides": {},
+      "expect": {"provider": "customidp", "issuer": "https://idp.example", "subject": "user_1", "verified": true, "transport": "backend"}
+    },
+    {
+      "name": "oidc audience values with characters outside the contract are dropped",
+      "provider": "customidp",
+      "claims": {"iss": "https://idp.example", "sub": "user_1", "aud": ["good", "bad aud", "ok:2"]},
+      "overrides": {},
+      "expect": {"provider": "customidp", "issuer": "https://idp.example", "subject": "user_1", "verified": true, "transport": "backend", "audience": "good", "audiences": ["good", "ok:2"]}
+    },
+    {
+      "name": "oidc audiences are capped at eight",
+      "provider": "customidp",
+      "claims": {"iss": "https://idp.example", "sub": "user_1", "aud": ["a1", "a2", "a3", "a4", "a5", "a6", "a7", "a8", "a9"]},
+      "overrides": {},
+      "expect": {"provider": "customidp", "issuer": "https://idp.example", "subject": "user_1", "verified": true, "transport": "backend", "audience": "a1", "audiences": ["a1", "a2", "a3", "a4", "a5", "a6", "a7", "a8"]}
+    },
+    {
+      "name": "an audiences override sets audience from its first item",
+      "provider": "customidp",
+      "claims": {"iss": "https://idp.example", "sub": "user_1", "aud": "from-token"},
+      "overrides": {"audiences": ["o1", "o2"]},
+      "expect": {"provider": "customidp", "issuer": "https://idp.example", "subject": "user_1", "verified": true, "transport": "backend", "audience": "o1", "audiences": ["o1", "o2"]}
+    },
+    {
+      "name": "an audience override keeps the mapped audiences",
+      "provider": "customidp",
+      "claims": {"iss": "https://idp.example", "sub": "user_1", "aud": ["a", "b"]},
+      "overrides": {"audience": "b"},
+      "expect": {"provider": "customidp", "issuer": "https://idp.example", "subject": "user_1", "verified": true, "transport": "backend", "audience": "b", "audiences": ["a", "b"]}
+    },
+    {
+      "name": "a null override is ignored",
+      "provider": "workos",
+      "claims": {"iss": "https://workos.example", "sub": "user_1", "org_id": "org_w"},
+      "overrides": {"organization_id": null, "email_verified": null},
+      "expect": {"provider": "workos", "issuer": "https://workos.example", "subject": "user_1", "verified": true, "transport": "backend", "organization_id": "org_w", "impersonated": false}
+    },
+    {
+      "name": "an issuer that is not https is refused",
+      "provider": "customidp",
+      "claims": {"iss": "http://idp.example", "sub": "user_1"},
+      "overrides": {},
+      "error": true
+    },
+    {
+      "name": "an issuer with whitespace is refused",
+      "provider": "customidp",
+      "claims": {"iss": "https://idp.example/a b", "sub": "user_1"},
+      "overrides": {},
+      "error": true
+    },
+    {
+      "name": "a missing issuer is refused",
+      "provider": "workos",
+      "claims": {"sub": "user_1"},
+      "overrides": {},
+      "error": true
+    },
+    {
+      "name": "a missing subject is refused",
+      "provider": "clerk",
+      "claims": {"iss": "https://clerk.example"},
+      "overrides": {},
+      "error": true
+    },
+    {
+      "name": "a subject outside the contract is refused",
+      "provider": "auth0",
+      "claims": {"iss": "https://tenant.auth0.com/", "sub": "has space"},
+      "overrides": {},
+      "error": true
+    },
+    {
+      "name": "an empty subject is refused",
+      "provider": "auth0",
+      "claims": {"iss": "https://tenant.auth0.com/", "sub": ""},
+      "overrides": {},
+      "error": true
+    },
+    {
+      "name": "a numeric subject is refused",
+      "provider": "customidp",
+      "claims": {"iss": "https://idp.example", "sub": 12},
+      "overrides": {},
+      "error": true
+    },
+    {
+      "name": "an invalid provider slug is refused",
+      "provider": "Bad Slug",
+      "claims": {"iss": "https://idp.example", "sub": "user_1"},
+      "overrides": {},
+      "error": true
+    },
+    {
+      "name": "a one character provider slug is refused",
+      "provider": "x",
+      "claims": {"iss": "https://idp.example", "sub": "user_1"},
+      "overrides": {},
+      "error": true
+    },
+    {
+      "name": "workos every mapped claim at once",
+      "provider": "workos",
+      "claims": {"iss": "https://workos.example", "sub": "user_b", "aud": "api://b", "sid": "sid_b", "jti": "jti_b", "iat": 1700000000, "exp": 1700003600, "auth_time": 1700000100, "org_id": "org_b", "roles": ["a", "b"], "permissions": ["p:1"], "act": {"sub": "s"}},
+      "overrides": {},
+      "expect": {"provider": "workos", "issuer": "https://workos.example", "subject": "user_b", "verified": true, "transport": "backend", "audience": "api://b", "audiences": ["api://b"], "session_id": "sid_b", "token_id": "jti_b", "expires_at": "2023-11-14T23:13:20Z", "auth_time": "2023-11-14T22:15:00Z", "issued_at": "2023-11-14T22:13:20Z", "organization_id": "org_b", "roles": ["a", "b"], "scopes": ["p:1"], "impersonated": true}
+    },
+    {
+      "name": "clerk every mapped claim at once",
+      "provider": "clerk",
+      "claims": {"iss": "https://clerk.example", "sub": "user_b", "aud": "api://b", "sid": "sid_b", "jti": "jti_b", "iat": 1700000000, "exp": 1700003600, "auth_time": 1700000100, "o": {"id": "org_b", "rol": "admin", "per": "a,b"}, "fva": [1, 2], "act": {"sub": "s"}},
+      "overrides": {},
+      "expect": {"provider": "clerk", "issuer": "https://clerk.example", "subject": "user_b", "verified": true, "transport": "backend", "audience": "api://b", "audiences": ["api://b"], "session_id": "sid_b", "token_id": "jti_b", "expires_at": "2023-11-14T23:13:20Z", "auth_time": "2023-11-14T22:15:00Z", "organization_id": "org_b", "roles": ["admin"], "scopes": ["a", "b"], "mfa": {"present": true, "age_seconds": 120}, "impersonated": true}
+    },
+    {
+      "name": "auth0 every mapped claim at once",
+      "provider": "auth0",
+      "claims": {"iss": "https://tenant.auth0.com/", "sub": "user_b", "aud": "api://b", "sid": "sid_b", "jti": "jti_b", "iat": 1700000000, "exp": 1700003600, "auth_time": 1700000100, "org_id": "org_b", "scope": "openid", "email_verified": true, "phone_number_verified": false, "amr": ["mfa"], "act": {"sub": "s"}},
+      "overrides": {},
+      "expect": {"provider": "auth0", "issuer": "https://tenant.auth0.com/", "subject": "user_b", "verified": true, "transport": "backend", "audience": "api://b", "audiences": ["api://b"], "session_id": "sid_b", "token_id": "jti_b", "expires_at": "2023-11-14T23:13:20Z", "auth_time": "2023-11-14T22:15:00Z", "issued_at": "2023-11-14T22:13:20Z", "organization_id": "org_b", "scopes": ["openid"], "email_verified": true, "phone_verified": false, "mfa": {"present": true, "methods": ["mfa"]}, "impersonated": true}
     }
   ]
 }
