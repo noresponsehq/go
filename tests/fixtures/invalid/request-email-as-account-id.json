@@ -1,0 +1,6 @@
+{
+  "account_id": "new.user@example.com",
+  "identifiers": {
+    "email": "new.user@example.com"
+  }
+}

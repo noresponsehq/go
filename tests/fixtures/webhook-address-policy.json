@@ -1,0 +1,275 @@
+{
+  "description": "Address policy for webhook delivery (SSRF). A sender resolves the registered host, refuses the delivery unless every resolved address is permitted, then connects to that validated address. NOR-30 must refuse every must_refuse entry and permit every must_permit entry; runtime/contracts/the Go contract implementation.is_permitted_webhook_address is the reference and tests/contracts/test_the Go contract implementation.py runs both lists against it.",
+  "must_refuse": [
+    {
+      "address": "127.0.0.1",
+      "why": "IPv4 loopback"
+    },
+    {
+      "address": "0.0.0.0",
+      "why": "this host"
+    },
+    {
+      "address": "0.1.2.3",
+      "why": "0.0.0.0/8"
+    },
+    {
+      "address": "10.0.0.1",
+      "why": "RFC 1918"
+    },
+    {
+      "address": "172.16.5.4",
+      "why": "RFC 1918"
+    },
+    {
+      "address": "192.168.1.1",
+      "why": "RFC 1918"
+    },
+    {
+      "address": "100.64.0.1",
+      "why": "CGNAT"
+    },
+    {
+      "address": "100.100.100.200",
+      "why": "CGNAT (Alibaba metadata)"
+    },
+    {
+      "address": "169.254.169.254",
+      "why": "link-local, cloud metadata"
+    },
+    {
+      "address": "168.63.129.16",
+      "why": "Azure WireServer (platform-specific deny)"
+    },
+    {
+      "address": "::ffff:168.63.129.16",
+      "why": "IPv4-mapped Azure WireServer"
+    },
+    {
+      "address": "192.0.0.170",
+      "why": "IETF protocol assignments (NAT64 discovery)"
+    },
+    {
+      "address": "192.0.2.1",
+      "why": "TEST-NET-1"
+    },
+    {
+      "address": "198.51.100.1",
+      "why": "TEST-NET-2"
+    },
+    {
+      "address": "203.0.113.1",
+      "why": "TEST-NET-3"
+    },
+    {
+      "address": "198.18.0.1",
+      "why": "benchmarking 198.18.0.0/15"
+    },
+    {
+      "address": "198.19.255.254",
+      "why": "benchmarking 198.18.0.0/15"
+    },
+    {
+      "address": "192.88.99.1",
+      "why": "deprecated 6to4 relay anycast"
+    },
+    {
+      "address": "192.31.196.1",
+      "why": "AS112-v4"
+    },
+    {
+      "address": "192.52.193.1",
+      "why": "AMT"
+    },
+    {
+      "address": "192.175.48.1",
+      "why": "direct delegation AS112"
+    },
+    {
+      "address": "224.0.0.1",
+      "why": "multicast"
+    },
+    {
+      "address": "239.255.255.250",
+      "why": "multicast (SSDP)"
+    },
+    {
+      "address": "240.0.0.1",
+      "why": "reserved"
+    },
+    {
+      "address": "255.255.255.255",
+      "why": "limited broadcast"
+    },
+    {
+      "address": "::1",
+      "why": "IPv6 loopback"
+    },
+    {
+      "address": "::",
+      "why": "unspecified"
+    },
+    {
+      "address": "fe80::1",
+      "why": "link-local"
+    },
+    {
+      "address": "fe80::1%eth0",
+      "why": "scoped link-local"
+    },
+    {
+      "address": "fc00::1",
+      "why": "unique local"
+    },
+    {
+      "address": "fd00:ec2::254",
+      "why": "unique local (AWS IMDS IPv6)"
+    },
+    {
+      "address": "fec0::1",
+      "why": "deprecated site-local"
+    },
+    {
+      "address": "ff02::1",
+      "why": "multicast"
+    },
+    {
+      "address": "::ffff:127.0.0.1",
+      "why": "IPv4-mapped loopback"
+    },
+    {
+      "address": "::ffff:169.254.169.254",
+      "why": "IPv4-mapped metadata"
+    },
+    {
+      "address": "::ffff:10.0.0.1",
+      "why": "IPv4-mapped RFC 1918"
+    },
+    {
+      "address": "::127.0.0.1",
+      "why": "IPv4-compatible loopback"
+    },
+    {
+      "address": "::a9fe:a9fe",
+      "why": "IPv4-compatible metadata"
+    },
+    {
+      "address": "64:ff9b::a9fe:a9fe",
+      "why": "NAT64 of 169.254.169.254; Python is_global says True"
+    },
+    {
+      "address": "64:ff9b::7f00:1",
+      "why": "NAT64 of 127.0.0.1"
+    },
+    {
+      "address": "64:ff9b:1::808:808",
+      "why": "local-use NAT64 64:ff9b:1::/48"
+    },
+    {
+      "address": "2002:a9fe:a9fe::1",
+      "why": "6to4 embedding 169.254.169.254"
+    },
+    {
+      "address": "2002:808:808::1",
+      "why": "6to4, refused outright"
+    },
+    {
+      "address": "2001:0:4136:e378:8000:63bf:3fff:fdd2",
+      "why": "Teredo"
+    },
+    {
+      "address": "2002:7f00:1::1",
+      "why": "6to4 embedding 127.0.0.1 (CR-10)"
+    },
+    {
+      "address": "2002:c0a8:101::1",
+      "why": "6to4 embedding 192.168.1.1 (CR-10)"
+    },
+    {
+      "address": "2001::1",
+      "why": "Teredo 2001::/32 server prefix (CR-10)"
+    },
+    {
+      "address": "2001:0:5ef5:79fd:0:59d:a0e5:ba1",
+      "why": "Teredo embedding a public address, refused outright rather than unwrapped (CR-10)"
+    },
+    {
+      "address": "64:ff9b:1:ffff::a9fe:a9fe",
+      "why": "local-use NAT64 64:ff9b:1::/48 embedding 169.254.169.254 (CR-10)"
+    },
+    {
+      "address": "64:ff9b:1::1",
+      "why": "local-use NAT64 64:ff9b:1::/48 (CR-10)"
+    },
+    {
+      "address": "2001:2::1",
+      "why": "benchmarking 2001:2::/48"
+    },
+    {
+      "address": "2001:db8::1",
+      "why": "documentation"
+    },
+    {
+      "address": "3fff::1",
+      "why": "documentation 3fff::/20"
+    },
+    {
+      "address": "100::1",
+      "why": "discard-only 100::/64"
+    },
+    {
+      "address": "5f00::1",
+      "why": "SRv6 SIDs"
+    },
+    {
+      "address": "2620:4f:8000::1",
+      "why": "direct delegation AS112"
+    },
+    {
+      "address": "::ffff:0:a9fe:a9fe",
+      "why": "IPv4-translated (SIIT), not global unicast"
+    },
+    {
+      "address": "4000::1",
+      "why": "outside 2000::/3"
+    },
+    {
+      "address": "not-an-ip",
+      "why": "unparseable"
+    },
+    {
+      "address": "0177.0.0.1",
+      "why": "octal IPv4 spelling"
+    },
+    {
+      "address": "2130706433",
+      "why": "integer IPv4 spelling"
+    }
+  ],
+  "must_permit": [
+    {
+      "address": "8.8.8.8",
+      "why": "public IPv4"
+    },
+    {
+      "address": "1.1.1.1",
+      "why": "public IPv4"
+    },
+    {
+      "address": "2606:4700:4700::1111",
+      "why": "public IPv6"
+    },
+    {
+      "address": "2001:4860:4860::8888",
+      "why": "public IPv6"
+    },
+    {
+      "address": "::ffff:8.8.8.8",
+      "why": "IPv4-mapped public"
+    },
+    {
+      "address": "64:ff9b::808:808",
+      "why": "NAT64 of a public address"
+    }
+  ]
+}

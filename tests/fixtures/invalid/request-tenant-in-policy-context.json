@@ -1,0 +1,10 @@
+{
+  "account_id": "acct_7f3a9c",
+  "identifiers": {
+    "email": "new.user@example.com"
+  },
+  "policy_context": {
+    "flow": "signup",
+    "tenant": "tnt_other"
+  }
+}

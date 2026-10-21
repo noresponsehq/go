@@ -1,0 +1,7 @@
+# .gitignore
+.DS_Store
+**/.noresponse/temp/
+**/.noresponse/logs/
+.noresponse/reports
+.env
+.env.local

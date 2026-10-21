@@ -1,0 +1,62 @@
+package components
+
+import (
+	"github.com/noresponsehq/go/v2/internal/utils"
+)
+
+// AssessmentList - Body of the 200 answer to POST /v1/assessments/query: one page of the calling tenant's unexpired assessments for one account, newest first, each at its latest assessment_version. Every item's account_id equals the page's. An assessment past its expires_at is not listed. next_cursor is present only when another page exists.
+type AssessmentList struct {
+	// Version of the body shape.
+	//lint:ignore U1000 accessed via reflection for JSON marshaling
+	schemaVersion string `const:"1" json:"schema_version"`
+	// Your own opaque identifier for the account being checked, scoped to your tenant. Use an id you mint, with no direct identifier (email, phone, name or national id) in it. '|' is accepted so an Auth0 user id such as 'auth0|64abc' passes unchanged; '@', '+', '$' and whitespace are refused, as is a JWT; a hex digest such as a SHA-256 is allowed. It travels only in request bodies.
+	AccountID string       `json:"account_id"`
+	Items     []Assessment `json:"items"`
+	// Opaque cursor for the next page, bound to your tenant and the account_id it was issued for. Pass it back unchanged in the next query; a tampered, foreign or expired cursor answers 400 invalid_cursor.
+	NextCursor *string `json:"next_cursor,omitzero"`
+	// Your current retention period, so a consumer knows how far back history reaches. Every item expires no later than its created_at plus this many days.
+	RetentionDays *int64 `default:"365" json:"retention_days"`
+}
+
+func (a AssessmentList) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(a, "", false)
+}
+
+func (a *AssessmentList) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &a, "", false, nil); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (a *AssessmentList) GetSchemaVersion() string {
+	return "1"
+}
+
+func (a *AssessmentList) GetAccountID() string {
+	if a == nil {
+		return ""
+	}
+	return a.AccountID
+}
+
+func (a *AssessmentList) GetItems() []Assessment {
+	if a == nil {
+		return []Assessment{}
+	}
+	return a.Items
+}
+
+func (a *AssessmentList) GetNextCursor() *string {
+	if a == nil {
+		return nil
+	}
+	return a.NextCursor
+}
+
+func (a *AssessmentList) GetRetentionDays() *int64 {
+	if a == nil {
+		return nil
+	}
+	return a.RetentionDays
+}

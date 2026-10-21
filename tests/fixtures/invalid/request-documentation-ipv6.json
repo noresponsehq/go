@@ -1,0 +1,7 @@
+{
+  "account_id": "acct_8412",
+  "identifiers": {
+    "email": "jane.doe@example.com",
+    "ip": "2001:db8::1"
+  }
+}

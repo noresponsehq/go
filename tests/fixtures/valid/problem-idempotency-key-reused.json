@@ -1,0 +1,8 @@
+{
+  "type": "https://docs.noresponse.org/problems/idempotency-key-reused",
+  "title": "Idempotency key reused",
+  "status": 409,
+  "detail": "This Idempotency-Key was used with a different request body.",
+  "code": "idempotency_key_reused",
+  "request_id": "0123456789abcdef0123456789abcdef"
+}

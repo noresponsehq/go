@@ -1,0 +1,35 @@
+{
+  "schema_version": "1",
+  "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+  "account_id": "acct_7f3a9c",
+  "request_id": "req-2026-10-14-0001",
+  "policy_version": "heuristic-2026-10.1",
+  "policy_basis": "heuristic_unvalidated",
+  "assessment_version": 1,
+  "created_at": "2026-10-14T09:00:00.000Z",
+  "updated_at": "2026-10-14T09:00:00.012Z",
+  "expires_at": "2027-10-14T09:00:00.000Z",
+  "timing": {
+    "deadline_ms": 500,
+    "elapsed_ms": 12
+  },
+  "status": "pending",
+  "confidence": "unavailable",
+  "signals": [
+    {
+      "type": "account_presence",
+      "identifier": "phone",
+      "outcome": "unavailable",
+      "source_id": "phone_src_04",
+      "reason": "deferred",
+      "freshness": "unknown"
+    }
+  ],
+  "incomplete_sources": [
+    {
+      "lane": "phone",
+      "reason": "deferred"
+    }
+  ],
+  "assessment_url": "/v1/assessments/asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+}

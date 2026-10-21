@@ -1,0 +1,1756 @@
+{
+  "description": "Every signup assessment contract fixture, the schema it is checked against and the expected verdict. expect=valid must validate. For the request schema the Go decoder (assesswire.DecodeAssessmentRequest) also applies server normalisation, whose refusals use the keywords normalisation, format and public_address. response_mode, when set, names the view a response fixture is: assesswire.ModeViolations must accept a valid one and report `rule` for a semantic_invalid one. expect=invalid must fail schema validation, and the set of top-level (keyword, JSON pointer) errors must equal `errors` plus `also` under python-jsonschema, and jsonschema-rs must reach the same valid/invalid verdict, where `also` lists errors intrinsic to the same bad value (an over-long value that also breaks its pattern). expect=semantic_invalid is schema-valid and runtime/contracts/the Go contract implementation.semantic_violations (history_violations for a page) must report `rule`. A schema of the form identity.openapi.json#/... names a schema inside the OpenAPI document. tests/contracts/test_the Go contract implementation.py enforces all of this and that every file here is listed.",
+  "cases": [
+    {
+      "file": "valid/assessment-request-minimal.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/assessment-request-full.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/assessment-request-hashed-account-id.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/assessment-request-auth0-account-id.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/assessment-complete.json",
+      "schema": "assessment.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/assessment-complete-timed-out-lane.json",
+      "schema": "assessment.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/assessment-partial.json",
+      "schema": "assessment.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/assessment-mixed-identifier.json",
+      "schema": "assessment.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/assessment-pending.json",
+      "schema": "assessment.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/assessment-list.json",
+      "schema": "assessment-list.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/assessment-query.json",
+      "schema": "assessment-query.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/webhook-assessment-updated.json",
+      "schema": "webhook-event.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/webhook-assessment-updated-detailed.json",
+      "schema": "webhook-event.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/webhook-assessment-expired.json",
+      "schema": "webhook-event.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/webhook-endpoint-verification.json",
+      "schema": "webhook-event.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/webhook-verification-response.json",
+      "schema": "webhook-verification-response.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/problem-idempotency-key-reused.json",
+      "schema": "problem-details.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/problem-rate-limited.json",
+      "schema": "problem-details.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/problem-invalid-request.json",
+      "schema": "problem-details.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/assessment-request-mixed-case-email.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/assessment-request-plus-alias-email.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/assessment-request-phone-only.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/assessment-request-lookalike-username-bcrypt-fan.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/assessment-request-lookalike-username-eyj.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/assessment-request-lookalike-username-eyj-dotted.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/assessment-request-lookalike-username-short-hex.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/assessment-request-lookalike-username-hex-39.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/assessment-request-lookalike-username-hex-41.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/assessment-request-lookalike-username-truncated-bcrypt.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/assessment-request-lookalike-username-dollar-one.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/assessment-request-lookalike-email-dollar-local.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/assessment-request-lookalike-email-hex-local.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/assessment-request-lookalike-request-id-uuid.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/assessment-request-lookalike-request-id-short-hex.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/assessment-phone-only-pending.json",
+      "schema": "assessment.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/assessment-phone-uncovered-complete.json",
+      "schema": "assessment.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/problem-tenant-forbidden-scope.json",
+      "schema": "identity.openapi.json#/components/responses/TenantForbidden/content/application~1problem+json/schema",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/assessment-request-lookalike-username-eyjohnathan.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/assessment-request-lookalike-username-eyjohnathan-short.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "invalid/request-tenant-id.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "additionalProperties",
+          ""
+        ]
+      ],
+      "why": "II-006 tenant comes from the principal only"
+    },
+    {
+      "file": "invalid/request-tenant-in-policy-context.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "additionalProperties",
+          "/policy_context"
+        ]
+      ],
+      "why": "II-006"
+    },
+    {
+      "file": "invalid/request-empty-identifiers.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "anyOf",
+          "/identifiers"
+        ]
+      ],
+      "why": "II-004 at least one of email, username or phone"
+    },
+    {
+      "file": "invalid/request-missing-identifiers.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "required",
+          ""
+        ]
+      ],
+      "why": "II-004"
+    },
+    {
+      "file": "invalid/request-unknown-identifier.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "additionalProperties",
+          "/identifiers"
+        ]
+      ],
+      "why": "II-004 email, username, phone, name and ip only",
+      "also": [
+        [
+          "anyOf",
+          "/identifiers"
+        ]
+      ]
+    },
+    {
+      "file": "invalid/request-extra-field.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "additionalProperties",
+          ""
+        ]
+      ],
+      "why": "II-004 excess fields"
+    },
+    {
+      "file": "invalid/request-oversized-email.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "maxLength",
+          "/identifiers/email"
+        ]
+      ],
+      "why": "II-004 bounded lengths"
+    },
+    {
+      "file": "invalid/request-oversized-account-id.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "maxLength",
+          "/account_id"
+        ]
+      ],
+      "also": [
+        [
+          "pattern",
+          "/account_id"
+        ]
+      ],
+      "why": "II-004 bounded lengths"
+    },
+    {
+      "file": "invalid/request-unnormalised-phone.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "pattern",
+          "/identifiers/phone"
+        ]
+      ],
+      "why": "II-004 strict E.164"
+    },
+    {
+      "file": "invalid/request-padded-email.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "pattern",
+          "/identifiers/email"
+        ]
+      ],
+      "why": "II-004 strict normalisation"
+    },
+    {
+      "file": "invalid/request-email-as-account-id.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "pattern",
+          "/account_id"
+        ]
+      ],
+      "why": "II-007 obvious direct identifier in account_id"
+    },
+    {
+      "file": "invalid/request-password-field.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "additionalProperties",
+          ""
+        ]
+      ],
+      "why": "II-007 no credential field"
+    },
+    {
+      "file": "invalid/request-password-hash-identifier.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "additionalProperties",
+          "/identifiers"
+        ]
+      ],
+      "why": "II-007 no hash field"
+    },
+    {
+      "file": "invalid/request-deadline-above-ceiling.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "maximum",
+          "/deadline_ms"
+        ]
+      ],
+      "why": "II-002 client deadline above the 500 ms ceiling"
+    },
+    {
+      "file": "invalid/request-email-trailing-newline.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "not",
+          "/identifiers/email"
+        ]
+      ],
+      "why": "II-004 trailing line feed refused"
+    },
+    {
+      "file": "invalid/request-phone-trailing-newline.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "not",
+          "/identifiers/phone"
+        ]
+      ],
+      "why": "II-004 trailing line feed refused"
+    },
+    {
+      "file": "invalid/request-account-id-trailing-newline.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "not",
+          "/account_id"
+        ]
+      ],
+      "why": "II-004 trailing line feed refused"
+    },
+    {
+      "file": "invalid/request-zero-width-username.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "pattern",
+          "/identifiers/username"
+        ]
+      ],
+      "why": "II-004 invisible format character refused"
+    },
+    {
+      "file": "invalid/request-jwt-account-id.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "not",
+          "/account_id"
+        ]
+      ],
+      "why": "II-007 a JWT is never an account id"
+    },
+    {
+      "file": "invalid/request-sha256-request-id.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "not",
+          "/request_id"
+        ]
+      ],
+      "why": "II-007 secret-shaped request_id"
+    },
+    {
+      "file": "invalid/request-jwt-request-id.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "not",
+          "/request_id"
+        ]
+      ],
+      "why": "II-007 secret-shaped request_id"
+    },
+    {
+      "file": "invalid/request-bcrypt-username.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "not",
+          "/identifiers/username"
+        ]
+      ],
+      "why": "II-007 secret-shaped username"
+    },
+    {
+      "file": "invalid/request-sha256-username.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "not",
+          "/identifiers/username"
+        ]
+      ],
+      "why": "II-007 secret-shaped username"
+    },
+    {
+      "file": "invalid/idempotency-key-trailing-newline.json",
+      "schema": "identity.openapi.json#/components/parameters/IdempotencyKey/schema",
+      "expect": "invalid",
+      "errors": [
+        [
+          "not",
+          ""
+        ]
+      ],
+      "why": "II-004 Idempotency-Key with a trailing line feed"
+    },
+    {
+      "file": "invalid/idempotency-key-too-short.json",
+      "schema": "identity.openapi.json#/components/parameters/IdempotencyKey/schema",
+      "expect": "invalid",
+      "errors": [
+        [
+          "minLength",
+          ""
+        ],
+        [
+          "pattern",
+          ""
+        ]
+      ],
+      "why": "Idempotency-Key bounds"
+    },
+    {
+      "file": "invalid/response-deny-recommendation.json",
+      "schema": "assessment.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "enum",
+          "/recommendation"
+        ]
+      ],
+      "why": "II-001 no deny in v0"
+    },
+    {
+      "file": "invalid/response-numeric-score.json",
+      "schema": "assessment.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "additionalProperties",
+          ""
+        ]
+      ],
+      "why": "REL-002 no numeric probability"
+    },
+    {
+      "file": "invalid/response-numeric-confidence.json",
+      "schema": "assessment.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "enum",
+          "/confidence"
+        ]
+      ],
+      "why": "REL-002 ordinal confidence only"
+    },
+    {
+      "file": "invalid/response-missing-policy-version.json",
+      "schema": "assessment.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "required",
+          ""
+        ]
+      ],
+      "why": "REL-002 policy_version required"
+    },
+    {
+      "file": "invalid/response-tenant-id.json",
+      "schema": "assessment.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "additionalProperties",
+          ""
+        ]
+      ],
+      "why": "II-006 tenant never returned"
+    },
+    {
+      "file": "invalid/response-raw-breach-value.json",
+      "schema": "assessment.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "additionalProperties",
+          "/signals/0"
+        ]
+      ],
+      "why": "II-007 no raw breach value field"
+    },
+    {
+      "file": "invalid/response-timeout-encoded-as-not-found.json",
+      "schema": "assessment.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "not",
+          "/signals/2"
+        ]
+      ],
+      "why": "REL-001 a timed_out reason on not_found"
+    },
+    {
+      "file": "invalid/response-complete-with-incomplete-sources.json",
+      "schema": "assessment.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "not",
+          "/incomplete_sources/0/reason"
+        ]
+      ],
+      "why": "§5.4 a complete assessment may list a failed or timed-out lane, never one still running"
+    },
+    {
+      "file": "invalid/response-partial-without-incomplete-sources.json",
+      "schema": "assessment.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "minItems",
+          "/incomplete_sources"
+        ]
+      ],
+      "why": "II-002 partial names what is missing"
+    },
+    {
+      "file": "invalid/response-pending-with-recommendation.json",
+      "schema": "assessment.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "not",
+          ""
+        ]
+      ],
+      "why": "II-002 pending has no recommendation yet, not even review"
+    },
+    {
+      "file": "invalid/response-pending-without-incomplete-sources.json",
+      "schema": "assessment.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "minItems",
+          "/incomplete_sources"
+        ]
+      ],
+      "why": "II-002 pending names what is missing"
+    },
+    {
+      "file": "invalid/response-found-without-evidence-ref.json",
+      "schema": "assessment.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "required",
+          "/signals/0"
+        ]
+      ],
+      "why": "II-007 evidence by opaque ref"
+    },
+    {
+      "file": "invalid/response-missing-freshness.json",
+      "schema": "assessment.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "required",
+          "/signals/0"
+        ]
+      ],
+      "why": "PERF-005 freshness class required"
+    },
+    {
+      "file": "invalid/response-found-with-unknown-freshness.json",
+      "schema": "assessment.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "enum",
+          "/signals/0/freshness"
+        ]
+      ],
+      "why": "PERF-005 found evidence has a known freshness"
+    },
+    {
+      "file": "invalid/response-unavailable-with-observed-at.json",
+      "schema": "assessment.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "not",
+          "/signals/2"
+        ]
+      ],
+      "why": "PERF-005 nothing observed when no evidence was obtained"
+    },
+    {
+      "file": "invalid/response-unknown-outcome.json",
+      "schema": "assessment.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "enum",
+          "/signals/0/outcome"
+        ]
+      ],
+      "why": "REL-001 closed outcome vocabulary"
+    },
+    {
+      "file": "invalid/response-incomplete-insufficient-evidence.json",
+      "schema": "assessment.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "enum",
+          "/incomplete_sources/0/reason"
+        ]
+      ],
+      "why": "REL-001 insufficient_evidence is settled, not incomplete"
+    },
+    {
+      "file": "invalid/response-incomplete-names-source.json",
+      "schema": "assessment.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "additionalProperties",
+          "/incomplete_sources/0"
+        ],
+        [
+          "required",
+          "/incomplete_sources/0"
+        ]
+      ],
+      "why": "§5.1 a served incomplete entry names a lane, never a source"
+    },
+    {
+      "file": "invalid/response-request-id-trailing-newline.json",
+      "schema": "assessment.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "not",
+          "/request_id"
+        ]
+      ],
+      "why": "II-004 trailing line feed refused"
+    },
+    {
+      "file": "invalid/response-failure-as-not-found.json",
+      "schema": "assessment.schema.json",
+      "expect": "semantic_invalid",
+      "rule": "incomplete_lane_without_signal:phone",
+      "why": "REL-001 a pair in incomplete_sources reported not_found"
+    },
+    {
+      "file": "invalid/response-unlisted-timeout.json",
+      "schema": "assessment.schema.json",
+      "expect": "semantic_invalid",
+      "rule": "unsettled_source_not_listed:phone_src_04:phone",
+      "why": "REL-001 a timed-out pair must be listed in incomplete_sources"
+    },
+    {
+      "file": "invalid/response-mixed-identifier-failure-as-not-found.json",
+      "schema": "assessment.schema.json",
+      "expect": "semantic_invalid",
+      "rule": "incomplete_lane_without_signal:accounts",
+      "why": "REL-001 per identifier: github settled for email but timed out for username, so its username signal cannot be not_found"
+    },
+    {
+      "file": "invalid/response-mixed-identifier-unlisted.json",
+      "schema": "assessment.schema.json",
+      "expect": "semantic_invalid",
+      "rule": "unsettled_lane_not_listed:phone",
+      "why": "REL-001 every unsettled (source, identifier) pair is listed"
+    },
+    {
+      "file": "invalid/response-incomplete-source-without-signal.json",
+      "schema": "assessment.schema.json",
+      "expect": "semantic_invalid",
+      "rule": "incomplete_lane_without_signal:accounts",
+      "why": "REL-001 a partial status rests on a real, signalled gap"
+    },
+    {
+      "file": "invalid/response-duplicate-incomplete-source.json",
+      "schema": "assessment.schema.json",
+      "expect": "semantic_invalid",
+      "rule": "duplicate_incomplete_lane:phone",
+      "why": "REL-001 one entry per (source, identifier)"
+    },
+    {
+      "file": "invalid/history-account-mismatch.json",
+      "schema": "assessment-list.schema.json",
+      "expect": "semantic_invalid",
+      "rule": "history_account_mismatch:1",
+      "why": "II-006 a page holds one account's history"
+    },
+    {
+      "file": "invalid/query-tenant-id.json",
+      "schema": "assessment-query.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "additionalProperties",
+          ""
+        ]
+      ],
+      "why": "II-006"
+    },
+    {
+      "file": "invalid/query-limit-above-page.json",
+      "schema": "assessment-query.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "maximum",
+          "/limit"
+        ]
+      ],
+      "why": "II-004 bounded page size"
+    },
+    {
+      "file": "invalid/query-cursor-trailing-newline.json",
+      "schema": "assessment-query.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "not",
+          "/cursor"
+        ]
+      ],
+      "why": "II-004 trailing line feed refused"
+    },
+    {
+      "file": "invalid/webhook-update-names-source.json",
+      "schema": "webhook-event.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "additionalProperties",
+          "/data/incomplete_sources/0"
+        ],
+        [
+          "required",
+          "/data/incomplete_sources/0"
+        ]
+      ],
+      "why": "§5.1 incomplete_sources names a lane, never a source"
+    },
+    {
+      "file": "invalid/webhook-tenant-id.json",
+      "schema": "webhook-event.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "additionalProperties",
+          ""
+        ]
+      ],
+      "why": "II-006"
+    },
+    {
+      "file": "invalid/webhook-identifier-leak.json",
+      "schema": "webhook-event.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "additionalProperties",
+          "/data"
+        ]
+      ],
+      "why": "II-007 no identifier member in the assessment"
+    },
+    {
+      "file": "invalid/webhook-unknown-event-type.json",
+      "schema": "webhook-event.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "enum",
+          "/type"
+        ]
+      ],
+      "why": "II-005 closed event types"
+    },
+    {
+      "file": "invalid/webhook-update-pointer-only.json",
+      "schema": "webhook-event.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "additionalProperties",
+          "/data"
+        ],
+        [
+          "not",
+          "/data"
+        ],
+        [
+          "required",
+          "/data"
+        ]
+      ],
+      "why": "§5.3 an update carries the full assessment, not a pointer"
+    },
+    {
+      "file": "invalid/webhook-expired-with-assessment-url.json",
+      "schema": "webhook-event.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "additionalProperties",
+          "/data"
+        ]
+      ],
+      "why": "II-005 nothing to fetch after expiry"
+    },
+    {
+      "file": "invalid/webhook-update-with-expired-status.json",
+      "schema": "webhook-event.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "additionalProperties",
+          "/data"
+        ],
+        [
+          "required",
+          "/data"
+        ]
+      ],
+      "why": "II-005 only the minimal expiry carries status expired"
+    },
+    {
+      "file": "invalid/webhook-verification-without-challenge.json",
+      "schema": "webhook-event.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "required",
+          "/data"
+        ]
+      ],
+      "why": "II-005 verification carries a challenge"
+    },
+    {
+      "file": "invalid/webhook-verification-response-wrong-shape.json",
+      "schema": "webhook-verification-response.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "additionalProperties",
+          ""
+        ]
+      ],
+      "why": "II-005 the echo is exactly the challenge"
+    },
+    {
+      "file": "invalid/request-argon2-username.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "not",
+          "/identifiers/username"
+        ]
+      ],
+      "why": "II-007 CR-09 exact argon2 hash in username"
+    },
+    {
+      "file": "invalid/request-sha1-username.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "not",
+          "/identifiers/username"
+        ]
+      ],
+      "why": "II-007 CR-09 exact 40-character hex digest in username"
+    },
+    {
+      "file": "invalid/request-sha512-request-id.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "not",
+          "/request_id"
+        ]
+      ],
+      "why": "II-007 CR-09 exact 128-character hex digest in request_id"
+    },
+    {
+      "file": "invalid/request-sha512crypt-username.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "not",
+          "/identifiers/username"
+        ]
+      ],
+      "why": "II-007 CR-09 exact sha-crypt shape in username"
+    },
+    {
+      "file": "invalid/request-deadline-below-floor.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "minimum",
+          "/deadline_ms"
+        ]
+      ],
+      "why": "II-002 CR-04 deadline_ms is 50 to 500"
+    },
+    {
+      "file": "invalid/response-phone-not-found-synchronously.json",
+      "schema": "assessment.schema.json",
+      "expect": "semantic_invalid",
+      "rule": "async_only_not_deferred:phone_src_04:phone",
+      "why": "CR-05 REL-001 phone is async-only: the synchronous answer never reports it not_found"
+    },
+    {
+      "file": "invalid/response-phone-timed-out-synchronously.json",
+      "schema": "assessment.schema.json",
+      "expect": "semantic_invalid",
+      "rule": "async_only_not_deferred:phone_src_04:phone",
+      "why": "CR-05 phone was never attempted synchronously, so it is deferred, not timed out"
+    },
+    {
+      "file": "invalid/response-unregistered-signal-type.json",
+      "schema": "assessment.schema.json",
+      "expect": "semantic_invalid",
+      "rule": "unregistered_signal_type:device_reputation",
+      "why": "CR-11 a signal type must be in the reviewed registry"
+    },
+    {
+      "file": "invalid/response-expiry-beyond-max-retention.json",
+      "schema": "assessment.schema.json",
+      "expect": "semantic_invalid",
+      "rule": "expiry_beyond_max_retention",
+      "why": "CR-06 DATA-007 a record lives at most 365 days from its creation"
+    },
+    {
+      "file": "invalid/history-retention-above-max.json",
+      "schema": "assessment-list.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "maximum",
+          "/retention_days"
+        ]
+      ],
+      "why": "CR-06 retention is at most 365 days; a tenant may only shorten it"
+    },
+    {
+      "file": "invalid/history-retention-zero.json",
+      "schema": "assessment-list.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "minimum",
+          "/retention_days"
+        ]
+      ],
+      "why": "CR-06 retention is at least 1 day"
+    },
+    {
+      "file": "invalid/history-expiry-beyond-retention.json",
+      "schema": "assessment-list.schema.json",
+      "expect": "semantic_invalid",
+      "rule": "expiry_beyond_retention:0",
+      "why": "CR-06 after a tenant shortens retention every record expires at created_at + min(at creation, current)"
+    },
+    {
+      "file": "invalid/problem-idempotency-key-in-flight.json",
+      "schema": "identity.openapi.json#/components/responses/IdempotencyConflict/content/application~1problem+json/schema",
+      "expect": "invalid",
+      "errors": [
+        [
+          "enum",
+          "/code"
+        ]
+      ],
+      "why": "CR-07 a same-body reuse replays the latest assessment; there is no in-flight 409"
+    },
+    {
+      "file": "invalid/response-deferred-not-unavailable.json",
+      "schema": "assessment.schema.json",
+      "expect": "semantic_invalid",
+      "rule": "deferred_not_unavailable:phone_src_04:phone",
+      "why": "CR-05 deferred marks an unattempted pair, so its outcome is unavailable"
+    },
+    {
+      "file": "invalid/response-deferred-email.json",
+      "schema": "assessment.schema.json",
+      "expect": "semantic_invalid",
+      "rule": "deferred_on_sync_kind:account_presence:github:email",
+      "why": "CR-05 only async-only kinds are deferred; email runs on the synchronous path"
+    },
+    {
+      "file": "invalid/response-phone-coverage-deferred.json",
+      "schema": "assessment.schema.json",
+      "expect": "semantic_invalid",
+      "rule": "coverage_deferred:coverage-unavailable:phone",
+      "why": "NOR-112 a phone with no source offered has nothing queued, so it is unavailable and the answer settles, never deferred"
+    },
+    {
+      "file": "valid/assessment-phone-enrichment-facts.json",
+      "schema": "assessment.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "invalid/response-phone-enrichment-provider.json",
+      "schema": "assessment.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "additionalProperties",
+          "/signals/0/enrichment"
+        ]
+      ],
+      "why": "NOR-177 the provider is never served"
+    },
+    {
+      "file": "invalid/response-phone-enrichment-provider-score.json",
+      "schema": "assessment.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "additionalProperties",
+          "/signals/0/enrichment/fields"
+        ]
+      ],
+      "why": "NOR-177/REL-002 no provider score"
+    },
+    {
+      "file": "invalid/response-phone-enrichment-provider-verdict.json",
+      "schema": "assessment.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "additionalProperties",
+          "/signals/0/enrichment/fields"
+        ]
+      ],
+      "why": "NOR-177 no provider verdict"
+    },
+    {
+      "file": "valid/assessment-risk.json",
+      "schema": "assessment.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/assessment-risk-tenant-override.json",
+      "schema": "assessment.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "invalid/response-policy-version-bad-suffix.json",
+      "schema": "assessment.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "pattern",
+          "/risk/policy_version"
+        ]
+      ],
+      "why": "spec §9: a tenant override suffix is +t<N>"
+    },
+    {
+      "file": "invalid/response-risk-score-over-100.json",
+      "schema": "assessment.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "maximum",
+          "/risk/score"
+        ]
+      ],
+      "why": "NOR-178 score is 0..100"
+    },
+    {
+      "file": "invalid/response-risk-unknown-reason.json",
+      "schema": "assessment.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "enum",
+          "/risk/reasons/0/code"
+        ]
+      ],
+      "why": "NOR-178 reasons come from the registered list, never a provider"
+    },
+    {
+      "file": "invalid/response-risk-reason-names-source.json",
+      "schema": "assessment.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "additionalProperties",
+          "/risk/reasons/0"
+        ]
+      ],
+      "why": "NOR-178 a reason never names a source"
+    },
+    {
+      "file": "invalid/response-risk-on-pending.json",
+      "schema": "assessment.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "not",
+          ""
+        ]
+      ],
+      "why": "NOR-178 a pending answer has no recommendation, so no risk"
+    },
+    {
+      "file": "valid/assessment-standard-phone-only.json",
+      "schema": "assessment.schema.json",
+      "expect": "valid",
+      "response_mode": "standard",
+      "why": "spec §5.1 standard view of a phone-only assessment once phone settled: no signals[], phone facts only, nothing claimed about lanes that did not run"
+    },
+    {
+      "file": "valid/assessment-standard-breach-only.json",
+      "schema": "assessment.schema.json",
+      "expect": "valid",
+      "response_mode": "standard",
+      "why": "spec §5.1 §6.7 breach facts for the email in the standard view: counts, years and exposed kinds, never a value"
+    },
+    {
+      "file": "valid/assessment-standard-mixed.json",
+      "schema": "assessment.schema.json",
+      "expect": "valid",
+      "response_mode": "standard",
+      "why": "spec §5.1 the standard example: every lane's summary, consistency and the breach reasons, no signals[]"
+    },
+    {
+      "file": "valid/assessment-standard-truncated.json",
+      "schema": "assessment.schema.json",
+      "expect": "valid",
+      "response_mode": "standard",
+      "why": "spec §6.3 a truncated username result is found with absence claims withheld (name unknown); a standard partial lists its incomplete pair without signals[]"
+    },
+    {
+      "file": "valid/assessment-detailed.json",
+      "schema": "assessment.schema.json",
+      "expect": "valid",
+      "response_mode": "detailed",
+      "why": "spec §5.2 the detailed view adds signals[] and risk.details: breach tables by display name and kind, breach names and phone names"
+    },
+    {
+      "file": "invalid/response-breach-plaintext-password.json",
+      "schema": "assessment.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "additionalProperties",
+          "/risk/summary/email/breach"
+        ]
+      ],
+      "why": "II-007 spec §5.1 raw-value refusal: no member carries a plaintext password"
+    },
+    {
+      "file": "invalid/response-breach-raw-record.json",
+      "schema": "assessment.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "additionalProperties",
+          "/risk/details/breaches/0"
+        ]
+      ],
+      "why": "II-007 spec §5.2 raw-value refusal: a breach entry names the table, never a record"
+    },
+    {
+      "file": "invalid/response-breach-exposed-value.json",
+      "schema": "assessment.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "enum",
+          "/risk/summary/email/breach/exposed/1"
+        ]
+      ],
+      "why": "II-007 spec §5.1 exposed names data kinds from a closed list, never a value"
+    },
+    {
+      "file": "invalid/response-breached-boolean.json",
+      "schema": "assessment.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "additionalProperties",
+          "/risk/summary/email"
+        ]
+      ],
+      "why": "spec §5.1 summary.email.breached became the breach object"
+    },
+    {
+      "file": "invalid/response-breach-unknown-kind.json",
+      "schema": "assessment.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "enum",
+          "/risk/details/breaches/0/kind"
+        ]
+      ],
+      "why": "spec §6.2 the table kind is a closed list"
+    },
+    {
+      "file": "invalid/response-breaches-over-cap.json",
+      "schema": "assessment.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "maxItems",
+          "/risk/details/breaches"
+        ]
+      ],
+      "why": "spec §5.2 breaches[] is capped at 50"
+    },
+    {
+      "file": "invalid/response-breach-truncated-not-found.json",
+      "schema": "assessment.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "const",
+          "/risk/summary/username/breach/found"
+        ]
+      ],
+      "why": "spec §6.3 a truncated result matched too much, so it is found"
+    },
+    {
+      "file": "invalid/response-breach-not-found-with-years.json",
+      "schema": "assessment.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "not",
+          "/risk/summary/email/breach"
+        ]
+      ],
+      "why": "spec §6.4 a value in no table has no table years or exposure"
+    },
+    {
+      "file": "invalid/response-ip-unknown-type.json",
+      "schema": "assessment.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "enum",
+          "/risk/summary/ip/type"
+        ]
+      ],
+      "why": "spec §5.1 ip.type is a closed list"
+    },
+    {
+      "file": "invalid/response-consistency-country-match.json",
+      "schema": "assessment.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "enum",
+          "/risk/summary/consistency/country"
+        ]
+      ],
+      "why": "spec §5.1 country consistency is consistent, mismatch or unknown"
+    },
+    {
+      "file": "invalid/response-reason-device-identifier.json",
+      "schema": "assessment.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "enum",
+          "/risk/reasons/0/identifier"
+        ]
+      ],
+      "why": "spec §4 no device identifier in v1"
+    },
+    {
+      "file": "invalid/response-reason-old-breach-history.json",
+      "schema": "assessment.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "enum",
+          "/risk/reasons/4/code"
+        ]
+      ],
+      "why": "spec §6.7 old_breach_history was replaced by aged_identity"
+    },
+    {
+      "file": "invalid/response-details-without-signals.json",
+      "schema": "assessment.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "required",
+          ""
+        ]
+      ],
+      "why": "spec §5.2 risk.details marks a detailed view, which carries signals[]"
+    },
+    {
+      "file": "invalid/response-standard-with-signals.json",
+      "schema": "assessment.schema.json",
+      "expect": "semantic_invalid",
+      "rule": "signals_in_standard_mode",
+      "response_mode": "standard",
+      "why": "spec §5.1 signals[] is removed from the standard view"
+    },
+    {
+      "file": "invalid/response-detailed-without-signals.json",
+      "schema": "assessment.schema.json",
+      "expect": "semantic_invalid",
+      "rule": "detailed_without_signals",
+      "response_mode": "detailed",
+      "why": "spec §5.2 a detailed view always carries signals[], possibly empty"
+    },
+    {
+      "file": "valid/assessment-request-name-ip.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "valid",
+      "why": "spec §4 name and ip beside a lookup identifier"
+    },
+    {
+      "file": "valid/assessment-request-ipv6-name.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "valid",
+      "why": "spec §4 an RFC 5952 IPv6 address and a non-ASCII name"
+    },
+    {
+      "file": "invalid/request-name-only.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "anyOf",
+          "/identifiers"
+        ]
+      ],
+      "why": "spec §4 a name alone has nothing to look up"
+    },
+    {
+      "file": "invalid/request-ip-only.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "anyOf",
+          "/identifiers"
+        ]
+      ],
+      "why": "spec §4 an ip alone has nothing to look up"
+    },
+    {
+      "file": "invalid/request-name-and-ip-only.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "anyOf",
+          "/identifiers"
+        ]
+      ],
+      "why": "spec §4 name and ip together still need email, username or phone"
+    },
+    {
+      "file": "invalid/request-private-ip.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "public_address",
+          "/identifiers/ip"
+        ]
+      ],
+      "why": "spec §4 a private address is refused by the server"
+    },
+    {
+      "file": "invalid/request-loopback-ipv6.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "public_address",
+          "/identifiers/ip"
+        ]
+      ],
+      "why": "spec §4 loopback is refused"
+    },
+    {
+      "file": "invalid/request-link-local-ip.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "public_address",
+          "/identifiers/ip"
+        ]
+      ],
+      "why": "spec §4 link-local is refused"
+    },
+    {
+      "file": "invalid/request-documentation-ipv6.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "public_address",
+          "/identifiers/ip"
+        ]
+      ],
+      "why": "spec §4 reserved (documentation) ranges are refused"
+    },
+    {
+      "file": "invalid/request-ipv6-not-canonical.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "format",
+          "/identifiers/ip"
+        ]
+      ],
+      "why": "spec §4 IPv6 in RFC 5952 form only, so one address has one spelling"
+    },
+    {
+      "file": "invalid/request-ip-leading-zero.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "pattern",
+          "/identifiers/ip"
+        ]
+      ],
+      "why": "spec §4 a dotted quad without leading zeros (no octal ambiguity)"
+    },
+    {
+      "file": "invalid/request-ip-with-port.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "pattern",
+          "/identifiers/ip"
+        ]
+      ],
+      "why": "spec §4 an address, not an endpoint"
+    },
+    {
+      "file": "invalid/request-device.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "additionalProperties",
+          "/identifiers"
+        ]
+      ],
+      "why": "spec §2 §4 no device fingerprint in v1"
+    },
+    {
+      "file": "invalid/request-name-control-character.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "pattern",
+          "/identifiers/name"
+        ]
+      ],
+      "why": "spec §4 no control characters in a name"
+    },
+    {
+      "file": "invalid/request-name-line-separator.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "normalisation",
+          "/identifiers/name"
+        ]
+      ],
+      "why": "spec §4 server normalisation refuses a line separator in a name"
+    },
+    {
+      "file": "invalid/request-oversized-name.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "maxLength",
+          "/identifiers/name"
+        ]
+      ],
+      "also": [
+        [
+          "pattern",
+          "/identifiers/name"
+        ]
+      ],
+      "why": "spec §4 a name is at most 128 characters"
+    },
+    {
+      "file": "valid/assessment-outcome-request.json",
+      "schema": "assessment-outcome-request.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/assessment-outcome-request-minimal.json",
+      "schema": "assessment-outcome-request.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/assessment-outcome.json",
+      "schema": "assessment-outcome.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "invalid/outcome-unknown-value.json",
+      "schema": "assessment-outcome-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "enum",
+          "/outcome"
+        ]
+      ],
+      "why": "closed outcome vocabulary"
+    },
+    {
+      "file": "invalid/outcome-tenant-id.json",
+      "schema": "assessment-outcome-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "additionalProperties",
+          ""
+        ]
+      ],
+      "why": "II-006"
+    },
+    {
+      "file": "invalid/outcome-notes-too-long.json",
+      "schema": "assessment-outcome-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "maxLength",
+          "/notes"
+        ]
+      ],
+      "why": "notes are bounded"
+    },
+    {
+      "file": "invalid/outcome-notes-control-character.json",
+      "schema": "assessment-outcome-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "not",
+          "/notes"
+        ]
+      ],
+      "why": "control characters refused"
+    },
+    {
+      "file": "invalid/outcome-observed-at-not-a-time.json",
+      "schema": "assessment-outcome-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "format",
+          "/observed_at"
+        ]
+      ],
+      "why": "observed_at is an RFC 3339 time"
+    },
+    {
+      "file": "valid/key-rotation-request.json",
+      "schema": "key-rotation-request.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/key-rotation-request-empty.json",
+      "schema": "key-rotation-request.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/key-rotation.json",
+      "schema": "key-rotation.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/problem-key-rotation-in-progress.json",
+      "schema": "problem-details.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "invalid/key-rotation-overlap-too-short.json",
+      "schema": "key-rotation-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "minimum",
+          "/overlap_seconds"
+        ]
+      ],
+      "why": "the overlap is at least 60 seconds"
+    },
+    {
+      "file": "invalid/key-rotation-overlap-too-long.json",
+      "schema": "key-rotation-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "maximum",
+          "/overlap_seconds"
+        ]
+      ],
+      "why": "the overlap is bounded at 7 days"
+    },
+    {
+      "file": "invalid/key-rotation-tenant-id.json",
+      "schema": "key-rotation-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "additionalProperties",
+          ""
+        ]
+      ],
+      "why": "II-006"
+    },
+    {
+      "file": "invalid/key-rotation-bad-key.json",
+      "schema": "key-rotation.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "pattern",
+          "/key"
+        ]
+      ],
+      "why": "the new key has the contract's key shape"
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "type": "https://docs.noresponse.org/problems/idempotency-key-in-flight",
+  "title": "Idempotency key in flight",
+  "status": 409,
+  "detail": "The first request with this key has not finished.",
+  "code": "idempotency_key_in_flight",
+  "request_id": "0123456789abcdef0123456789abcdef"
+}

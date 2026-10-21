@@ -1,0 +1,7 @@
+{
+  "account_id": "acct_7f3a9c",
+  "identifiers": {
+    "email": "new.user@example.com"
+  },
+  "callback_url": "https://evil.example/"
+}

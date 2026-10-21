@@ -1,0 +1,13 @@
+{
+  "id": "evt_01JA2ZB4N5P6Q7R8S9T0VWXYZ1",
+  "type": "assessment.updated",
+  "created_at": "2026-10-14T09:00:02.000Z",
+  "data": {
+    "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+    "account_id": "acct_7f3a9c",
+    "assessment_version": 2,
+    "status": "complete",
+    "change_reason": "source_settled",
+    "assessment_url": "/v1/assessments/asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+  }
+}

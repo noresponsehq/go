@@ -1,0 +1,8 @@
+{
+  "type": "https://docs.noresponse.org/problems/key-rotation-in-progress",
+  "title": "Key rotation in progress",
+  "status": 409,
+  "detail": "This API key was already rotated and is in its overlap window; rotate with the new key.",
+  "code": "key_rotation_in_progress",
+  "request_id": "0123456789abcdef0123456789abcdef"
+}

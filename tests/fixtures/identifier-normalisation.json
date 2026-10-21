@@ -1,0 +1,89 @@
+{
+  "description": "Email normalisation the server applies before digesting an identifier (CR-05). The local part keeps its case and is only NFC-normalised; the domain is lower-cased; no alias is rewritten. normalise lists input and the exact normal form. distinct lists pairs that are different identifiers and must never share a digest. runtime/contracts/the Go contract implementation.normalise_email is the reference and tests/contracts/test_the Go contract implementation.py runs both lists against it; NOR-30 must pass them too. username_match lists username pairs and whether they share a match form (the Go contract implementation.username_match_key: NFC, str.casefold, NFC); the username itself is echoed as received.",
+  "normalise": [
+    {
+      "input": "Jane.Doe@Example.COM",
+      "output": "Jane.Doe@example.com",
+      "why": "only the domain is lower-cased"
+    },
+    {
+      "input": "jane.doe@example.com",
+      "output": "jane.doe@example.com",
+      "why": "already normal"
+    },
+    {
+      "input": "Jane.Doe+signup@GoogleMail.com",
+      "output": "Jane.Doe+signup@googlemail.com",
+      "why": "no +tag stripping and no provider aliasing"
+    },
+    {
+      "input": "j.a.n.e@gmail.com",
+      "output": "j.a.n.e@gmail.com",
+      "why": "no dot removal"
+    },
+    {
+      "input": "pay$me@EXAMPLE.org",
+      "output": "pay$me@example.org",
+      "why": "a $ in the local part is kept"
+    },
+    {
+      "input": "Jose\u0301@example.com",
+      "output": "Jos\u00e9@example.com",
+      "why": "the local part is NFC-normalised, nothing else"
+    }
+  ],
+  "distinct": [
+    {
+      "a": "Jane.Doe@example.com",
+      "b": "jane.doe@example.com",
+      "why": "the local part is case-sensitive"
+    },
+    {
+      "a": "jane.doe+signup@example.com",
+      "b": "jane.doe@example.com",
+      "why": "a +tag is part of the address"
+    },
+    {
+      "a": "janedoe@gmail.com",
+      "b": "jane.doe@gmail.com",
+      "why": "dots are part of the address"
+    },
+    {
+      "a": "jane.doe@googlemail.com",
+      "b": "jane.doe@gmail.com",
+      "why": "no cross-provider aliasing (DATA-005)"
+    }
+  ],
+  "username_match": [
+    {
+      "a": "JaneDoe",
+      "b": "janedoe",
+      "same": true,
+      "why": "compared case-insensitively"
+    },
+    {
+      "a": "Stra\u00dfe",
+      "b": "STRASSE",
+      "same": true,
+      "why": "Unicode default case folding, not lower()"
+    },
+    {
+      "a": "Jose\u0301",
+      "b": "JOS\u00c9",
+      "same": true,
+      "why": "NFC around the case fold"
+    },
+    {
+      "a": "jane_doe",
+      "b": "janedoe",
+      "same": false,
+      "why": "no punctuation stripping"
+    },
+    {
+      "a": "jane.doe",
+      "b": "janedoe",
+      "same": false,
+      "why": "no dot removal"
+    }
+  ]
+}

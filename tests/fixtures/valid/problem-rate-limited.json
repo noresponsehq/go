@@ -1,0 +1,8 @@
+{
+  "type": "https://docs.noresponse.org/problems/rate-limited",
+  "title": "Rate limited",
+  "status": 429,
+  "detail": "The tenant's assessment rate is exhausted; retry after the Retry-After interval.",
+  "code": "rate_limited",
+  "request_id": "0123456789abcdef0123456789abcdef"
+}

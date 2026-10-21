@@ -1,0 +1,103 @@
+{
+  "description": "Cross-SDK vectors for the auth_context claim mappers (Go FromXClaims, TypeScript fromX, Python from_x). Each case runs the same verified claims and overrides through the named helper (any provider other than workos, clerk and auth0 uses the generic OIDC helper with that slug); the JSON every SDK sends must equal expect exactly. Rules the vectors pin: contact verification comes from token claims only for Auth0 (email_verified and phone_number_verified), from overrides for every provider; a NumericDate is written as RFC 3339 in whole UTC seconds, the fraction truncated; string claims split on whitespace (OAuth scope, RFC 6749 section 3.3), and Clerk permissions also on commas; Clerk's role is one slug; Clerk never sends issued_at from iat (a 60-second refresh clock; session age is the session_created_at override); Auth0 amr lists every method except pwd, and an amr of only pwd sends no mfa; the first-class adapters always send impersonated, false included; an override replaces the mapped value, false included.",
+  "cases": [
+    {
+      "name": "workos full token with user-record overrides",
+      "provider": "workos",
+      "claims": {"iss": "https://api.workos.com/user_management/client_1", "sub": "user_01", "aud": "api://signup", "sid": "session_01", "jti": "jwt_01", "iat": 1700000000, "exp": 1700003600.75, "auth_time": "2026-10-19T18:00:00Z", "org_id": "org_01", "role": "member", "roles": ["admin", "billing"], "permissions": ["signup:write", "signup:read"], "act": {"sub": "support"}, "email_verified": true},
+      "overrides": {"email_verified": true, "account_created_at": "2026-01-01T00:00:00Z", "session_created_at": "2026-10-19T17:59:00Z"},
+      "expect": {"provider": "workos", "issuer": "https://api.workos.com/user_management/client_1", "subject": "user_01", "verified": true, "transport": "backend", "audience": "api://signup", "audiences": ["api://signup"], "session_id": "session_01", "token_id": "jwt_01", "issued_at": "2023-11-14T22:13:20Z", "expires_at": "2023-11-14T23:13:20Z", "auth_time": "2026-10-19T18:00:00Z", "organization_id": "org_01", "roles": ["admin", "billing"], "scopes": ["signup:write", "signup:read"], "impersonated": true, "email_verified": true, "account_created_at": "2026-01-01T00:00:00Z", "session_created_at": "2026-10-19T17:59:00Z"}
+    },
+    {
+      "name": "workos ignores contact-verification claims and maps a single role",
+      "provider": "workos",
+      "claims": {"iss": "https://workos.example", "sub": "user_1", "role": "member", "email_verified": true, "phone_verified": true, "phone_number_verified": true},
+      "overrides": {},
+      "expect": {"provider": "workos", "issuer": "https://workos.example", "subject": "user_1", "verified": true, "transport": "backend", "roles": ["member"], "impersonated": false}
+    },
+    {
+      "name": "workos false overrides replace mapped values",
+      "provider": "workos",
+      "claims": {"iss": "https://workos.example", "sub": "user_1", "act": {"sub": "support"}},
+      "overrides": {"impersonated": false, "phone_verified": false},
+      "expect": {"provider": "workos", "issuer": "https://workos.example", "subject": "user_1", "verified": true, "transport": "backend", "impersonated": false, "phone_verified": false}
+    },
+    {
+      "name": "clerk v2 session with org claims and second-factor age",
+      "provider": "clerk",
+      "claims": {"iss": "https://clerk.example", "sub": "user_2", "aud": ["api://signup", "api://identity"], "sid": "sess_2", "iat": 1700000000, "exp": 1700003600, "v": 2, "fva": [7, 1.5], "o": {"id": "org_v2", "rol": "admin", "per": "read,manage"}, "act": {"sub": "support"}, "email_verified": true},
+      "overrides": {"session_created_at": "2026-10-19T18:00:00Z"},
+      "expect": {"provider": "clerk", "issuer": "https://clerk.example", "subject": "user_2", "verified": true, "transport": "backend", "audience": "api://signup", "audiences": ["api://signup", "api://identity"], "session_id": "sess_2", "expires_at": "2023-11-14T23:13:20Z", "organization_id": "org_v2", "roles": ["admin"], "scopes": ["read", "manage"], "mfa": {"present": true, "age_seconds": 90}, "impersonated": true, "session_created_at": "2026-10-19T18:00:00Z"}
+    },
+    {
+      "name": "clerk v1 session with one factor",
+      "provider": "clerk",
+      "claims": {"iss": "https://clerk.example", "sub": "user_3", "org_id": "org_v1", "org_role": "org:admin", "org_permissions": "org:read, org:write", "fva": [7, -1], "phone_verified": true},
+      "overrides": {},
+      "expect": {"provider": "clerk", "issuer": "https://clerk.example", "subject": "user_3", "verified": true, "transport": "backend", "organization_id": "org_v1", "roles": ["org:admin"], "scopes": ["org:read", "org:write"], "impersonated": false}
+    },
+    {
+      "name": "clerk refresh-clock iat is not sent and a fresh second factor is age zero",
+      "provider": "clerk",
+      "claims": {"iss": "https://clerk.example", "sub": "user_4", "sid": "sess_4", "iat": 1700000000, "exp": 1700000060, "v": 2, "fva": [0, 0], "o": {"id": "org_4", "rol": "member"}},
+      "overrides": {"session_created_at": "2023-11-14T22:00:00Z", "account_created_at": "2023-11-10T00:00:00Z", "email_verified": true, "phone_verified": false},
+      "expect": {"provider": "clerk", "issuer": "https://clerk.example", "subject": "user_4", "verified": true, "transport": "backend", "session_id": "sess_4", "expires_at": "2023-11-14T22:14:20Z", "organization_id": "org_4", "roles": ["member"], "mfa": {"present": true, "age_seconds": 0}, "impersonated": false, "session_created_at": "2023-11-14T22:00:00Z", "account_created_at": "2023-11-10T00:00:00Z", "email_verified": true, "phone_verified": false}
+    },
+    {
+      "name": "auth0 id token with scope, verified claims and amr",
+      "provider": "auth0",
+      "claims": {"iss": "https://tenant.auth0.com/", "sub": "auth0|abc", "aud": "client_1", "iat": 1700000000, "exp": 1700003600, "auth_time": 1700000000.9, "org_id": "org_a0", "scope": "openid  profile\temail", "permissions": ["read:users"], "email_verified": false, "phone_number_verified": true, "phone_verified": false, "amr": ["pwd", "otp"]},
+      "overrides": {},
+      "expect": {"provider": "auth0", "issuer": "https://tenant.auth0.com/", "subject": "auth0|abc", "verified": true, "transport": "backend", "audience": "client_1", "audiences": ["client_1"], "issued_at": "2023-11-14T22:13:20Z", "expires_at": "2023-11-14T23:13:20Z", "auth_time": "2023-11-14T22:13:20Z", "organization_id": "org_a0", "scopes": ["openid", "profile", "email"], "email_verified": false, "phone_verified": true, "mfa": {"present": false, "methods": ["otp"]}, "impersonated": false}
+    },
+    {
+      "name": "auth0 password-only amr and permissions fallback",
+      "provider": "auth0",
+      "claims": {"iss": "https://tenant.auth0.com/", "sub": "auth0|def", "scope": "", "permissions": ["read:users", "write:users"], "amr": ["pwd"], "act": {"sub": "agent"}},
+      "overrides": {},
+      "expect": {"provider": "auth0", "issuer": "https://tenant.auth0.com/", "subject": "auth0|def", "verified": true, "transport": "backend", "scopes": ["read:users", "write:users"], "impersonated": true}
+    },
+    {
+      "name": "auth0 override replaces a verified claim",
+      "provider": "auth0",
+      "claims": {"iss": "https://tenant.auth0.com/", "sub": "auth0|ghi", "email_verified": true, "amr": ["pwd", "mfa"]},
+      "overrides": {"email_verified": false},
+      "expect": {"provider": "auth0", "issuer": "https://tenant.auth0.com/", "subject": "auth0|ghi", "verified": true, "transport": "backend", "email_verified": false, "mfa": {"present": true, "methods": ["mfa"]}, "impersonated": false}
+    },
+    {
+      "name": "auth0 false phone and impersonation overrides replace true claims",
+      "provider": "auth0",
+      "claims": {"iss": "https://tenant.auth0.com/", "sub": "auth0|jkl", "email_verified": true, "phone_number_verified": true, "act": {"sub": "support"}},
+      "overrides": {"phone_verified": false, "impersonated": false},
+      "expect": {"provider": "auth0", "issuer": "https://tenant.auth0.com/", "subject": "auth0|jkl", "verified": true, "transport": "backend", "email_verified": true, "phone_verified": false, "impersonated": false}
+    },
+    {
+      "name": "clerk mfa override with present false replaces the second-factor claim",
+      "provider": "clerk",
+      "claims": {"iss": "https://clerk.example", "sub": "user_4", "fva": [7, 2], "act": {"sub": "support"}},
+      "overrides": {"mfa": {"present": false}, "impersonated": false},
+      "expect": {"provider": "clerk", "issuer": "https://clerk.example", "subject": "user_4", "verified": true, "transport": "backend", "mfa": {"present": false}, "impersonated": false}
+    },
+    {
+      "name": "auth0 does not read a phone_verified claim",
+      "provider": "auth0",
+      "claims": {"iss": "https://auth0.example", "sub": "user_1", "email_verified": false, "phone_verified": true},
+      "overrides": {},
+      "expect": {"provider": "auth0", "issuer": "https://auth0.example", "subject": "user_1", "verified": true, "transport": "backend", "email_verified": false, "impersonated": false}
+    },
+    {
+      "name": "oidc maps base claims and takes facts from overrides only",
+      "provider": "customidp",
+      "claims": {"iss": "https://idp.example", "sub": "user_9", "aud": "api://signup api://identity", "sid": "s9", "jti": "t9", "iat": 1700000000, "org_id": "org_9", "roles": ["admin"], "email_verified": true, "act": {"sub": "x"}},
+      "overrides": {"email_verified": true, "account_created_at": "2026-01-01T00:00:00Z"},
+      "expect": {"provider": "customidp", "issuer": "https://idp.example", "subject": "user_9", "verified": true, "transport": "backend", "audience": "api://signup", "audiences": ["api://signup", "api://identity"], "session_id": "s9", "token_id": "t9", "issued_at": "2023-11-14T22:13:20Z", "email_verified": true, "account_created_at": "2026-01-01T00:00:00Z"}
+    },
+    {
+      "name": "oidc ignores contact-verification claims",
+      "provider": "customidp",
+      "claims": {"iss": "https://customidp.example", "sub": "user_1", "email_verified": true, "phone_verified": true, "phone_number_verified": true},
+      "overrides": {},
+      "expect": {"provider": "customidp", "issuer": "https://customidp.example", "subject": "user_1", "verified": true, "transport": "backend"}
+    }
+  ]
+}

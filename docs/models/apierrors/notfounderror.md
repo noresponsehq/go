@@ -1,0 +1,17 @@
+# NotFoundError
+
+HTTP 404 problem document.
+
+
+## Fields
+
+| Field                                                                              | Type                                                                               | Required                                                                           | Description                                                                        |
+| ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| `Type`                                                                             | `string`                                                                           | :heavy_check_mark:                                                                 | N/A                                                                                |
+| `Title`                                                                            | `string`                                                                           | :heavy_check_mark:                                                                 | N/A                                                                                |
+| `Status`                                                                           | `int64`                                                                            | :heavy_check_mark:                                                                 | N/A                                                                                |
+| `Detail`                                                                           | `string`                                                                           | :heavy_check_mark:                                                                 | N/A                                                                                |
+| `Instance`                                                                         | `*string`                                                                          | :heavy_minus_sign:                                                                 | N/A                                                                                |
+| `Code`                                                                             | [components.NotFoundErrorCode](../../models/components/notfounderrorcode.md)       | :heavy_check_mark:                                                                 | Machine codes an HTTP 404 answer can carry.                                        |
+| `RequestID`                                                                        | `string`                                                                           | :heavy_check_mark:                                                                 | N/A                                                                                |
+| `InvalidParams`                                                                    | [][components.ProblemInvalidParam](../../models/components/probleminvalidparam.md) | :heavy_minus_sign:                                                                 | N/A                                                                                |

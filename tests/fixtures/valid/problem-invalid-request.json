@@ -1,0 +1,14 @@
+{
+  "type": "https://docs.noresponse.org/problems/invalid-request",
+  "title": "Invalid request",
+  "status": 400,
+  "detail": "The body does not match the assessment request schema.",
+  "code": "invalid_request",
+  "request_id": "0123456789abcdef0123456789abcdef",
+  "invalid_params": [
+    {
+      "field": "deadline_ms",
+      "reason": "must be at most 500"
+    }
+  ]
+}

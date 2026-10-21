@@ -1,0 +1,5 @@
+# Hand-written files beside the generated client.
+/webhooks.go
+/webhooks_test.go
+/wait.go
+/wait_test.go

@@ -1,0 +1,107 @@
+package components
+
+import (
+	"github.com/noresponsehq/go/v2/internal/utils"
+)
+
+// Risk - The one risk decision for this event. score is 0 (safe) to 100 (risky): the sum of the weights of the reasons that fired, clamped to 0 to 100, from hand-set versioned weights. Every answer with a recommendation carries it, and the top-level recommendation equals risk.recommendation. It names no source or provider.
+type Risk struct {
+	Score int64 `json:"score"`
+	// low 0-29, medium 30-59, high 60-84, critical 85-100.
+	Band Band `json:"band"`
+	// The recommended action: allow, step_up or review. Your application applies it.
+	Recommendation Recommendation `json:"recommendation"`
+	// How much of the planned evidence answered; it says nothing about risk.
+	Confidence RiskConfidence `json:"confidence"`
+	// Version of the hand-authored heuristic weights that produced the recommendation, for example 'risk-2026-10.7'. A tenant threshold override adds a +t<N> suffix, e.g. 'risk-2026-10.7+t3'.
+	PolicyVersion string `json:"policy_version"`
+	// Labels the v0 policy as hand-authored and not statistically validated.
+	//lint:ignore U1000 accessed via reflection for JSON marshaling
+	policyBasis string `const:"heuristic_unvalidated" json:"policy_basis"`
+	// Every reason that fired, highest weight first. The weights sum to score before clamping.
+	Reasons []RiskReason `json:"reasons"`
+	// A few typed facts per identifier. Every fact is optional: absent means the evidence did not answer and makes no claim, while false or 0 is a definite answer. Lanes that do not exist yet leave their members absent.
+	Summary *RiskSummary `json:"summary,omitzero"`
+	// Sources counted by state, not named.
+	Coverage RiskCoverage `json:"coverage"`
+	// Detailed view only (response_mode=detailed, which needs the detailed scope); a standard answer leaves it out. Merged observations without provider, source, origin, raw breach record, value or score.
+	Details *RiskDetails `json:"details,omitzero"`
+}
+
+func (r Risk) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(r, "", false)
+}
+
+func (r *Risk) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &r, "", false, nil); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r *Risk) GetScore() int64 {
+	if r == nil {
+		return 0
+	}
+	return r.Score
+}
+
+func (r *Risk) GetBand() Band {
+	if r == nil {
+		return Band("")
+	}
+	return r.Band
+}
+
+func (r *Risk) GetRecommendation() Recommendation {
+	if r == nil {
+		return Recommendation("")
+	}
+	return r.Recommendation
+}
+
+func (r *Risk) GetConfidence() RiskConfidence {
+	if r == nil {
+		return RiskConfidence("")
+	}
+	return r.Confidence
+}
+
+func (r *Risk) GetPolicyVersion() string {
+	if r == nil {
+		return ""
+	}
+	return r.PolicyVersion
+}
+
+func (r *Risk) GetPolicyBasis() string {
+	return "heuristic_unvalidated"
+}
+
+func (r *Risk) GetReasons() []RiskReason {
+	if r == nil {
+		return []RiskReason{}
+	}
+	return r.Reasons
+}
+
+func (r *Risk) GetSummary() *RiskSummary {
+	if r == nil {
+		return nil
+	}
+	return r.Summary
+}
+
+func (r *Risk) GetCoverage() RiskCoverage {
+	if r == nil {
+		return RiskCoverage{}
+	}
+	return r.Coverage
+}
+
+func (r *Risk) GetDetails() *RiskDetails {
+	if r == nil {
+		return nil
+	}
+	return r.Details
+}

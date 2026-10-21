@@ -1,0 +1,72 @@
+configVersion: 2.0.0
+generation:
+  sdkClassName: NoResponse
+  maintainOpenAPIOrder: true
+  usageSnippets:
+    optionalPropertyRendering: withExample
+    sdkInitStyle: constructor
+  useClassNamesForArrayFields: true
+  fixes:
+    nameResolutionDec2023: true
+    nameResolutionFeb2025: true
+    parameterOrderingFeb2024: true
+    requestResponseComponentNamesFeb2024: true
+    securityFeb2025: true
+    sharedErrorComponentsApr2025: true
+    sharedNestedComponentsJan2026: true
+    nameOverrideFeb2026: true
+    openSingleValueEnumsOct2026: true
+  auth:
+    oAuth2ClientCredentialsEnabled: false
+    oAuth2PasswordEnabled: false
+    hoistGlobalSecurity: true
+  inferSSEOverload: true
+  sdkHooksConfigAccess: true
+  schemas:
+    allOfMergeStrategy: shallowMerge
+  requestBodyFieldName: body
+  versioningStrategy: automatic
+  persistentEdits: {}
+  tests:
+    generateTests: false
+    generateNewTests: false
+    skipResponseBodyAssertions: false
+go:
+  version: 2.0.0
+  additionalDependencies: {}
+  baseErrorName: APIError
+  clientServerStatusCodesAsErrors: true
+  defaultErrorName: APIStatusError
+  enableCustomCodeRegions: true
+  enableSkipDeserialization: true
+  envVarPrefix: NORESPONSE
+  fixFlags:
+    encodePathParams: true
+  flattenGlobalSecurity: true
+  forwardCompatibleEnumsByDefault: true
+  forwardCompatibleUnionsByDefault: tagged-and-untagged
+  idiomaticMethodCollisionNames: true
+  imports:
+    option: openapi
+    paths:
+      callbacks: models/callbacks
+      errors: models/apierrors
+      operations: models/operations
+      shared: models/components
+      webhooks: models/webhooks
+  includeEmptyObjects: true
+  inferUnionDiscriminators: true
+  inputModelSuffix: input
+  maxMethodParams: 5
+  methodArguments: infer-optional-args
+  modulePath: github.com/noresponsehq/go
+  multipartArrayFormat: standard
+  nullableOptionalWrapper: true
+  optionalMethodArguments: pointers
+  outputModelSuffix: output
+  respectRequiredFields: false
+  respectTitlesForPrimitiveUnionMembers: true
+  responseFormat: flat
+  sdkPackageName: noresponse
+  unionGenerics: false
+  unionStrategy: populated-fields

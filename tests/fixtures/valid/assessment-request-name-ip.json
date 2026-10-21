@@ -1,0 +1,17 @@
+{
+  "account_id": "acct_8412",
+  "identifiers": {
+    "email": "jane.doe@example.com",
+    "username": "janedoe",
+    "phone": "+14155550123",
+    "name": "Jane A. Doe",
+    "ip": "73.162.18.45"
+  },
+  "policy_context": {
+    "flow": "signup",
+    "region": "US"
+  },
+  "request_id": "req_01",
+  "deadline_ms": 500,
+  "response_mode": "standard"
+}

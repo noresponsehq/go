@@ -1,0 +1,14 @@
+{
+  "account_id": "acct_7f3a9c",
+  "identifiers": {
+    "email": "new.user@example.com",
+    "username": "new_user_42",
+    "phone": "+447700900123"
+  },
+  "policy_context": {
+    "flow": "signup",
+    "region": "GB"
+  },
+  "request_id": "req-2026-10-14-0001",
+  "deadline_ms": 300
+}

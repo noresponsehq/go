@@ -1,0 +1,59 @@
+{
+  "schema_version": "1",
+  "assessment_id": "asm_01JB3C4D5E6F7G8H9JKMNPQRST",
+  "account_id": "acct_8412",
+  "request_id": "req_01",
+  "status": "complete",
+  "recommendation": "allow",
+  "confidence": "high",
+  "risk": {
+    "score": 0,
+    "band": "low",
+    "recommendation": "allow",
+    "confidence": "high",
+    "policy_version": "risk-2026-10.3",
+    "policy_basis": "heuristic_unvalidated",
+    "reasons": [
+      {
+        "code": "credential_list_exposure",
+        "weight": 10,
+        "identifier": "email"
+      },
+      {
+        "code": "established_accounts",
+        "weight": -15
+      },
+      {
+        "code": "aged_identity",
+        "weight": -25,
+        "identifier": "email"
+      }
+    ],
+    "summary": {
+      "email": {
+        "disposable": false,
+        "accounts_found": 4,
+        "breach": {
+          "found": false,
+          "first_year": 2015
+        }
+      }
+    },
+    "coverage": {
+      "answered": 6,
+      "failed": 0,
+      "pending": 0
+    }
+  },
+  "incomplete_sources": [],
+  "policy_version": "risk-2026-10.3",
+  "policy_basis": "heuristic_unvalidated",
+  "assessment_version": 1,
+  "created_at": "2026-10-18T11:00:00.000Z",
+  "updated_at": "2026-10-18T11:00:00.212Z",
+  "expires_at": "2027-10-18T11:00:00.000Z",
+  "timing": {
+    "deadline_ms": 500,
+    "elapsed_ms": 212
+  }
+}

@@ -1,0 +1,105 @@
+{
+  "schema_version": "1",
+  "assessment_id": "asm_01JB3C4D5E6F7G8H9JKMNPQRST",
+  "account_id": "acct_8412",
+  "request_id": "req_01",
+  "status": "complete",
+  "recommendation": "allow",
+  "confidence": "high",
+  "risk": {
+    "score": 0,
+    "band": "low",
+    "recommendation": "allow",
+    "confidence": "high",
+    "policy_version": "risk-2026-10.3",
+    "policy_basis": "heuristic_unvalidated",
+    "reasons": [
+      {
+        "code": "voip_number",
+        "weight": 25,
+        "identifier": "phone"
+      },
+      {
+        "code": "breach_cooccurrence",
+        "weight": -10,
+        "identifier": "phone"
+      },
+      {
+        "code": "breach_name_match",
+        "weight": -15,
+        "identifier": "name"
+      },
+      {
+        "code": "established_accounts",
+        "weight": -15,
+        "identifier": "email"
+      },
+      {
+        "code": "aged_identity",
+        "weight": -25,
+        "identifier": "email"
+      }
+    ],
+    "summary": {
+      "email": {
+        "disposable": false,
+        "accounts_found": 6,
+        "breach": {
+          "found": true,
+          "breach_count": 7,
+          "first_year": 2013,
+          "last_year": 2021,
+          "exposed": [
+            "email",
+            "name",
+            "password",
+            "phone",
+            "ip"
+          ],
+          "in_credential_lists": false,
+          "recent_password_exposure": false,
+          "truncated": false
+        }
+      },
+      "username": {
+        "accounts_found": 3,
+        "breach": {
+          "found": false,
+          "truncated": false
+        }
+      },
+      "phone": {
+        "line_type": "voip",
+        "country": "US",
+        "report_count": 0
+      },
+      "ip": {
+        "country": "US",
+        "type": "residential",
+        "seen_in_tenant": 1
+      },
+      "consistency": {
+        "name": "match",
+        "phone": "match",
+        "ip": "unknown",
+        "country": "match"
+      }
+    },
+    "coverage": {
+      "answered": 14,
+      "failed": 1,
+      "pending": 0
+    }
+  },
+  "incomplete_sources": [],
+  "policy_version": "risk-2026-10.3",
+  "policy_basis": "heuristic_unvalidated",
+  "assessment_version": 3,
+  "created_at": "2026-10-18T11:00:00.000Z",
+  "updated_at": "2026-10-18T11:00:04.000Z",
+  "expires_at": "2027-10-18T11:00:00.000Z",
+  "timing": {
+    "deadline_ms": 500,
+    "elapsed_ms": 4000
+  }
+}
