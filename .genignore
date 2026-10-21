@@ -9,3 +9,4 @@
 /README.md
 /auth.go
 /auth_test.go
+/mockserver_test.go
