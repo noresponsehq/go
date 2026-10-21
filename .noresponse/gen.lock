@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: 25ddae46-795d-45f5-b455-3f48c41d440e
 management:
-  docChecksum: 4378a64e73e12591a581f87a653bb76a
+  docChecksum: 88b1f03440bf6ac102bca1fd0701b0e2
   docVersion: "1"
   speakeasyVersion: internal
   generationVersion: internal
-  releaseVersion: 2.0.0
-  configChecksum: bc6c479a3e31caa5d15acecf3240b86e
+  releaseVersion: 2.0.1
+  configChecksum: 05975f3217f5693b910e972aafbaf51a
 features:
   go:
     additionalDependencies: 0.1.0
@@ -427,7 +427,7 @@ trackedFiles:
   models/operations/rotateapikey.go:
     last_write_checksum: sha1:acc52891cdcbdb6e02a7a15426e813c84d2f1d65
   noresponse.go:
-    last_write_checksum: sha1:fbf342a0d11feb8e16423f4535c7ff74bde40488
+    last_write_checksum: sha1:667a749eb698cb06605972b781c1dd1712488682
   optionalnullable/optionalnullable.go:
     last_write_checksum: sha1:38cf187cd65a5213be09788f67d82dc49d46b583
   optionalnullable/optionalnullable_test.go:
