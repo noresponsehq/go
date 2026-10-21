@@ -7,3 +7,5 @@
 /client_test.go
 /example_test.go
 /README.md
+/auth.go
+/auth_test.go
