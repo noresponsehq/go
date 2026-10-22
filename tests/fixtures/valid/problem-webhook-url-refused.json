@@ -1,0 +1,8 @@
+{
+  "type": "https://docs.noresponse.org/problems/webhook-url-refused",
+  "title": "Webhook URL refused",
+  "status": 400,
+  "detail": "The URL is not a permitted webhook destination.",
+  "code": "webhook_url_refused",
+  "request_id": "0123456789abcdef0123456789abcdef"
+}

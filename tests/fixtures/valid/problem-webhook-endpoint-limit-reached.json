@@ -1,0 +1,8 @@
+{
+  "type": "https://docs.noresponse.org/problems/webhook-endpoint-limit-reached",
+  "title": "Webhook endpoint limit reached",
+  "status": 409,
+  "detail": "The tenant already has 5 webhook endpoints; delete one first.",
+  "code": "webhook_endpoint_limit_reached",
+  "request_id": "0123456789abcdef0123456789abcdef"
+}

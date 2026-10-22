@@ -260,3 +260,23 @@ func TestContractInvalidFixturesAndMalformedIdentifiersAreRefused(t *testing.T) 
 		wantCode(t, err, "invalid_payload")
 	}
 }
+
+func TestATestEventSaysSoAndARealOneDoesNot(t *testing.T) {
+	secrets := map[string]string{"whk_sdktest01": "secret"}
+	for name, want := range map[string]bool{"valid/webhook-assessment-updated-test.json": true, "valid/webhook-assessment-updated.json": false} {
+		body := fixture(t, name, nil)
+		var envelope struct {
+			ID string `json:"id"`
+		}
+		if err := json.Unmarshal(body, &envelope); err != nil {
+			t.Fatal(err)
+		}
+		event, err := ConstructEvent(body, sign(t, body, "secret", "1791968402", envelope.ID, "whk_sdktest01"), secrets, at(1791968402))
+		if err != nil {
+			t.Fatalf("%s: %v", name, err)
+		}
+		if _, ok := event.Data.(*components.Assessment); !ok || event.Test != want {
+			t.Fatalf("%s: test = %v, data %T", name, event.Test, event.Data)
+		}
+	}
+}

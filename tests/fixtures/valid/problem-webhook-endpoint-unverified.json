@@ -1,0 +1,8 @@
+{
+  "type": "https://docs.noresponse.org/problems/webhook-endpoint-unverified",
+  "title": "Webhook endpoint unverified",
+  "status": 409,
+  "detail": "The endpoint is not verified; send endpoint.verification first.",
+  "code": "webhook_endpoint_unverified",
+  "request_id": "0123456789abcdef0123456789abcdef"
+}

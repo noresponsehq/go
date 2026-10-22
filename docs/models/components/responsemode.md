@@ -10,6 +10,9 @@ import (
 )
 
 value := components.ResponseModeStandard
+
+// Open enum: custom values can be created with a direct type cast
+custom := components.ResponseMode("custom_value")
 ```
 
 

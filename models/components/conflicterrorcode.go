@@ -4,9 +4,11 @@ package components
 type ConflictErrorCode string
 
 const (
-	ConflictErrorCodeIdempotencyKeyReused  ConflictErrorCode = "idempotency_key_reused"
-	ConflictErrorCodeKeyRotationInProgress ConflictErrorCode = "key_rotation_in_progress"
-	ConflictErrorCodeTooManyIntegrations   ConflictErrorCode = "too_many_integrations"
+	ConflictErrorCodeIdempotencyKeyReused        ConflictErrorCode = "idempotency_key_reused"
+	ConflictErrorCodeKeyRotationInProgress       ConflictErrorCode = "key_rotation_in_progress"
+	ConflictErrorCodeWebhookEndpointLimitReached ConflictErrorCode = "webhook_endpoint_limit_reached"
+	ConflictErrorCodeWebhookEndpointUnverified   ConflictErrorCode = "webhook_endpoint_unverified"
+	ConflictErrorCodeTooManyIntegrations         ConflictErrorCode = "too_many_integrations"
 )
 
 func (e ConflictErrorCode) ToPointer() *ConflictErrorCode {
@@ -17,7 +19,7 @@ func (e ConflictErrorCode) ToPointer() *ConflictErrorCode {
 func (e *ConflictErrorCode) IsExact() bool {
 	if e != nil {
 		switch *e {
-		case "idempotency_key_reused", "key_rotation_in_progress", "too_many_integrations":
+		case "idempotency_key_reused", "key_rotation_in_progress", "webhook_endpoint_limit_reached", "webhook_endpoint_unverified", "too_many_integrations":
 			return true
 		}
 	}

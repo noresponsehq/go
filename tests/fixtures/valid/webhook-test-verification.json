@@ -1,0 +1,7 @@
+{
+  "delivery_id": "evt_01JA2ZD2A3B4C5D6E7F8G9H0J1",
+  "endpoint_id": "whe_01JA2ZD0E1F2G3H4J5K6M7N8P9",
+  "event": "endpoint.verification",
+  "state": "verified",
+  "verified": true
+}

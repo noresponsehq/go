@@ -18,8 +18,10 @@ custom := components.ConflictErrorCode("custom_value")
 
 ## Values
 
-| Name                                     | Value                                    |
-| ---------------------------------------- | ---------------------------------------- |
-| `ConflictErrorCodeIdempotencyKeyReused`  | idempotency_key_reused                   |
-| `ConflictErrorCodeKeyRotationInProgress` | key_rotation_in_progress                 |
-| `ConflictErrorCodeTooManyIntegrations`   | too_many_integrations                    |
+| Name                                           | Value                                          |
+| ---------------------------------------------- | ---------------------------------------------- |
+| `ConflictErrorCodeIdempotencyKeyReused`        | idempotency_key_reused                         |
+| `ConflictErrorCodeKeyRotationInProgress`       | key_rotation_in_progress                       |
+| `ConflictErrorCodeWebhookEndpointLimitReached` | webhook_endpoint_limit_reached                 |
+| `ConflictErrorCodeWebhookEndpointUnverified`   | webhook_endpoint_unverified                    |
+| `ConflictErrorCodeTooManyIntegrations`         | too_many_integrations                          |

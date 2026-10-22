@@ -45,7 +45,7 @@ func Float64(f float64) *float64 { return &f }
 func Pointer[T any](v T) *T { return &v }
 
 // NoResponse API: Server-side signup and gateway risk assessment: a recommendation, polling and signed webhooks.
-// Assess a signup or gateway event, poll a pending assessment, page through an account's history, record what you later learned, rotate your API key, and register hosted endpoints that answer your WorkOS or Auth0 sign-up and sign-in hooks. Every response carries X-Request-ID; every error is an RFC 9457 problem document. Keep the API key on your server.
+// Assess a signup or gateway event, poll a pending assessment, page through an account's history, record what you later learned, rotate your API key, manage your webhook endpoints, and register hosted endpoints that answer your WorkOS or Auth0 sign-up and sign-in hooks. Every response carries X-Request-ID; every error is an RFC 9457 problem document. Keep the API key on your server.
 type NoResponse struct {
 	SDKVersion string
 	// Signup and gateway assessments.
@@ -54,6 +54,8 @@ type NoResponse struct {
 	Keys *Keys
 	// Hosted endpoints that answer your sign-up and sign-in hooks.
 	Integrations *Integrations
+	// Your webhook endpoints: register, list, rotate signing keys, send test events and delete.
+	WebhookEndpoints *WebhookEndpoints
 
 	sdkConfiguration config.SDKConfiguration
 	hooks            *hooks.Hooks
@@ -130,10 +132,10 @@ func WithTimeout(timeout time.Duration) SDKOption {
 // New creates a new instance of the SDK with the provided options
 func New(opts ...SDKOption) *NoResponse {
 	sdk := &NoResponse{
-		SDKVersion: "2.0.12",
+		SDKVersion: "2.0.13",
 		sdkConfiguration: config.SDKConfiguration{
-			UserAgent:         "noresponse-sdk/go 2.0.12",
-			SDKVersion:        "2.0.12",
+			UserAgent:         "noresponse-sdk/go 2.0.13",
+			SDKVersion:        "2.0.13",
 			GenVersion:        "internal",
 			OpenAPIDocVersion: "1",
 			ServerList:        ServerList,
@@ -161,6 +163,7 @@ func New(opts ...SDKOption) *NoResponse {
 	sdk.Assessments = newAssessments(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Keys = newKeys(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Integrations = newIntegrations(sdk, sdk.sdkConfiguration, sdk.hooks)
+	sdk.WebhookEndpoints = newWebhookEndpoints(sdk, sdk.sdkConfiguration, sdk.hooks)
 
 	return sdk
 }

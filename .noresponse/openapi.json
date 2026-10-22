@@ -4,7 +4,7 @@
     "title": "NoResponse API",
     "version": "1",
     "summary": "Server-side signup and gateway risk assessment: a recommendation, polling and signed webhooks.",
-    "description": "Assess a signup or gateway event, poll a pending assessment, page through an account's history, record what you later learned, rotate your API key, and register hosted endpoints that answer your WorkOS or Auth0 sign-up and sign-in hooks. Every response carries X-Request-ID; every error is an RFC 9457 problem document. Keep the API key on your server.",
+    "description": "Assess a signup or gateway event, poll a pending assessment, page through an account's history, record what you later learned, rotate your API key, manage your webhook endpoints, and register hosted endpoints that answer your WorkOS or Auth0 sign-up and sign-in hooks. Every response carries X-Request-ID; every error is an RFC 9457 problem document. Keep the API key on your server.",
     "license": {
       "name": "Apache-2.0",
       "identifier": "Apache-2.0"
@@ -44,6 +44,10 @@
     {
       "name": "keys",
       "description": "Your own API keys."
+    },
+    {
+      "name": "webhookEndpoints",
+      "description": "Your webhook endpoints: register, list, rotate signing keys, send test events and delete."
     },
     {
       "name": "integrations",
@@ -622,6 +626,288 @@
           },
           "409": {
             "$ref": "#/components/responses/IdempotencyConflict"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ],
+        "x-noresponse-retries": {
+          "strategy": "none"
+        }
+      }
+    },
+    "/v1/webhooks": {
+      "get": {
+        "operationId": "listWebhookEndpoints",
+        "x-noresponse-group": "webhookEndpoints",
+        "x-noresponse-name-override": "list",
+        "tags": [
+          "webhookEndpoints"
+        ],
+        "summary": "List the tenant's webhook endpoints.",
+        "description": "Lists your webhook endpoints in every state, ordered by endpoint_id, with the ids of their signing keys and without secrets. Requires the webhooks scope.",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/WebhookEndpointList"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/TenantForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/IdempotencyConflict"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "createWebhookEndpoint",
+        "x-noresponse-group": "webhookEndpoints",
+        "x-noresponse-name-override": "create",
+        "tags": [
+          "webhookEndpoints"
+        ],
+        "summary": "Register a webhook endpoint.",
+        "description": "Registers a webhook endpoint and returns it with its first signing secret, shown only in this answer: store it where your receiver reads it. The URL is https on port 443 or 8443 with a DNS host whose every address is public; it is checked now and on every delivery. The endpoint starts unverified and receives assessment events once it echoes an endpoint.verification challenge, which sendTestEvent sends. You can hold 5 endpoints. Requires the webhooks scope, and response_mode detailed also the detailed scope. Registration is not idempotent: a retry after a lost answer registers a second endpoint, which you can list and delete.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebhookEndpointRequest"
+              },
+              "examples": {
+                "standard": {
+                  "value": {
+                    "url": "https://hooks.example.com/noresponse"
+                  }
+                },
+                "detailed": {
+                  "value": {
+                    "url": "https://hooks.example.com:8443/noresponse/detailed",
+                    "response_mode": "detailed"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/WebhookEndpointCreated"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidWebhookEndpoint"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/TenantForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/WebhookEndpointLimitReached"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ],
+        "x-noresponse-retries": {
+          "strategy": "none"
+        }
+      }
+    },
+    "/v1/webhooks/{endpoint_id}": {
+      "delete": {
+        "operationId": "deleteWebhookEndpoint",
+        "x-noresponse-group": "webhookEndpoints",
+        "x-noresponse-name-override": "delete",
+        "tags": [
+          "webhookEndpoints"
+        ],
+        "summary": "Delete a webhook endpoint.",
+        "description": "Deletes the endpoint and its signing keys. Deliveries still queued for it are dropped. Requires the webhooks scope. An endpoint that is already gone answers 404.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/EndpointId"
+          }
+        ],
+        "responses": {
+          "204": {
+            "$ref": "#/components/responses/WebhookEndpointDeleted"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/TenantForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/WebhookEndpointNotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/IdempotencyConflict"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/v1/webhooks/{endpoint_id}/rotate": {
+      "post": {
+        "operationId": "rotateWebhookSigningKey",
+        "x-noresponse-group": "webhookEndpoints",
+        "x-noresponse-name-override": "rotateSigningKey",
+        "tags": [
+          "webhookEndpoints"
+        ],
+        "summary": "Rotate an endpoint's signing key.",
+        "description": "Issues a new signing key for the endpoint and returns its secret once. Every delivery from now on is signed with it; the key it replaces keeps verifying for 7 days, so your receiver can hold both while it switches. Requires the webhooks scope. Rotation is not idempotent: a retry after a lost answer issues another key, which replaces the first.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/EndpointId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebhookKeyRotationRequest"
+              },
+              "examples": {
+                "empty": {
+                  "value": {}
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/WebhookKeyRotated"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidWebhookRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/TenantForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/WebhookEndpointNotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/IdempotencyConflict"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ],
+        "x-noresponse-retries": {
+          "strategy": "none"
+        }
+      }
+    },
+    "/v1/webhooks/{endpoint_id}/test": {
+      "post": {
+        "operationId": "sendWebhookTestEvent",
+        "x-noresponse-group": "webhookEndpoints",
+        "x-noresponse-name-override": "sendTestEvent",
+        "tags": [
+          "webhookEndpoints"
+        ],
+        "summary": "Send a test event to an endpoint.",
+        "description": "endpoint.verification sends a signed challenge now and answers whether the endpoint echoed it within 5 seconds; an echo verifies the endpoint, including a disabled one. assessment.updated queues one signed event with test: true and a fixed example assessment in the endpoint's response mode, delivered and retried like any other event; the endpoint must be verified. Both use the endpoint's current signing key. Requires the webhooks scope.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/EndpointId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebhookTestRequest"
+              },
+              "examples": {
+                "verification": {
+                  "value": {
+                    "event": "endpoint.verification"
+                  }
+                },
+                "assessment_updated": {
+                  "value": {
+                    "event": "assessment.updated"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "$ref": "#/components/responses/WebhookTestAccepted"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidWebhookRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/TenantForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/WebhookEndpointNotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/WebhookEndpointUnverified"
           },
           "429": {
             "$ref": "#/components/responses/RateLimited"
@@ -1385,7 +1671,8 @@
         "enum": [
           "invalid_request",
           "invalid_idempotency_key",
-          "invalid_cursor"
+          "invalid_cursor",
+          "webhook_url_refused"
         ],
         "description": "Machine codes an HTTP 400 answer can carry."
       },
@@ -1573,6 +1860,8 @@
         "enum": [
           "idempotency_key_reused",
           "key_rotation_in_progress",
+          "webhook_endpoint_limit_reached",
+          "webhook_endpoint_unverified",
           "too_many_integrations"
         ],
         "description": "Machine codes an HTTP 409 answer can carry."
@@ -2788,6 +3077,60 @@
         ],
         "description": "Per-signal outcome. A source that timed out, was blocked or errored reports blocked, unavailable or inconclusive with a reason and is listed in incomplete_sources; not_found is a definite absence."
       },
+      "SigningKey": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "key_id",
+          "created_at"
+        ],
+        "description": "One signing key, by id. The secret is not included.",
+        "properties": {
+          "key_id": {
+            "type": "string",
+            "pattern": "^whk_[A-Za-z0-9]{8,64}$",
+            "description": "The signing key id, sent as NR-Webhook-Key-Id on every delivery it signs.",
+            "example": "whk_01JA2ZD1M2N3P4Q5R6S7T8V9W0"
+          },
+          "created_at": {
+            "type": "string",
+            "example": "2026-10-22T09:00:00.000Z"
+          },
+          "expires_at": {
+            "type": "string",
+            "description": "Present on a key a rotation replaced: it stops verifying at this instant, 7 days after the rotation. Absent on the key that signs.",
+            "example": "2026-10-29T10:00:00.000Z"
+          }
+        }
+      },
+      "SigningSecret": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "key_id",
+          "secret",
+          "created_at"
+        ],
+        "description": "A newly issued signing key with its secret, shown only in this answer. A receiver verifies NR-Webhook-Signature with the secret's UTF-8 bytes as the HMAC-SHA256 key.",
+        "properties": {
+          "key_id": {
+            "type": "string",
+            "pattern": "^whk_[A-Za-z0-9]{8,64}$",
+            "description": "The signing key id, sent as NR-Webhook-Key-Id on every delivery it signs.",
+            "example": "whk_01JA2ZD1M2N3P4Q5R6S7T8V9W0"
+          },
+          "secret": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]{43}$",
+            "description": "The signing secret: 32 random bytes as 43 characters of unpadded base64url. It is not stored in readable form or returned again.",
+            "example": "Zm9yLWRvY3Mtb25seS1ub3QtYS1yZWFsLXNlY3JldDA"
+          },
+          "created_at": {
+            "type": "string",
+            "example": "2026-10-22T09:00:00.000Z"
+          }
+        }
+      },
       "Status": {
         "enum": [
           "complete",
@@ -2804,6 +3147,221 @@
           "provider_hook"
         ],
         "description": "Where this context was derived. Backend is the trusted integration path; browser values are treated as weak hints. provider_hook is a hosted provider hook (an Auth0 or WorkOS Action) calling at hook_point; it needs hook_point and verified false, and its authentication facts are not scored."
+      },
+      "WebhookEndpoint": {
+        "description": "One of the tenant's registered webhook endpoints. Signing secrets are not part of it: a secret is shown once, when it is issued (POST /v1/webhooks and POST /v1/webhooks/{endpoint_id}/rotate).",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "endpoint_id",
+          "url",
+          "state",
+          "response_mode",
+          "created_at",
+          "signing_keys"
+        ],
+        "properties": {
+          "endpoint_id": {
+            "type": "string",
+            "pattern": "^whe_[0-9A-HJKMNP-TV-Z]{26}$",
+            "description": "Opaque id of the endpoint registration.",
+            "example": "whe_01JA2ZD0E1F2G3H4J5K6M7N8P9"
+          },
+          "url": {
+            "type": "string",
+            "minLength": 12,
+            "maxLength": 2048,
+            "description": "The destination URL, as registered.",
+            "example": "https://hooks.example.com/noresponse"
+          },
+          "state": {
+            "$ref": "#/components/schemas/WebhookEndpointState",
+            "description": "unverified until the endpoint echoes an endpoint.verification challenge (send one with POST /v1/webhooks/{endpoint_id}/test); verified receives assessment.updated events; disabled after 72 hours of continuous delivery failure, and verified again by the same challenge."
+          },
+          "response_mode": {
+            "$ref": "#/components/schemas/ResponseMode",
+            "description": "The view assessment.updated events carry: the assessment as GET /v1/assessments/{assessment_id} returns it in this response mode."
+          },
+          "created_at": {
+            "type": "string",
+            "example": "2026-10-22T09:00:00.000Z"
+          },
+          "verified_at": {
+            "type": "string",
+            "description": "When the endpoint last echoed a challenge. Absent until it first does.",
+            "example": "2026-10-22T09:00:05.000Z"
+          },
+          "signing_keys": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 64,
+            "items": {
+              "$ref": "#/components/schemas/SigningKey"
+            },
+            "description": "The keys a receiver may see in NR-Webhook-Key-Id, oldest first. The last one signs every new delivery; an older one keeps verifying until its expires_at."
+          }
+        }
+      },
+      "WebhookEndpointCreated": {
+        "description": "The 201 answer of POST /v1/webhooks: the new endpoint, unverified, and its first signing secret, shown once. Store the secret where the receiver reads it, then send endpoint.verification with POST /v1/webhooks/{endpoint_id}/test.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "endpoint",
+          "signing_secret"
+        ],
+        "properties": {
+          "endpoint": {
+            "$ref": "#/components/schemas/WebhookEndpoint"
+          },
+          "signing_secret": {
+            "$ref": "#/components/schemas/SigningSecret"
+          }
+        }
+      },
+      "WebhookEndpointList": {
+        "description": "GET /v1/webhooks answer: every endpoint of the calling tenant, in every state, ordered by endpoint_id. A tenant holds at most 5, so there is no page.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "items"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "maxItems": 5,
+            "items": {
+              "$ref": "#/components/schemas/WebhookEndpoint"
+            }
+          }
+        }
+      },
+      "WebhookEndpointRequest": {
+        "description": "POST /v1/webhooks body. The tenant is the API key that signs the request, so it is not a body member. The URL must be https on port 443 or 8443 with a DNS name, not an IP literal, and every address the name resolves to must be public.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "url"
+        ],
+        "properties": {
+          "url": {
+            "type": "string",
+            "minLength": 12,
+            "maxLength": 2048,
+            "pattern": "^https://",
+            "description": "Where deliveries are sent: an https URL on port 443 or 8443, with a DNS host and no userinfo or fragment, at most 2048 characters.",
+            "example": "https://hooks.example.com/noresponse"
+          },
+          "response_mode": {
+            "$ref": "#/components/schemas/ResponseMode",
+            "description": "The view assessment.updated events carry: standard (the default) or detailed, which needs an API key with the detailed scope as well.",
+            "default": "standard"
+          }
+        }
+      },
+      "WebhookEndpointState": {
+        "enum": [
+          "unverified",
+          "verified",
+          "disabled"
+        ],
+        "description": "unverified until the endpoint echoes an endpoint.verification challenge (send one with POST /v1/webhooks/{endpoint_id}/test); verified receives assessment.updated events; disabled after 72 hours of continuous delivery failure, and verified again by the same challenge."
+      },
+      "WebhookKeyRotation": {
+        "description": "The 201 answer of POST /v1/webhooks/{endpoint_id}/rotate: the new signing secret, shown once, which signs every delivery from now on, and when the key it replaced stops verifying. Until then a receiver accepts both.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "endpoint_id",
+          "signing_secret",
+          "previous_key_id",
+          "previous_key_expires_at"
+        ],
+        "properties": {
+          "endpoint_id": {
+            "type": "string",
+            "pattern": "^whe_[0-9A-HJKMNP-TV-Z]{26}$",
+            "description": "Opaque id of the endpoint registration.",
+            "example": "whe_01JA2ZD0E1F2G3H4J5K6M7N8P9"
+          },
+          "signing_secret": {
+            "$ref": "#/components/schemas/SigningSecret"
+          },
+          "previous_key_id": {
+            "type": "string",
+            "pattern": "^whk_[A-Za-z0-9]{8,64}$",
+            "description": "The key that signed until this rotation.",
+            "example": "whk_01JA2Z9A1B2C3D4E5F6G7H8J9K"
+          },
+          "previous_key_expires_at": {
+            "type": "string",
+            "description": "When the previous key stops verifying: 7 days after the rotation.",
+            "example": "2026-10-29T10:00:00.000Z"
+          }
+        }
+      },
+      "WebhookKeyRotationRequest": {
+        "description": "POST /v1/webhooks/{endpoint_id}/rotate body: an empty object. The old key keeps verifying for 7 days.",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {}
+      },
+      "WebhookTest": {
+        "description": "The 202 answer of POST /v1/webhooks/{endpoint_id}/test: the event that was sent or queued.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "delivery_id",
+          "endpoint_id",
+          "event",
+          "state"
+        ],
+        "properties": {
+          "delivery_id": {
+            "type": "string",
+            "pattern": "^evt_[0-9A-HJKMNP-TV-Z]{26}$",
+            "description": "The event id the receiver sees as NR-Webhook-Id and as the body's id.",
+            "example": "evt_01JA2ZD3K4M5N6P7Q8R9S0T1V2"
+          },
+          "endpoint_id": {
+            "type": "string",
+            "pattern": "^whe_[0-9A-HJKMNP-TV-Z]{26}$",
+            "description": "Opaque id of the endpoint registration.",
+            "example": "whe_01JA2ZD0E1F2G3H4J5K6M7N8P9"
+          },
+          "event": {
+            "$ref": "#/components/schemas/WebhookTestRequestEvent"
+          },
+          "state": {
+            "$ref": "#/components/schemas/WebhookEndpointState",
+            "description": "The endpoint's state after this call."
+          },
+          "verified": {
+            "type": "boolean",
+            "description": "endpoint.verification only: true when the endpoint echoed the challenge within 5 seconds. A false answer leaves the endpoint's state as it was."
+          }
+        }
+      },
+      "WebhookTestRequest": {
+        "description": "POST /v1/webhooks/{endpoint_id}/test body: which event to send.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "event"
+        ],
+        "properties": {
+          "event": {
+            "$ref": "#/components/schemas/WebhookTestRequestEvent",
+            "description": "endpoint.verification sends a fresh challenge now, in this call, and the endpoint is verified if it echoes it. assessment.updated queues an event whose data is a fixed example assessment, with test true, delivered and retried like any other; the endpoint must be verified."
+          }
+        }
+      },
+      "WebhookTestRequestEvent": {
+        "enum": [
+          "endpoint.verification",
+          "assessment.updated"
+        ],
+        "description": "endpoint.verification sends a fresh challenge now, in this call, and the endpoint is verified if it echoes it. assessment.updated queues an event whose data is a fixed example assessment, with test true, delivered and retried like any other; the endpoint must be verified."
       }
     },
     "parameters": {
@@ -2831,6 +3389,18 @@
           "example": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
         },
         "description": "Path segment, matched case-sensitively. A value that does not match the assessment_id shape answers 404, not 400."
+      },
+      "EndpointId": {
+        "name": "endpoint_id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^whe_[0-9A-HJKMNP-TV-Z]{26}$",
+          "description": "Opaque id of the endpoint registration.",
+          "example": "whe_01JA2ZD0E1F2G3H4J5K6M7N8P9"
+        },
+        "description": "The endpoint's whe_ id. An id that is unknown, malformed or another tenant's answers 404."
       },
       "IntegrationId": {
         "name": "integration_id",
@@ -4307,6 +4877,363 @@
           "application/problem+json": {
             "schema": {
               "$ref": "#/components/schemas/BadRequestError"
+            }
+          }
+        }
+      },
+      "WebhookEndpointCreated": {
+        "description": "The endpoint, unverified, and its first signing secret, shown once.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/WebhookEndpointCreated"
+            },
+            "examples": {
+              "created": {
+                "value": {
+                  "endpoint": {
+                    "endpoint_id": "whe_01JA2ZD0E1F2G3H4J5K6M7N8P9",
+                    "url": "https://hooks.example.com/noresponse",
+                    "state": "unverified",
+                    "response_mode": "standard",
+                    "created_at": "2026-10-22T09:00:00.000Z",
+                    "signing_keys": [
+                      {
+                        "key_id": "whk_01JA2ZD1M2N3P4Q5R6S7T8V9W0",
+                        "created_at": "2026-10-22T09:00:00.000Z"
+                      }
+                    ]
+                  },
+                  "signing_secret": {
+                    "key_id": "whk_01JA2ZD1M2N3P4Q5R6S7T8V9W0",
+                    "secret": "Zm9yLWRvY3Mtb25seS1ub3QtYS1yZWFsLXNlY3JldDA",
+                    "created_at": "2026-10-22T09:00:00.000Z"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "WebhookEndpointList": {
+        "description": "Every endpoint of the calling tenant.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/WebhookEndpointList"
+            },
+            "examples": {
+              "endpoints": {
+                "value": {
+                  "items": [
+                    {
+                      "endpoint_id": "whe_01JA2ZD0E1F2G3H4J5K6M7N8P9",
+                      "url": "https://hooks.example.com/noresponse",
+                      "state": "verified",
+                      "response_mode": "standard",
+                      "created_at": "2026-10-22T09:00:00.000Z",
+                      "verified_at": "2026-10-22T09:00:05.000Z",
+                      "signing_keys": [
+                        {
+                          "key_id": "whk_01JA2Z9A1B2C3D4E5F6G7H8J9K",
+                          "created_at": "2026-10-22T09:00:00.000Z",
+                          "expires_at": "2026-10-29T10:00:00.000Z"
+                        },
+                        {
+                          "key_id": "whk_01JA2ZD1M2N3P4Q5R6S7T8V9W0",
+                          "created_at": "2026-10-22T10:00:00.000Z"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "WebhookEndpointDeleted": {
+        "description": "The endpoint and its keys are gone. Deliveries still queued for it are dropped.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        }
+      },
+      "WebhookKeyRotated": {
+        "description": "The new signing secret, shown once. Both keys verify until previous_key_expires_at; deliveries are signed with the new one from now on.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/WebhookKeyRotation"
+            },
+            "examples": {
+              "rotated": {
+                "value": {
+                  "endpoint_id": "whe_01JA2ZD0E1F2G3H4J5K6M7N8P9",
+                  "signing_secret": {
+                    "key_id": "whk_01JA2ZD1M2N3P4Q5R6S7T8V9W0",
+                    "secret": "cm90YXRlZC1mb3ItZG9jcy1vbmx5LW5vdC1yZWFsLTE",
+                    "created_at": "2026-10-22T10:00:00.000Z"
+                  },
+                  "previous_key_id": "whk_01JA2Z9A1B2C3D4E5F6G7H8J9K",
+                  "previous_key_expires_at": "2026-10-29T10:00:00.000Z"
+                }
+              }
+            }
+          }
+        }
+      },
+      "WebhookTestAccepted": {
+        "description": "The test event: sent, for endpoint.verification, or queued for delivery, for assessment.updated.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/WebhookTest"
+            },
+            "examples": {
+              "verification": {
+                "value": {
+                  "delivery_id": "evt_01JA2ZD2A3B4C5D6E7F8G9H0J1",
+                  "endpoint_id": "whe_01JA2ZD0E1F2G3H4J5K6M7N8P9",
+                  "event": "endpoint.verification",
+                  "state": "verified",
+                  "verified": true
+                }
+              },
+              "assessment_updated": {
+                "value": {
+                  "delivery_id": "evt_01JA2ZD3K4M5N6P7Q8R9S0T1V2",
+                  "endpoint_id": "whe_01JA2ZD0E1F2G3H4J5K6M7N8P9",
+                  "event": "assessment.updated",
+                  "state": "verified"
+                }
+              }
+            }
+          }
+        }
+      },
+      "InvalidWebhookEndpoint": {
+        "description": "The body is not JSON or does not match the request schema (invalid_request), or the URL is not a permitted webhook destination (webhook_url_refused): not https, a port other than 443 or 8443, userinfo or a fragment, an IP literal, a host that does not resolve, or an address that is not public. invalid_params names the offending fields without their values.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/BadRequestError"
+            }
+          }
+        }
+      },
+      "InvalidWebhookRequest": {
+        "description": "The body is not JSON or does not match the request schema. invalid_params names the offending fields without their values.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/BadRequestError"
+            }
+          }
+        }
+      },
+      "WebhookEndpointNotFound": {
+        "description": "No endpoint with this id for the calling tenant, including a malformed id and another tenant's endpoint.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/NotFoundError"
+            }
+          }
+        }
+      },
+      "WebhookEndpointLimitReached": {
+        "description": "The tenant already holds 5 webhook endpoints. Delete one first.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/ConflictError"
+            }
+          }
+        }
+      },
+      "WebhookEndpointUnverified": {
+        "description": "assessment.updated was asked for an endpoint that is not verified. Send endpoint.verification first; a disabled endpoint is verified again the same way.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/ConflictError"
             }
           }
         }

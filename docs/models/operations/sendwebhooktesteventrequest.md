@@ -1,0 +1,9 @@
+# SendWebhookTestEventRequest
+
+
+## Fields
+
+| Field                                                                                     | Type                                                                                      | Required                                                                                  | Description                                                                               | Example                                                                                   |
+| ----------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| `EndpointID`                                                                              | `string`                                                                                  | :heavy_check_mark:                                                                        | The endpoint's whe_ id. An id that is unknown, malformed or another tenant's answers 404. | whe_01JA2ZD0E1F2G3H4J5K6M7N8P9                                                            |
+| `Body`                                                                                    | [components.WebhookTestRequest](../../models/components/webhooktestrequest.md)            | :heavy_check_mark:                                                                        | N/A                                                                                       |                                                                                           |

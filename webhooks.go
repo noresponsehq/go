@@ -92,7 +92,11 @@ type Event struct {
 	ID        string
 	Type      string
 	CreatedAt string
-	Data      any
+	// Test is true on an event sent by WebhookEndpoints.SendTestEvent: Data
+	// is a fixed example assessment, not one of yours. Acknowledge it and
+	// apply nothing.
+	Test bool
+	Data any
 }
 
 // Expired reports whether this is the terminal expiry event. Delete what you
@@ -168,6 +172,7 @@ func ConstructEvent(payload []byte, headers http.Header, secrets map[string]stri
 		ID        *string         `json:"id"`
 		Type      string          `json:"type"`
 		CreatedAt *string         `json:"created_at"`
+		Test      bool            `json:"test"`
 		Data      json.RawMessage `json:"data"`
 	}
 	if err := json.Unmarshal(payload, &body); err != nil {
@@ -186,7 +191,7 @@ func ConstructEvent(payload []byte, headers http.Header, secrets map[string]stri
 	if err != nil {
 		return nil, err
 	}
-	return &Event{ID: id, Type: body.Type, CreatedAt: *body.CreatedAt, Data: data}, nil
+	return &Event{ID: id, Type: body.Type, CreatedAt: *body.CreatedAt, Test: body.Test && body.Type == EventAssessmentUpdated, Data: data}, nil
 }
 
 func eventData(eventType string, raw json.RawMessage) (any, error) {

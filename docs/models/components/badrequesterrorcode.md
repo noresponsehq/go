@@ -23,3 +23,4 @@ custom := components.BadRequestErrorCode("custom_value")
 | `BadRequestErrorCodeInvalidRequest`        | invalid_request                            |
 | `BadRequestErrorCodeInvalidIdempotencyKey` | invalid_idempotency_key                    |
 | `BadRequestErrorCodeInvalidCursor`         | invalid_cursor                             |
+| `BadRequestErrorCodeWebhookURLRefused`     | webhook_url_refused                        |

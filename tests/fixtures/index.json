@@ -1936,6 +1936,177 @@
       "why": "the new key has the contract's key shape"
     },
     {
+      "file": "valid/webhook-endpoint-request.json",
+      "schema": "webhook-endpoint-request.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/webhook-endpoint-request-detailed.json",
+      "schema": "webhook-endpoint-request.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/webhook-endpoint-created.json",
+      "schema": "webhook-endpoint-created.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/webhook-endpoint-list.json",
+      "schema": "webhook-endpoint-list.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/webhook-endpoint-list-empty.json",
+      "schema": "webhook-endpoint-list.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/webhook-key-rotation-request.json",
+      "schema": "webhook-key-rotation-request.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/webhook-key-rotation.json",
+      "schema": "webhook-key-rotation.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/webhook-test-request-verification.json",
+      "schema": "webhook-test-request.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/webhook-test-request-assessment-updated.json",
+      "schema": "webhook-test-request.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/webhook-test-verification.json",
+      "schema": "webhook-test.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/webhook-test-assessment-updated.json",
+      "schema": "webhook-test.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/webhook-assessment-updated-test.json",
+      "schema": "webhook-event.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/problem-webhook-url-refused.json",
+      "schema": "problem-details.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/problem-webhook-endpoint-limit-reached.json",
+      "schema": "problem-details.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/problem-webhook-endpoint-unverified.json",
+      "schema": "problem-details.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "invalid/webhook-endpoint-request-http.json",
+      "schema": "webhook-endpoint-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "pattern",
+          "/url"
+        ]
+      ],
+      "why": "deliveries go over https only"
+    },
+    {
+      "file": "invalid/webhook-endpoint-request-tenant-id.json",
+      "schema": "webhook-endpoint-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "additionalProperties",
+          ""
+        ]
+      ],
+      "why": "II-006"
+    },
+    {
+      "file": "invalid/webhook-endpoint-request-raw-mode.json",
+      "schema": "webhook-endpoint-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "enum",
+          "/response_mode"
+        ]
+      ],
+      "why": "there is no raw mode"
+    },
+    {
+      "file": "invalid/webhook-test-request-unknown-event.json",
+      "schema": "webhook-test-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "enum",
+          "/event"
+        ]
+      ],
+      "why": "only endpoint.verification and assessment.updated can be sent"
+    },
+    {
+      "file": "invalid/webhook-test-verification-without-verified.json",
+      "schema": "webhook-test.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "required",
+          ""
+        ]
+      ],
+      "why": "a verification test says whether the endpoint echoed"
+    },
+    {
+      "file": "invalid/webhook-endpoint-lists-secret.json",
+      "schema": "webhook-endpoint-created.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "additionalProperties",
+          "/endpoint/signing_keys/0"
+        ]
+      ],
+      "why": "a listed key never carries its secret"
+    },
+    {
+      "file": "invalid/webhook-test-flag-false.json",
+      "schema": "webhook-event.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "const",
+          "/test"
+        ]
+      ],
+      "why": "test is present only as true"
+    },
+    {
+      "file": "invalid/webhook-key-rotation-request-overlap.json",
+      "schema": "webhook-key-rotation-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "additionalProperties",
+          ""
+        ]
+      ],
+      "why": "a signing key's overlap is fixed at 7 days"
+    },
+    {
       "file": "valid/integration-request-auth0.json",
       "schema": "integration-request.schema.json",
       "expect": "valid"

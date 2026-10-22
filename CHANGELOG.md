@@ -1,5 +1,22 @@
 # Changelog
 
+## 2.0.13
+
+* `Sdk.WebhookEndpoints.List()`: **Added**
+* `Sdk.WebhookEndpoints.Create()`: **Added**
+* `Sdk.WebhookEndpoints.Delete()`: **Added**
+* `Sdk.WebhookEndpoints.RotateSigningKey()`: **Added**
+* `Sdk.WebhookEndpoints.SendTestEvent()`: **Added**
+* `Sdk.Assessments.Create()`:  `error.Code` **Changed**
+* `Sdk.Assessments.Get()`:  `error.Code` **Changed**
+* `Sdk.Assessments.RecordOutcome()`:  `error.Code` **Changed**
+* `Sdk.Assessments.Query()`:  `error.Code` **Changed**
+* `Sdk.Keys.Rotate()`:  `error.Code` **Changed**
+* `Sdk.Integrations.Create()`:  `error.Code` **Changed**
+* `Sdk.Integrations.List()`:  `error.Code` **Changed**
+* `Sdk.Integrations.Delete()`:  `error.Code` **Changed**
+* `Sdk.Integrations.Rotate()`:  `error.Code` **Changed**
+
 ## 2.0.12
 
 * `Sdk.Integrations.Create()`: **Added**

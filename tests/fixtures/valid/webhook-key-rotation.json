@@ -1,0 +1,10 @@
+{
+  "endpoint_id": "whe_01JA2ZD0E1F2G3H4J5K6M7N8P9",
+  "signing_secret": {
+    "key_id": "whk_01JA2ZD1M2N3P4Q5R6S7T8V9W0",
+    "secret": "cm90YXRlZC1mb3ItZG9jcy1vbmx5LW5vdC1yZWFsLTE",
+    "created_at": "2026-10-22T10:00:00.000Z"
+  },
+  "previous_key_id": "whk_01JA2Z9A1B2C3D4E5F6G7H8J9K",
+  "previous_key_expires_at": "2026-10-29T10:00:00.000Z"
+}

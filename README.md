@@ -142,6 +142,20 @@ sha256, err := noresponse.HashIssuedCredential(issuedKey) // 64 lower-case hex c
 
 ## Webhooks
 
+Register your endpoint with a key that has the `webhooks` scope. The signing secret is shown only in this answer, so store it, then send the verification challenge:
+
+```go
+created, err := client.WebhookEndpoints.Create(ctx, components.WebhookEndpointRequest{URL: "https://app.example.com/webhooks/noresponse"})
+if err != nil {
+	return err
+}
+secret := created.Result.SigningSecret // store secret.KeyID and secret.Secret
+check, err := client.WebhookEndpoints.SendTestEvent(ctx, created.Result.Endpoint.EndpointID,
+	components.WebhookTestRequest{Event: components.WebhookTestRequestEventEndpointVerification}) // check.Result.Verified
+```
+
+`List`, `RotateSigningKey` (the old key verifies for 7 more days) and `Delete` manage it afterwards. An `assessment.updated` test event arrives with `event.Test` true.
+
 Pass the raw request body. Re-encoding parsed JSON breaks the signature.
 
 ```go

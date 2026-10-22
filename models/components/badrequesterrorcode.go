@@ -7,6 +7,7 @@ const (
 	BadRequestErrorCodeInvalidRequest        BadRequestErrorCode = "invalid_request"
 	BadRequestErrorCodeInvalidIdempotencyKey BadRequestErrorCode = "invalid_idempotency_key"
 	BadRequestErrorCodeInvalidCursor         BadRequestErrorCode = "invalid_cursor"
+	BadRequestErrorCodeWebhookURLRefused     BadRequestErrorCode = "webhook_url_refused"
 )
 
 func (e BadRequestErrorCode) ToPointer() *BadRequestErrorCode {
@@ -17,7 +18,7 @@ func (e BadRequestErrorCode) ToPointer() *BadRequestErrorCode {
 func (e *BadRequestErrorCode) IsExact() bool {
 	if e != nil {
 		switch *e {
-		case "invalid_request", "invalid_idempotency_key", "invalid_cursor":
+		case "invalid_request", "invalid_idempotency_key", "invalid_cursor", "webhook_url_refused":
 			return true
 		}
 	}
