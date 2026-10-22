@@ -1,0 +1,8 @@
+{
+  "hook_point": "post_login",
+  "event_id": "evt-1",
+  "user": {
+    "user_id": "auth0|64abc"
+  },
+  "tenant_id": "tnt_a"
+}

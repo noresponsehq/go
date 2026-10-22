@@ -4,7 +4,7 @@
     "title": "NoResponse API",
     "version": "1",
     "summary": "Server-side signup and gateway risk assessment: a recommendation, polling and signed webhooks.",
-    "description": "Assess a signup or gateway event, poll a pending assessment, page through an account's history, record what you later learned, and rotate your API key. Every response carries X-Request-ID; every error is an RFC 9457 problem document. Keep the API key on your server.",
+    "description": "Assess a signup or gateway event, poll a pending assessment, page through an account's history, record what you later learned, rotate your API key, and register hosted endpoints that answer your WorkOS or Auth0 sign-up and sign-in hooks. Every response carries X-Request-ID; every error is an RFC 9457 problem document. Keep the API key on your server.",
     "license": {
       "name": "Apache-2.0",
       "identifier": "Apache-2.0"
@@ -44,6 +44,10 @@
     {
       "name": "keys",
       "description": "Your own API keys."
+    },
+    {
+      "name": "integrations",
+      "description": "Hosted endpoints that answer your sign-up and sign-in hooks."
     }
   ],
   "paths": {
@@ -411,6 +415,227 @@
           "strategy": "none"
         }
       }
+    },
+    "/v1/integrations": {
+      "post": {
+        "operationId": "createIntegration",
+        "x-noresponse-group": "integrations",
+        "x-noresponse-name-override": "create",
+        "tags": [
+          "integrations"
+        ],
+        "summary": "Register a hosted provider integration.",
+        "description": "Registers a WorkOS or Auth0 integration and returns its hosted endpoint, url, so a sign-up or sign-in is scored with no server of your own. For WorkOS, send the Actions signing secret from the WorkOS dashboard and point the user registration and authentication Actions at url. For Auth0, the answer's secret is the shared secret of the NoResponse Auth0 Action, shown once: store it as an Action secret. hook_points defaults to both pre_registration and post_login; an event that is not listed is allowed without an assessment. The endpoint waits for the full assessment for at most 2.5 seconds (WorkOS) or 4.5 seconds (Auth0), denies only when risk.block is true and allows on any failure. Requires the integrations scope; at most 10 per account. Not idempotent: a retry after a lost answer registers another integration.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IntegrationRequest"
+              },
+              "examples": {
+                "auth0": {
+                  "value": {
+                    "platform": "auth0"
+                  }
+                },
+                "workos": {
+                  "value": {
+                    "platform": "workos",
+                    "hook_points": [
+                      "pre_registration",
+                      "post_login"
+                    ],
+                    "signing_secret": "wos_action_secret_k3Yx8pQ2mN7vR4tW"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/IntegrationCreated"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidIntegration"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/TenantForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/TooManyIntegrations"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ],
+        "x-noresponse-retries": {
+          "strategy": "none"
+        }
+      },
+      "get": {
+        "operationId": "listIntegrations",
+        "x-noresponse-group": "integrations",
+        "x-noresponse-name-override": "list",
+        "tags": [
+          "integrations"
+        ],
+        "summary": "List the tenant's integrations.",
+        "description": "Every integration, oldest first. Listings carry no secrets. Requires the integrations scope.",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/IntegrationListed"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/TenantForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/IdempotencyConflict"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/v1/integrations/{integration_id}": {
+      "delete": {
+        "operationId": "deleteIntegration",
+        "x-noresponse-group": "integrations",
+        "x-noresponse-name-override": "delete",
+        "tags": [
+          "integrations"
+        ],
+        "summary": "Delete an integration.",
+        "description": "Removes the integration and its secrets; its endpoint answers 404 from then on, so remove the Action from the provider first. Requires the integrations scope. An unknown or already deleted integration answers 404.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IntegrationId"
+          }
+        ],
+        "responses": {
+          "204": {
+            "$ref": "#/components/responses/IntegrationDeleted"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/TenantForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/IntegrationNotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/IdempotencyConflict"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/v1/integrations/{integration_id}/rotate": {
+      "post": {
+        "operationId": "rotateIntegrationSecret",
+        "x-noresponse-group": "integrations",
+        "x-noresponse-name-override": "rotate",
+        "tags": [
+          "integrations"
+        ],
+        "summary": "Replace an integration's secret.",
+        "description": "For Auth0, send {} and the answer's secret is the new shared secret, shown once. For WorkOS, regenerate the Actions secret in the WorkOS dashboard and send it as signing_secret. The replaced secret is still accepted for 24 hours (previous_secret_expires_at). Requires the integrations scope. Not idempotent: a retry after a lost answer rotates again.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IntegrationId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IntegrationRotationRequest"
+              },
+              "examples": {
+                "auth0": {
+                  "value": {}
+                },
+                "workos": {
+                  "value": {
+                    "signing_secret": "wos_action_secret_Z9cD1eF5gH0jL4sP"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/IntegrationRotated"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidIntegration"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/TenantForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/IntegrationNotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/IdempotencyConflict"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ],
+        "x-noresponse-retries": {
+          "strategy": "none"
+        }
+      }
     }
   },
   "components": {
@@ -418,7 +643,7 @@
       "apiKey": {
         "type": "http",
         "scheme": "bearer",
-        "description": "Your API key, sent as `Authorization: Bearer <key>`. Keys are opaque, scoped (assess, history, webhooks, and optionally detailed) and identify one tenant. Rotate with POST /v1/keys/rotate. A missing, malformed, revoked or expired key answers 401; a key without the operation's scope answers 403."
+        "description": "Your API key, sent as `Authorization: Bearer <key>`. Keys are opaque, scoped (assess, history, webhooks, integrations, and optionally detailed) and identify one tenant. Rotate with POST /v1/keys/rotate. A missing, malformed, revoked or expired key answers 401; a key without the operation's scope answers 403."
       }
     },
     "schemas": {
@@ -1347,7 +1572,8 @@
         "type": "string",
         "enum": [
           "idempotency_key_reused",
-          "key_rotation_in_progress"
+          "key_rotation_in_progress",
+          "too_many_integrations"
         ],
         "description": "Machine codes an HTTP 409 answer can carry."
       },
@@ -1468,6 +1694,141 @@
           }
         }
       },
+      "Integration": {
+        "description": "A hosted provider integration. Point the provider at url: a WorkOS user registration or authentication Action, or the NoResponse Auth0 Action, which sends secret as a bearer token. The answer allows or denies the event: deny only when the assessment's risk.block is true, and allow on every failure, so a fault on the NoResponse side lets the user through. secret is present only in the answers of POST /v1/integrations and POST /v1/integrations/{integration_id}/rotate for an Auth0 integration, and is not returned again.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "integration_id",
+          "platform",
+          "hook_points",
+          "url",
+          "created_at"
+        ],
+        "properties": {
+          "integration_id": {
+            "type": "string",
+            "pattern": "^int_[0-7][0-9A-HJKMNP-TV-Z]{25}$",
+            "description": "Opaque, server-assigned integration id: int_ and a 26-character Crockford base32 ULID. Another tenant's integration id answers 404.",
+            "example": "int_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          },
+          "platform": {
+            "$ref": "#/components/schemas/IntegrationPlatform"
+          },
+          "hook_points": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 2,
+            "items": {
+              "$ref": "#/components/schemas/IntegrationHookPoint"
+            },
+            "description": "Each hook point at most once."
+          },
+          "url": {
+            "type": "string",
+            "maxLength": 256,
+            "pattern": "^https://[A-Za-z0-9.-]+(?::[0-9]{1,5})?/hooks/int_[0-7][0-9A-HJKMNP-TV-Z]{25}$",
+            "description": "The hosted endpoint, https://api.noresponse.org/hooks/{integration_id} in production.",
+            "example": "https://api.noresponse.org/hooks/int_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          },
+          "secret": {
+            "type": "string",
+            "pattern": "^nri_[A-Za-z0-9_-]{42}[AEIMQUYcgkosw048]$",
+            "description": "Auth0 only, and only when it is created or rotated: the shared secret the Auth0 Action sends as Authorization: Bearer <secret>. nri_ and 43 unpadded base64url characters (32 random bytes). Store it as an Auth0 Action secret.",
+            "example": "nri_k3Yx8pQ2mN7vR4tW6zB9cD1eF5gH0jL4sP9uV2wX7yA"
+          },
+          "created_at": {
+            "type": "string",
+            "example": "2026-10-14T09:00:00.000Z"
+          },
+          "rotated_at": {
+            "type": "string",
+            "description": "When the secret was last rotated; absent until the first rotation.",
+            "example": "2026-10-15T09:00:00.000Z"
+          },
+          "previous_secret_expires_at": {
+            "type": "string",
+            "description": "After a rotation, when the replaced secret stops being accepted; absent when no replaced secret is still accepted.",
+            "example": "2026-10-16T09:00:00.000Z"
+          }
+        }
+      },
+      "IntegrationHookPoint": {
+        "enum": [
+          "pre_registration",
+          "post_login"
+        ],
+        "description": "pre_registration runs before the user exists; post_login runs after a successful sign-in."
+      },
+      "IntegrationList": {
+        "description": "GET /v1/integrations: every integration of the tenant, oldest first, at most 10. No secret is ever listed.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "items"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "maxItems": 10,
+            "items": {
+              "$ref": "#/components/schemas/Integration"
+            }
+          }
+        }
+      },
+      "IntegrationPlatform": {
+        "enum": [
+          "workos",
+          "auth0"
+        ],
+        "description": "The authentication provider that calls the endpoint."
+      },
+      "IntegrationRequest": {
+        "description": "POST /v1/integrations body. Registers a hosted endpoint for one authentication provider. The tenant is the API key that signs the request, so the body has no tenant field and refuses one like any other unknown member. A WorkOS integration needs signing_secret, the Actions secret shown in the WorkOS dashboard, which NoResponse uses to verify each Action request and to sign its answer. An Auth0 integration sends no signing_secret: NoResponse generates the shared secret and returns it once.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "platform"
+        ],
+        "properties": {
+          "platform": {
+            "$ref": "#/components/schemas/IntegrationPlatform"
+          },
+          "hook_points": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 2,
+            "items": {
+              "$ref": "#/components/schemas/IntegrationHookPoint"
+            },
+            "description": "The provider events the endpoint scores. Default both: pre_registration (WorkOS user registration Action, Auth0 pre-user-registration trigger) and post_login (WorkOS authentication Action, Auth0 post-login trigger). An event that is not listed is answered allow without an assessment."
+          },
+          "signing_secret": {
+            "type": "string",
+            "minLength": 16,
+            "maxLength": 256,
+            "pattern": "^[!-~]{16,256}$",
+            "description": "The WorkOS Actions signing secret, as the WorkOS dashboard shows it: 16 to 256 printable ASCII characters with no spaces. It is stored sealed and is not returned.",
+            "example": "wos_action_secret_k3Yx8pQ2mN7vR4tW"
+          }
+        }
+      },
+      "IntegrationRotationRequest": {
+        "description": "POST /v1/integrations/{integration_id}/rotate body. For an Auth0 integration send {}: NoResponse generates a new shared secret and returns it once. For a WorkOS integration send the new signing_secret after regenerating it in the WorkOS dashboard. Either way the previous secret is still accepted for 24 hours, so the provider can be switched over without a refused call.",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "signing_secret": {
+            "type": "string",
+            "minLength": 16,
+            "maxLength": 256,
+            "pattern": "^[!-~]{16,256}$",
+            "description": "The WorkOS Actions signing secret, as the WorkOS dashboard shows it: 16 to 256 printable ASCII characters with no spaces. It is stored sealed and is not returned.",
+            "example": "wos_action_secret_Z9cD1eF5gH0jL4sP"
+          }
+        }
+      },
       "IpSummary": {
         "type": "object",
         "additionalProperties": false,
@@ -1536,7 +1897,8 @@
                 "assess",
                 "history",
                 "webhooks",
-                "detailed"
+                "detailed",
+                "integrations"
               ]
             },
             "description": "The scopes of the new key: those of the presented key."
@@ -2469,6 +2831,18 @@
           "example": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
         },
         "description": "Path segment, matched case-sensitively. A value that does not match the assessment_id shape answers 404, not 400."
+      },
+      "IntegrationId": {
+        "name": "integration_id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^int_[0-7][0-9A-HJKMNP-TV-Z]{25}$",
+          "description": "Opaque, server-assigned integration id: int_ and a 26-character Crockford base32 ULID. Another tenant's integration id answers 404.",
+          "example": "int_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+        },
+        "description": "Path segment, matched case-sensitively. A value that does not match the integration_id shape, or another tenant's id, answers 404."
       }
     },
     "responses": {
@@ -3933,6 +4307,268 @@
           "application/problem+json": {
             "schema": {
               "$ref": "#/components/schemas/BadRequestError"
+            }
+          }
+        }
+      },
+      "IntegrationCreated": {
+        "description": "The integration. For Auth0, secret is shown here once only.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Integration"
+            },
+            "examples": {
+              "auth0": {
+                "value": {
+                  "integration_id": "int_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+                  "platform": "auth0",
+                  "hook_points": [
+                    "pre_registration",
+                    "post_login"
+                  ],
+                  "url": "https://api.noresponse.org/hooks/int_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+                  "secret": "nri_k3Yx8pQ2mN7vR4tW6zB9cD1eF5gH0jL4sP9uV2wX7yA",
+                  "created_at": "2026-10-14T09:00:00.000Z"
+                }
+              },
+              "workos": {
+                "value": {
+                  "integration_id": "int_01JA2Z9M3R5T8W1YBCDEFGHJKN",
+                  "platform": "workos",
+                  "hook_points": [
+                    "pre_registration",
+                    "post_login"
+                  ],
+                  "url": "https://api.noresponse.org/hooks/int_01JA2Z9M3R5T8W1YBCDEFGHJKN",
+                  "created_at": "2026-10-14T09:05:00.000Z"
+                }
+              }
+            }
+          }
+        }
+      },
+      "IntegrationListed": {
+        "description": "Every integration of the tenant, oldest first, without secrets.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/IntegrationList"
+            },
+            "examples": {
+              "list": {
+                "value": {
+                  "items": [
+                    {
+                      "integration_id": "int_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+                      "platform": "auth0",
+                      "hook_points": [
+                        "pre_registration",
+                        "post_login"
+                      ],
+                      "url": "https://api.noresponse.org/hooks/int_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+                      "created_at": "2026-10-14T09:00:00.000Z",
+                      "rotated_at": "2026-10-15T09:00:00.000Z",
+                      "previous_secret_expires_at": "2026-10-16T09:00:00.000Z"
+                    },
+                    {
+                      "integration_id": "int_01JA2Z9M3R5T8W1YBCDEFGHJKN",
+                      "platform": "workos",
+                      "hook_points": [
+                        "post_login"
+                      ],
+                      "url": "https://api.noresponse.org/hooks/int_01JA2Z9M3R5T8W1YBCDEFGHJKN",
+                      "created_at": "2026-10-14T09:05:00.000Z"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "IntegrationRotated": {
+        "description": "The integration with its new secret. For Auth0, secret is the new shared secret, shown once. previous_secret_expires_at says until when the replaced secret is still accepted.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Integration"
+            },
+            "examples": {
+              "auth0": {
+                "value": {
+                  "integration_id": "int_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+                  "platform": "auth0",
+                  "hook_points": [
+                    "pre_registration",
+                    "post_login"
+                  ],
+                  "url": "https://api.noresponse.org/hooks/int_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+                  "secret": "nri_Z9cD1eF5gH0jL4sP9uV2wX7yAk3Yx8pQ2mN7vR4tW6A",
+                  "created_at": "2026-10-14T09:00:00.000Z",
+                  "rotated_at": "2026-10-15T09:00:00.000Z",
+                  "previous_secret_expires_at": "2026-10-16T09:00:00.000Z"
+                }
+              }
+            }
+          }
+        }
+      },
+      "IntegrationDeleted": {
+        "description": "The integration is gone. Its hosted endpoint answers 404 from now on, so the provider applies its own failure setting.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        }
+      },
+      "InvalidIntegration": {
+        "description": "The body is not JSON or does not match its schema (an unknown member such as tenant_id, an unknown platform or hook point, a hook point listed twice, a WorkOS integration without signing_secret or an Auth0 integration with one, or a rotation whose signing_secret does not fit the integration's platform). invalid_params names the offending fields without their values.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/BadRequestError"
+            }
+          }
+        }
+      },
+      "IntegrationNotFound": {
+        "description": "No integration with this id for the calling tenant, or a malformed integration_id.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/NotFoundError"
+            }
+          }
+        }
+      },
+      "TooManyIntegrations": {
+        "description": "The tenant already holds 10 integrations. Delete one first.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/ConflictError"
             }
           }
         }

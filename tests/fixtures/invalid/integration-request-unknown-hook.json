@@ -1,0 +1,6 @@
+{
+  "platform": "auth0",
+  "hook_points": [
+    "token_issuance"
+  ]
+}

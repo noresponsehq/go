@@ -1,0 +1,9 @@
+{
+  "hook_point": "pre_registration",
+  "event_id": "2f1c9e4a-6b0d-4f7e-9a51-3c8d2e7b6a10",
+  "user": {
+    "email": "new.user@example.com"
+  },
+  "request": {},
+  "connection": {}
+}

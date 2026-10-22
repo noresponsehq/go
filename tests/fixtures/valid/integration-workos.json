@@ -1,0 +1,10 @@
+{
+  "integration_id": "int_01JA2Z9M3R5T8W1YBCDEFGHJKN",
+  "platform": "workos",
+  "hook_points": [
+    "pre_registration",
+    "post_login"
+  ],
+  "url": "https://api.noresponse.org/hooks/int_01JA2Z9M3R5T8W1YBCDEFGHJKN",
+  "created_at": "2026-10-14T09:05:00.000Z"
+}

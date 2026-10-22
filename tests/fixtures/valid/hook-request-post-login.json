@@ -1,0 +1,38 @@
+{
+  "hook_point": "post_login",
+  "event_id": "evt-auth0-7f3a9c-0002",
+  "user": {
+    "user_id": "auth0|64abc",
+    "email": "jordan.lee@example.com",
+    "email_verified": true,
+    "phone_number": "+14155550123",
+    "phone_verified": false,
+    "name": "Jordan Lee",
+    "created_at": "2026-10-01T08:00:00.000Z"
+  },
+  "request": {
+    "ip": "203.0.113.7",
+    "user_agent": "Mozilla/5.0",
+    "geo": {
+      "country_code": "AU",
+      "time_zone": "Australia/Sydney"
+    }
+  },
+  "connection": {
+    "name": "google-oauth2",
+    "strategy": "google-oauth2"
+  },
+  "session": {
+    "authentication": {
+      "methods": [
+        {
+          "name": "federated",
+          "timestamp": "2026-10-14T09:00:00.000Z"
+        }
+      ]
+    },
+    "stats": {
+      "logins_count": 12
+    }
+  }
+}

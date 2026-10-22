@@ -1,0 +1,22 @@
+{
+  "hook_point": "pre_registration",
+  "event_id": "evt-auth0-7f3a9c-0001",
+  "user": {
+    "email": "new.user@example.com",
+    "email_verified": false,
+    "username": "newuser",
+    "name": "Jordan Lee"
+  },
+  "request": {
+    "ip": "203.0.113.7",
+    "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_0) AppleWebKit/605.1.15",
+    "geo": {
+      "country_code": "AU",
+      "time_zone": "Australia/Sydney"
+    }
+  },
+  "connection": {
+    "name": "Username-Password-Authentication",
+    "strategy": "auth0"
+  }
+}

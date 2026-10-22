@@ -1,0 +1,10 @@
+{
+  "decision": "deny",
+  "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+  "account_id": "auth0|64abc",
+  "risk": {
+    "score": 91,
+    "recommendation": "review",
+    "block": true
+  }
+}

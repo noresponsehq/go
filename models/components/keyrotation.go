@@ -3,10 +3,11 @@ package components
 type Scope string
 
 const (
-	ScopeAssess   Scope = "assess"
-	ScopeHistory  Scope = "history"
-	ScopeWebhooks Scope = "webhooks"
-	ScopeDetailed Scope = "detailed"
+	ScopeAssess       Scope = "assess"
+	ScopeHistory      Scope = "history"
+	ScopeWebhooks     Scope = "webhooks"
+	ScopeDetailed     Scope = "detailed"
+	ScopeIntegrations Scope = "integrations"
 )
 
 func (e Scope) ToPointer() *Scope {
@@ -17,7 +18,7 @@ func (e Scope) ToPointer() *Scope {
 func (e *Scope) IsExact() bool {
 	if e != nil {
 		switch *e {
-		case "assess", "history", "webhooks", "detailed":
+		case "assess", "history", "webhooks", "detailed", "integrations":
 			return true
 		}
 	}

@@ -1934,6 +1934,244 @@
         ]
       ],
       "why": "the new key has the contract's key shape"
+    },
+    {
+      "file": "valid/integration-request-auth0.json",
+      "schema": "integration-request.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/integration-request-workos.json",
+      "schema": "integration-request.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/integration-request-one-hook.json",
+      "schema": "integration-request.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/integration-auth0.json",
+      "schema": "integration.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/integration-workos.json",
+      "schema": "integration.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/integration-auth0-rotated.json",
+      "schema": "integration.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/integration-list.json",
+      "schema": "integration-list.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/integration-list-empty.json",
+      "schema": "integration-list.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/integration-rotation-request-empty.json",
+      "schema": "integration-rotation-request.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/integration-rotation-request-workos.json",
+      "schema": "integration-rotation-request.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/problem-too-many-integrations.json",
+      "schema": "problem-details.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/problem-invalid-hook-signature.json",
+      "schema": "problem-details.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/hook-request-pre-registration.json",
+      "schema": "hook-request.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/hook-request-post-login.json",
+      "schema": "hook-request.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/hook-response-allow.json",
+      "schema": "hook-response.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/hook-response-deny.json",
+      "schema": "hook-response.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/hook-response-fail-open.json",
+      "schema": "hook-response.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "invalid/integration-request-workos-no-secret.json",
+      "schema": "integration-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "required",
+          ""
+        ]
+      ],
+      "why": "WorkOS needs the Actions signing secret"
+    },
+    {
+      "file": "invalid/integration-request-auth0-secret.json",
+      "schema": "integration-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "not",
+          ""
+        ]
+      ],
+      "why": "NoResponse generates the Auth0 secret"
+    },
+    {
+      "file": "invalid/integration-request-unknown-platform.json",
+      "schema": "integration-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "enum",
+          "/platform"
+        ]
+      ],
+      "why": "only WorkOS and Auth0 have hosted endpoints"
+    },
+    {
+      "file": "invalid/integration-request-tenant-id.json",
+      "schema": "integration-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "additionalProperties",
+          ""
+        ]
+      ],
+      "why": "II-006"
+    },
+    {
+      "file": "invalid/integration-request-unknown-hook.json",
+      "schema": "integration-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "enum",
+          "/hook_points/0"
+        ]
+      ],
+      "why": "only pre_registration and post_login are hosted"
+    },
+    {
+      "file": "invalid/integration-request-no-hooks.json",
+      "schema": "integration-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "minItems",
+          "/hook_points"
+        ]
+      ],
+      "why": "an integration answers at least one hook point"
+    },
+    {
+      "file": "invalid/integration-request-short-secret.json",
+      "schema": "integration-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "minLength",
+          "/signing_secret"
+        ],
+        [
+          "pattern",
+          "/signing_secret"
+        ]
+      ],
+      "why": "the signing secret is at least 16 characters"
+    },
+    {
+      "file": "invalid/integration-list-with-secret.json",
+      "schema": "integration-list.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "not",
+          "/items/0"
+        ]
+      ],
+      "why": "a listing never carries a secret"
+    },
+    {
+      "file": "invalid/integration-bad-url.json",
+      "schema": "integration.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "pattern",
+          "/url"
+        ]
+      ],
+      "why": "the hosted endpoint is https"
+    },
+    {
+      "file": "invalid/hook-request-no-event-id.json",
+      "schema": "hook-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "required",
+          ""
+        ]
+      ],
+      "why": "retries deduplicate on event_id"
+    },
+    {
+      "file": "invalid/hook-request-unknown-member.json",
+      "schema": "hook-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "additionalProperties",
+          ""
+        ]
+      ],
+      "why": "the tenant is the integration's, never the body's"
+    },
+    {
+      "file": "invalid/hook-response-block-decision.json",
+      "schema": "hook-response.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "enum",
+          "/decision"
+        ]
+      ],
+      "why": "the decision is allow or deny"
+    },
+    {
+      "file": "valid/hook-request-pre-registration-sparse.json",
+      "schema": "hook-request.schema.json",
+      "expect": "valid"
     }
   ]
 }

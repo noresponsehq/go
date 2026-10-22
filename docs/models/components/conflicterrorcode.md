@@ -22,3 +22,4 @@ custom := components.ConflictErrorCode("custom_value")
 | ---------------------------------------- | ---------------------------------------- |
 | `ConflictErrorCodeIdempotencyKeyReused`  | idempotency_key_reused                   |
 | `ConflictErrorCodeKeyRotationInProgress` | key_rotation_in_progress                 |
+| `ConflictErrorCodeTooManyIntegrations`   | too_many_integrations                    |

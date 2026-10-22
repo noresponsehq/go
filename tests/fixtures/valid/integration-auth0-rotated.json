@@ -1,0 +1,13 @@
+{
+  "integration_id": "int_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+  "platform": "auth0",
+  "hook_points": [
+    "pre_registration",
+    "post_login"
+  ],
+  "url": "https://api.noresponse.org/hooks/int_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+  "secret": "nri_Z9cD1eF5gH0jL4sP9uV2wX7yAk3Yx8pQ2mN7vR4tW6A",
+  "created_at": "2026-10-14T09:00:00.000Z",
+  "rotated_at": "2026-10-15T09:00:00.000Z",
+  "previous_secret_expires_at": "2026-10-16T09:00:00.000Z"
+}

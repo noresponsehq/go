@@ -1,0 +1,10 @@
+{
+  "decision": "allow",
+  "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+  "account_id": "pre:asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+  "risk": {
+    "score": 12,
+    "recommendation": "allow",
+    "block": false
+  }
+}

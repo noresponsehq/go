@@ -16,9 +16,10 @@ custom := components.Scope("custom_value")
 
 ## Values
 
-| Name            | Value           |
-| --------------- | --------------- |
-| `ScopeAssess`   | assess          |
-| `ScopeHistory`  | history         |
-| `ScopeWebhooks` | webhooks        |
-| `ScopeDetailed` | detailed        |
+| Name                | Value               |
+| ------------------- | ------------------- |
+| `ScopeAssess`       | assess              |
+| `ScopeHistory`      | history             |
+| `ScopeWebhooks`     | webhooks            |
+| `ScopeDetailed`     | detailed            |
+| `ScopeIntegrations` | integrations        |

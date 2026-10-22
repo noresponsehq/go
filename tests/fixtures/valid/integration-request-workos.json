@@ -1,0 +1,8 @@
+{
+  "platform": "workos",
+  "hook_points": [
+    "pre_registration",
+    "post_login"
+  ],
+  "signing_secret": "wos_action_secret_k3Yx8pQ2mN7vR4tW"
+}

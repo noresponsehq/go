@@ -1,0 +1,8 @@
+{
+  "type": "https://docs.noresponse.org/problems/too-many-integrations",
+  "title": "Too many integrations",
+  "status": 409,
+  "detail": "The tenant already holds 10 integrations; delete one first.",
+  "code": "too_many_integrations",
+  "request_id": "0123456789abcdef0123456789abcdef"
+}

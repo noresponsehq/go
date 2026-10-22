@@ -68,6 +68,10 @@ Every method takes a `context.Context` first. Cancelling it cancels the request 
 | `noresponse.WaitForAssessment(ctx, client, assessmentID, nil)` | Poll until the assessment is no longer pending, honouring `Retry-After`. |
 | `noresponse.ConstructEvent(payload, headers, secrets)` | Verify a webhook delivery and return the typed event. |
 | `client.Keys.Rotate(ctx, request)` | Rotate the API key that signs the request. |
+| `client.Integrations.Create(ctx, request)` | Register a hosted WorkOS or Auth0 integration (`integrations` scope). For Auth0, `res.Result.Secret` is shown once. Never retried. |
+| `client.Integrations.List(ctx)` | Every integration, oldest first, with no secrets. |
+| `client.Integrations.Delete(ctx, integrationID)` | Delete an integration. |
+| `client.Integrations.Rotate(ctx, integrationID, body)` | Replace an integration's secret. Never retried. |
 
 Each response carries `Headers` (including `X-Request-ID`) and `Result`.
 

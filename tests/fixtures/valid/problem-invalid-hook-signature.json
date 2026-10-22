@@ -1,0 +1,8 @@
+{
+  "type": "https://docs.noresponse.org/problems/invalid-hook-signature",
+  "title": "Invalid hook signature",
+  "status": 401,
+  "detail": "The request is not signed or authenticated with this integration's secret.",
+  "code": "invalid_hook_signature",
+  "request_id": "0123456789abcdef0123456789abcdef"
+}

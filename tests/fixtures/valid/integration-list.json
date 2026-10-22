@@ -1,0 +1,25 @@
+{
+  "items": [
+    {
+      "integration_id": "int_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+      "platform": "auth0",
+      "hook_points": [
+        "pre_registration",
+        "post_login"
+      ],
+      "url": "https://api.noresponse.org/hooks/int_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+      "created_at": "2026-10-14T09:00:00.000Z",
+      "rotated_at": "2026-10-15T09:00:00.000Z",
+      "previous_secret_expires_at": "2026-10-16T09:00:00.000Z"
+    },
+    {
+      "integration_id": "int_01JA2Z9M3R5T8W1YBCDEFGHJKN",
+      "platform": "workos",
+      "hook_points": [
+        "post_login"
+      ],
+      "url": "https://api.noresponse.org/hooks/int_01JA2Z9M3R5T8W1YBCDEFGHJKN",
+      "created_at": "2026-10-14T09:05:00.000Z"
+    }
+  ]
+}
