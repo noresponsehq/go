@@ -128,6 +128,14 @@ for assessment, err := range noresponse.AllAssessments(ctx, client, query) {
 }
 ```
 
+## Issued keys
+
+When your signup gate issues an API key to the new account, send only its hash, as `issued_credential.sha256`; the key itself never leaves your backend.
+
+```go
+sha256, err := noresponse.HashIssuedCredential(issuedKey) // 64 lower-case hex characters
+```
+
 ## Webhooks
 
 Pass the raw request body. Re-encoding parsed JSON breaks the signature.

@@ -13,7 +13,7 @@ Signup and gateway assessments.
 
 ## Create
 
-Returns within the deadline (500 ms at most) with a complete, partial or pending assessment: 200 carries complete or partial, 202 carries pending with Location and Retry-After. A pending answer has no recommendation; apply your own fallback for pending, 429, 503 or a timeout. Requires the assess scope. Idempotency-Key is required and is bound to the body for 24 hours: the same key with the same body replays the latest assessment with Idempotent-Replayed: true and starts no new work; the same key with a different body answers 409 idempotency_key_reused. response_mode defaults to standard; detailed needs the detailed scope.
+Returns within the deadline (500 ms at most) with a complete, partial or pending assessment: 200 carries complete or partial, 202 carries pending with Location and Retry-After. A pending answer has no recommendation; apply your own fallback for pending, 429, 503 or a timeout. risk.block says when your block threshold was reached. Requires the assess scope. Idempotency-Key is required and is bound to the body for 24 hours: the same key with the same body replays the latest assessment with Idempotent-Replayed: true and starts no new work; the same key with a different body answers 409 idempotency_key_reused. response_mode defaults to standard; detailed needs the detailed scope.
 
 ### Example Usage: complete
 
@@ -87,6 +87,9 @@ func main() {
             Scopes: []string{
                 "org:sys_profile:manage",
             },
+        },
+        IssuedCredential: &components.AssessmentRequestIssuedCredential{
+            Sha256: "2bdbf5c72f2a36df0ef40fb92203612274d4546f56dba946070a6a79c2401a1b",
         },
     })
     if err != nil {
@@ -169,6 +172,9 @@ func main() {
             Scopes: []string{
                 "org:sys_profile:manage",
             },
+        },
+        IssuedCredential: &components.AssessmentRequestIssuedCredential{
+            Sha256: "2bdbf5c72f2a36df0ef40fb92203612274d4546f56dba946070a6a79c2401a1b",
         },
     })
     if err != nil {
@@ -376,6 +382,9 @@ func main() {
                 "org:sys_profile:manage",
             },
         },
+        IssuedCredential: &components.AssessmentRequestIssuedCredential{
+            Sha256: "2bdbf5c72f2a36df0ef40fb92203612274d4546f56dba946070a6a79c2401a1b",
+        },
     })
     if err != nil {
         log.Fatal(err)
@@ -457,6 +466,9 @@ func main() {
             Scopes: []string{
                 "org:sys_profile:manage",
             },
+        },
+        IssuedCredential: &components.AssessmentRequestIssuedCredential{
+            Sha256: "2bdbf5c72f2a36df0ef40fb92203612274d4546f56dba946070a6a79c2401a1b",
         },
     })
     if err != nil {

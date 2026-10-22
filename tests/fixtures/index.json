@@ -7,6 +7,11 @@
       "expect": "valid"
     },
     {
+      "file": "valid/assessment-request-issued-credential.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "valid"
+    },
+    {
       "file": "valid/assessment-request-full.json",
       "schema": "assessment-request.schema.json",
       "expect": "valid"
@@ -195,6 +200,30 @@
       "file": "valid/assessment-request-lookalike-username-eyjohnathan-short.json",
       "schema": "assessment-request.schema.json",
       "expect": "valid"
+    },
+    {
+      "file": "invalid/request-issued-credential-uppercase.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "pattern",
+          "/issued_credential/sha256"
+        ]
+      ],
+      "why": "NOR-290 the hash is 64 lower-case hex"
+    },
+    {
+      "file": "invalid/request-issued-credential-raw-key.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "additionalProperties",
+          "/issued_credential"
+        ]
+      ],
+      "why": "NOR-290 only the hash is accepted, never the key"
     },
     {
       "file": "invalid/request-tenant-id.json",
@@ -1155,6 +1184,42 @@
       "file": "valid/assessment-risk-tenant-override.json",
       "schema": "assessment.schema.json",
       "expect": "valid"
+    },
+    {
+      "file": "valid/assessment-risk-block.json",
+      "schema": "assessment.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "invalid/response-block-without-threshold.json",
+      "schema": "assessment.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "required",
+          "/risk"
+        ]
+      ],
+      "why": "NOR-289 a block names the threshold it used"
+    },
+    {
+      "file": "invalid/response-block-threshold-zero.json",
+      "schema": "assessment.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "minimum",
+          "/risk/block_threshold"
+        ]
+      ],
+      "why": "NOR-289 block_threshold is 1..100; blocking off omits it"
+    },
+    {
+      "file": "invalid/response-block-mismatch.json",
+      "schema": "assessment.schema.json",
+      "expect": "semantic_invalid",
+      "rule": "risk_block_mismatch",
+      "why": "NOR-289 block is exactly score >= block_threshold"
     },
     {
       "file": "invalid/response-policy-version-bad-suffix.json",

@@ -56,7 +56,7 @@
           "assessments"
         ],
         "summary": "Assess identifiers for a signup or gateway decision.",
-        "description": "Returns within the deadline (500 ms at most) with a complete, partial or pending assessment: 200 carries complete or partial, 202 carries pending with Location and Retry-After. A pending answer has no recommendation; apply your own fallback for pending, 429, 503 or a timeout. Requires the assess scope. Idempotency-Key is required and is bound to the body for 24 hours: the same key with the same body replays the latest assessment with Idempotent-Replayed: true and starts no new work; the same key with a different body answers 409 idempotency_key_reused. response_mode defaults to standard; detailed needs the detailed scope.",
+        "description": "Returns within the deadline (500 ms at most) with a complete, partial or pending assessment: 200 carries complete or partial, 202 carries pending with Location and Retry-After. A pending answer has no recommendation; apply your own fallback for pending, 429, 503 or a timeout. risk.block says when your block threshold was reached. Requires the assess scope. Idempotency-Key is required and is bound to the body for 24 hours: the same key with the same body replays the latest assessment with Idempotent-Replayed: true and starts no new work; the same key with a different body answers 409 idempotency_key_reused. response_mode defaults to standard; detailed needs the detailed scope.",
         "parameters": [
           {
             "$ref": "#/components/parameters/IdempotencyKey"
@@ -739,6 +739,10 @@
           },
           "auth_context": {
             "$ref": "#/components/schemas/AuthContext"
+          },
+          "issued_credential": {
+            "$ref": "#/components/schemas/AssessmentRequestIssuedCredential",
+            "description": "Optional. When the signup gate issues an API key to the new account, send SHA-256 of that key, so later usage of the key, or a leaked copy, ties back to this assessment. Each SDK has a helper that computes it. Send only the hash: customer keys are high-entropy, so the hash reveals nothing about them. The assessment stores it, and no response, webhook or log carries it."
           }
         }
       },
@@ -852,6 +856,22 @@
           }
         },
         "description": "At least one of email, username or phone. name and ip refine the match and travel beside a lookup identifier; a body with only name or ip is refused with 400."
+      },
+      "AssessmentRequestIssuedCredential": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "sha256"
+        ],
+        "description": "Optional. When the signup gate issues an API key to the new account, send SHA-256 of that key, so later usage of the key, or a leaked copy, ties back to this assessment. Each SDK has a helper that computes it. Send only the hash: customer keys are high-entropy, so the hash reveals nothing about them. The assessment stores it, and no response, webhook or log carries it.",
+        "properties": {
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$",
+            "description": "SHA-256 of the issued key's UTF-8 bytes, as 64 lower-case hex characters.",
+            "example": "2bdbf5c72f2a36df0ef40fb92203612274d4546f56dba946070a6a79c2401a1b"
+          }
+        }
       },
       "AssessmentRequestPolicyContext": {
         "type": "object",
@@ -2079,6 +2099,16 @@
           "recommendation": {
             "$ref": "#/components/schemas/Recommendation"
           },
+          "block": {
+            "type": "boolean",
+            "description": "true when the tenant's block threshold is set and score reached it. A provider hook can deny the signup on it; the provider decides and enforces. It does not change recommendation. It is false while blocking is off, the default, and a body from before the flag existed omits it: read absent as false."
+          },
+          "block_threshold": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100,
+            "description": "The block threshold this answer used: block is true exactly when score is at least this value. Absent while blocking is off. NoResponse sets it per tenant on request, at or above the review threshold."
+          },
           "confidence": {
             "$ref": "#/components/schemas/RiskConfidence",
             "description": "How much of the planned evidence answered; it says nothing about risk."
@@ -2597,6 +2627,7 @@
                     "score": 0,
                     "band": "low",
                     "recommendation": "allow",
+                    "block": false,
                     "confidence": "high",
                     "policy_version": "risk-2026-10.3",
                     "policy_basis": "heuristic_unvalidated",
@@ -2704,6 +2735,7 @@
                     "score": 10,
                     "band": "low",
                     "recommendation": "allow",
+                    "block": false,
                     "confidence": "high",
                     "policy_version": "risk-2026-10.3",
                     "policy_basis": "heuristic_unvalidated",
@@ -3154,6 +3186,7 @@
                     "score": 0,
                     "band": "low",
                     "recommendation": "allow",
+                    "block": false,
                     "confidence": "high",
                     "policy_version": "risk-2026-10.3",
                     "policy_basis": "heuristic_unvalidated",
@@ -3261,6 +3294,7 @@
                     "score": 10,
                     "band": "low",
                     "recommendation": "allow",
+                    "block": false,
                     "confidence": "high",
                     "policy_version": "risk-2026-10.3",
                     "policy_basis": "heuristic_unvalidated",

@@ -24,6 +24,7 @@
       "score": 50,
       "band": "medium",
       "recommendation": "step_up",
+      "block": false,
       "confidence": "medium",
       "policy_version": "risk-2026-10.1",
       "policy_basis": "heuristic_unvalidated",

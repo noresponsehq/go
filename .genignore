@@ -9,6 +9,8 @@
 /README.md
 /LICENSE
 /auth.go
+/issued_credential.go
+/issued_credential_test.go
 /auth_test.go
 /mockserver_test.go
 /late_results.go

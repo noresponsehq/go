@@ -21,6 +21,8 @@ type AssessmentRequest struct {
 	ClientContext *AssessmentRequestClientContext `json:"client_context,omitzero"`
 	// Normalised claims from a session your backend has already verified with WorkOS, Clerk, Auth0 or any OIDC provider. Pass the output of the SDK's auth adapters, not a raw token.
 	AuthContext *AuthContext `json:"auth_context,omitzero"`
+	// Optional. When the signup gate issues an API key to the new account, send SHA-256 of that key, so later usage of the key, or a leaked copy, ties back to this assessment. Each SDK has a helper that computes it. Send only the hash: customer keys are high-entropy, so the hash reveals nothing about them. The assessment stores it, and no response, webhook or log carries it.
+	IssuedCredential *AssessmentRequestIssuedCredential `json:"issued_credential,omitzero"`
 }
 
 func (a AssessmentRequest) MarshalJSON() ([]byte, error) {
@@ -88,4 +90,11 @@ func (a *AssessmentRequest) GetAuthContext() *AuthContext {
 		return nil
 	}
 	return a.AuthContext
+}
+
+func (a *AssessmentRequest) GetIssuedCredential() *AssessmentRequestIssuedCredential {
+	if a == nil {
+		return nil
+	}
+	return a.IssuedCredential
 }

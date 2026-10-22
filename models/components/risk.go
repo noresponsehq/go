@@ -11,6 +11,10 @@ type Risk struct {
 	Band Band `json:"band"`
 	// The recommended action: allow, step_up or review. Your application applies it.
 	Recommendation Recommendation `json:"recommendation"`
+	// true when the tenant's block threshold is set and score reached it. A provider hook can deny the signup on it; the provider decides and enforces. It does not change recommendation. It is false while blocking is off, the default, and a body from before the flag existed omits it: read absent as false.
+	Block *bool `json:"block,omitzero"`
+	// The block threshold this answer used: block is true exactly when score is at least this value. Absent while blocking is off. NoResponse sets it per tenant on request, at or above the review threshold.
+	BlockThreshold *int64 `json:"block_threshold,omitzero"`
 	// How much of the planned evidence answered; it says nothing about risk.
 	Confidence RiskConfidence `json:"confidence"`
 	// Version of the hand-authored heuristic weights that produced the recommendation, for example 'risk-2026-10.7'. A tenant threshold override adds a +t<N> suffix, e.g. 'risk-2026-10.7+t3'.
@@ -58,6 +62,20 @@ func (r *Risk) GetRecommendation() Recommendation {
 		return Recommendation("")
 	}
 	return r.Recommendation
+}
+
+func (r *Risk) GetBlock() *bool {
+	if r == nil {
+		return nil
+	}
+	return r.Block
+}
+
+func (r *Risk) GetBlockThreshold() *int64 {
+	if r == nil {
+		return nil
+	}
+	return r.BlockThreshold
 }
 
 func (r *Risk) GetConfidence() RiskConfidence {

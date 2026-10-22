@@ -10,6 +10,7 @@
     "score": 15,
     "band": "low",
     "recommendation": "allow",
+    "block": false,
     "confidence": "medium",
     "policy_version": "risk-2026-10.3",
     "policy_basis": "heuristic_unvalidated",
