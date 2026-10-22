@@ -7,6 +7,7 @@
 /client_test.go
 /example_test.go
 /README.md
+/LICENSE
 /auth.go
 /auth_test.go
 /mockserver_test.go
