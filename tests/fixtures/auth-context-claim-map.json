@@ -10,6 +10,9 @@
     "actor": "True when the claim is an object with a non-empty string `sub` or `email` (RFC 8693 act), or a non-empty string. Any other value, including an empty object, is false. The result is always sent, false included.",
     "mfa_factor_age": "claim[index] must be a JSON number from 0 to `maxSeconds` / `unitSeconds`; the context gets mfa {present: true, age_seconds: trunc(value * unitSeconds)}. A negative value (Clerk -1 is no second factor), a non-number, a missing index or an out-of-range value gives no mfa.",
     "mfa_methods": "The claim must be an array. Strings that match the kind are kept, up to `max`. present is true when any kept value equals `mfaValue` ignoring case; methods lists the kept values except those equal to an `ignore` value ignoring case. No methods gives no mfa, so a password-only amr sends nothing.",
+    "mfa_aal": "`claim` must be a string in `absent` (mfa {present: false}) or in `present` (mfa {present: true}); any other value gives no mfa. Only for `present`, the `amr` claim is read: an array whose items are a string or an object with a string `methodKey`; each name found in `factors` adds its mapped name once, in array order. No such name sends present alone. A name outside `factors` (a first factor, a refresh marker) is never listed.",
+    "mfa_factor": "The claim must be a string that matches the kind; the context gets mfa {present: true, methods: [value]}. Anything else gives no mfa.",
+    "marker": "Sends `value` when any `when` entry matches: the claim's JSON value has the same type and value as `equals` (the boolean true does not match the string \"true\" or the number 1). Used only for a downgrade: an anonymous user is sent as assurance_level low, and no claim ever sends a higher level.",
     "overrides": "A key in overrides replaces the mapped value, false and empty included. A null override is ignored. Overrides are written by the caller from verified records and are not filtered.",
     "audience": "audience defaults to the first mapped audience, or to the first item of an audiences override, when the context has audiences and no audience override.",
     "constants": "Sent on every context.",
@@ -65,6 +68,25 @@
         "phone_verified": {"op": "bool", "claims": ["phone_number_verified"]},
         "impersonated": {"op": "actor", "claims": ["act"]},
         "mfa": {"op": "mfa_methods", "kind": "method", "claim": "amr", "max": 8, "mfaValue": "mfa", "ignore": ["pwd"]}
+      }
+    },
+    "supabase": {
+      "notes": "Supabase Auth access token, verified with the project's legacy HS256 secret or its published JWKS. aal is aal1 or aal2, and aal2 means a second factor. amr is [{method, timestamp}], newest first; the second-factor methods are the ones supabase/auth counts toward aal2, and the slash in their names becomes a colon to fit the method kind. is_anonymous and app_metadata.provider anonymous mark an anonymous sign-in. session_id is the session; sid and auth_time are not read. role is the Postgres role. email, phone and user_metadata are not read: contact verification and account age come from the user record via overrides, and factor age from the amr timestamps.",
+      "disable": ["auth_time"],
+      "fields": {
+        "session_id": {"op": "id", "kind": "id", "claims": ["session_id"]},
+        "roles": {"op": "list", "kind": "role", "claims": ["role"], "split": "none", "max": 1},
+        "mfa": {"op": "mfa_aal", "claim": "aal", "present": ["aal2"], "absent": ["aal1"], "amr": "amr", "methodKey": "method", "factors": {"totp": "totp", "mfa/phone": "mfa:phone", "mfa/webauthn": "mfa:webauthn", "mfa/recovery_code": "mfa:recovery_code"}},
+        "assurance_level": {"op": "marker", "value": "low", "when": [{"claim": "is_anonymous", "equals": true}, {"claim": "app_metadata.provider", "equals": "anonymous"}]}
+      }
+    },
+    "firebase": {
+      "notes": "Firebase ID token, verified with the Admin SDK verifyIdToken. Custom claims sit at the top level beside the Firebase claims, so only the reserved names are read: iss, sub, aud, iat, exp, auth_time and the firebase object. sid, roles, scopes, organisation and email_verified are never read, because a custom claim can carry those names. firebase.sign_in_second_factor (phone or totp) proves a second factor, firebase.tenant is the Identity Platform tenant, and firebase.sign_in_provider anonymous marks an anonymous user. Contact verification and account age come from the Admin SDK user record via overrides.",
+      "disable": ["session_id", "token_id"],
+      "fields": {
+        "tenant_id": {"op": "id", "kind": "id", "claims": ["firebase.tenant"]},
+        "mfa": {"op": "mfa_factor", "kind": "method", "claim": "firebase.sign_in_second_factor"},
+        "assurance_level": {"op": "marker", "value": "low", "when": [{"claim": "firebase.sign_in_provider", "equals": "anonymous"}]}
       }
     },
     "oidc": {

@@ -5,8 +5,8 @@ management:
   docVersion: "1"
   speakeasyVersion: internal
   generationVersion: internal
-  releaseVersion: 2.0.5
-  configChecksum: 3422fe3c97928a55702f6569b9eda802
+  releaseVersion: 2.0.6
+  configChecksum: 63fbb67ec2b470ec2f3825ec99c4fd79
 features:
   go:
     additionalDependencies: 0.1.0
@@ -427,7 +427,7 @@ trackedFiles:
   models/operations/rotateapikey.go:
     last_write_checksum: sha1:acc52891cdcbdb6e02a7a15426e813c84d2f1d65
   noresponse.go:
-    last_write_checksum: sha1:39746ebe374d823f19ac7c119345574baf6322ee
+    last_write_checksum: sha1:1f45c3100126fea2f9dc445c4d69ed771fc5a251
   optionalnullable/optionalnullable.go:
     last_write_checksum: sha1:38cf187cd65a5213be09788f67d82dc49d46b583
   optionalnullable/optionalnullable_test.go:

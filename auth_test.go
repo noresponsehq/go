@@ -47,6 +47,10 @@ func TestAuthContextVectors(t *testing.T) {
 				got, err = FromClerkClaims(vector.Claims, vector.Overrides)
 			case "auth0":
 				got, err = FromAuth0Claims(vector.Claims, vector.Overrides)
+			case "supabase":
+				got, err = FromSupabaseClaims(vector.Claims, vector.Overrides)
+			case "firebase":
+				got, err = FromFirebaseClaims(vector.Claims, vector.Overrides)
 			default:
 				got, err = FromOIDCClaims(vector.Provider, vector.Claims, vector.Overrides)
 			}

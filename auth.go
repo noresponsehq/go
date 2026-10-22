@@ -26,20 +26,30 @@ import (
 // subject, or the provider is not a lowercase slug.
 var ErrInvalidAuthContext = errors.New("noresponse: invalid auth context")
 
-const authClaimMapJSON = `{"version":1,"kinds":{"id":{"pattern":"[A-Za-z0-9._:@/|+=~-]+","maxLength":256},"audience":{"pattern":"[A-Za-z0-9._:/-]+","maxLength":256},"role":{"pattern":"[A-Za-z0-9._:@/-]+","maxLength":64},"method":{"pattern":"[A-Za-z0-9._:-]+","maxLength":32},"issuer":{"pattern":"https://[\\x21-\\x7e]+","maxLength":256},"time":{"pattern":"[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:([0-5][0-9]|60)(\\.[0-9]+)?(Z|[+-]([01][0-9]|2[0-3]):[0-5][0-9])","maxLength":64}},"slug":"[a-z0-9][a-z0-9._-]{1,31}","constants":{"verified":true,"transport":"backend"},"base":{"issuer":{"op":"id","kind":"issuer","claims":["iss"],"required":true},"subject":{"op":"id","kind":"id","claims":["sub"],"required":true},"audiences":{"op":"list","kind":"audience","claims":["aud"],"split":"whitespace","max":8},"issued_at":{"op":"time","claims":["iat"]},"expires_at":{"op":"time","claims":["exp"]},"auth_time":{"op":"time","claims":["auth_time"]},"session_id":{"op":"id","kind":"id","claims":["sid"]},"token_id":{"op":"id","kind":"id","claims":["jti"]}},"providers":{"workos":{"fields":{"organization_id":{"op":"id","kind":"id","claims":["org_id"]},"roles":{"op":"list","kind":"role","claims":["roles","role"],"split":"whitespace","max":32},"scopes":{"op":"list","kind":"role","claims":["permissions"],"split":"whitespace","max":32},"impersonated":{"op":"actor","claims":["act"]}}},"clerk":{"disable":["issued_at"],"fields":{"organization_id":{"op":"id","kind":"id","claims":["o.id","org_id"]},"roles":{"op":"list","kind":"role","claims":["o.rol","org_role"],"split":"none","max":32},"scopes":{"op":"list","kind":"role","claims":["o.per","org_permissions"],"split":"comma_whitespace","max":32},"impersonated":{"op":"actor","claims":["act"]},"mfa":{"op":"mfa_factor_age","claim":"fva","index":1,"unitSeconds":60,"maxSeconds":315360000}}},"auth0":{"fields":{"organization_id":{"op":"id","kind":"id","claims":["org_id"]},"scopes":{"op":"list","kind":"role","claims":["scope","permissions"],"split":"whitespace","max":32},"email_verified":{"op":"bool","claims":["email_verified"]},"phone_verified":{"op":"bool","claims":["phone_number_verified"]},"impersonated":{"op":"actor","claims":["act"]},"mfa":{"op":"mfa_methods","kind":"method","claim":"amr","max":8,"mfaValue":"mfa","ignore":["pwd"]}}},"oidc":{"slugArgument":true,"fields":{}}}}`
+const authClaimMapJSON = `{"version":1,"kinds":{"id":{"pattern":"[A-Za-z0-9._:@/|+=~-]+","maxLength":256},"audience":{"pattern":"[A-Za-z0-9._:/-]+","maxLength":256},"role":{"pattern":"[A-Za-z0-9._:@/-]+","maxLength":64},"method":{"pattern":"[A-Za-z0-9._:-]+","maxLength":32},"issuer":{"pattern":"https://[\\x21-\\x7e]+","maxLength":256},"time":{"pattern":"[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:([0-5][0-9]|60)(\\.[0-9]+)?(Z|[+-]([01][0-9]|2[0-3]):[0-5][0-9])","maxLength":64}},"slug":"[a-z0-9][a-z0-9._-]{1,31}","constants":{"verified":true,"transport":"backend"},"base":{"issuer":{"op":"id","kind":"issuer","claims":["iss"],"required":true},"subject":{"op":"id","kind":"id","claims":["sub"],"required":true},"audiences":{"op":"list","kind":"audience","claims":["aud"],"split":"whitespace","max":8},"issued_at":{"op":"time","claims":["iat"]},"expires_at":{"op":"time","claims":["exp"]},"auth_time":{"op":"time","claims":["auth_time"]},"session_id":{"op":"id","kind":"id","claims":["sid"]},"token_id":{"op":"id","kind":"id","claims":["jti"]}},"providers":{"workos":{"fields":{"organization_id":{"op":"id","kind":"id","claims":["org_id"]},"roles":{"op":"list","kind":"role","claims":["roles","role"],"split":"whitespace","max":32},"scopes":{"op":"list","kind":"role","claims":["permissions"],"split":"whitespace","max":32},"impersonated":{"op":"actor","claims":["act"]}}},"clerk":{"disable":["issued_at"],"fields":{"organization_id":{"op":"id","kind":"id","claims":["o.id","org_id"]},"roles":{"op":"list","kind":"role","claims":["o.rol","org_role"],"split":"none","max":32},"scopes":{"op":"list","kind":"role","claims":["o.per","org_permissions"],"split":"comma_whitespace","max":32},"impersonated":{"op":"actor","claims":["act"]},"mfa":{"op":"mfa_factor_age","claim":"fva","index":1,"unitSeconds":60,"maxSeconds":315360000}}},"auth0":{"fields":{"organization_id":{"op":"id","kind":"id","claims":["org_id"]},"scopes":{"op":"list","kind":"role","claims":["scope","permissions"],"split":"whitespace","max":32},"email_verified":{"op":"bool","claims":["email_verified"]},"phone_verified":{"op":"bool","claims":["phone_number_verified"]},"impersonated":{"op":"actor","claims":["act"]},"mfa":{"op":"mfa_methods","kind":"method","claim":"amr","max":8,"mfaValue":"mfa","ignore":["pwd"]}}},"supabase":{"disable":["auth_time"],"fields":{"session_id":{"op":"id","kind":"id","claims":["session_id"]},"roles":{"op":"list","kind":"role","claims":["role"],"split":"none","max":1},"mfa":{"op":"mfa_aal","claim":"aal","present":["aal2"],"absent":["aal1"],"amr":"amr","methodKey":"method","factors":{"totp":"totp","mfa/phone":"mfa:phone","mfa/webauthn":"mfa:webauthn","mfa/recovery_code":"mfa:recovery_code"}},"assurance_level":{"op":"marker","value":"low","when":[{"claim":"is_anonymous","equals":true},{"claim":"app_metadata.provider","equals":"anonymous"}]}}},"firebase":{"disable":["session_id","token_id"],"fields":{"tenant_id":{"op":"id","kind":"id","claims":["firebase.tenant"]},"mfa":{"op":"mfa_factor","kind":"method","claim":"firebase.sign_in_second_factor"},"assurance_level":{"op":"marker","value":"low","when":[{"claim":"firebase.sign_in_provider","equals":"anonymous"}]}}},"oidc":{"slugArgument":true,"fields":{}}}}`
 
 type authRule struct {
-	Op          string   `json:"op"`
-	Kind        string   `json:"kind"`
-	Claims      []string `json:"claims"`
-	Claim       string   `json:"claim"`
-	Split       string   `json:"split"`
-	Max         int      `json:"max"`
-	Index       int      `json:"index"`
-	UnitSeconds float64  `json:"unitSeconds"`
-	MaxSeconds  float64  `json:"maxSeconds"`
-	MFAValue    string   `json:"mfaValue"`
-	Ignore      []string `json:"ignore"`
+	Op          string            `json:"op"`
+	Kind        string            `json:"kind"`
+	Claims      []string          `json:"claims"`
+	Claim       string            `json:"claim"`
+	Split       string            `json:"split"`
+	Max         int               `json:"max"`
+	Index       int               `json:"index"`
+	UnitSeconds float64           `json:"unitSeconds"`
+	MaxSeconds  float64           `json:"maxSeconds"`
+	MFAValue    string            `json:"mfaValue"`
+	Ignore      []string          `json:"ignore"`
+	Present     []string          `json:"present"`
+	Absent      []string          `json:"absent"`
+	AMR         string            `json:"amr"`
+	MethodKey   string            `json:"methodKey"`
+	Factors     map[string]string `json:"factors"`
+	Value       string            `json:"value"`
+	When        []struct {
+		Claim  string `json:"claim"`
+		Equals any    `json:"equals"`
+	} `json:"when"`
 }
 
 type authKind struct {
@@ -227,6 +237,46 @@ func authMapRule(claims map[string]any, rule authRule) any {
 			return nil
 		}
 		return map[string]any{"present": present, "methods": methods}
+	case "mfa_aal":
+		level, ok := authLookup(claims, rule.Claim).(string)
+		if !ok {
+			return nil
+		}
+		if authContains(rule.Absent, level) {
+			return map[string]any{"present": false}
+		}
+		if !authContains(rule.Present, level) {
+			return nil
+		}
+		entries, _ := authLookup(claims, rule.AMR).([]any)
+		methods := []string{}
+		for _, entry := range entries {
+			name := entry
+			if object, isObject := entry.(map[string]any); isObject {
+				name = object[rule.MethodKey]
+			}
+			text, isText := name.(string)
+			if !isText {
+				continue
+			}
+			if mapped, known := rule.Factors[text]; known && !authContains(methods, mapped) {
+				methods = append(methods, mapped)
+			}
+		}
+		if len(methods) == 0 {
+			return map[string]any{"present": true}
+		}
+		return map[string]any{"present": true, "methods": methods}
+	case "mfa_factor":
+		if text, ok := authMatches(rule.Kind, authLookup(claims, rule.Claim)); ok {
+			return map[string]any{"present": true, "methods": []string{text}}
+		}
+	case "marker":
+		for _, test := range rule.When {
+			if value := authLookup(claims, test.Claim); value != nil && value == test.Equals {
+				return rule.Value
+			}
+		}
 	default:
 		panic("noresponse: unknown claim map op " + rule.Op)
 	}
@@ -324,6 +374,19 @@ func FromClerkClaims(claims, overrides map[string]any) (*components.AuthContext,
 // claims. Do not pass an opaque API access token.
 func FromAuth0Claims(claims, overrides map[string]any) (*components.AuthContext, error) {
 	return authBuild("auth0", "auth0", claims, overrides)
+}
+
+// FromSupabaseClaims maps verified Supabase Auth access token claims (legacy
+// HS256 secret or JWKS). Pass the user record's contact verification as
+// overrides.
+func FromSupabaseClaims(claims, overrides map[string]any) (*components.AuthContext, error) {
+	return authBuild("supabase", "supabase", claims, overrides)
+}
+
+// FromFirebaseClaims maps verified Firebase ID token claims from the Admin SDK
+// VerifyIDToken. Custom claims never change the mapping.
+func FromFirebaseClaims(claims, overrides map[string]any) (*components.AuthContext, error) {
+	return authBuild("firebase", "firebase", claims, overrides)
 }
 
 // FromOIDCClaims is the generic adapter for providers without a first-class

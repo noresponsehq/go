@@ -1,5 +1,5 @@
 {
-  "description": "Cross-SDK vectors for the auth_context claim mappers (Go FromXClaims, TypeScript fromX, Python from_x). Each case runs the same verified claims and overrides through the named helper (any provider other than workos, clerk and auth0 uses the generic OIDC helper with that slug); the JSON every SDK sends must equal expect exactly. Rules the vectors pin: contact verification comes from token claims only for Auth0 (email_verified and phone_number_verified), from overrides for every provider; a NumericDate is written as RFC 3339 in whole UTC seconds, the fraction truncated; string claims split on whitespace (OAuth scope, RFC 6749 section 3.3), and Clerk permissions also on commas; Clerk's role is one slug; Clerk never sends issued_at from iat (a 60-second refresh clock; session age is the session_created_at override); Auth0 amr lists every method except pwd, and an amr of only pwd sends no mfa; the first-class adapters always send impersonated, false included; an override replaces the mapped value, false included. Unknown, mistyped, out-of-range and out-of-contract claims map to absent, never to a stronger assurance: a case with \"error\": true must be refused (a TypeError, ValueError or the language's equivalent) because issuer or subject is missing or invalid or the provider slug is not a lowercase slug; Clerk fva counts only a numeric second factor from 0 to ten years of minutes; Auth0 amr counts only an array of strings; a time string must be RFC 3339; and token claims never set assurance_level.",
+  "description": "Cross-SDK vectors for the auth_context claim mappers (Go FromXClaims, TypeScript fromX, Python from_x). Each case runs the same verified claims and overrides through the named helper (any provider other than workos, clerk, auth0, supabase and firebase uses the generic OIDC helper with that slug); the JSON every SDK sends must equal expect exactly. Rules the vectors pin: contact verification comes from token claims only for Auth0 (email_verified and phone_number_verified), from overrides for every provider; a NumericDate is written as RFC 3339 in whole UTC seconds, the fraction truncated; string claims split on whitespace (OAuth scope, RFC 6749 section 3.3), and Clerk permissions also on commas; Clerk's role is one slug; Clerk never sends issued_at from iat (a 60-second refresh clock; session age is the session_created_at override); Auth0 amr lists every method except pwd, and an amr of only pwd sends no mfa; the first-class adapters always send impersonated, false included; an override replaces the mapped value, false included. Unknown, mistyped, out-of-range and out-of-contract claims map to absent, never to a stronger assurance: a case with \"error\": true must be refused (a TypeError, ValueError or the language's equivalent) because issuer or subject is missing or invalid or the provider slug is not a lowercase slug; Clerk fva counts only a numeric second factor from 0 to ten years of minutes; Auth0 amr counts only an array of strings; a time string must be RFC 3339; and token claims never raise assurance_level: the only value any claim sends is low, for an anonymous user (Supabase is_anonymous or app_metadata.provider anonymous, Firebase sign_in_provider anonymous), and only an exact boolean true or the exact string anonymous counts. Supabase aal2 is mfa present with the second-factor methods from amr (a slash becomes a colon), aal1 is mfa present false, and any other aal sends no mfa. Firebase reads only its reserved claims, so custom claims named role, sid, tenant, amr, aal, email_verified or anything else never change the result; contact verification there comes from overrides.",
   "cases": [
     {
       "name": "workos full token with user-record overrides",
@@ -476,6 +476,881 @@
       "claims": {"iss": "https://tenant.auth0.com/", "sub": "user_b", "aud": "api://b", "sid": "sid_b", "jti": "jti_b", "iat": 1700000000, "exp": 1700003600, "auth_time": 1700000100, "org_id": "org_b", "scope": "openid", "email_verified": true, "phone_number_verified": false, "amr": ["mfa"], "act": {"sub": "s"}},
       "overrides": {},
       "expect": {"provider": "auth0", "issuer": "https://tenant.auth0.com/", "subject": "user_b", "verified": true, "transport": "backend", "audience": "api://b", "audiences": ["api://b"], "session_id": "sid_b", "token_id": "jti_b", "expires_at": "2023-11-14T23:13:20Z", "auth_time": "2023-11-14T22:15:00Z", "issued_at": "2023-11-14T22:13:20Z", "organization_id": "org_b", "scopes": ["openid"], "email_verified": true, "phone_verified": false, "mfa": {"present": true, "methods": ["mfa"]}, "impersonated": true}
+    },
+    {
+      "name": "supabase aal1 password session",
+      "provider": "supabase",
+      "claims": {"iss": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "aud": "authenticated", "sub": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "role": "authenticated", "aal": "aal1", "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "email": "person@example.com", "phone": "", "is_anonymous": false, "app_metadata": {"provider": "email", "providers": ["email"]}, "user_metadata": {}, "amr": [{"method": "password", "timestamp": 1759999995}], "iat": 1760000000, "exp": 1760003600},
+      "overrides": {},
+      "expect": {"provider": "supabase", "issuer": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "subject": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "verified": true, "transport": "backend", "audience": "authenticated", "audiences": ["authenticated"], "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "roles": ["authenticated"], "mfa": {"present": false}}
+    },
+    {
+      "name": "supabase aal1 amr oauth is not a second factor",
+      "provider": "supabase",
+      "claims": {"iss": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "aud": "authenticated", "sub": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "role": "authenticated", "aal": "aal1", "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "email": "person@example.com", "phone": "", "is_anonymous": false, "app_metadata": {"provider": "google", "providers": ["google"]}, "user_metadata": {}, "amr": [{"method": "oauth", "timestamp": 1759999995}], "iat": 1760000000, "exp": 1760003600},
+      "overrides": {},
+      "expect": {"provider": "supabase", "issuer": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "subject": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "verified": true, "transport": "backend", "audience": "authenticated", "audiences": ["authenticated"], "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "roles": ["authenticated"], "mfa": {"present": false}}
+    },
+    {
+      "name": "supabase aal1 amr otp is not a second factor",
+      "provider": "supabase",
+      "claims": {"iss": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "aud": "authenticated", "sub": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "role": "authenticated", "aal": "aal1", "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "email": "person@example.com", "phone": "", "is_anonymous": false, "app_metadata": {"provider": "email", "providers": ["email"]}, "user_metadata": {}, "amr": [{"method": "otp", "timestamp": 1759999995}], "iat": 1760000000, "exp": 1760003600},
+      "overrides": {},
+      "expect": {"provider": "supabase", "issuer": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "subject": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "verified": true, "transport": "backend", "audience": "authenticated", "audiences": ["authenticated"], "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "roles": ["authenticated"], "mfa": {"present": false}}
+    },
+    {
+      "name": "supabase aal1 amr magiclink is not a second factor",
+      "provider": "supabase",
+      "claims": {"iss": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "aud": "authenticated", "sub": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "role": "authenticated", "aal": "aal1", "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "email": "person@example.com", "phone": "", "is_anonymous": false, "app_metadata": {"provider": "email", "providers": ["email"]}, "user_metadata": {}, "amr": [{"method": "magiclink", "timestamp": 1759999995}], "iat": 1760000000, "exp": 1760003600},
+      "overrides": {},
+      "expect": {"provider": "supabase", "issuer": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "subject": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "verified": true, "transport": "backend", "audience": "authenticated", "audiences": ["authenticated"], "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "roles": ["authenticated"], "mfa": {"present": false}}
+    },
+    {
+      "name": "supabase aal1 amr recovery is not a second factor",
+      "provider": "supabase",
+      "claims": {"iss": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "aud": "authenticated", "sub": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "role": "authenticated", "aal": "aal1", "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "email": "person@example.com", "phone": "", "is_anonymous": false, "app_metadata": {"provider": "email", "providers": ["email"]}, "user_metadata": {}, "amr": [{"method": "recovery", "timestamp": 1759999995}], "iat": 1760000000, "exp": 1760003600},
+      "overrides": {},
+      "expect": {"provider": "supabase", "issuer": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "subject": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "verified": true, "transport": "backend", "audience": "authenticated", "audiences": ["authenticated"], "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "roles": ["authenticated"], "mfa": {"present": false}}
+    },
+    {
+      "name": "supabase aal1 amr invite is not a second factor",
+      "provider": "supabase",
+      "claims": {"iss": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "aud": "authenticated", "sub": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "role": "authenticated", "aal": "aal1", "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "email": "person@example.com", "phone": "", "is_anonymous": false, "app_metadata": {"provider": "email", "providers": ["email"]}, "user_metadata": {}, "amr": [{"method": "invite", "timestamp": 1759999995}], "iat": 1760000000, "exp": 1760003600},
+      "overrides": {},
+      "expect": {"provider": "supabase", "issuer": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "subject": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "verified": true, "transport": "backend", "audience": "authenticated", "audiences": ["authenticated"], "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "roles": ["authenticated"], "mfa": {"present": false}}
+    },
+    {
+      "name": "supabase aal1 amr email/signup is not a second factor",
+      "provider": "supabase",
+      "claims": {"iss": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "aud": "authenticated", "sub": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "role": "authenticated", "aal": "aal1", "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "email": "person@example.com", "phone": "", "is_anonymous": false, "app_metadata": {"provider": "email", "providers": ["email"]}, "user_metadata": {}, "amr": [{"method": "email/signup", "timestamp": 1759999995}], "iat": 1760000000, "exp": 1760003600},
+      "overrides": {},
+      "expect": {"provider": "supabase", "issuer": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "subject": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "verified": true, "transport": "backend", "audience": "authenticated", "audiences": ["authenticated"], "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "roles": ["authenticated"], "mfa": {"present": false}}
+    },
+    {
+      "name": "supabase aal1 amr email_change is not a second factor",
+      "provider": "supabase",
+      "claims": {"iss": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "aud": "authenticated", "sub": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "role": "authenticated", "aal": "aal1", "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "email": "person@example.com", "phone": "", "is_anonymous": false, "app_metadata": {"provider": "email", "providers": ["email"]}, "user_metadata": {}, "amr": [{"method": "email_change", "timestamp": 1759999995}], "iat": 1760000000, "exp": 1760003600},
+      "overrides": {},
+      "expect": {"provider": "supabase", "issuer": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "subject": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "verified": true, "transport": "backend", "audience": "authenticated", "audiences": ["authenticated"], "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "roles": ["authenticated"], "mfa": {"present": false}}
+    },
+    {
+      "name": "supabase aal1 amr token_refresh is not a second factor",
+      "provider": "supabase",
+      "claims": {"iss": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "aud": "authenticated", "sub": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "role": "authenticated", "aal": "aal1", "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "email": "person@example.com", "phone": "", "is_anonymous": false, "app_metadata": {"provider": "email", "providers": ["email"]}, "user_metadata": {}, "amr": [{"method": "token_refresh", "timestamp": 1759999995}], "iat": 1760000000, "exp": 1760003600},
+      "overrides": {},
+      "expect": {"provider": "supabase", "issuer": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "subject": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "verified": true, "transport": "backend", "audience": "authenticated", "audiences": ["authenticated"], "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "roles": ["authenticated"], "mfa": {"present": false}}
+    },
+    {
+      "name": "supabase aal1 amr web3 is not a second factor",
+      "provider": "supabase",
+      "claims": {"iss": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "aud": "authenticated", "sub": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "role": "authenticated", "aal": "aal1", "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "email": "person@example.com", "phone": "", "is_anonymous": false, "app_metadata": {"provider": "email", "providers": ["email"]}, "user_metadata": {}, "amr": [{"method": "web3", "timestamp": 1759999995}], "iat": 1760000000, "exp": 1760003600},
+      "overrides": {},
+      "expect": {"provider": "supabase", "issuer": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "subject": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "verified": true, "transport": "backend", "audience": "authenticated", "audiences": ["authenticated"], "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "roles": ["authenticated"], "mfa": {"present": false}}
+    },
+    {
+      "name": "supabase aal1 amr passkey is not a second factor",
+      "provider": "supabase",
+      "claims": {"iss": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "aud": "authenticated", "sub": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "role": "authenticated", "aal": "aal1", "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "email": "person@example.com", "phone": "", "is_anonymous": false, "app_metadata": {"provider": "email", "providers": ["email"]}, "user_metadata": {}, "amr": [{"method": "passkey", "timestamp": 1759999995}], "iat": 1760000000, "exp": 1760003600},
+      "overrides": {},
+      "expect": {"provider": "supabase", "issuer": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "subject": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "verified": true, "transport": "backend", "audience": "authenticated", "audiences": ["authenticated"], "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "roles": ["authenticated"], "mfa": {"present": false}}
+    },
+    {
+      "name": "supabase aal1 amr oauth_provider/authorization_code is not a second factor",
+      "provider": "supabase",
+      "claims": {"iss": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "aud": "authenticated", "sub": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "role": "authenticated", "aal": "aal1", "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "email": "person@example.com", "phone": "", "is_anonymous": false, "app_metadata": {"provider": "email", "providers": ["email"]}, "user_metadata": {}, "amr": [{"method": "oauth_provider/authorization_code", "timestamp": 1759999995}], "iat": 1760000000, "exp": 1760003600},
+      "overrides": {},
+      "expect": {"provider": "supabase", "issuer": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "subject": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "verified": true, "transport": "backend", "audience": "authenticated", "audiences": ["authenticated"], "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "roles": ["authenticated"], "mfa": {"present": false}}
+    },
+    {
+      "name": "supabase aal1 amr sso/saml with provider",
+      "provider": "supabase",
+      "claims": {"iss": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "aud": "authenticated", "sub": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "role": "authenticated", "aal": "aal1", "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "email": "person@example.com", "phone": "", "is_anonymous": false, "app_metadata": {"provider": "sso:0a1b2c3d", "providers": ["sso:0a1b2c3d"]}, "user_metadata": {}, "amr": [{"method": "sso/saml", "timestamp": 1759999995, "provider": "example-idp"}], "iat": 1760000000, "exp": 1760003600},
+      "overrides": {},
+      "expect": {"provider": "supabase", "issuer": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "subject": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "verified": true, "transport": "backend", "audience": "authenticated", "audiences": ["authenticated"], "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "roles": ["authenticated"], "mfa": {"present": false}}
+    },
+    {
+      "name": "supabase aal2 with totp second factor",
+      "provider": "supabase",
+      "claims": {"iss": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "aud": "authenticated", "sub": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "role": "authenticated", "aal": "aal2", "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "email": "person@example.com", "phone": "", "is_anonymous": false, "app_metadata": {"provider": "email", "providers": ["email"]}, "user_metadata": {}, "amr": [{"method": "totp", "timestamp": 1759999980}, {"method": "password", "timestamp": 1759999940}], "iat": 1760000000, "exp": 1760003600},
+      "overrides": {},
+      "expect": {"provider": "supabase", "issuer": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "subject": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "verified": true, "transport": "backend", "audience": "authenticated", "audiences": ["authenticated"], "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "roles": ["authenticated"], "mfa": {"present": true, "methods": ["totp"]}}
+    },
+    {
+      "name": "supabase aal2 with mfa/phone second factor",
+      "provider": "supabase",
+      "claims": {"iss": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "aud": "authenticated", "sub": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "role": "authenticated", "aal": "aal2", "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "email": "person@example.com", "phone": "", "is_anonymous": false, "app_metadata": {"provider": "email", "providers": ["email"]}, "user_metadata": {}, "amr": [{"method": "mfa/phone", "timestamp": 1759999980}, {"method": "password", "timestamp": 1759999940}], "iat": 1760000000, "exp": 1760003600},
+      "overrides": {},
+      "expect": {"provider": "supabase", "issuer": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "subject": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "verified": true, "transport": "backend", "audience": "authenticated", "audiences": ["authenticated"], "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "roles": ["authenticated"], "mfa": {"present": true, "methods": ["mfa:phone"]}}
+    },
+    {
+      "name": "supabase aal2 with mfa/webauthn second factor",
+      "provider": "supabase",
+      "claims": {"iss": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "aud": "authenticated", "sub": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "role": "authenticated", "aal": "aal2", "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "email": "person@example.com", "phone": "", "is_anonymous": false, "app_metadata": {"provider": "email", "providers": ["email"]}, "user_metadata": {}, "amr": [{"method": "mfa/webauthn", "timestamp": 1759999980}, {"method": "password", "timestamp": 1759999940}], "iat": 1760000000, "exp": 1760003600},
+      "overrides": {},
+      "expect": {"provider": "supabase", "issuer": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "subject": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "verified": true, "transport": "backend", "audience": "authenticated", "audiences": ["authenticated"], "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "roles": ["authenticated"], "mfa": {"present": true, "methods": ["mfa:webauthn"]}}
+    },
+    {
+      "name": "supabase aal2 with mfa/recovery_code second factor",
+      "provider": "supabase",
+      "claims": {"iss": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "aud": "authenticated", "sub": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "role": "authenticated", "aal": "aal2", "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "email": "person@example.com", "phone": "", "is_anonymous": false, "app_metadata": {"provider": "email", "providers": ["email"]}, "user_metadata": {}, "amr": [{"method": "mfa/recovery_code", "timestamp": 1759999980}, {"method": "password", "timestamp": 1759999940}], "iat": 1760000000, "exp": 1760003600},
+      "overrides": {},
+      "expect": {"provider": "supabase", "issuer": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "subject": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "verified": true, "transport": "backend", "audience": "authenticated", "audiences": ["authenticated"], "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "roles": ["authenticated"], "mfa": {"present": true, "methods": ["mfa:recovery_code"]}}
+    },
+    {
+      "name": "supabase aal2 lists every second factor once, newest first",
+      "provider": "supabase",
+      "claims": {"iss": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "aud": "authenticated", "sub": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "role": "authenticated", "aal": "aal2", "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "email": "person@example.com", "phone": "", "is_anonymous": false, "app_metadata": {"provider": "email", "providers": ["email"]}, "user_metadata": {}, "amr": [{"method": "mfa/webauthn", "timestamp": 1759999995}, {"method": "totp", "timestamp": 1759999980}, {"method": "totp", "timestamp": 1759999970}, {"method": "password", "timestamp": 1759999940}], "iat": 1760000000, "exp": 1760003600},
+      "overrides": {},
+      "expect": {"provider": "supabase", "issuer": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "subject": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "verified": true, "transport": "backend", "audience": "authenticated", "audiences": ["authenticated"], "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "roles": ["authenticated"], "mfa": {"present": true, "methods": ["mfa:webauthn", "totp"]}}
+    },
+    {
+      "name": "supabase aal2 after sso/saml keeps only the second factor",
+      "provider": "supabase",
+      "claims": {"iss": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "aud": "authenticated", "sub": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "role": "authenticated", "aal": "aal2", "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "email": "person@example.com", "phone": "", "is_anonymous": false, "app_metadata": {"provider": "sso:0a1b2c3d", "providers": ["sso:0a1b2c3d"]}, "user_metadata": {}, "amr": [{"method": "totp", "timestamp": 1759999980}, {"method": "sso/saml", "timestamp": 1759999940, "provider": "example-idp"}], "iat": 1760000000, "exp": 1760003600},
+      "overrides": {},
+      "expect": {"provider": "supabase", "issuer": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "subject": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "verified": true, "transport": "backend", "audience": "authenticated", "audiences": ["authenticated"], "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "roles": ["authenticated"], "mfa": {"present": true, "methods": ["totp"]}}
+    },
+    {
+      "name": "supabase aal2 without amr is present with no methods",
+      "provider": "supabase",
+      "claims": {"iss": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "aud": "authenticated", "sub": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "role": "authenticated", "aal": "aal2", "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "email": "person@example.com", "phone": "", "is_anonymous": false, "app_metadata": {"provider": "email", "providers": ["email"]}, "user_metadata": {}, "iat": 1760000000, "exp": 1760003600},
+      "overrides": {},
+      "expect": {"provider": "supabase", "issuer": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "subject": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "verified": true, "transport": "backend", "audience": "authenticated", "audiences": ["authenticated"], "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "roles": ["authenticated"], "mfa": {"present": true}}
+    },
+    {
+      "name": "supabase aal2 with an amr that is not an array",
+      "provider": "supabase",
+      "claims": {"iss": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "aud": "authenticated", "sub": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "role": "authenticated", "aal": "aal2", "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "email": "person@example.com", "phone": "", "is_anonymous": false, "app_metadata": {"provider": "email", "providers": ["email"]}, "user_metadata": {}, "amr": "totp", "iat": 1760000000, "exp": 1760003600},
+      "overrides": {},
+      "expect": {"provider": "supabase", "issuer": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "subject": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "verified": true, "transport": "backend", "audience": "authenticated", "audiences": ["authenticated"], "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "roles": ["authenticated"], "mfa": {"present": true}}
+    },
+    {
+      "name": "supabase aal2 with only unknown methods",
+      "provider": "supabase",
+      "claims": {"iss": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "aud": "authenticated", "sub": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "role": "authenticated", "aal": "aal2", "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "email": "person@example.com", "phone": "", "is_anonymous": false, "app_metadata": {"provider": "email", "providers": ["email"]}, "user_metadata": {}, "amr": [{"method": "mfa/future", "timestamp": 1760000000}, {"method": "password", "timestamp": 1760000000}], "iat": 1760000000, "exp": 1760003600},
+      "overrides": {},
+      "expect": {"provider": "supabase", "issuer": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "subject": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "verified": true, "transport": "backend", "audience": "authenticated", "audiences": ["authenticated"], "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "roles": ["authenticated"], "mfa": {"present": true}}
+    },
+    {
+      "name": "supabase amr as bare strings (older tokens)",
+      "provider": "supabase",
+      "claims": {"iss": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "aud": "authenticated", "sub": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "role": "authenticated", "aal": "aal2", "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "email": "person@example.com", "phone": "", "is_anonymous": false, "app_metadata": {"provider": "email", "providers": ["email"]}, "user_metadata": {}, "amr": ["totp", "password"], "iat": 1760000000, "exp": 1760003600},
+      "overrides": {},
+      "expect": {"provider": "supabase", "issuer": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "subject": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "verified": true, "transport": "backend", "audience": "authenticated", "audiences": ["authenticated"], "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "roles": ["authenticated"], "mfa": {"present": true, "methods": ["totp"]}}
+    },
+    {
+      "name": "supabase amr with malformed entries keeps the valid ones",
+      "provider": "supabase",
+      "claims": {"iss": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "aud": "authenticated", "sub": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "role": "authenticated", "aal": "aal2", "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "email": "person@example.com", "phone": "", "is_anonymous": false, "app_metadata": {"provider": "email", "providers": ["email"]}, "user_metadata": {}, "amr": [null, 7, {"method": 7}, {"timestamp": 1760000000}, {"method": ""}, {"method": "totp", "timestamp": "soon"}, ["totp"], {"method": "mfa/phone"}], "iat": 1760000000, "exp": 1760003600},
+      "overrides": {},
+      "expect": {"provider": "supabase", "issuer": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "subject": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "verified": true, "transport": "backend", "audience": "authenticated", "audiences": ["authenticated"], "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "roles": ["authenticated"], "mfa": {"present": true, "methods": ["totp", "mfa:phone"]}}
+    },
+    {
+      "name": "supabase aal1 with a second factor in amr is still not mfa",
+      "provider": "supabase",
+      "claims": {"iss": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "aud": "authenticated", "sub": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "role": "authenticated", "aal": "aal1", "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "email": "person@example.com", "phone": "", "is_anonymous": false, "app_metadata": {"provider": "email", "providers": ["email"]}, "user_metadata": {}, "amr": [{"method": "totp", "timestamp": 1760000000}], "iat": 1760000000, "exp": 1760003600},
+      "overrides": {},
+      "expect": {"provider": "supabase", "issuer": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "subject": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "verified": true, "transport": "backend", "audience": "authenticated", "audiences": ["authenticated"], "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "roles": ["authenticated"], "mfa": {"present": false}}
+    },
+    {
+      "name": "supabase aal aal3 sends no mfa",
+      "provider": "supabase",
+      "claims": {"iss": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "aud": "authenticated", "sub": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "role": "authenticated", "aal": "aal3", "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "email": "person@example.com", "phone": "", "is_anonymous": false, "app_metadata": {"provider": "email", "providers": ["email"]}, "user_metadata": {}, "amr": [{"method": "totp", "timestamp": 1760000000}], "iat": 1760000000, "exp": 1760003600},
+      "overrides": {},
+      "expect": {"provider": "supabase", "issuer": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "subject": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "verified": true, "transport": "backend", "audience": "authenticated", "audiences": ["authenticated"], "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "roles": ["authenticated"]}
+    },
+    {
+      "name": "supabase aal upper case sends no mfa",
+      "provider": "supabase",
+      "claims": {"iss": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "aud": "authenticated", "sub": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "role": "authenticated", "aal": "AAL2", "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "email": "person@example.com", "phone": "", "is_anonymous": false, "app_metadata": {"provider": "email", "providers": ["email"]}, "user_metadata": {}, "amr": [{"method": "totp", "timestamp": 1760000000}], "iat": 1760000000, "exp": 1760003600},
+      "overrides": {},
+      "expect": {"provider": "supabase", "issuer": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "subject": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "verified": true, "transport": "backend", "audience": "authenticated", "audiences": ["authenticated"], "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "roles": ["authenticated"]}
+    },
+    {
+      "name": "supabase aal number sends no mfa",
+      "provider": "supabase",
+      "claims": {"iss": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "aud": "authenticated", "sub": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "role": "authenticated", "aal": 2, "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "email": "person@example.com", "phone": "", "is_anonymous": false, "app_metadata": {"provider": "email", "providers": ["email"]}, "user_metadata": {}, "amr": [{"method": "totp", "timestamp": 1760000000}], "iat": 1760000000, "exp": 1760003600},
+      "overrides": {},
+      "expect": {"provider": "supabase", "issuer": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "subject": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "verified": true, "transport": "backend", "audience": "authenticated", "audiences": ["authenticated"], "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "roles": ["authenticated"]}
+    },
+    {
+      "name": "supabase aal boolean sends no mfa",
+      "provider": "supabase",
+      "claims": {"iss": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "aud": "authenticated", "sub": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "role": "authenticated", "aal": true, "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "email": "person@example.com", "phone": "", "is_anonymous": false, "app_metadata": {"provider": "email", "providers": ["email"]}, "user_metadata": {}, "amr": [{"method": "totp", "timestamp": 1760000000}], "iat": 1760000000, "exp": 1760003600},
+      "overrides": {},
+      "expect": {"provider": "supabase", "issuer": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "subject": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "verified": true, "transport": "backend", "audience": "authenticated", "audiences": ["authenticated"], "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "roles": ["authenticated"]}
+    },
+    {
+      "name": "supabase aal null sends no mfa",
+      "provider": "supabase",
+      "claims": {"iss": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "aud": "authenticated", "sub": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "role": "authenticated", "aal": null, "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "email": "person@example.com", "phone": "", "is_anonymous": false, "app_metadata": {"provider": "email", "providers": ["email"]}, "user_metadata": {}, "amr": [{"method": "totp", "timestamp": 1760000000}], "iat": 1760000000, "exp": 1760003600},
+      "overrides": {},
+      "expect": {"provider": "supabase", "issuer": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "subject": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "verified": true, "transport": "backend", "audience": "authenticated", "audiences": ["authenticated"], "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "roles": ["authenticated"]}
+    },
+    {
+      "name": "supabase aal empty sends no mfa",
+      "provider": "supabase",
+      "claims": {"iss": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "aud": "authenticated", "sub": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "role": "authenticated", "aal": "", "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "email": "person@example.com", "phone": "", "is_anonymous": false, "app_metadata": {"provider": "email", "providers": ["email"]}, "user_metadata": {}, "amr": [{"method": "totp", "timestamp": 1760000000}], "iat": 1760000000, "exp": 1760003600},
+      "overrides": {},
+      "expect": {"provider": "supabase", "issuer": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "subject": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "verified": true, "transport": "backend", "audience": "authenticated", "audiences": ["authenticated"], "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "roles": ["authenticated"]}
+    },
+    {
+      "name": "supabase aal object sends no mfa",
+      "provider": "supabase",
+      "claims": {"iss": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "aud": "authenticated", "sub": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "role": "authenticated", "aal": {"level": "aal2"}, "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "email": "person@example.com", "phone": "", "is_anonymous": false, "app_metadata": {"provider": "email", "providers": ["email"]}, "user_metadata": {}, "amr": [{"method": "totp", "timestamp": 1760000000}], "iat": 1760000000, "exp": 1760003600},
+      "overrides": {},
+      "expect": {"provider": "supabase", "issuer": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "subject": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "verified": true, "transport": "backend", "audience": "authenticated", "audiences": ["authenticated"], "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "roles": ["authenticated"]}
+    },
+    {
+      "name": "supabase missing aal and amr sends no mfa",
+      "provider": "supabase",
+      "claims": {"iss": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "aud": "authenticated", "sub": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "role": "authenticated", "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "email": "person@example.com", "phone": "", "is_anonymous": false, "app_metadata": {"provider": "email", "providers": ["email"]}, "user_metadata": {}, "iat": 1760000000, "exp": 1760003600},
+      "overrides": {},
+      "expect": {"provider": "supabase", "issuer": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "subject": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "verified": true, "transport": "backend", "audience": "authenticated", "audiences": ["authenticated"], "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "roles": ["authenticated"]}
+    },
+    {
+      "name": "supabase anonymous user is low assurance",
+      "provider": "supabase",
+      "claims": {"iss": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "aud": "authenticated", "sub": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "role": "authenticated", "aal": "aal1", "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "email": "", "phone": "", "is_anonymous": true, "app_metadata": {"provider": "anonymous", "providers": ["anonymous"]}, "user_metadata": {}, "amr": [{"method": "anonymous", "timestamp": 1759999999}], "iat": 1760000000, "exp": 1760003600},
+      "overrides": {},
+      "expect": {"provider": "supabase", "issuer": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "subject": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "verified": true, "transport": "backend", "audience": "authenticated", "audiences": ["authenticated"], "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "roles": ["authenticated"], "mfa": {"present": false}, "assurance_level": "low"}
+    },
+    {
+      "name": "supabase is_anonymous alone is low assurance",
+      "provider": "supabase",
+      "claims": {"iss": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "aud": "authenticated", "sub": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "role": "authenticated", "aal": "aal1", "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "email": "", "phone": "", "is_anonymous": true, "app_metadata": {"provider": "email", "providers": ["email"]}, "user_metadata": {}, "amr": [{"method": "password", "timestamp": 1759999995}], "iat": 1760000000, "exp": 1760003600},
+      "overrides": {},
+      "expect": {"provider": "supabase", "issuer": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "subject": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "verified": true, "transport": "backend", "audience": "authenticated", "audiences": ["authenticated"], "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "roles": ["authenticated"], "mfa": {"present": false}, "assurance_level": "low"}
+    },
+    {
+      "name": "supabase app_metadata provider anonymous alone is low assurance",
+      "provider": "supabase",
+      "claims": {"iss": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "aud": "authenticated", "sub": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "role": "authenticated", "aal": "aal1", "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "email": "person@example.com", "phone": "", "is_anonymous": false, "app_metadata": {"provider": "anonymous", "providers": ["anonymous"]}, "user_metadata": {}, "amr": [{"method": "password", "timestamp": 1759999995}], "iat": 1760000000, "exp": 1760003600},
+      "overrides": {},
+      "expect": {"provider": "supabase", "issuer": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "subject": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "verified": true, "transport": "backend", "audience": "authenticated", "audiences": ["authenticated"], "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "roles": ["authenticated"], "mfa": {"present": false}, "assurance_level": "low"}
+    },
+    {
+      "name": "supabase is_anonymous false and a real provider send no assurance level",
+      "provider": "supabase",
+      "claims": {"iss": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "aud": "authenticated", "sub": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "role": "authenticated", "aal": "aal1", "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "email": "person@example.com", "phone": "", "is_anonymous": false, "app_metadata": {"provider": "google", "providers": ["google"]}, "user_metadata": {}, "amr": [{"method": "password", "timestamp": 1759999995}], "iat": 1760000000, "exp": 1760003600},
+      "overrides": {},
+      "expect": {"provider": "supabase", "issuer": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "subject": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "verified": true, "transport": "backend", "audience": "authenticated", "audiences": ["authenticated"], "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "roles": ["authenticated"], "mfa": {"present": false}}
+    },
+    {
+      "name": "supabase is_anonymous string true is not an anonymous marker",
+      "provider": "supabase",
+      "claims": {"iss": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "aud": "authenticated", "sub": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "role": "authenticated", "aal": "aal1", "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "email": "person@example.com", "phone": "", "is_anonymous": "true", "app_metadata": {"provider": "email", "providers": ["email"]}, "user_metadata": {}, "amr": [{"method": "password", "timestamp": 1759999995}], "iat": 1760000000, "exp": 1760003600},
+      "overrides": {},
+      "expect": {"provider": "supabase", "issuer": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "subject": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "verified": true, "transport": "backend", "audience": "authenticated", "audiences": ["authenticated"], "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "roles": ["authenticated"], "mfa": {"present": false}}
+    },
+    {
+      "name": "supabase is_anonymous number one is not an anonymous marker",
+      "provider": "supabase",
+      "claims": {"iss": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "aud": "authenticated", "sub": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "role": "authenticated", "aal": "aal1", "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "email": "person@example.com", "phone": "", "is_anonymous": 1, "app_metadata": {"provider": "email", "providers": ["email"]}, "user_metadata": {}, "amr": [{"method": "password", "timestamp": 1759999995}], "iat": 1760000000, "exp": 1760003600},
+      "overrides": {},
+      "expect": {"provider": "supabase", "issuer": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "subject": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "verified": true, "transport": "backend", "audience": "authenticated", "audiences": ["authenticated"], "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "roles": ["authenticated"], "mfa": {"present": false}}
+    },
+    {
+      "name": "supabase is_anonymous null is not an anonymous marker",
+      "provider": "supabase",
+      "claims": {"iss": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "aud": "authenticated", "sub": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "role": "authenticated", "aal": "aal1", "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "email": "person@example.com", "phone": "", "is_anonymous": null, "app_metadata": {"provider": "email", "providers": ["email"]}, "user_metadata": {}, "amr": [{"method": "password", "timestamp": 1759999995}], "iat": 1760000000, "exp": 1760003600},
+      "overrides": {},
+      "expect": {"provider": "supabase", "issuer": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "subject": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "verified": true, "transport": "backend", "audience": "authenticated", "audiences": ["authenticated"], "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "roles": ["authenticated"], "mfa": {"present": false}}
+    },
+    {
+      "name": "supabase is_anonymous array is not an anonymous marker",
+      "provider": "supabase",
+      "claims": {"iss": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "aud": "authenticated", "sub": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "role": "authenticated", "aal": "aal1", "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "email": "person@example.com", "phone": "", "is_anonymous": [true], "app_metadata": {"provider": "email", "providers": ["email"]}, "user_metadata": {}, "amr": [{"method": "password", "timestamp": 1759999995}], "iat": 1760000000, "exp": 1760003600},
+      "overrides": {},
+      "expect": {"provider": "supabase", "issuer": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "subject": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "verified": true, "transport": "backend", "audience": "authenticated", "audiences": ["authenticated"], "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "roles": ["authenticated"], "mfa": {"present": false}}
+    },
+    {
+      "name": "supabase missing is_anonymous and app_metadata sends no assurance level",
+      "provider": "supabase",
+      "claims": {"iss": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "aud": "authenticated", "sub": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "role": "authenticated", "aal": "aal1", "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "email": "person@example.com", "phone": "", "user_metadata": {}, "amr": [{"method": "password", "timestamp": 1759999995}], "iat": 1760000000, "exp": 1760003600},
+      "overrides": {},
+      "expect": {"provider": "supabase", "issuer": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "subject": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "verified": true, "transport": "backend", "audience": "authenticated", "audiences": ["authenticated"], "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "roles": ["authenticated"], "mfa": {"present": false}}
+    },
+    {
+      "name": "supabase app_metadata that is not an object is ignored",
+      "provider": "supabase",
+      "claims": {"iss": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "aud": "authenticated", "sub": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "role": "authenticated", "aal": "aal1", "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "email": "person@example.com", "phone": "", "is_anonymous": false, "app_metadata": "anonymous", "user_metadata": {}, "amr": [{"method": "password", "timestamp": 1759999995}], "iat": 1760000000, "exp": 1760003600},
+      "overrides": {},
+      "expect": {"provider": "supabase", "issuer": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "subject": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "verified": true, "transport": "backend", "audience": "authenticated", "audiences": ["authenticated"], "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "roles": ["authenticated"], "mfa": {"present": false}}
+    },
+    {
+      "name": "supabase anonymous user never gets a stronger level from aal2",
+      "provider": "supabase",
+      "claims": {"iss": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "aud": "authenticated", "sub": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "role": "authenticated", "aal": "aal2", "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "email": "", "phone": "", "is_anonymous": true, "app_metadata": {"provider": "anonymous", "providers": ["anonymous"]}, "user_metadata": {}, "amr": [{"method": "totp", "timestamp": 1760000000}], "iat": 1760000000, "exp": 1760003600},
+      "overrides": {},
+      "expect": {"provider": "supabase", "issuer": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "subject": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "verified": true, "transport": "backend", "audience": "authenticated", "audiences": ["authenticated"], "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "roles": ["authenticated"], "mfa": {"present": true, "methods": ["totp"]}, "assurance_level": "low"}
+    },
+    {
+      "name": "supabase only issuer and subject",
+      "provider": "supabase",
+      "claims": {"iss": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "sub": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10"},
+      "overrides": {},
+      "expect": {"provider": "supabase", "issuer": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "subject": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "verified": true, "transport": "backend"}
+    },
+    {
+      "name": "supabase ignores sid, auth_time and contact-verification claims",
+      "provider": "supabase",
+      "claims": {"iss": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "aud": "authenticated", "sub": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "role": "authenticated", "aal": "aal1", "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "email": "person@example.com", "phone": "", "is_anonymous": false, "app_metadata": {"provider": "email", "providers": ["email"]}, "user_metadata": {}, "amr": [{"method": "password", "timestamp": 1759999995}], "iat": 1760000000, "exp": 1760003600, "sid": "other-session", "auth_time": 1760000000, "email_verified": true, "phone_verified": true, "phone_number_verified": true, "org_id": "org_1", "scope": "admin", "permissions": ["a"], "act": {"sub": "support"}},
+      "overrides": {},
+      "expect": {"provider": "supabase", "issuer": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "subject": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "verified": true, "transport": "backend", "audience": "authenticated", "audiences": ["authenticated"], "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "roles": ["authenticated"], "mfa": {"present": false}}
+    },
+    {
+      "name": "supabase ignores user_metadata and app_metadata roles",
+      "provider": "supabase",
+      "claims": {"iss": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "aud": "authenticated", "sub": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "role": "authenticated", "aal": "aal1", "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "email": "person@example.com", "phone": "", "is_anonymous": false, "app_metadata": {"provider": "email", "providers": ["email"], "role": "admin", "roles": ["admin"]}, "user_metadata": {"email_verified": true, "role": "admin", "roles": ["admin"]}, "amr": [{"method": "password", "timestamp": 1759999995}], "iat": 1760000000, "exp": 1760003600},
+      "overrides": {},
+      "expect": {"provider": "supabase", "issuer": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "subject": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "verified": true, "transport": "backend", "audience": "authenticated", "audiences": ["authenticated"], "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "roles": ["authenticated"], "mfa": {"present": false}}
+    },
+    {
+      "name": "supabase maps jti and an audience list",
+      "provider": "supabase",
+      "claims": {"iss": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "aud": ["authenticated", "api://signup"], "sub": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "role": "authenticated", "aal": "aal1", "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "email": "person@example.com", "phone": "", "is_anonymous": false, "app_metadata": {"provider": "email", "providers": ["email"]}, "user_metadata": {}, "amr": [{"method": "password", "timestamp": 1759999995}], "iat": 1760000000, "exp": 1760003600, "jti": "0b9f6d1e-0d0a-4d8c-a3aa-6d6e1f4a7c11"},
+      "overrides": {},
+      "expect": {"provider": "supabase", "issuer": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "subject": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "verified": true, "transport": "backend", "audience": "authenticated", "audiences": ["authenticated", "api://signup"], "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "roles": ["authenticated"], "mfa": {"present": false}, "token_id": "0b9f6d1e-0d0a-4d8c-a3aa-6d6e1f4a7c11"}
+    },
+    {
+      "name": "supabase role anon maps to roles",
+      "provider": "supabase",
+      "claims": {"iss": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "aud": "authenticated", "sub": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "role": "anon", "aal": "aal1", "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "email": "person@example.com", "phone": "", "is_anonymous": false, "app_metadata": {"provider": "email", "providers": ["email"]}, "user_metadata": {}, "amr": [{"method": "password", "timestamp": 1759999995}], "iat": 1760000000, "exp": 1760003600},
+      "overrides": {},
+      "expect": {"provider": "supabase", "issuer": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "subject": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "verified": true, "transport": "backend", "audience": "authenticated", "audiences": ["authenticated"], "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "roles": ["anon"], "mfa": {"present": false}}
+    },
+    {
+      "name": "supabase role service_role maps to roles",
+      "provider": "supabase",
+      "claims": {"iss": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "aud": "authenticated", "sub": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "role": "service_role", "aal": "aal1", "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "email": "person@example.com", "phone": "", "is_anonymous": false, "app_metadata": {"provider": "email", "providers": ["email"]}, "user_metadata": {}, "amr": [{"method": "password", "timestamp": 1759999995}], "iat": 1760000000, "exp": 1760003600},
+      "overrides": {},
+      "expect": {"provider": "supabase", "issuer": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "subject": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "verified": true, "transport": "backend", "audience": "authenticated", "audiences": ["authenticated"], "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "roles": ["service_role"], "mfa": {"present": false}}
+    },
+    {
+      "name": "supabase role supabase_admin maps to roles",
+      "provider": "supabase",
+      "claims": {"iss": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "aud": "authenticated", "sub": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "role": "supabase_admin", "aal": "aal1", "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "email": "person@example.com", "phone": "", "is_anonymous": false, "app_metadata": {"provider": "email", "providers": ["email"]}, "user_metadata": {}, "amr": [{"method": "password", "timestamp": 1759999995}], "iat": 1760000000, "exp": 1760003600},
+      "overrides": {},
+      "expect": {"provider": "supabase", "issuer": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "subject": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "verified": true, "transport": "backend", "audience": "authenticated", "audiences": ["authenticated"], "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "roles": ["supabase_admin"], "mfa": {"present": false}}
+    },
+    {
+      "name": "supabase role dashboard_user maps to roles",
+      "provider": "supabase",
+      "claims": {"iss": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "aud": "authenticated", "sub": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "role": "dashboard_user", "aal": "aal1", "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "email": "person@example.com", "phone": "", "is_anonymous": false, "app_metadata": {"provider": "email", "providers": ["email"]}, "user_metadata": {}, "amr": [{"method": "password", "timestamp": 1759999995}], "iat": 1760000000, "exp": 1760003600},
+      "overrides": {},
+      "expect": {"provider": "supabase", "issuer": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "subject": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "verified": true, "transport": "backend", "audience": "authenticated", "audiences": ["authenticated"], "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "roles": ["dashboard_user"], "mfa": {"present": false}}
+    },
+    {
+      "name": "supabase role number is absent",
+      "provider": "supabase",
+      "claims": {"iss": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "aud": "authenticated", "sub": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "role": 1, "aal": "aal1", "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "email": "person@example.com", "phone": "", "is_anonymous": false, "app_metadata": {"provider": "email", "providers": ["email"]}, "user_metadata": {}, "amr": [{"method": "password", "timestamp": 1759999995}], "iat": 1760000000, "exp": 1760003600},
+      "overrides": {},
+      "expect": {"provider": "supabase", "issuer": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "subject": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "verified": true, "transport": "backend", "audience": "authenticated", "audiences": ["authenticated"], "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "mfa": {"present": false}}
+    },
+    {
+      "name": "supabase role with a space is absent",
+      "provider": "supabase",
+      "claims": {"iss": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "aud": "authenticated", "sub": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "role": "service role", "aal": "aal1", "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "email": "person@example.com", "phone": "", "is_anonymous": false, "app_metadata": {"provider": "email", "providers": ["email"]}, "user_metadata": {}, "amr": [{"method": "password", "timestamp": 1759999995}], "iat": 1760000000, "exp": 1760003600},
+      "overrides": {},
+      "expect": {"provider": "supabase", "issuer": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "subject": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "verified": true, "transport": "backend", "audience": "authenticated", "audiences": ["authenticated"], "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "mfa": {"present": false}}
+    },
+    {
+      "name": "supabase role empty is absent",
+      "provider": "supabase",
+      "claims": {"iss": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "aud": "authenticated", "sub": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "role": "", "aal": "aal1", "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "email": "person@example.com", "phone": "", "is_anonymous": false, "app_metadata": {"provider": "email", "providers": ["email"]}, "user_metadata": {}, "amr": [{"method": "password", "timestamp": 1759999995}], "iat": 1760000000, "exp": 1760003600},
+      "overrides": {},
+      "expect": {"provider": "supabase", "issuer": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "subject": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "verified": true, "transport": "backend", "audience": "authenticated", "audiences": ["authenticated"], "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "mfa": {"present": false}}
+    },
+    {
+      "name": "supabase role null is absent",
+      "provider": "supabase",
+      "claims": {"iss": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "aud": "authenticated", "sub": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "role": null, "aal": "aal1", "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "email": "person@example.com", "phone": "", "is_anonymous": false, "app_metadata": {"provider": "email", "providers": ["email"]}, "user_metadata": {}, "amr": [{"method": "password", "timestamp": 1759999995}], "iat": 1760000000, "exp": 1760003600},
+      "overrides": {},
+      "expect": {"provider": "supabase", "issuer": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "subject": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "verified": true, "transport": "backend", "audience": "authenticated", "audiences": ["authenticated"], "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "mfa": {"present": false}}
+    },
+    {
+      "name": "supabase session_id with characters outside the contract is absent",
+      "provider": "supabase",
+      "claims": {"iss": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "aud": "authenticated", "sub": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "role": "authenticated", "aal": "aal1", "session_id": "not valid!", "email": "person@example.com", "phone": "", "is_anonymous": false, "app_metadata": {"provider": "email", "providers": ["email"]}, "user_metadata": {}, "amr": [{"method": "password", "timestamp": 1759999995}], "iat": 1760000000, "exp": 1760003600},
+      "overrides": {},
+      "expect": {"provider": "supabase", "issuer": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "subject": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "verified": true, "transport": "backend", "audience": "authenticated", "audiences": ["authenticated"], "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "roles": ["authenticated"], "mfa": {"present": false}}
+    },
+    {
+      "name": "supabase session_id that is a number is absent",
+      "provider": "supabase",
+      "claims": {"iss": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "aud": "authenticated", "sub": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "role": "authenticated", "aal": "aal1", "session_id": 7, "email": "person@example.com", "phone": "", "is_anonymous": false, "app_metadata": {"provider": "email", "providers": ["email"]}, "user_metadata": {}, "amr": [{"method": "password", "timestamp": 1759999995}], "iat": 1760000000, "exp": 1760003600},
+      "overrides": {},
+      "expect": {"provider": "supabase", "issuer": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "subject": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "verified": true, "transport": "backend", "audience": "authenticated", "audiences": ["authenticated"], "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "roles": ["authenticated"], "mfa": {"present": false}}
+    },
+    {
+      "name": "supabase mfa override replaces the mapped value",
+      "provider": "supabase",
+      "claims": {"iss": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "aud": "authenticated", "sub": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "role": "authenticated", "aal": "aal2", "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "email": "person@example.com", "phone": "", "is_anonymous": false, "app_metadata": {"provider": "email", "providers": ["email"]}, "user_metadata": {}, "amr": [{"method": "totp", "timestamp": 1760000000}], "iat": 1760000000, "exp": 1760003600},
+      "overrides": {"mfa": {"present": true, "methods": ["totp"], "age_seconds": 45}},
+      "expect": {"provider": "supabase", "issuer": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "subject": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "verified": true, "transport": "backend", "audience": "authenticated", "audiences": ["authenticated"], "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "roles": ["authenticated"], "mfa": {"present": true, "methods": ["totp"], "age_seconds": 45}}
+    },
+    {
+      "name": "supabase contact verification and account age come from overrides",
+      "provider": "supabase",
+      "claims": {"iss": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "aud": "authenticated", "sub": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "role": "authenticated", "aal": "aal1", "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "email": "person@example.com", "phone": "", "is_anonymous": false, "app_metadata": {"provider": "email", "providers": ["email"]}, "user_metadata": {}, "amr": [{"method": "password", "timestamp": 1759999995}], "iat": 1760000000, "exp": 1760003600},
+      "overrides": {"email_verified": true, "phone_verified": false, "account_created_at": "2026-01-01T00:00:00Z"},
+      "expect": {"provider": "supabase", "issuer": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "subject": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "verified": true, "transport": "backend", "audience": "authenticated", "audiences": ["authenticated"], "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "roles": ["authenticated"], "mfa": {"present": false}, "email_verified": true, "phone_verified": false, "account_created_at": "2026-01-01T00:00:00Z"}
+    },
+    {
+      "name": "supabase anon key token without a subject is refused",
+      "provider": "supabase",
+      "claims": {"iss": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "role": "anon", "iat": 1760000000, "exp": 1760003600, "ref": "abcdefghijklmnopqrst"},
+      "overrides": {},
+      "error": true
+    },
+    {
+      "name": "supabase service_role key token without a subject is refused",
+      "provider": "supabase",
+      "claims": {"iss": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "role": "service_role", "iat": 1760000000, "exp": 1760003600},
+      "overrides": {},
+      "error": true
+    },
+    {
+      "name": "supabase http issuer is refused",
+      "provider": "supabase",
+      "claims": {"iss": "http://abcdefghijklmnopqrst.supabase.co/auth/v1", "aud": "authenticated", "sub": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "role": "authenticated", "aal": "aal1", "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "email": "person@example.com", "phone": "", "is_anonymous": false, "app_metadata": {"provider": "email", "providers": ["email"]}, "user_metadata": {}, "amr": [{"method": "password", "timestamp": 1759999995}], "iat": 1760000000, "exp": 1760003600},
+      "overrides": {},
+      "error": true
+    },
+    {
+      "name": "supabase self-hosted issuer is accepted",
+      "provider": "supabase",
+      "claims": {"iss": "https://auth.example.com/auth/v1", "aud": "authenticated", "sub": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "role": "authenticated", "aal": "aal1", "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "email": "person@example.com", "phone": "", "is_anonymous": false, "app_metadata": {"provider": "email", "providers": ["email"]}, "user_metadata": {}, "amr": [{"method": "password", "timestamp": 1759999995}], "iat": 1760000000, "exp": 1760003600},
+      "overrides": {},
+      "expect": {"provider": "supabase", "issuer": "https://auth.example.com/auth/v1", "subject": "4d3f1a9e-6c1b-4a52-9b7e-2f6f2c1d9a10", "verified": true, "transport": "backend", "audience": "authenticated", "audiences": ["authenticated"], "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "roles": ["authenticated"], "mfa": {"present": false}}
+    },
+    {
+      "name": "supabase empty subject is refused",
+      "provider": "supabase",
+      "claims": {"iss": "https://abcdefghijklmnopqrst.supabase.co/auth/v1", "aud": "authenticated", "sub": "", "role": "authenticated", "aal": "aal1", "session_id": "9c0b6a58-1f1e-4c7a-8f51-7d2a5b3e1c44", "email": "person@example.com", "phone": "", "is_anonymous": false, "app_metadata": {"provider": "email", "providers": ["email"]}, "user_metadata": {}, "amr": [{"method": "password", "timestamp": 1759999995}], "iat": 1760000000, "exp": 1760003600},
+      "overrides": {},
+      "error": true
+    },
+    {
+      "name": "firebase email and password sign-in",
+      "provider": "firebase",
+      "claims": {"iss": "https://securetoken.google.com/example-project", "aud": "example-project", "auth_time": 1759999900, "user_id": "Xk3EXAMPLEuid0123456789abcdef", "sub": "Xk3EXAMPLEuid0123456789abcdef", "iat": 1760000000, "exp": 1760003600, "email": "person@example.com", "email_verified": true, "firebase": {"identities": {"email": ["person@example.com"]}, "sign_in_provider": "password"}},
+      "overrides": {},
+      "expect": {"provider": "firebase", "issuer": "https://securetoken.google.com/example-project", "subject": "Xk3EXAMPLEuid0123456789abcdef", "verified": true, "transport": "backend", "audience": "example-project", "audiences": ["example-project"], "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "auth_time": "2025-10-09T08:51:40Z"}
+    },
+    {
+      "name": "firebase email and password sign-in with unverified email",
+      "provider": "firebase",
+      "claims": {"iss": "https://securetoken.google.com/example-project", "aud": "example-project", "auth_time": 1759999900, "user_id": "Xk3EXAMPLEuid0123456789abcdef", "sub": "Xk3EXAMPLEuid0123456789abcdef", "iat": 1760000000, "exp": 1760003600, "email": "person@example.com", "email_verified": false, "firebase": {"identities": {"email": ["person@example.com"]}, "sign_in_provider": "password"}},
+      "overrides": {},
+      "expect": {"provider": "firebase", "issuer": "https://securetoken.google.com/example-project", "subject": "Xk3EXAMPLEuid0123456789abcdef", "verified": true, "transport": "backend", "audience": "example-project", "audiences": ["example-project"], "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "auth_time": "2025-10-09T08:51:40Z"}
+    },
+    {
+      "name": "firebase google.com sign-in",
+      "provider": "firebase",
+      "claims": {"iss": "https://securetoken.google.com/example-project", "aud": "example-project", "auth_time": 1759999900, "user_id": "Xk3EXAMPLEuid0123456789abcdef", "sub": "Xk3EXAMPLEuid0123456789abcdef", "iat": 1760000000, "exp": 1760003600, "email": "person@example.com", "email_verified": true, "firebase": {"identities": {"google.com": ["109876543210987654321"], "email": ["person@example.com"]}, "sign_in_provider": "google.com"}},
+      "overrides": {},
+      "expect": {"provider": "firebase", "issuer": "https://securetoken.google.com/example-project", "subject": "Xk3EXAMPLEuid0123456789abcdef", "verified": true, "transport": "backend", "audience": "example-project", "audiences": ["example-project"], "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "auth_time": "2025-10-09T08:51:40Z"}
+    },
+    {
+      "name": "firebase facebook.com sign-in",
+      "provider": "firebase",
+      "claims": {"iss": "https://securetoken.google.com/example-project", "aud": "example-project", "auth_time": 1759999900, "user_id": "Xk3EXAMPLEuid0123456789abcdef", "sub": "Xk3EXAMPLEuid0123456789abcdef", "iat": 1760000000, "exp": 1760003600, "email": "person@example.com", "email_verified": true, "firebase": {"identities": {"facebook.com": ["10158000000000000"], "email": ["person@example.com"]}, "sign_in_provider": "facebook.com"}},
+      "overrides": {},
+      "expect": {"provider": "firebase", "issuer": "https://securetoken.google.com/example-project", "subject": "Xk3EXAMPLEuid0123456789abcdef", "verified": true, "transport": "backend", "audience": "example-project", "audiences": ["example-project"], "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "auth_time": "2025-10-09T08:51:40Z"}
+    },
+    {
+      "name": "firebase twitter.com sign-in",
+      "provider": "firebase",
+      "claims": {"iss": "https://securetoken.google.com/example-project", "aud": "example-project", "auth_time": 1759999900, "user_id": "Xk3EXAMPLEuid0123456789abcdef", "sub": "Xk3EXAMPLEuid0123456789abcdef", "iat": 1760000000, "exp": 1760003600, "firebase": {"identities": {"twitter.com": ["1234567890"]}, "sign_in_provider": "twitter.com"}},
+      "overrides": {},
+      "expect": {"provider": "firebase", "issuer": "https://securetoken.google.com/example-project", "subject": "Xk3EXAMPLEuid0123456789abcdef", "verified": true, "transport": "backend", "audience": "example-project", "audiences": ["example-project"], "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "auth_time": "2025-10-09T08:51:40Z"}
+    },
+    {
+      "name": "firebase github.com sign-in",
+      "provider": "firebase",
+      "claims": {"iss": "https://securetoken.google.com/example-project", "aud": "example-project", "auth_time": 1759999900, "user_id": "Xk3EXAMPLEuid0123456789abcdef", "sub": "Xk3EXAMPLEuid0123456789abcdef", "iat": 1760000000, "exp": 1760003600, "email": "person@example.com", "email_verified": true, "firebase": {"identities": {"github.com": ["1234567"], "email": ["person@example.com"]}, "sign_in_provider": "github.com"}},
+      "overrides": {},
+      "expect": {"provider": "firebase", "issuer": "https://securetoken.google.com/example-project", "subject": "Xk3EXAMPLEuid0123456789abcdef", "verified": true, "transport": "backend", "audience": "example-project", "audiences": ["example-project"], "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "auth_time": "2025-10-09T08:51:40Z"}
+    },
+    {
+      "name": "firebase apple.com sign-in",
+      "provider": "firebase",
+      "claims": {"iss": "https://securetoken.google.com/example-project", "aud": "example-project", "auth_time": 1759999900, "user_id": "Xk3EXAMPLEuid0123456789abcdef", "sub": "Xk3EXAMPLEuid0123456789abcdef", "iat": 1760000000, "exp": 1760003600, "email": "person@example.com", "email_verified": true, "firebase": {"identities": {"apple.com": ["001234.0123456789abcdef0123456789abcdef.0123"], "email": ["person@example.com"]}, "sign_in_provider": "apple.com"}},
+      "overrides": {},
+      "expect": {"provider": "firebase", "issuer": "https://securetoken.google.com/example-project", "subject": "Xk3EXAMPLEuid0123456789abcdef", "verified": true, "transport": "backend", "audience": "example-project", "audiences": ["example-project"], "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "auth_time": "2025-10-09T08:51:40Z"}
+    },
+    {
+      "name": "firebase microsoft.com sign-in",
+      "provider": "firebase",
+      "claims": {"iss": "https://securetoken.google.com/example-project", "aud": "example-project", "auth_time": 1759999900, "user_id": "Xk3EXAMPLEuid0123456789abcdef", "sub": "Xk3EXAMPLEuid0123456789abcdef", "iat": 1760000000, "exp": 1760003600, "email": "person@example.com", "email_verified": true, "firebase": {"identities": {"microsoft.com": ["a1b2c3d4e5f6"], "email": ["person@example.com"]}, "sign_in_provider": "microsoft.com"}},
+      "overrides": {},
+      "expect": {"provider": "firebase", "issuer": "https://securetoken.google.com/example-project", "subject": "Xk3EXAMPLEuid0123456789abcdef", "verified": true, "transport": "backend", "audience": "example-project", "audiences": ["example-project"], "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "auth_time": "2025-10-09T08:51:40Z"}
+    },
+    {
+      "name": "firebase yahoo.com sign-in",
+      "provider": "firebase",
+      "claims": {"iss": "https://securetoken.google.com/example-project", "aud": "example-project", "auth_time": 1759999900, "user_id": "Xk3EXAMPLEuid0123456789abcdef", "sub": "Xk3EXAMPLEuid0123456789abcdef", "iat": 1760000000, "exp": 1760003600, "email": "person@example.com", "email_verified": true, "firebase": {"identities": {"yahoo.com": ["ABCDEFGHIJKLMNOP"], "email": ["person@example.com"]}, "sign_in_provider": "yahoo.com"}},
+      "overrides": {},
+      "expect": {"provider": "firebase", "issuer": "https://securetoken.google.com/example-project", "subject": "Xk3EXAMPLEuid0123456789abcdef", "verified": true, "transport": "backend", "audience": "example-project", "audiences": ["example-project"], "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "auth_time": "2025-10-09T08:51:40Z"}
+    },
+    {
+      "name": "firebase playgames.google.com sign-in",
+      "provider": "firebase",
+      "claims": {"iss": "https://securetoken.google.com/example-project", "aud": "example-project", "auth_time": 1759999900, "user_id": "Xk3EXAMPLEuid0123456789abcdef", "sub": "Xk3EXAMPLEuid0123456789abcdef", "iat": 1760000000, "exp": 1760003600, "firebase": {"identities": {"playgames.google.com": ["g01234567890123456789"]}, "sign_in_provider": "playgames.google.com"}},
+      "overrides": {},
+      "expect": {"provider": "firebase", "issuer": "https://securetoken.google.com/example-project", "subject": "Xk3EXAMPLEuid0123456789abcdef", "verified": true, "transport": "backend", "audience": "example-project", "audiences": ["example-project"], "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "auth_time": "2025-10-09T08:51:40Z"}
+    },
+    {
+      "name": "firebase gc.apple.com sign-in",
+      "provider": "firebase",
+      "claims": {"iss": "https://securetoken.google.com/example-project", "aud": "example-project", "auth_time": 1759999900, "user_id": "Xk3EXAMPLEuid0123456789abcdef", "sub": "Xk3EXAMPLEuid0123456789abcdef", "iat": 1760000000, "exp": 1760003600, "firebase": {"identities": {"gc.apple.com": ["G:1234567890"]}, "sign_in_provider": "gc.apple.com"}},
+      "overrides": {},
+      "expect": {"provider": "firebase", "issuer": "https://securetoken.google.com/example-project", "subject": "Xk3EXAMPLEuid0123456789abcdef", "verified": true, "transport": "backend", "audience": "example-project", "audiences": ["example-project"], "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "auth_time": "2025-10-09T08:51:40Z"}
+    },
+    {
+      "name": "firebase linkedin.com sign-in",
+      "provider": "firebase",
+      "claims": {"iss": "https://securetoken.google.com/example-project", "aud": "example-project", "auth_time": 1759999900, "user_id": "Xk3EXAMPLEuid0123456789abcdef", "sub": "Xk3EXAMPLEuid0123456789abcdef", "iat": 1760000000, "exp": 1760003600, "email": "person@example.com", "email_verified": true, "firebase": {"identities": {"linkedin.com": ["abcDEF123"], "email": ["person@example.com"]}, "sign_in_provider": "linkedin.com"}},
+      "overrides": {},
+      "expect": {"provider": "firebase", "issuer": "https://securetoken.google.com/example-project", "subject": "Xk3EXAMPLEuid0123456789abcdef", "verified": true, "transport": "backend", "audience": "example-project", "audiences": ["example-project"], "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "auth_time": "2025-10-09T08:51:40Z"}
+    },
+    {
+      "name": "firebase oidc.example-idp sign-in",
+      "provider": "firebase",
+      "claims": {"iss": "https://securetoken.google.com/example-project", "aud": "example-project", "auth_time": 1759999900, "user_id": "Xk3EXAMPLEuid0123456789abcdef", "sub": "Xk3EXAMPLEuid0123456789abcdef", "iat": 1760000000, "exp": 1760003600, "email": "person@example.com", "email_verified": true, "firebase": {"identities": {"oidc.example-idp": ["subject-123"], "email": ["person@example.com"]}, "sign_in_provider": "oidc.example-idp"}},
+      "overrides": {},
+      "expect": {"provider": "firebase", "issuer": "https://securetoken.google.com/example-project", "subject": "Xk3EXAMPLEuid0123456789abcdef", "verified": true, "transport": "backend", "audience": "example-project", "audiences": ["example-project"], "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "auth_time": "2025-10-09T08:51:40Z"}
+    },
+    {
+      "name": "firebase saml.example-idp sign-in",
+      "provider": "firebase",
+      "claims": {"iss": "https://securetoken.google.com/example-project", "aud": "example-project", "auth_time": 1759999900, "user_id": "Xk3EXAMPLEuid0123456789abcdef", "sub": "Xk3EXAMPLEuid0123456789abcdef", "iat": 1760000000, "exp": 1760003600, "email": "person@example.com", "email_verified": true, "firebase": {"identities": {"saml.example-idp": ["person@example.com"], "email": ["person@example.com"]}, "sign_in_provider": "saml.example-idp"}},
+      "overrides": {},
+      "expect": {"provider": "firebase", "issuer": "https://securetoken.google.com/example-project", "subject": "Xk3EXAMPLEuid0123456789abcdef", "verified": true, "transport": "backend", "audience": "example-project", "audiences": ["example-project"], "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "auth_time": "2025-10-09T08:51:40Z"}
+    },
+    {
+      "name": "firebase custom sign-in",
+      "provider": "firebase",
+      "claims": {"iss": "https://securetoken.google.com/example-project", "aud": "example-project", "auth_time": 1759999900, "user_id": "Xk3EXAMPLEuid0123456789abcdef", "sub": "Xk3EXAMPLEuid0123456789abcdef", "iat": 1760000000, "exp": 1760003600, "firebase": {"identities": {}, "sign_in_provider": "custom"}},
+      "overrides": {},
+      "expect": {"provider": "firebase", "issuer": "https://securetoken.google.com/example-project", "subject": "Xk3EXAMPLEuid0123456789abcdef", "verified": true, "transport": "backend", "audience": "example-project", "audiences": ["example-project"], "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "auth_time": "2025-10-09T08:51:40Z"}
+    },
+    {
+      "name": "firebase phone sign-in has no email",
+      "provider": "firebase",
+      "claims": {"iss": "https://securetoken.google.com/example-project", "aud": "example-project", "auth_time": 1759999900, "user_id": "Xk3EXAMPLEuid0123456789abcdef", "sub": "Xk3EXAMPLEuid0123456789abcdef", "iat": 1760000000, "exp": 1760003600, "firebase": {"identities": {"phone": ["+61400000000"]}, "sign_in_provider": "phone"}, "phone_number": "+61400000000"},
+      "overrides": {},
+      "expect": {"provider": "firebase", "issuer": "https://securetoken.google.com/example-project", "subject": "Xk3EXAMPLEuid0123456789abcdef", "verified": true, "transport": "backend", "audience": "example-project", "audiences": ["example-project"], "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "auth_time": "2025-10-09T08:51:40Z"}
+    },
+    {
+      "name": "firebase anonymous sign-in is low assurance",
+      "provider": "firebase",
+      "claims": {"iss": "https://securetoken.google.com/example-project", "aud": "example-project", "auth_time": 1759999900, "user_id": "Xk3EXAMPLEuid0123456789abcdef", "sub": "Xk3EXAMPLEuid0123456789abcdef", "iat": 1760000000, "exp": 1760003600, "firebase": {"identities": {}, "sign_in_provider": "anonymous"}},
+      "overrides": {},
+      "expect": {"provider": "firebase", "issuer": "https://securetoken.google.com/example-project", "subject": "Xk3EXAMPLEuid0123456789abcdef", "verified": true, "transport": "backend", "audience": "example-project", "audiences": ["example-project"], "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "auth_time": "2025-10-09T08:51:40Z", "assurance_level": "low"}
+    },
+    {
+      "name": "firebase anonymous user linked to a provider is no longer anonymous",
+      "provider": "firebase",
+      "claims": {"iss": "https://securetoken.google.com/example-project", "aud": "example-project", "auth_time": 1759999900, "user_id": "Xk3EXAMPLEuid0123456789abcdef", "sub": "Xk3EXAMPLEuid0123456789abcdef", "iat": 1760000000, "exp": 1760003600, "email": "person@example.com", "email_verified": true, "firebase": {"identities": {"google.com": ["109876543210987654321"], "email": ["person@example.com"]}, "sign_in_provider": "google.com"}},
+      "overrides": {},
+      "expect": {"provider": "firebase", "issuer": "https://securetoken.google.com/example-project", "subject": "Xk3EXAMPLEuid0123456789abcdef", "verified": true, "transport": "backend", "audience": "example-project", "audiences": ["example-project"], "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "auth_time": "2025-10-09T08:51:40Z"}
+    },
+    {
+      "name": "firebase phone second factor",
+      "provider": "firebase",
+      "claims": {"iss": "https://securetoken.google.com/example-project", "aud": "example-project", "auth_time": 1759999900, "user_id": "Xk3EXAMPLEuid0123456789abcdef", "sub": "Xk3EXAMPLEuid0123456789abcdef", "iat": 1760000000, "exp": 1760003600, "email": "person@example.com", "email_verified": true, "firebase": {"identities": {"email": ["person@example.com"]}, "sign_in_provider": "password", "sign_in_second_factor": "phone", "second_factor_identifier": "EXAMPLEFACTORID"}},
+      "overrides": {},
+      "expect": {"provider": "firebase", "issuer": "https://securetoken.google.com/example-project", "subject": "Xk3EXAMPLEuid0123456789abcdef", "verified": true, "transport": "backend", "audience": "example-project", "audiences": ["example-project"], "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "auth_time": "2025-10-09T08:51:40Z", "mfa": {"present": true, "methods": ["phone"]}}
+    },
+    {
+      "name": "firebase totp second factor",
+      "provider": "firebase",
+      "claims": {"iss": "https://securetoken.google.com/example-project", "aud": "example-project", "auth_time": 1759999900, "user_id": "Xk3EXAMPLEuid0123456789abcdef", "sub": "Xk3EXAMPLEuid0123456789abcdef", "iat": 1760000000, "exp": 1760003600, "email": "person@example.com", "email_verified": true, "firebase": {"identities": {"email": ["person@example.com"]}, "sign_in_provider": "password", "sign_in_second_factor": "totp", "second_factor_identifier": "EXAMPLEFACTORID"}},
+      "overrides": {},
+      "expect": {"provider": "firebase", "issuer": "https://securetoken.google.com/example-project", "subject": "Xk3EXAMPLEuid0123456789abcdef", "verified": true, "transport": "backend", "audience": "example-project", "audiences": ["example-project"], "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "auth_time": "2025-10-09T08:51:40Z", "mfa": {"present": true, "methods": ["totp"]}}
+    },
+    {
+      "name": "firebase second factor after a social sign-in",
+      "provider": "firebase",
+      "claims": {"iss": "https://securetoken.google.com/example-project", "aud": "example-project", "auth_time": 1759999900, "user_id": "Xk3EXAMPLEuid0123456789abcdef", "sub": "Xk3EXAMPLEuid0123456789abcdef", "iat": 1760000000, "exp": 1760003600, "email": "person@example.com", "email_verified": true, "firebase": {"identities": {"google.com": ["109876543210987654321"], "email": ["person@example.com"]}, "sign_in_provider": "google.com", "sign_in_second_factor": "phone", "second_factor_identifier": "EXAMPLEFACTORID"}},
+      "overrides": {},
+      "expect": {"provider": "firebase", "issuer": "https://securetoken.google.com/example-project", "subject": "Xk3EXAMPLEuid0123456789abcdef", "verified": true, "transport": "backend", "audience": "example-project", "audiences": ["example-project"], "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "auth_time": "2025-10-09T08:51:40Z", "mfa": {"present": true, "methods": ["phone"]}}
+    },
+    {
+      "name": "firebase sign_in_second_factor number sends no mfa",
+      "provider": "firebase",
+      "claims": {"iss": "https://securetoken.google.com/example-project", "aud": "example-project", "auth_time": 1759999900, "user_id": "Xk3EXAMPLEuid0123456789abcdef", "sub": "Xk3EXAMPLEuid0123456789abcdef", "iat": 1760000000, "exp": 1760003600, "email": "person@example.com", "email_verified": true, "firebase": {"identities": {"email": ["person@example.com"]}, "sign_in_provider": "password", "sign_in_second_factor": 1}},
+      "overrides": {},
+      "expect": {"provider": "firebase", "issuer": "https://securetoken.google.com/example-project", "subject": "Xk3EXAMPLEuid0123456789abcdef", "verified": true, "transport": "backend", "audience": "example-project", "audiences": ["example-project"], "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "auth_time": "2025-10-09T08:51:40Z"}
+    },
+    {
+      "name": "firebase sign_in_second_factor boolean sends no mfa",
+      "provider": "firebase",
+      "claims": {"iss": "https://securetoken.google.com/example-project", "aud": "example-project", "auth_time": 1759999900, "user_id": "Xk3EXAMPLEuid0123456789abcdef", "sub": "Xk3EXAMPLEuid0123456789abcdef", "iat": 1760000000, "exp": 1760003600, "email": "person@example.com", "email_verified": true, "firebase": {"identities": {"email": ["person@example.com"]}, "sign_in_provider": "password", "sign_in_second_factor": true}},
+      "overrides": {},
+      "expect": {"provider": "firebase", "issuer": "https://securetoken.google.com/example-project", "subject": "Xk3EXAMPLEuid0123456789abcdef", "verified": true, "transport": "backend", "audience": "example-project", "audiences": ["example-project"], "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "auth_time": "2025-10-09T08:51:40Z"}
+    },
+    {
+      "name": "firebase sign_in_second_factor empty sends no mfa",
+      "provider": "firebase",
+      "claims": {"iss": "https://securetoken.google.com/example-project", "aud": "example-project", "auth_time": 1759999900, "user_id": "Xk3EXAMPLEuid0123456789abcdef", "sub": "Xk3EXAMPLEuid0123456789abcdef", "iat": 1760000000, "exp": 1760003600, "email": "person@example.com", "email_verified": true, "firebase": {"identities": {"email": ["person@example.com"]}, "sign_in_provider": "password", "sign_in_second_factor": ""}},
+      "overrides": {},
+      "expect": {"provider": "firebase", "issuer": "https://securetoken.google.com/example-project", "subject": "Xk3EXAMPLEuid0123456789abcdef", "verified": true, "transport": "backend", "audience": "example-project", "audiences": ["example-project"], "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "auth_time": "2025-10-09T08:51:40Z"}
+    },
+    {
+      "name": "firebase sign_in_second_factor with a space sends no mfa",
+      "provider": "firebase",
+      "claims": {"iss": "https://securetoken.google.com/example-project", "aud": "example-project", "auth_time": 1759999900, "user_id": "Xk3EXAMPLEuid0123456789abcdef", "sub": "Xk3EXAMPLEuid0123456789abcdef", "iat": 1760000000, "exp": 1760003600, "email": "person@example.com", "email_verified": true, "firebase": {"identities": {"email": ["person@example.com"]}, "sign_in_provider": "password", "sign_in_second_factor": "text message"}},
+      "overrides": {},
+      "expect": {"provider": "firebase", "issuer": "https://securetoken.google.com/example-project", "subject": "Xk3EXAMPLEuid0123456789abcdef", "verified": true, "transport": "backend", "audience": "example-project", "audiences": ["example-project"], "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "auth_time": "2025-10-09T08:51:40Z"}
+    },
+    {
+      "name": "firebase sign_in_second_factor over 32 characters sends no mfa",
+      "provider": "firebase",
+      "claims": {"iss": "https://securetoken.google.com/example-project", "aud": "example-project", "auth_time": 1759999900, "user_id": "Xk3EXAMPLEuid0123456789abcdef", "sub": "Xk3EXAMPLEuid0123456789abcdef", "iat": 1760000000, "exp": 1760003600, "email": "person@example.com", "email_verified": true, "firebase": {"identities": {"email": ["person@example.com"]}, "sign_in_provider": "password", "sign_in_second_factor": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}},
+      "overrides": {},
+      "expect": {"provider": "firebase", "issuer": "https://securetoken.google.com/example-project", "subject": "Xk3EXAMPLEuid0123456789abcdef", "verified": true, "transport": "backend", "audience": "example-project", "audiences": ["example-project"], "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "auth_time": "2025-10-09T08:51:40Z"}
+    },
+    {
+      "name": "firebase sign_in_second_factor object sends no mfa",
+      "provider": "firebase",
+      "claims": {"iss": "https://securetoken.google.com/example-project", "aud": "example-project", "auth_time": 1759999900, "user_id": "Xk3EXAMPLEuid0123456789abcdef", "sub": "Xk3EXAMPLEuid0123456789abcdef", "iat": 1760000000, "exp": 1760003600, "email": "person@example.com", "email_verified": true, "firebase": {"identities": {"email": ["person@example.com"]}, "sign_in_provider": "password", "sign_in_second_factor": {"factor": "phone"}}},
+      "overrides": {},
+      "expect": {"provider": "firebase", "issuer": "https://securetoken.google.com/example-project", "subject": "Xk3EXAMPLEuid0123456789abcdef", "verified": true, "transport": "backend", "audience": "example-project", "audiences": ["example-project"], "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "auth_time": "2025-10-09T08:51:40Z"}
+    },
+    {
+      "name": "firebase sign_in_second_factor null sends no mfa",
+      "provider": "firebase",
+      "claims": {"iss": "https://securetoken.google.com/example-project", "aud": "example-project", "auth_time": 1759999900, "user_id": "Xk3EXAMPLEuid0123456789abcdef", "sub": "Xk3EXAMPLEuid0123456789abcdef", "iat": 1760000000, "exp": 1760003600, "email": "person@example.com", "email_verified": true, "firebase": {"identities": {"email": ["person@example.com"]}, "sign_in_provider": "password", "sign_in_second_factor": null}},
+      "overrides": {},
+      "expect": {"provider": "firebase", "issuer": "https://securetoken.google.com/example-project", "subject": "Xk3EXAMPLEuid0123456789abcdef", "verified": true, "transport": "backend", "audience": "example-project", "audiences": ["example-project"], "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "auth_time": "2025-10-09T08:51:40Z"}
+    },
+    {
+      "name": "firebase second_factor_identifier alone is not mfa",
+      "provider": "firebase",
+      "claims": {"iss": "https://securetoken.google.com/example-project", "aud": "example-project", "auth_time": 1759999900, "user_id": "Xk3EXAMPLEuid0123456789abcdef", "sub": "Xk3EXAMPLEuid0123456789abcdef", "iat": 1760000000, "exp": 1760003600, "email": "person@example.com", "email_verified": true, "firebase": {"identities": {"email": ["person@example.com"]}, "sign_in_provider": "password", "second_factor_identifier": "EXAMPLEFACTORID"}},
+      "overrides": {},
+      "expect": {"provider": "firebase", "issuer": "https://securetoken.google.com/example-project", "subject": "Xk3EXAMPLEuid0123456789abcdef", "verified": true, "transport": "backend", "audience": "example-project", "audiences": ["example-project"], "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "auth_time": "2025-10-09T08:51:40Z"}
+    },
+    {
+      "name": "firebase tenant",
+      "provider": "firebase",
+      "claims": {"iss": "https://securetoken.google.com/example-project", "aud": "example-project", "auth_time": 1759999900, "user_id": "Xk3EXAMPLEuid0123456789abcdef", "sub": "Xk3EXAMPLEuid0123456789abcdef", "iat": 1760000000, "exp": 1760003600, "email": "person@example.com", "email_verified": true, "firebase": {"identities": {"email": ["person@example.com"]}, "sign_in_provider": "password", "tenant": "tenant-a1b2c"}},
+      "overrides": {},
+      "expect": {"provider": "firebase", "issuer": "https://securetoken.google.com/example-project", "subject": "Xk3EXAMPLEuid0123456789abcdef", "verified": true, "transport": "backend", "audience": "example-project", "audiences": ["example-project"], "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "auth_time": "2025-10-09T08:51:40Z", "tenant_id": "tenant-a1b2c"}
+    },
+    {
+      "name": "firebase tenant with a second factor",
+      "provider": "firebase",
+      "claims": {"iss": "https://securetoken.google.com/example-project", "aud": "example-project", "auth_time": 1759999900, "user_id": "Xk3EXAMPLEuid0123456789abcdef", "sub": "Xk3EXAMPLEuid0123456789abcdef", "iat": 1760000000, "exp": 1760003600, "email": "person@example.com", "email_verified": true, "firebase": {"identities": {"email": ["person@example.com"]}, "sign_in_provider": "password", "sign_in_second_factor": "totp", "second_factor_identifier": "EXAMPLEFACTORID", "tenant": "tenant-a1b2c"}},
+      "overrides": {},
+      "expect": {"provider": "firebase", "issuer": "https://securetoken.google.com/example-project", "subject": "Xk3EXAMPLEuid0123456789abcdef", "verified": true, "transport": "backend", "audience": "example-project", "audiences": ["example-project"], "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "auth_time": "2025-10-09T08:51:40Z", "tenant_id": "tenant-a1b2c", "mfa": {"present": true, "methods": ["totp"]}}
+    },
+    {
+      "name": "firebase anonymous user in a tenant",
+      "provider": "firebase",
+      "claims": {"iss": "https://securetoken.google.com/example-project", "aud": "example-project", "auth_time": 1759999900, "user_id": "Xk3EXAMPLEuid0123456789abcdef", "sub": "Xk3EXAMPLEuid0123456789abcdef", "iat": 1760000000, "exp": 1760003600, "firebase": {"identities": {}, "sign_in_provider": "anonymous", "tenant": "tenant-a1b2c"}},
+      "overrides": {},
+      "expect": {"provider": "firebase", "issuer": "https://securetoken.google.com/example-project", "subject": "Xk3EXAMPLEuid0123456789abcdef", "verified": true, "transport": "backend", "audience": "example-project", "audiences": ["example-project"], "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "auth_time": "2025-10-09T08:51:40Z", "assurance_level": "low", "tenant_id": "tenant-a1b2c"}
+    },
+    {
+      "name": "firebase tenant number is absent",
+      "provider": "firebase",
+      "claims": {"iss": "https://securetoken.google.com/example-project", "aud": "example-project", "auth_time": 1759999900, "user_id": "Xk3EXAMPLEuid0123456789abcdef", "sub": "Xk3EXAMPLEuid0123456789abcdef", "iat": 1760000000, "exp": 1760003600, "email": "person@example.com", "email_verified": true, "firebase": {"identities": {"email": ["person@example.com"]}, "sign_in_provider": "password", "tenant": 7}},
+      "overrides": {},
+      "expect": {"provider": "firebase", "issuer": "https://securetoken.google.com/example-project", "subject": "Xk3EXAMPLEuid0123456789abcdef", "verified": true, "transport": "backend", "audience": "example-project", "audiences": ["example-project"], "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "auth_time": "2025-10-09T08:51:40Z"}
+    },
+    {
+      "name": "firebase tenant with a space is absent",
+      "provider": "firebase",
+      "claims": {"iss": "https://securetoken.google.com/example-project", "aud": "example-project", "auth_time": 1759999900, "user_id": "Xk3EXAMPLEuid0123456789abcdef", "sub": "Xk3EXAMPLEuid0123456789abcdef", "iat": 1760000000, "exp": 1760003600, "email": "person@example.com", "email_verified": true, "firebase": {"identities": {"email": ["person@example.com"]}, "sign_in_provider": "password", "tenant": "tenant one"}},
+      "overrides": {},
+      "expect": {"provider": "firebase", "issuer": "https://securetoken.google.com/example-project", "subject": "Xk3EXAMPLEuid0123456789abcdef", "verified": true, "transport": "backend", "audience": "example-project", "audiences": ["example-project"], "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "auth_time": "2025-10-09T08:51:40Z"}
+    },
+    {
+      "name": "firebase tenant empty is absent",
+      "provider": "firebase",
+      "claims": {"iss": "https://securetoken.google.com/example-project", "aud": "example-project", "auth_time": 1759999900, "user_id": "Xk3EXAMPLEuid0123456789abcdef", "sub": "Xk3EXAMPLEuid0123456789abcdef", "iat": 1760000000, "exp": 1760003600, "email": "person@example.com", "email_verified": true, "firebase": {"identities": {"email": ["person@example.com"]}, "sign_in_provider": "password", "tenant": ""}},
+      "overrides": {},
+      "expect": {"provider": "firebase", "issuer": "https://securetoken.google.com/example-project", "subject": "Xk3EXAMPLEuid0123456789abcdef", "verified": true, "transport": "backend", "audience": "example-project", "audiences": ["example-project"], "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "auth_time": "2025-10-09T08:51:40Z"}
+    },
+    {
+      "name": "firebase tenant null is absent",
+      "provider": "firebase",
+      "claims": {"iss": "https://securetoken.google.com/example-project", "aud": "example-project", "auth_time": 1759999900, "user_id": "Xk3EXAMPLEuid0123456789abcdef", "sub": "Xk3EXAMPLEuid0123456789abcdef", "iat": 1760000000, "exp": 1760003600, "email": "person@example.com", "email_verified": true, "firebase": {"identities": {"email": ["person@example.com"]}, "sign_in_provider": "password", "tenant": null}},
+      "overrides": {},
+      "expect": {"provider": "firebase", "issuer": "https://securetoken.google.com/example-project", "subject": "Xk3EXAMPLEuid0123456789abcdef", "verified": true, "transport": "backend", "audience": "example-project", "audiences": ["example-project"], "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "auth_time": "2025-10-09T08:51:40Z"}
+    },
+    {
+      "name": "firebase tenant object is absent",
+      "provider": "firebase",
+      "claims": {"iss": "https://securetoken.google.com/example-project", "aud": "example-project", "auth_time": 1759999900, "user_id": "Xk3EXAMPLEuid0123456789abcdef", "sub": "Xk3EXAMPLEuid0123456789abcdef", "iat": 1760000000, "exp": 1760003600, "email": "person@example.com", "email_verified": true, "firebase": {"identities": {"email": ["person@example.com"]}, "sign_in_provider": "password", "tenant": {"id": "t"}}},
+      "overrides": {},
+      "expect": {"provider": "firebase", "issuer": "https://securetoken.google.com/example-project", "subject": "Xk3EXAMPLEuid0123456789abcdef", "verified": true, "transport": "backend", "audience": "example-project", "audiences": ["example-project"], "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "auth_time": "2025-10-09T08:51:40Z"}
+    },
+    {
+      "name": "firebase token without a tenant sends no tenant_id",
+      "provider": "firebase",
+      "claims": {"iss": "https://securetoken.google.com/example-project", "aud": "example-project", "auth_time": 1759999900, "user_id": "Xk3EXAMPLEuid0123456789abcdef", "sub": "Xk3EXAMPLEuid0123456789abcdef", "iat": 1760000000, "exp": 1760003600, "email": "person@example.com", "email_verified": true, "firebase": {"identities": {"email": ["person@example.com"]}, "sign_in_provider": "password"}},
+      "overrides": {},
+      "expect": {"provider": "firebase", "issuer": "https://securetoken.google.com/example-project", "subject": "Xk3EXAMPLEuid0123456789abcdef", "verified": true, "transport": "backend", "audience": "example-project", "audiences": ["example-project"], "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "auth_time": "2025-10-09T08:51:40Z"}
+    },
+    {
+      "name": "firebase email_verified is not read from the token",
+      "provider": "firebase",
+      "claims": {"iss": "https://securetoken.google.com/example-project", "aud": "example-project", "auth_time": 1759999900, "user_id": "Xk3EXAMPLEuid0123456789abcdef", "sub": "Xk3EXAMPLEuid0123456789abcdef", "iat": 1760000000, "exp": 1760003600, "email": "person@example.com", "email_verified": true, "firebase": {"identities": {"email": ["person@example.com"]}, "sign_in_provider": "password"}},
+      "overrides": {},
+      "expect": {"provider": "firebase", "issuer": "https://securetoken.google.com/example-project", "subject": "Xk3EXAMPLEuid0123456789abcdef", "verified": true, "transport": "backend", "audience": "example-project", "audiences": ["example-project"], "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "auth_time": "2025-10-09T08:51:40Z"}
+    },
+    {
+      "name": "firebase contact verification comes from overrides",
+      "provider": "firebase",
+      "claims": {"iss": "https://securetoken.google.com/example-project", "aud": "example-project", "auth_time": 1759999900, "user_id": "Xk3EXAMPLEuid0123456789abcdef", "sub": "Xk3EXAMPLEuid0123456789abcdef", "iat": 1760000000, "exp": 1760003600, "email": "person@example.com", "email_verified": false, "firebase": {"identities": {"email": ["person@example.com"]}, "sign_in_provider": "password"}},
+      "overrides": {"email_verified": true, "phone_verified": false, "account_created_at": "2026-01-01T00:00:00Z", "session_created_at": "2025-10-09T08:51:40Z"},
+      "expect": {"provider": "firebase", "issuer": "https://securetoken.google.com/example-project", "subject": "Xk3EXAMPLEuid0123456789abcdef", "verified": true, "transport": "backend", "audience": "example-project", "audiences": ["example-project"], "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "auth_time": "2025-10-09T08:51:40Z", "email_verified": true, "phone_verified": false, "account_created_at": "2026-01-01T00:00:00Z", "session_created_at": "2025-10-09T08:51:40Z"}
+    },
+    {
+      "name": "firebase mfa override replaces the mapped value",
+      "provider": "firebase",
+      "claims": {"iss": "https://securetoken.google.com/example-project", "aud": "example-project", "auth_time": 1759999900, "user_id": "Xk3EXAMPLEuid0123456789abcdef", "sub": "Xk3EXAMPLEuid0123456789abcdef", "iat": 1760000000, "exp": 1760003600, "email": "person@example.com", "email_verified": true, "firebase": {"identities": {"email": ["person@example.com"]}, "sign_in_provider": "password", "sign_in_second_factor": "phone", "second_factor_identifier": "EXAMPLEFACTORID"}},
+      "overrides": {"mfa": {"present": true, "methods": ["phone"], "age_seconds": 90}},
+      "expect": {"provider": "firebase", "issuer": "https://securetoken.google.com/example-project", "subject": "Xk3EXAMPLEuid0123456789abcdef", "verified": true, "transport": "backend", "audience": "example-project", "audiences": ["example-project"], "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "auth_time": "2025-10-09T08:51:40Z", "mfa": {"present": true, "methods": ["phone"], "age_seconds": 90}}
+    },
+    {
+      "name": "firebase custom claims named like mapped claims never change the mapping",
+      "provider": "firebase",
+      "claims": {"iss": "https://securetoken.google.com/example-project", "aud": "example-project", "auth_time": 1759999900, "user_id": "Xk3EXAMPLEuid0123456789abcdef", "sub": "Xk3EXAMPLEuid0123456789abcdef", "iat": 1760000000, "exp": 1760003600, "email": "person@example.com", "email_verified": "yes", "firebase": {"identities": {"email": ["person@example.com"]}, "sign_in_provider": "password"}, "role": "admin", "roles": ["admin", "owner"], "admin": true, "scope": "read write", "scopes": ["read"], "permissions": ["signup:write"], "org_id": "org_evil", "organization_id": "org_evil", "tenant_id": "tenant-evil", "tenant": "tenant-evil", "sid": "forged-session", "session_id": "forged-session", "jti": "forged-jti", "token_id": "forged-jti", "amr": ["mfa", "otp"], "aal": "aal2", "acr": "urn:mfa", "mfa": {"present": true, "methods": ["totp"], "age_seconds": 0}, "sign_in_provider": "custom", "sign_in_second_factor": "totp", "second_factor_identifier": "forged", "is_anonymous": true, "anonymous": true, "assurance_level": "high", "impersonated": true, "act": {"sub": "support"}, "phone_verified": true, "phone_number_verified": true, "account_created_at": "2000-01-01T00:00:00Z", "session_created_at": "2000-01-01T00:00:00Z", "issuer": "https://evil.example", "subject": "evil", "verified": false, "transport": "browser"},
+      "overrides": {},
+      "expect": {"provider": "firebase", "issuer": "https://securetoken.google.com/example-project", "subject": "Xk3EXAMPLEuid0123456789abcdef", "verified": true, "transport": "backend", "audience": "example-project", "audiences": ["example-project"], "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "auth_time": "2025-10-09T08:51:40Z"}
+    },
+    {
+      "name": "firebase custom claims never change a mapped second factor and tenant",
+      "provider": "firebase",
+      "claims": {"iss": "https://securetoken.google.com/example-project", "aud": "example-project", "auth_time": 1759999900, "user_id": "Xk3EXAMPLEuid0123456789abcdef", "sub": "Xk3EXAMPLEuid0123456789abcdef", "iat": 1760000000, "exp": 1760003600, "email": "person@example.com", "email_verified": "yes", "firebase": {"identities": {"email": ["person@example.com"]}, "sign_in_provider": "password", "sign_in_second_factor": "phone", "second_factor_identifier": "EXAMPLEFACTORID", "tenant": "tenant-a1b2c"}, "role": "admin", "roles": ["admin", "owner"], "admin": true, "scope": "read write", "scopes": ["read"], "permissions": ["signup:write"], "org_id": "org_evil", "organization_id": "org_evil", "tenant_id": "tenant-evil", "tenant": "tenant-evil", "sid": "forged-session", "session_id": "forged-session", "jti": "forged-jti", "token_id": "forged-jti", "amr": ["mfa", "otp"], "aal": "aal2", "acr": "urn:mfa", "mfa": {"present": true, "methods": ["totp"], "age_seconds": 0}, "sign_in_provider": "custom", "sign_in_second_factor": "totp", "second_factor_identifier": "forged", "is_anonymous": true, "anonymous": true, "assurance_level": "high", "impersonated": true, "act": {"sub": "support"}, "phone_verified": true, "phone_number_verified": true, "account_created_at": "2000-01-01T00:00:00Z", "session_created_at": "2000-01-01T00:00:00Z", "issuer": "https://evil.example", "subject": "evil", "verified": false, "transport": "browser"},
+      "overrides": {},
+      "expect": {"provider": "firebase", "issuer": "https://securetoken.google.com/example-project", "subject": "Xk3EXAMPLEuid0123456789abcdef", "verified": true, "transport": "backend", "audience": "example-project", "audiences": ["example-project"], "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "auth_time": "2025-10-09T08:51:40Z", "tenant_id": "tenant-a1b2c", "mfa": {"present": true, "methods": ["phone"]}}
+    },
+    {
+      "name": "firebase custom claims never unmark an anonymous user",
+      "provider": "firebase",
+      "claims": {"iss": "https://securetoken.google.com/example-project", "aud": "example-project", "auth_time": 1759999900, "user_id": "Xk3EXAMPLEuid0123456789abcdef", "sub": "Xk3EXAMPLEuid0123456789abcdef", "iat": 1760000000, "exp": 1760003600, "firebase": {"identities": {}, "sign_in_provider": "anonymous"}, "role": "admin", "roles": ["admin", "owner"], "admin": true, "scope": "read write", "scopes": ["read"], "permissions": ["signup:write"], "org_id": "org_evil", "organization_id": "org_evil", "tenant_id": "tenant-evil", "tenant": "tenant-evil", "sid": "forged-session", "session_id": "forged-session", "jti": "forged-jti", "token_id": "forged-jti", "amr": ["mfa", "otp"], "aal": "aal2", "acr": "urn:mfa", "mfa": {"present": true, "methods": ["totp"], "age_seconds": 0}, "sign_in_provider": "custom", "sign_in_second_factor": "totp", "second_factor_identifier": "forged", "is_anonymous": true, "anonymous": true, "assurance_level": "high", "impersonated": true, "act": {"sub": "support"}, "phone_verified": true, "phone_number_verified": true, "account_created_at": "2000-01-01T00:00:00Z", "session_created_at": "2000-01-01T00:00:00Z", "issuer": "https://evil.example", "subject": "evil", "verified": false, "transport": "browser"},
+      "overrides": {},
+      "expect": {"provider": "firebase", "issuer": "https://securetoken.google.com/example-project", "subject": "Xk3EXAMPLEuid0123456789abcdef", "verified": true, "transport": "backend", "audience": "example-project", "audiences": ["example-project"], "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "auth_time": "2025-10-09T08:51:40Z", "assurance_level": "low"}
+    },
+    {
+      "name": "firebase custom claims on a token without a firebase claim map to nothing extra",
+      "provider": "firebase",
+      "claims": {"iss": "https://securetoken.google.com/example-project", "aud": "example-project", "auth_time": 1759999900, "user_id": "Xk3EXAMPLEuid0123456789abcdef", "sub": "Xk3EXAMPLEuid0123456789abcdef", "iat": 1760000000, "exp": 1760003600, "email": "person@example.com", "email_verified": "yes", "role": "admin", "roles": ["admin", "owner"], "admin": true, "scope": "read write", "scopes": ["read"], "permissions": ["signup:write"], "org_id": "org_evil", "organization_id": "org_evil", "tenant_id": "tenant-evil", "tenant": "tenant-evil", "sid": "forged-session", "session_id": "forged-session", "jti": "forged-jti", "token_id": "forged-jti", "amr": ["mfa", "otp"], "aal": "aal2", "acr": "urn:mfa", "mfa": {"present": true, "methods": ["totp"], "age_seconds": 0}, "sign_in_provider": "custom", "sign_in_second_factor": "totp", "second_factor_identifier": "forged", "is_anonymous": true, "anonymous": true, "assurance_level": "high", "impersonated": true, "act": {"sub": "support"}, "phone_verified": true, "phone_number_verified": true, "account_created_at": "2000-01-01T00:00:00Z", "session_created_at": "2000-01-01T00:00:00Z", "issuer": "https://evil.example", "subject": "evil", "verified": false, "transport": "browser"},
+      "overrides": {},
+      "expect": {"provider": "firebase", "issuer": "https://securetoken.google.com/example-project", "subject": "Xk3EXAMPLEuid0123456789abcdef", "verified": true, "transport": "backend", "audience": "example-project", "audiences": ["example-project"], "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "auth_time": "2025-10-09T08:51:40Z"}
+    },
+    {
+      "name": "firebase custom claim role alone changes nothing",
+      "provider": "firebase",
+      "claims": {"iss": "https://securetoken.google.com/example-project", "aud": "example-project", "auth_time": 1759999900, "user_id": "Xk3EXAMPLEuid0123456789abcdef", "sub": "Xk3EXAMPLEuid0123456789abcdef", "iat": 1760000000, "exp": 1760003600, "email": "person@example.com", "email_verified": true, "firebase": {"identities": {"email": ["person@example.com"]}, "sign_in_provider": "password"}, "role": "admin"},
+      "overrides": {},
+      "expect": {"provider": "firebase", "issuer": "https://securetoken.google.com/example-project", "subject": "Xk3EXAMPLEuid0123456789abcdef", "verified": true, "transport": "backend", "audience": "example-project", "audiences": ["example-project"], "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "auth_time": "2025-10-09T08:51:40Z"}
+    },
+    {
+      "name": "firebase custom claim roles alone changes nothing",
+      "provider": "firebase",
+      "claims": {"iss": "https://securetoken.google.com/example-project", "aud": "example-project", "auth_time": 1759999900, "user_id": "Xk3EXAMPLEuid0123456789abcdef", "sub": "Xk3EXAMPLEuid0123456789abcdef", "iat": 1760000000, "exp": 1760003600, "email": "person@example.com", "email_verified": true, "firebase": {"identities": {"email": ["person@example.com"]}, "sign_in_provider": "password"}, "roles": ["admin"]},
+      "overrides": {},
+      "expect": {"provider": "firebase", "issuer": "https://securetoken.google.com/example-project", "subject": "Xk3EXAMPLEuid0123456789abcdef", "verified": true, "transport": "backend", "audience": "example-project", "audiences": ["example-project"], "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "auth_time": "2025-10-09T08:51:40Z"}
+    },
+    {
+      "name": "firebase custom claim sid alone changes nothing",
+      "provider": "firebase",
+      "claims": {"iss": "https://securetoken.google.com/example-project", "aud": "example-project", "auth_time": 1759999900, "user_id": "Xk3EXAMPLEuid0123456789abcdef", "sub": "Xk3EXAMPLEuid0123456789abcdef", "iat": 1760000000, "exp": 1760003600, "email": "person@example.com", "email_verified": true, "firebase": {"identities": {"email": ["person@example.com"]}, "sign_in_provider": "password"}, "sid": "forged-session"},
+      "overrides": {},
+      "expect": {"provider": "firebase", "issuer": "https://securetoken.google.com/example-project", "subject": "Xk3EXAMPLEuid0123456789abcdef", "verified": true, "transport": "backend", "audience": "example-project", "audiences": ["example-project"], "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "auth_time": "2025-10-09T08:51:40Z"}
+    },
+    {
+      "name": "firebase custom claim org_id alone changes nothing",
+      "provider": "firebase",
+      "claims": {"iss": "https://securetoken.google.com/example-project", "aud": "example-project", "auth_time": 1759999900, "user_id": "Xk3EXAMPLEuid0123456789abcdef", "sub": "Xk3EXAMPLEuid0123456789abcdef", "iat": 1760000000, "exp": 1760003600, "email": "person@example.com", "email_verified": true, "firebase": {"identities": {"email": ["person@example.com"]}, "sign_in_provider": "password"}, "org_id": "org_evil"},
+      "overrides": {},
+      "expect": {"provider": "firebase", "issuer": "https://securetoken.google.com/example-project", "subject": "Xk3EXAMPLEuid0123456789abcdef", "verified": true, "transport": "backend", "audience": "example-project", "audiences": ["example-project"], "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "auth_time": "2025-10-09T08:51:40Z"}
+    },
+    {
+      "name": "firebase custom claim scope alone changes nothing",
+      "provider": "firebase",
+      "claims": {"iss": "https://securetoken.google.com/example-project", "aud": "example-project", "auth_time": 1759999900, "user_id": "Xk3EXAMPLEuid0123456789abcdef", "sub": "Xk3EXAMPLEuid0123456789abcdef", "iat": 1760000000, "exp": 1760003600, "email": "person@example.com", "email_verified": true, "firebase": {"identities": {"email": ["person@example.com"]}, "sign_in_provider": "password"}, "scope": "admin"},
+      "overrides": {},
+      "expect": {"provider": "firebase", "issuer": "https://securetoken.google.com/example-project", "subject": "Xk3EXAMPLEuid0123456789abcdef", "verified": true, "transport": "backend", "audience": "example-project", "audiences": ["example-project"], "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "auth_time": "2025-10-09T08:51:40Z"}
+    },
+    {
+      "name": "firebase custom claim is_anonymous alone changes nothing",
+      "provider": "firebase",
+      "claims": {"iss": "https://securetoken.google.com/example-project", "aud": "example-project", "auth_time": 1759999900, "user_id": "Xk3EXAMPLEuid0123456789abcdef", "sub": "Xk3EXAMPLEuid0123456789abcdef", "iat": 1760000000, "exp": 1760003600, "email": "person@example.com", "email_verified": true, "firebase": {"identities": {"email": ["person@example.com"]}, "sign_in_provider": "password"}, "is_anonymous": true},
+      "overrides": {},
+      "expect": {"provider": "firebase", "issuer": "https://securetoken.google.com/example-project", "subject": "Xk3EXAMPLEuid0123456789abcdef", "verified": true, "transport": "backend", "audience": "example-project", "audiences": ["example-project"], "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "auth_time": "2025-10-09T08:51:40Z"}
+    },
+    {
+      "name": "firebase missing firebase claim sends nothing extra",
+      "provider": "firebase",
+      "claims": {"iss": "https://securetoken.google.com/example-project", "sub": "Xk3EXAMPLEuid0123456789abcdef"},
+      "overrides": {},
+      "expect": {"provider": "firebase", "issuer": "https://securetoken.google.com/example-project", "subject": "Xk3EXAMPLEuid0123456789abcdef", "verified": true, "transport": "backend"}
+    },
+    {
+      "name": "firebase firebase claim that is not an object sends nothing extra",
+      "provider": "firebase",
+      "claims": {"iss": "https://securetoken.google.com/example-project", "sub": "Xk3EXAMPLEuid0123456789abcdef", "firebase": "anonymous"},
+      "overrides": {},
+      "expect": {"provider": "firebase", "issuer": "https://securetoken.google.com/example-project", "subject": "Xk3EXAMPLEuid0123456789abcdef", "verified": true, "transport": "backend"}
+    },
+    {
+      "name": "firebase sign_in_provider of another type is not anonymous",
+      "provider": "firebase",
+      "claims": {"iss": "https://securetoken.google.com/example-project", "aud": "example-project", "auth_time": 1759999900, "user_id": "Xk3EXAMPLEuid0123456789abcdef", "sub": "Xk3EXAMPLEuid0123456789abcdef", "iat": 1760000000, "exp": 1760003600, "email": "person@example.com", "email_verified": true, "firebase": {"identities": {"email": ["person@example.com"]}, "sign_in_provider": null}},
+      "overrides": {},
+      "expect": {"provider": "firebase", "issuer": "https://securetoken.google.com/example-project", "subject": "Xk3EXAMPLEuid0123456789abcdef", "verified": true, "transport": "backend", "audience": "example-project", "audiences": ["example-project"], "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "auth_time": "2025-10-09T08:51:40Z"}
+    },
+    {
+      "name": "firebase sign_in_provider Anonymous in another case is not anonymous",
+      "provider": "firebase",
+      "claims": {"iss": "https://securetoken.google.com/example-project", "aud": "example-project", "auth_time": 1759999900, "user_id": "Xk3EXAMPLEuid0123456789abcdef", "sub": "Xk3EXAMPLEuid0123456789abcdef", "iat": 1760000000, "exp": 1760003600, "email": "person@example.com", "email_verified": true, "firebase": {"identities": {"email": ["person@example.com"]}, "sign_in_provider": "Anonymous"}},
+      "overrides": {},
+      "expect": {"provider": "firebase", "issuer": "https://securetoken.google.com/example-project", "subject": "Xk3EXAMPLEuid0123456789abcdef", "verified": true, "transport": "backend", "audience": "example-project", "audiences": ["example-project"], "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "auth_time": "2025-10-09T08:51:40Z"}
+    },
+    {
+      "name": "firebase auth_time as a number maps and exp truncates",
+      "provider": "firebase",
+      "claims": {"iss": "https://securetoken.google.com/example-project", "aud": "example-project", "auth_time": 1759999900, "user_id": "Xk3EXAMPLEuid0123456789abcdef", "sub": "Xk3EXAMPLEuid0123456789abcdef", "iat": 1760000000, "exp": 1760003600.9, "email": "person@example.com", "email_verified": true, "firebase": {"identities": {"email": ["person@example.com"]}, "sign_in_provider": "password"}},
+      "overrides": {},
+      "expect": {"provider": "firebase", "issuer": "https://securetoken.google.com/example-project", "subject": "Xk3EXAMPLEuid0123456789abcdef", "verified": true, "transport": "backend", "audience": "example-project", "audiences": ["example-project"], "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "auth_time": "2025-10-09T08:51:40Z"}
+    },
+    {
+      "name": "firebase admin SDK uid and user_id are not read",
+      "provider": "firebase",
+      "claims": {"iss": "https://securetoken.google.com/example-project", "aud": "example-project", "auth_time": 1759999900, "user_id": "other-uid", "sub": "Xk3EXAMPLEuid0123456789abcdef", "iat": 1760000000, "exp": 1760003600, "email": "person@example.com", "email_verified": true, "firebase": {"identities": {"email": ["person@example.com"]}, "sign_in_provider": "password"}, "uid": "other-uid"},
+      "overrides": {},
+      "expect": {"provider": "firebase", "issuer": "https://securetoken.google.com/example-project", "subject": "Xk3EXAMPLEuid0123456789abcdef", "verified": true, "transport": "backend", "audience": "example-project", "audiences": ["example-project"], "issued_at": "2025-10-09T08:53:20Z", "expires_at": "2025-10-09T09:53:20Z", "auth_time": "2025-10-09T08:51:40Z"}
+    },
+    {
+      "name": "firebase http issuer is refused",
+      "provider": "firebase",
+      "claims": {"iss": "http://securetoken.google.com/example-project", "aud": "example-project", "auth_time": 1759999900, "user_id": "Xk3EXAMPLEuid0123456789abcdef", "sub": "Xk3EXAMPLEuid0123456789abcdef", "iat": 1760000000, "exp": 1760003600, "email": "person@example.com", "email_verified": true, "firebase": {"identities": {"email": ["person@example.com"]}, "sign_in_provider": "password"}},
+      "overrides": {},
+      "error": true
+    },
+    {
+      "name": "firebase uid with a space is refused",
+      "provider": "firebase",
+      "claims": {"iss": "https://securetoken.google.com/example-project", "aud": "example-project", "auth_time": 1759999900, "user_id": "Xk3EXAMPLEuid0123456789abcdef", "sub": "bad uid", "iat": 1760000000, "exp": 1760003600, "email": "person@example.com", "email_verified": true, "firebase": {"identities": {"email": ["person@example.com"]}, "sign_in_provider": "password"}},
+      "overrides": {},
+      "error": true
+    },
+    {
+      "name": "firebase missing subject is refused",
+      "provider": "firebase",
+      "claims": {"iss": "https://securetoken.google.com/example-project", "aud": "example-project", "auth_time": 1759999900, "user_id": "Xk3EXAMPLEuid0123456789abcdef", "iat": 1760000000, "exp": 1760003600, "email": "person@example.com", "email_verified": true, "firebase": {"identities": {"email": ["person@example.com"]}, "sign_in_provider": "password"}},
+      "overrides": {},
+      "error": true
     }
   ]
 }
