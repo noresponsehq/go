@@ -1,0 +1,12 @@
+{
+  "account_id": "acct_7f3a9c",
+  "identifiers": {
+    "email": "new.user@example.com"
+  },
+  "auth_context": {
+    "provider": "auth0",
+    "issuer": "https://tenant.auth0.com/",
+    "verified": true,
+    "transport": "backend"
+  }
+}

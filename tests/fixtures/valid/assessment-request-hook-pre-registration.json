@@ -1,0 +1,12 @@
+{
+  "identifiers": {
+    "email": "new.user@example.com"
+  },
+  "auth_context": {
+    "provider": "auth0",
+    "issuer": "https://tenant.auth0.com/",
+    "verified": false,
+    "transport": "provider_hook",
+    "hook_point": "pre_registration"
+  }
+}

@@ -457,7 +457,7 @@
             "minLength": 1,
             "maxLength": 128,
             "pattern": "^[A-Za-z0-9][A-Za-z0-9._:|-]{0,127}$",
-            "description": "Your own opaque identifier for the account being checked, scoped to your tenant. Use an id you mint, with no direct identifier (email, phone, name or national id) in it. '|' is accepted so an Auth0 user id such as 'auth0|64abc' passes unchanged; '@', '+', '$' and whitespace are refused, as is a JWT; a hex digest such as a SHA-256 is allowed. It travels only in request bodies.",
+            "description": "Your own opaque identifier for the account being checked, scoped to your tenant. Use an id you mint, with no direct identifier (email, phone, name or national id) in it. '|' is accepted so an Auth0 user id such as 'auth0|64abc' passes unchanged; '@', '+', '$' and whitespace are refused, as is a JWT; a hex digest such as a SHA-256 is allowed. It travels only in request bodies. An assessment requested by a provider hook at pre_registration, which has no account yet, carries the server-issued account_id pre: followed by its assessment_id.",
             "example": "acct_7f3a9c"
           },
           "request_id": {
@@ -560,7 +560,7 @@
             "minLength": 1,
             "maxLength": 128,
             "pattern": "^[A-Za-z0-9][A-Za-z0-9._:|-]{0,127}$",
-            "description": "Your own opaque identifier for the account being checked, scoped to your tenant. Use an id you mint, with no direct identifier (email, phone, name or national id) in it. '|' is accepted so an Auth0 user id such as 'auth0|64abc' passes unchanged; '@', '+', '$' and whitespace are refused, as is a JWT; a hex digest such as a SHA-256 is allowed. It travels only in request bodies.",
+            "description": "Your own opaque identifier for the account being checked, scoped to your tenant. Use an id you mint, with no direct identifier (email, phone, name or national id) in it. '|' is accepted so an Auth0 user id such as 'auth0|64abc' passes unchanged; '@', '+', '$' and whitespace are refused, as is a JWT; a hex digest such as a SHA-256 is allowed. It travels only in request bodies. An assessment requested by a provider hook at pre_registration, which has no account yet, carries the server-issued account_id pre: followed by its assessment_id.",
             "example": "acct_7f3a9c"
           },
           "items": {
@@ -666,7 +666,7 @@
             "minLength": 1,
             "maxLength": 128,
             "pattern": "^[A-Za-z0-9][A-Za-z0-9._:|-]{0,127}$",
-            "description": "Your own opaque identifier for the account being checked, scoped to your tenant. Use an id you mint, with no direct identifier (email, phone, name or national id) in it. '|' is accepted so an Auth0 user id such as 'auth0|64abc' passes unchanged; '@', '+', '$' and whitespace are refused, as is a JWT; a hex digest such as a SHA-256 is allowed. It travels only in request bodies.",
+            "description": "Your own opaque identifier for the account being checked, scoped to your tenant. Use an id you mint, with no direct identifier (email, phone, name or national id) in it. '|' is accepted so an Auth0 user id such as 'auth0|64abc' passes unchanged; '@', '+', '$' and whitespace are refused, as is a JWT; a hex digest such as a SHA-256 is allowed. It travels only in request bodies. An assessment requested by a provider hook at pre_registration, which has no account yet, carries the server-issued account_id pre: followed by its assessment_id.",
             "example": "acct_7f3a9c"
           },
           "limit": {
@@ -704,7 +704,7 @@
             "minLength": 1,
             "maxLength": 128,
             "pattern": "^[A-Za-z0-9][A-Za-z0-9._:|-]{0,127}$",
-            "description": "Your own opaque identifier for the account being checked, scoped to your tenant. Use an id you mint, with no direct identifier (email, phone, name or national id) in it. '|' is accepted so an Auth0 user id such as 'auth0|64abc' passes unchanged; '@', '+', '$' and whitespace are refused, as is a JWT; a hex digest such as a SHA-256 is allowed. It travels only in request bodies.",
+            "description": "Your own opaque identifier for the account being checked, scoped to your tenant. Use an id you mint, with no direct identifier (email, phone, name or national id) in it. '|' is accepted so an Auth0 user id such as 'auth0|64abc' passes unchanged; '@', '+', '$' and whitespace are refused, as is a JWT; a hex digest such as a SHA-256 is allowed. It travels only in request bodies. An assessment requested by a provider hook at pre_registration, which has no account yet, carries the server-issued account_id pre: followed by its assessment_id.",
             "example": "acct_7f3a9c"
           },
           "identifiers": {
@@ -941,7 +941,7 @@
             "type": "string",
             "maxLength": 256,
             "pattern": "^[A-Za-z0-9._:@/|+=~-]{1,256}$",
-            "description": "The verified stable subject identifier (`sub`), opaque to NoResponse.",
+            "description": "The verified stable subject identifier (`sub`), opaque to NoResponse. Required, except from a provider hook at pre_registration, where no user exists yet.",
             "example": "user_2EXAMPLE"
           },
           "session_id": {
@@ -1020,8 +1020,12 @@
           },
           "transport": {
             "$ref": "#/components/schemas/Transport",
-            "description": "Where the customer derived this context. Backend is the trusted integration path; browser values are treated as weak hints.",
+            "description": "Where this context was derived. Backend is the trusted integration path; browser values are treated as weak hints. provider_hook is a hosted provider hook (an Auth0 or WorkOS Action) calling at hook_point; it needs hook_point and verified false, and its authentication facts are not scored.",
             "default": "backend"
+          },
+          "hook_point": {
+            "$ref": "#/components/schemas/HookPoint",
+            "description": "The provider event a provider_hook context was sent for. pre_registration runs before the user exists, so subject and the request's account_id may be absent there. Sent only with transport provider_hook."
           },
           "verified": {
             "type": "boolean",
@@ -1395,6 +1399,17 @@
           "unknown"
         ],
         "description": "Freshness class of the evidence behind a signal. unknown whenever no evidence was obtained."
+      },
+      "HookPoint": {
+        "type": "string",
+        "enum": [
+          "pre_registration",
+          "post_registration",
+          "pre_login",
+          "post_login",
+          "token_issuance"
+        ],
+        "description": "The provider event a provider_hook context was sent for. pre_registration runs before the user exists, so subject and the request's account_id may be absent there. Sent only with transport provider_hook."
       },
       "IdentifierKind": {
         "enum": [
@@ -2393,9 +2408,10 @@
         "type": "string",
         "enum": [
           "backend",
-          "browser"
+          "browser",
+          "provider_hook"
         ],
-        "description": "Where the customer derived this context. Backend is the trusted integration path; browser values are treated as weak hints."
+        "description": "Where this context was derived. Backend is the trusted integration path; browser values are treated as weak hints. provider_hook is a hosted provider hook (an Auth0 or WorkOS Action) calling at hook_point; it needs hook_point and verified false, and its authentication facts are not scored."
       }
     },
     "parameters": {

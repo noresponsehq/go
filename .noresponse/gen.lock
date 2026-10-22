@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: 25ddae46-795d-45f5-b455-3f48c41d440e
 management:
-  docChecksum: 9b2eee6d979ca39441098c7423cd91b6
+  docChecksum: 4889c46d56c5d681cb501f0843a1504f
   docVersion: "1"
   speakeasyVersion: internal
   generationVersion: internal
-  releaseVersion: 2.0.8
-  configChecksum: 825d9234eefb8abb1a8fe56241557db9
+  releaseVersion: 2.0.9
+  configChecksum: cf2f8114e6088310532c7227a6a3f92b
 features:
   go:
     additionalDependencies: 0.1.0
@@ -53,17 +53,17 @@ trackedFiles:
   docs/models/components/alternatenameunion.md:
     last_write_checksum: sha1:f5af048a9c3e9c8e64532c7d8372d3c0c98f9e79
   docs/models/components/assessment.md:
-    last_write_checksum: sha1:9a38060bf6d53159b75a9f3b9a6472bd6558dda4
+    last_write_checksum: sha1:3c0e62676bb0ce4d0ee53e3dbd44f4ef60c76f73
   docs/models/components/assessmentlist.md:
-    last_write_checksum: sha1:b86d143fb649001229df6ad3dda6646c7042dab0
+    last_write_checksum: sha1:fddc432e93ce20ef5817c10f1e1aae1eb188812d
   docs/models/components/assessmentoutcome.md:
     last_write_checksum: sha1:f77d3fc79a98e0eb5037ff9ed8c622dbb8406bfa
   docs/models/components/assessmentoutcomerequest.md:
     last_write_checksum: sha1:eaa27aa045acb9b4a5b3ff64c918e3bede67068e
   docs/models/components/assessmentquery.md:
-    last_write_checksum: sha1:c26129e020ecc2f811bc4a56e0d29cfee19da222
+    last_write_checksum: sha1:c93dc9fb5a5e54e987e77a224ecc29a3ac83c395
   docs/models/components/assessmentrequest.md:
-    last_write_checksum: sha1:c3ee124f116ede53d4c93637145556311206adc3
+    last_write_checksum: sha1:c0fd8fe1d70d047eb4a0b66957336ce669b5a7fa
   docs/models/components/assessmentrequestclientcontext.md:
     last_write_checksum: sha1:872a7a4550b3202b8332d7707a17d6929f726a78
   docs/models/components/assessmentrequestidentifiers.md:
@@ -75,7 +75,7 @@ trackedFiles:
   docs/models/components/assurancelevel.md:
     last_write_checksum: sha1:1a6c7559cd6bbfb1fd8ae7ad6a74444432e28086
   docs/models/components/authcontext.md:
-    last_write_checksum: sha1:a0a316c92e55b7718efe5e7af7797395d61b3236
+    last_write_checksum: sha1:7a76d88e14f964b6eca30d06a6cd4fa0dbfbed9f
   docs/models/components/authcontextmfa.md:
     last_write_checksum: sha1:0899c8e216ad7d017b50dc1d44d9436f8e388c5a
   docs/models/components/authenticationerrorcode.md:
@@ -114,6 +114,8 @@ trackedFiles:
     last_write_checksum: sha1:286e3241151790cb1e0e848f0e89334ffd7beca0
   docs/models/components/freshness.md:
     last_write_checksum: sha1:14379d9345eaa692779d9ac3d6c44ab8a91ae777
+  docs/models/components/hookpoint.md:
+    last_write_checksum: sha1:0c768d47867d2f8153a6db49e8f1a86b62f98217
   docs/models/components/identifierkind.md:
     last_write_checksum: sha1:020f6eeabf77ef580f6a51d25a85d92e1a12b788
   docs/models/components/incompletereason.md:
@@ -205,7 +207,7 @@ trackedFiles:
   docs/models/components/timezoneunion.md:
     last_write_checksum: sha1:00a48465d7df2bf8695234bd1ab1e2100a9f492c
   docs/models/components/transport.md:
-    last_write_checksum: sha1:6dcf6d847565e1c527fff14f02ebe58043735d42
+    last_write_checksum: sha1:85a9cf02aaf3f51bac62a4b246d158b9e02043e6
   docs/models/components/website.md:
     last_write_checksum: sha1:0c51cc841fa8bca9e86405df9cb958841a5a4134
   docs/models/components/websiteunion.md:
@@ -283,17 +285,17 @@ trackedFiles:
   models/apierrors/responsevalidationerror.go:
     last_write_checksum: sha1:18ce0b205131db4e67be69b2f0725a48d98b3f74
   models/components/assessment.go:
-    last_write_checksum: sha1:0ff5bba2cb2a720fea73302c12f876bb3d871323
+    last_write_checksum: sha1:b3a98c396ceab4769d4abc791a6d539c475f36d6
   models/components/assessmentlist.go:
-    last_write_checksum: sha1:3dc3bb26a02496637c4fb02e4c700c464c9ec6e0
+    last_write_checksum: sha1:0ae02cd3a59869542ece4329fa2be167ec655449
   models/components/assessmentoutcome.go:
     last_write_checksum: sha1:a97c89c818f1e56dfd321b94e2533cc03b91b66a
   models/components/assessmentoutcomerequest.go:
     last_write_checksum: sha1:52bf783cdff6cbad8e7a17124634a7bc10502cae
   models/components/assessmentquery.go:
-    last_write_checksum: sha1:2f271d6bca9294e212ca1fed08172cb89f52ca02
+    last_write_checksum: sha1:5ef9e784f6fc8cc4377c908fdea88afa740278f7
   models/components/assessmentrequest.go:
-    last_write_checksum: sha1:fba67be964fcfc2be04e83d6d9ca60e2e0733ef8
+    last_write_checksum: sha1:7a4a393f712150ec3abedf3a6888629337225299
   models/components/assessmentrequestclientcontext.go:
     last_write_checksum: sha1:ecb3e604c96afa8782120a3029443100b3cdcb65
   models/components/assessmentrequestidentifiers.go:
@@ -305,7 +307,7 @@ trackedFiles:
   models/components/assurancelevel.go:
     last_write_checksum: sha1:2fe8cfc9e9d301133cbba7d513079733e8122ced
   models/components/authcontext.go:
-    last_write_checksum: sha1:757e6d1865f85554a42e15d9d2b2d893d31ac82e
+    last_write_checksum: sha1:fd8f0c89370b436a2d6fd7616b4141b87523e2f1
   models/components/authcontextmfa.go:
     last_write_checksum: sha1:b917b8a926391b0ddb2c85523d3f6e75003a727e
   models/components/authenticationerrorcode.go:
@@ -340,6 +342,8 @@ trackedFiles:
     last_write_checksum: sha1:bcbe965594fb876e84dfd8695c70580826f95d67
   models/components/freshness.go:
     last_write_checksum: sha1:bd656ecbe7761280272e5ec7d4da877cf4aa8c40
+  models/components/hookpoint.go:
+    last_write_checksum: sha1:d545a4289dffe5cca5aaf40b45b76d199d7b05fa
   models/components/identifierkind.go:
     last_write_checksum: sha1:6d9189c36c22dbe2848c29c7c1bb6c5f5ecd77eb
   models/components/incompletereason.go:
@@ -413,7 +417,7 @@ trackedFiles:
   models/components/status.go:
     last_write_checksum: sha1:87772d609f2892b4ccfa3b3675f25dab2f0236f8
   models/components/transport.go:
-    last_write_checksum: sha1:d62785b2a48db680e1458b8cb8719a019c9d4f74
+    last_write_checksum: sha1:30baa43f1dbe6e1f2904630a2eb2591f9b605f32
   models/operations/createassessment.go:
     last_write_checksum: sha1:d02be59f0cfde3a74618cfcb0f319032c4176571
   models/operations/getassessment.go:
@@ -427,7 +431,7 @@ trackedFiles:
   models/operations/rotateapikey.go:
     last_write_checksum: sha1:acc52891cdcbdb6e02a7a15426e813c84d2f1d65
   noresponse.go:
-    last_write_checksum: sha1:8bc3d3031c18adfee4bdea278adc325c0f13db7c
+    last_write_checksum: sha1:560ee4f3f0d226721abb1e68e8c5b9eca0ad307e
   optionalnullable/optionalnullable.go:
     last_write_checksum: sha1:38cf187cd65a5213be09788f67d82dc49d46b583
   optionalnullable/optionalnullable_test.go:

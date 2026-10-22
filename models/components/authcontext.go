@@ -14,7 +14,7 @@ type AuthContext struct {
 	Audience *string `json:"audience,omitzero"`
 	// All verified audience/resource identifiers from an OAuth or OIDC token. The first value may also be copied to audience for simple integrations.
 	Audiences []string `json:"audiences,omitzero"`
-	// The verified stable subject identifier (`sub`), opaque to NoResponse.
+	// The verified stable subject identifier (`sub`), opaque to NoResponse. Required, except from a provider hook at pre_registration, where no user exists yet.
 	Subject string `json:"subject"`
 	// The verified session identifier (`sid` or provider equivalent).
 	SessionID *string `json:"session_id,omitzero"`
@@ -42,8 +42,10 @@ type AuthContext struct {
 	AssuranceLevel *AssuranceLevel `json:"assurance_level,omitzero"`
 	// Whether the verified session is acting on behalf of another subject.
 	Impersonated *bool `json:"impersonated,omitzero"`
-	// Where the customer derived this context. Backend is the trusted integration path; browser values are treated as weak hints.
+	// Where this context was derived. Backend is the trusted integration path; browser values are treated as weak hints. provider_hook is a hosted provider hook (an Auth0 or WorkOS Action) calling at hook_point; it needs hook_point and verified false, and its authentication facts are not scored.
 	Transport *Transport `json:"transport,omitzero"`
+	// The provider event a provider_hook context was sent for. pre_registration runs before the user exists, so subject and the request's account_id may be absent there. Sent only with transport provider_hook.
+	HookPoint *HookPoint `json:"hook_point,omitzero"`
 	// Whether the customer completed signature, issuer, audience and expiry validation before calling NoResponse. False contexts are accepted only as weak hints.
 	Verified bool `json:"verified"`
 	// Normalized multi-factor evidence from a verified provider session.
@@ -196,6 +198,13 @@ func (a *AuthContext) GetTransport() *Transport {
 		return nil
 	}
 	return a.Transport
+}
+
+func (a *AuthContext) GetHookPoint() *HookPoint {
+	if a == nil {
+		return nil
+	}
+	return a.HookPoint
 }
 
 func (a *AuthContext) GetVerified() bool {

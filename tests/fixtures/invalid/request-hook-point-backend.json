@@ -1,0 +1,14 @@
+{
+  "account_id": "user_01",
+  "identifiers": {
+    "email": "new.user@example.com"
+  },
+  "auth_context": {
+    "provider": "workos",
+    "issuer": "https://api.workos.com/user_management/client_1",
+    "subject": "user_01",
+    "verified": false,
+    "transport": "backend",
+    "hook_point": "post_login"
+  }
+}

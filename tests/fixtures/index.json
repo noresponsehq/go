@@ -1436,6 +1436,16 @@
       "why": "spec §4 an RFC 5952 IPv6 address and a non-ASCII name"
     },
     {
+      "file": "valid/assessment-request-hook-post-login.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/assessment-request-hook-pre-registration.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "valid"
+    },
+    {
       "file": "invalid/request-name-only.json",
       "schema": "assessment-request.schema.json",
       "expect": "invalid",
@@ -1608,6 +1618,114 @@
         ]
       ],
       "why": "spec §4 a name is at most 128 characters"
+    },
+    {
+      "file": "invalid/request-missing-account-id.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "required",
+          ""
+        ]
+      ],
+      "why": "account_id is required outside a provider hook at pre_registration"
+    },
+    {
+      "file": "invalid/request-hook-post-login-no-account-id.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "required",
+          ""
+        ]
+      ],
+      "why": "only pre_registration may omit account_id"
+    },
+    {
+      "file": "invalid/request-hook-post-login-no-subject.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "required",
+          "/auth_context"
+        ]
+      ],
+      "why": "only pre_registration may omit subject"
+    },
+    {
+      "file": "invalid/request-backend-no-subject.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "required",
+          "/auth_context"
+        ]
+      ],
+      "why": "a backend context names its subject"
+    },
+    {
+      "file": "invalid/request-hook-verified.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "const",
+          "/auth_context/verified"
+        ]
+      ],
+      "why": "verified is always false for a provider hook"
+    },
+    {
+      "file": "invalid/request-hook-no-hook-point.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "required",
+          "/auth_context"
+        ]
+      ],
+      "why": "provider_hook needs hook_point"
+    },
+    {
+      "file": "invalid/request-hook-point-backend.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "const",
+          "/auth_context/transport"
+        ]
+      ],
+      "why": "hook_point is sent only with transport provider_hook"
+    },
+    {
+      "file": "invalid/request-hook-point-no-transport.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "required",
+          "/auth_context"
+        ]
+      ],
+      "why": "hook_point is sent only with transport provider_hook"
+    },
+    {
+      "file": "invalid/request-hook-point-unknown.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "enum",
+          "/auth_context/hook_point"
+        ]
+      ],
+      "why": "hook_point is a closed list"
     },
     {
       "file": "valid/assessment-outcome-request.json",
