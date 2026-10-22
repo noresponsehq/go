@@ -3,14 +3,14 @@
   "version": 1,
   "rules": {
     "claims": "A claim path is a list of keys. A key that is not an object at that depth makes the claim absent. No listed claim name contains a dot.",
-    "id": "The first claim whose value is a string that matches its kind. Anything else is skipped.",
+    "id": "The first claim whose value is a string that matches its kind. With `single`, an array holding exactly one item is read as that item. Anything else is skipped.",
     "list": "Items come from an array of strings or from one string split by `split`. Items that do not match the kind are dropped, the list is cut at `max`, and the first claim that yields at least one item wins. A claim of any other type is skipped.",
     "time": "A number in 0 to 253402300799 (a NumericDate) becomes RFC 3339 UTC in whole seconds, the fraction truncated. A string is kept only when it matches the time kind (RFC 3339 with an upper-case T and Z). Anything else is absent.",
     "bool": "Only a JSON boolean counts; the strings \"true\" and \"false\" are skipped.",
-    "actor": "True when the claim is an object with a non-empty string `sub` or `email` (RFC 8693 act), or a non-empty string. Any other value, including an empty object, is false. The result is always sent, false included.",
+    "actor": "True when any listed claim is an object with a non-empty string `sub` or `email` (RFC 8693 act), or a non-empty string. Any other value, including an empty object, is false. The result is always sent, false included, except with `onlyTrue`, used where the impersonation claim comes from an optional mapper: then false is never sent, because a missing claim proves nothing.",
     "mfa_factor_age": "claim[index] must be a JSON number from 0 to `maxSeconds` / `unitSeconds`; the context gets mfa {present: true, age_seconds: trunc(value * unitSeconds)}. A negative value (Clerk -1 is no second factor), a non-number, a missing index or an out-of-range value gives no mfa.",
-    "mfa_methods": "The claim must be an array. Strings that match the kind are kept, up to `max`. present is true when any kept value equals `mfaValue` ignoring case; methods lists the kept values except those equal to an `ignore` value ignoring case. No methods gives no mfa, so a password-only amr sends nothing.",
-    "mfa_aal": "`claim` must be a string in `absent` (mfa {present: false}) or in `present` (mfa {present: true}); any other value gives no mfa. Only for `present`, the `amr` claim is read: an array whose items are a string or an object with a string `methodKey`; each name found in `factors` adds its mapped name once, in array order. No such name sends present alone. A name outside `factors` (a first factor, a refresh marker) is never listed.",
+    "mfa_methods": "The claim must be an array. Strings that match the kind are kept, up to `max`. present is true when any kept value equals `mfaValue` ignoring case, or when `classes` is set and the kept values, lower-cased, fall in at least two of its factor classes (knowledge, possession, inherence); methods lists the kept values except those equal to an `ignore` value ignoring case. No methods gives no mfa, so a password-only amr sends nothing.",
+    "mfa_aal": "`claim` must be a string in `absent` (mfa {present: false}) or in `present` (mfa {present: true}); any other value gives no mfa. Only for `present`, the `amr` claim is read: an array whose items are a string or an object with a string `methodKey`; each name found in `factors` adds its mapped name once, in array order. With `levelKey`, an entry counts only when it is an object whose `levelKey` value is a string in `present`. No such name sends present alone. A name outside `factors` (a first factor, a refresh marker) is never listed.",
     "mfa_factor": "The claim must be a string that matches the kind; the context gets mfa {present: true, methods: [value]}. Anything else gives no mfa.",
     "marker": "Sends `value` when any `when` entry matches: the claim's JSON value has the same type and value as `equals` (the boolean true does not match the string \"true\" or the number 1). Used only for a downgrade: an anonymous user is sent as assurance_level low, and no claim ever sends a higher level.",
     "overrides": "A key in overrides replaces the mapped value, false and empty included. A null override is ignored. Overrides are written by the caller from verified records and are not filtered.",
@@ -87,6 +87,57 @@
         "tenant_id": {"op": "id", "kind": "id", "claims": ["firebase.tenant"]},
         "mfa": {"op": "mfa_factor", "kind": "method", "claim": "firebase.sign_in_second_factor"},
         "assurance_level": {"op": "marker", "value": "low", "when": [{"claim": "firebase.sign_in_provider", "equals": "anonymous"}]}
+      }
+    },
+    "cognito": {
+      "notes": "Amazon Cognito user pool ID or access token. A pre token generation Lambda can add any claim outside the Cognito token schema and can rewrite standard attributes, so only claims Cognito computes and the Lambda cannot change are read, plus Cognito's own groups and scope claims. aud (ID token) and client_id (access token) are the same app client, and an access token with a resource binding carries the API URL in aud. origin_jti ties every token from one sign-in and refresh token together, so it is the session; sid is not read. amr lists pwd, otp, sms, email_otp, swk, hwk and fed, and Cognito adds mfa when two distinct factors were completed. acr is a Cognito level name the pool can rename, so it is not read. email_verified is a standard attribute the Lambda can override, so contact verification comes from AdminGetUser via overrides. Cognito has no impersonation, tenant or organisation claim.",
+      "fields": {
+        "audiences": {"op": "list", "kind": "audience", "claims": ["aud", "client_id"], "split": "none", "max": 8},
+        "session_id": {"op": "id", "kind": "id", "claims": ["origin_jti"]},
+        "roles": {"op": "list", "kind": "role", "claims": ["cognito:groups"], "split": "none", "max": 32},
+        "scopes": {"op": "list", "kind": "role", "claims": ["scope"], "split": "whitespace", "max": 32},
+        "mfa": {"op": "mfa_methods", "kind": "method", "claim": "amr", "max": 8, "mfaValue": "mfa", "ignore": ["pwd"]}
+      }
+    },
+    "entra": {
+      "notes": "Microsoft Entra ID v1.0 (iss https://sts.windows.net/{tid}/) or v2.0 (iss https://login.microsoftonline.com/{tid}/v2.0) ID or access token. Every claim read is in Entra's restricted claim set, which claims mapping and custom claims policies cannot emit or change. tid is the tenant. roles holds app roles (and app permissions in an app-only token); wids and groups are GUIDs and are not read. scp is space separated. uti is the token id; Entra has no jti. amr is in v1 tokens and a v2 optional claim; Entra adds mfa whenever a second factor was completed; none (no completed authentication) is never listed. acr (v1 only, 0 or 1) and acrs (tenant-defined auth context ids) say nothing fixed about strength and are not read. Entra has no email_verified claim and no impersonation claim; contact verification comes from Microsoft Graph via overrides.",
+      "fields": {
+        "tenant_id": {"op": "id", "kind": "id", "claims": ["tid"]},
+        "token_id": {"op": "id", "kind": "id", "claims": ["uti"]},
+        "roles": {"op": "list", "kind": "role", "claims": ["roles"], "split": "none", "max": 32},
+        "scopes": {"op": "list", "kind": "role", "claims": ["scp"], "split": "whitespace", "max": 32},
+        "mfa": {"op": "mfa_methods", "kind": "method", "claim": "amr", "max": 8, "mfaValue": "mfa", "ignore": ["pwd", "none"]}
+      }
+    },
+    "keycloak": {
+      "notes": "Keycloak ID or access token. sid is the user session (session_state in older releases). realm_access.roles holds realm roles; resource_access is keyed by client id and is not read. organization comes from the organization scope: a single alias, or by default an array of aliases, read only when it holds exactly one; the object form keyed by alias is not read. amr comes from the Authentication Method Reference (AMR) mapper, holding the reference value configured on each completed execution: with RFC 8176 values, a knowledge factor (pwd, pin, kba) with a possession (otp, hwk, swk, sc, sms, tel) or inherence (fpt, face, iris, retina, vbm) factor proves a second factor, as does mfa. acr is a realm-defined level name and is not read. impersonator.id and impersonator.username come from the Impersonator User ID and Impersonator Username builtin mappers; they are optional, so a token without them sends no impersonated value. email_verified is not read; contact verification comes from the user record via overrides.",
+      "fields": {
+        "session_id": {"op": "id", "kind": "id", "claims": ["sid", "session_state"]},
+        "organization_id": {"op": "id", "kind": "id", "claims": ["organization"], "single": true},
+        "roles": {"op": "list", "kind": "role", "claims": ["realm_access.roles"], "split": "none", "max": 32},
+        "scopes": {"op": "list", "kind": "role", "claims": ["scope"], "split": "whitespace", "max": 32},
+        "impersonated": {"op": "actor", "claims": ["impersonator.id", "impersonator.username"], "onlyTrue": true},
+        "mfa": {"op": "mfa_methods", "kind": "method", "claim": "amr", "max": 8, "mfaValue": "mfa", "ignore": ["pwd"], "classes": {"pwd": "knowledge", "pin": "knowledge", "kba": "knowledge", "otp": "possession", "hwk": "possession", "swk": "possession", "sc": "possession", "sms": "possession", "tel": "possession", "fpt": "inherence", "face": "inherence", "iris": "inherence", "retina": "inherence", "vbm": "inherence"}}
+      }
+    },
+    "ory": {
+      "notes": "Ory Identities (Kratos) session from toSession, as JSON. A session is not a token: it has no issuer, so the caller passes its project URL (https://{slug}.projects.oryapis.com or its own Kratos public URL) as the issuer override, and there is no audience, issued-at or token id. The subject is identity.id and the session is id. issued_at is when the session was issued and authenticated_at is the latest factor. authenticator_assurance_level aal2 means a second factor; aal1 means one factor and aal0 none. Only authentication_methods entries with aal aal2 name the second factor: totp, lookup_secret, webauthn or code; an oidc or saml entry at aal2 is an upstream second factor and sends present alone. identity.organization_id is the B2B organisation. Traits and metadata are customer data and are never read; contact verification comes from identity.verifiable_addresses via overrides. Ory has no impersonation.",
+      "disable": ["issuer", "audiences", "issued_at", "token_id"],
+      "fields": {
+        "subject": {"op": "id", "kind": "id", "claims": ["identity.id"], "required": true},
+        "session_id": {"op": "id", "kind": "id", "claims": ["id"]},
+        "expires_at": {"op": "time", "claims": ["expires_at"]},
+        "auth_time": {"op": "time", "claims": ["authenticated_at"]},
+        "session_created_at": {"op": "time", "claims": ["issued_at"]},
+        "account_created_at": {"op": "time", "claims": ["identity.created_at"]},
+        "organization_id": {"op": "id", "kind": "id", "claims": ["identity.organization_id"]},
+        "mfa": {"op": "mfa_aal", "claim": "authenticator_assurance_level", "present": ["aal2"], "absent": ["aal1"], "amr": "authentication_methods", "methodKey": "method", "levelKey": "aal", "factors": {"totp": "totp", "lookup_secret": "lookup_secret", "webauthn": "webauthn", "code": "code"}}
+      }
+    },
+    "ory_oauth2": {
+      "notes": "Ory OAuth2 and OpenID Connect (Hydra) ID token; sent as provider ory. Hydra writes iss, sub, aud, iat, exp, auth_time, jti, acr, amr and sid over any same-named claim the consent app adds, so a custom claim never changes those. sid is the Hydra login session. With Ory's own login UI, amr lists the Kratos methods completed (password, totp, lookup_secret, webauthn, code, oidc); a knowledge factor (password) with a possession factor proves a second factor, as does an RFC 8176 mfa value from a custom login app. acr is set by the login app and is not read. Scopes, organisation and contact verification come from overrides.",
+      "fields": {
+        "mfa": {"op": "mfa_methods", "kind": "method", "claim": "amr", "max": 8, "mfaValue": "mfa", "ignore": ["password", "pwd"], "classes": {"password": "knowledge", "totp": "possession", "lookup_secret": "possession", "webauthn": "possession", "code": "possession"}}
       }
     },
     "oidc": {

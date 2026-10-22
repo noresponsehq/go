@@ -51,6 +51,16 @@ func TestAuthContextVectors(t *testing.T) {
 				got, err = FromSupabaseClaims(vector.Claims, vector.Overrides)
 			case "firebase":
 				got, err = FromFirebaseClaims(vector.Claims, vector.Overrides)
+			case "cognito":
+				got, err = FromCognitoClaims(vector.Claims, vector.Overrides)
+			case "entra":
+				got, err = FromEntraClaims(vector.Claims, vector.Overrides)
+			case "keycloak":
+				got, err = FromKeycloakClaims(vector.Claims, vector.Overrides)
+			case "ory":
+				got, err = FromOrySession(vector.Claims, vector.Overrides)
+			case "ory_oauth2":
+				got, err = FromOryOAuth2Claims(vector.Claims, vector.Overrides)
 			default:
 				got, err = FromOIDCClaims(vector.Provider, vector.Claims, vector.Overrides)
 			}
