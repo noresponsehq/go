@@ -38,7 +38,56 @@ func main() {
 
     res, err := s.Assessments.Create(ctx, "<value>", components.AssessmentRequest{
         AccountID: "<id>",
-        Identifiers: components.AssessmentRequestIdentifiers{},
+        Identifiers: components.AssessmentRequestIdentifiers{
+            Email: noresponse.Pointer("new.user@example.com"),
+            Username: noresponse.Pointer("new.user"),
+            Phone: noresponse.Pointer("+61412345678"),
+            Name: noresponse.Pointer("Alex Example"),
+            IP: noresponse.Pointer("203.0.113.45"),
+        },
+        PolicyContext: &components.AssessmentRequestPolicyContext{
+            Region: noresponse.Pointer("AU"),
+        },
+        RequestID: noresponse.Pointer("req-2026-10-14-0001"),
+        ClientContext: &components.AssessmentRequestClientContext{
+            Timezone: noresponse.Pointer("Australia/Sydney"),
+            Locale: noresponse.Pointer("en-AU"),
+            AppVersion: noresponse.Pointer("4.12.0"),
+            UserAgent: noresponse.Pointer("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36"),
+            DeviceID: noresponse.Pointer("dev_5c1e8a"),
+            SessionID: noresponse.Pointer("sess_9b2d41"),
+            ClientObservedAt: noresponse.Pointer("2026-10-14T08:59:58.000Z"),
+        },
+        AuthContext: &components.AuthContext{
+            Provider: "clerk",
+            Issuer: "https://example-app.clerk.accounts.dev",
+            Audience: noresponse.Pointer("https://app.example.com"),
+            Audiences: []string{
+                "https://app.example.com",
+            },
+            Subject: "user_2EXAMPLE",
+            SessionID: noresponse.Pointer("sess_2EXAMPLE"),
+            OrganizationID: noresponse.Pointer("org_2EXAMPLE"),
+            TenantID: noresponse.Pointer("tenant_2EXAMPLE"),
+            TokenID: noresponse.Pointer("2EXAMPLEJTI"),
+            IssuedAt: noresponse.Pointer("2026-10-14T08:59:40.000Z"),
+            ExpiresAt: noresponse.Pointer("2026-10-14T09:00:40.000Z"),
+            SessionCreatedAt: noresponse.Pointer("2026-10-14T08:57:00.000Z"),
+            AuthTime: noresponse.Pointer("2026-10-14T08:55:00.000Z"),
+            AccountCreatedAt: noresponse.Pointer("2026-10-14T08:56:00.000Z"),
+            Verified: false,
+            Mfa: &components.AuthContextMfa{
+                Methods: []string{
+                    "totp",
+                },
+            },
+            Roles: []string{
+                "admin",
+            },
+            Scopes: []string{
+                "org:sys_profile:manage",
+            },
+        },
     })
     if err != nil {
         log.Fatal(err)
@@ -71,7 +120,56 @@ func main() {
 
     res, err := s.Assessments.Create(ctx, "<value>", components.AssessmentRequest{
         AccountID: "<id>",
-        Identifiers: components.AssessmentRequestIdentifiers{},
+        Identifiers: components.AssessmentRequestIdentifiers{
+            Email: noresponse.Pointer("new.user@example.com"),
+            Username: noresponse.Pointer("new.user"),
+            Phone: noresponse.Pointer("+61412345678"),
+            Name: noresponse.Pointer("Alex Example"),
+            IP: noresponse.Pointer("203.0.113.45"),
+        },
+        PolicyContext: &components.AssessmentRequestPolicyContext{
+            Region: noresponse.Pointer("AU"),
+        },
+        RequestID: noresponse.Pointer("req-2026-10-14-0001"),
+        ClientContext: &components.AssessmentRequestClientContext{
+            Timezone: noresponse.Pointer("Australia/Sydney"),
+            Locale: noresponse.Pointer("en-AU"),
+            AppVersion: noresponse.Pointer("4.12.0"),
+            UserAgent: noresponse.Pointer("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36"),
+            DeviceID: noresponse.Pointer("dev_5c1e8a"),
+            SessionID: noresponse.Pointer("sess_9b2d41"),
+            ClientObservedAt: noresponse.Pointer("2026-10-14T08:59:58.000Z"),
+        },
+        AuthContext: &components.AuthContext{
+            Provider: "clerk",
+            Issuer: "https://example-app.clerk.accounts.dev",
+            Audience: noresponse.Pointer("https://app.example.com"),
+            Audiences: []string{
+                "https://app.example.com",
+            },
+            Subject: "user_2EXAMPLE",
+            SessionID: noresponse.Pointer("sess_2EXAMPLE"),
+            OrganizationID: noresponse.Pointer("org_2EXAMPLE"),
+            TenantID: noresponse.Pointer("tenant_2EXAMPLE"),
+            TokenID: noresponse.Pointer("2EXAMPLEJTI"),
+            IssuedAt: noresponse.Pointer("2026-10-14T08:59:40.000Z"),
+            ExpiresAt: noresponse.Pointer("2026-10-14T09:00:40.000Z"),
+            SessionCreatedAt: noresponse.Pointer("2026-10-14T08:57:00.000Z"),
+            AuthTime: noresponse.Pointer("2026-10-14T08:55:00.000Z"),
+            AccountCreatedAt: noresponse.Pointer("2026-10-14T08:56:00.000Z"),
+            Verified: false,
+            Mfa: &components.AuthContextMfa{
+                Methods: []string{
+                    "totp",
+                },
+            },
+            Roles: []string{
+                "admin",
+            },
+            Scopes: []string{
+                "org:sys_profile:manage",
+            },
+        },
     })
     if err != nil {
         log.Fatal(err)
@@ -228,7 +326,56 @@ func main() {
 
     res, err := s.Assessments.Create(ctx, "<value>", components.AssessmentRequest{
         AccountID: "<id>",
-        Identifiers: components.AssessmentRequestIdentifiers{},
+        Identifiers: components.AssessmentRequestIdentifiers{
+            Email: noresponse.Pointer("new.user@example.com"),
+            Username: noresponse.Pointer("new.user"),
+            Phone: noresponse.Pointer("+61412345678"),
+            Name: noresponse.Pointer("Alex Example"),
+            IP: noresponse.Pointer("203.0.113.45"),
+        },
+        PolicyContext: &components.AssessmentRequestPolicyContext{
+            Region: noresponse.Pointer("AU"),
+        },
+        RequestID: noresponse.Pointer("req-2026-10-14-0001"),
+        ClientContext: &components.AssessmentRequestClientContext{
+            Timezone: noresponse.Pointer("Australia/Sydney"),
+            Locale: noresponse.Pointer("en-AU"),
+            AppVersion: noresponse.Pointer("4.12.0"),
+            UserAgent: noresponse.Pointer("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36"),
+            DeviceID: noresponse.Pointer("dev_5c1e8a"),
+            SessionID: noresponse.Pointer("sess_9b2d41"),
+            ClientObservedAt: noresponse.Pointer("2026-10-14T08:59:58.000Z"),
+        },
+        AuthContext: &components.AuthContext{
+            Provider: "clerk",
+            Issuer: "https://example-app.clerk.accounts.dev",
+            Audience: noresponse.Pointer("https://app.example.com"),
+            Audiences: []string{
+                "https://app.example.com",
+            },
+            Subject: "user_2EXAMPLE",
+            SessionID: noresponse.Pointer("sess_2EXAMPLE"),
+            OrganizationID: noresponse.Pointer("org_2EXAMPLE"),
+            TenantID: noresponse.Pointer("tenant_2EXAMPLE"),
+            TokenID: noresponse.Pointer("2EXAMPLEJTI"),
+            IssuedAt: noresponse.Pointer("2026-10-14T08:59:40.000Z"),
+            ExpiresAt: noresponse.Pointer("2026-10-14T09:00:40.000Z"),
+            SessionCreatedAt: noresponse.Pointer("2026-10-14T08:57:00.000Z"),
+            AuthTime: noresponse.Pointer("2026-10-14T08:55:00.000Z"),
+            AccountCreatedAt: noresponse.Pointer("2026-10-14T08:56:00.000Z"),
+            Verified: false,
+            Mfa: &components.AuthContextMfa{
+                Methods: []string{
+                    "totp",
+                },
+            },
+            Roles: []string{
+                "admin",
+            },
+            Scopes: []string{
+                "org:sys_profile:manage",
+            },
+        },
     })
     if err != nil {
         log.Fatal(err)
@@ -261,7 +408,56 @@ func main() {
 
     res, err := s.Assessments.Create(ctx, "<value>", components.AssessmentRequest{
         AccountID: "<id>",
-        Identifiers: components.AssessmentRequestIdentifiers{},
+        Identifiers: components.AssessmentRequestIdentifiers{
+            Email: noresponse.Pointer("new.user@example.com"),
+            Username: noresponse.Pointer("new.user"),
+            Phone: noresponse.Pointer("+61412345678"),
+            Name: noresponse.Pointer("Alex Example"),
+            IP: noresponse.Pointer("203.0.113.45"),
+        },
+        PolicyContext: &components.AssessmentRequestPolicyContext{
+            Region: noresponse.Pointer("AU"),
+        },
+        RequestID: noresponse.Pointer("req-2026-10-14-0001"),
+        ClientContext: &components.AssessmentRequestClientContext{
+            Timezone: noresponse.Pointer("Australia/Sydney"),
+            Locale: noresponse.Pointer("en-AU"),
+            AppVersion: noresponse.Pointer("4.12.0"),
+            UserAgent: noresponse.Pointer("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36"),
+            DeviceID: noresponse.Pointer("dev_5c1e8a"),
+            SessionID: noresponse.Pointer("sess_9b2d41"),
+            ClientObservedAt: noresponse.Pointer("2026-10-14T08:59:58.000Z"),
+        },
+        AuthContext: &components.AuthContext{
+            Provider: "clerk",
+            Issuer: "https://example-app.clerk.accounts.dev",
+            Audience: noresponse.Pointer("https://app.example.com"),
+            Audiences: []string{
+                "https://app.example.com",
+            },
+            Subject: "user_2EXAMPLE",
+            SessionID: noresponse.Pointer("sess_2EXAMPLE"),
+            OrganizationID: noresponse.Pointer("org_2EXAMPLE"),
+            TenantID: noresponse.Pointer("tenant_2EXAMPLE"),
+            TokenID: noresponse.Pointer("2EXAMPLEJTI"),
+            IssuedAt: noresponse.Pointer("2026-10-14T08:59:40.000Z"),
+            ExpiresAt: noresponse.Pointer("2026-10-14T09:00:40.000Z"),
+            SessionCreatedAt: noresponse.Pointer("2026-10-14T08:57:00.000Z"),
+            AuthTime: noresponse.Pointer("2026-10-14T08:55:00.000Z"),
+            AccountCreatedAt: noresponse.Pointer("2026-10-14T08:56:00.000Z"),
+            Verified: false,
+            Mfa: &components.AuthContextMfa{
+                Methods: []string{
+                    "totp",
+                },
+            },
+            Roles: []string{
+                "admin",
+            },
+            Scopes: []string{
+                "org:sys_profile:manage",
+            },
+        },
     })
     if err != nil {
         log.Fatal(err)
@@ -274,12 +470,12 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                                                                                                      | Type                                                                                                                                                           | Required                                                                                                                                                       | Description                                                                                                                                                    |
-| -------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ctx`                                                                                                                                                          | [context.Context](https://pkg.go.dev/context#Context)                                                                                                          | :heavy_check_mark:                                                                                                                                             | The context to use for the request.                                                                                                                            |
-| `idempotencyKey`                                                                                                                                               | `string`                                                                                                                                                       | :heavy_check_mark:                                                                                                                                             | Opaque client key, 16 to 128 characters of [A-Za-z0-9._:-] (a UUID or ULID fits). Scoped to the tenant principal and bound to the canonical body for 24 hours. |
-| `body`                                                                                                                                                         | [components.AssessmentRequest](../../models/components/assessmentrequest.md)                                                                                   | :heavy_check_mark:                                                                                                                                             | N/A                                                                                                                                                            |
-| `opts`                                                                                                                                                         | [][operations.Option](../../models/operations/option.md)                                                                                                       | :heavy_minus_sign:                                                                                                                                             | The options for this request.                                                                                                                                  |
+| Parameter                                                                                                                                                      | Type                                                                                                                                                           | Required                                                                                                                                                       | Description                                                                                                                                                    | Example                                                                                                                                                        |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ctx`                                                                                                                                                          | [context.Context](https://pkg.go.dev/context#Context)                                                                                                          | :heavy_check_mark:                                                                                                                                             | The context to use for the request.                                                                                                                            |                                                                                                                                                                |
+| `idempotencyKey`                                                                                                                                               | `string`                                                                                                                                                       | :heavy_check_mark:                                                                                                                                             | Opaque client key, 16 to 128 characters of [A-Za-z0-9._:-] (a UUID or ULID fits). Scoped to the tenant principal and bound to the canonical body for 24 hours. | signup-7f3a9c-0001                                                                                                                                             |
+| `body`                                                                                                                                                         | [components.AssessmentRequest](../../models/components/assessmentrequest.md)                                                                                   | :heavy_check_mark:                                                                                                                                             | N/A                                                                                                                                                            |                                                                                                                                                                |
+| `opts`                                                                                                                                                         | [][operations.Option](../../models/operations/option.md)                                                                                                       | :heavy_minus_sign:                                                                                                                                             | The options for this request.                                                                                                                                  |                                                                                                                                                                |
 
 ### Response
 
@@ -449,12 +645,12 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                                                         | Type                                                                                                              | Required                                                                                                          | Description                                                                                                       |
-| ----------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| `ctx`                                                                                                             | [context.Context](https://pkg.go.dev/context#Context)                                                             | :heavy_check_mark:                                                                                                | The context to use for the request.                                                                               |
-| `assessmentID`                                                                                                    | `string`                                                                                                          | :heavy_check_mark:                                                                                                | Path segment, matched case-sensitively. A value that does not match the assessment_id shape answers 404, not 400. |
-| `responseMode`                                                                                                    | [*components.ResponseMode](../../models/components/responsemode.md)                                               | :heavy_minus_sign:                                                                                                | Optional standard or separately authorised detailed customer view; raw is rejected.                               |
-| `opts`                                                                                                            | [][operations.Option](../../models/operations/option.md)                                                          | :heavy_minus_sign:                                                                                                | The options for this request.                                                                                     |
+| Parameter                                                                                                         | Type                                                                                                              | Required                                                                                                          | Description                                                                                                       | Example                                                                                                           |
+| ----------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| `ctx`                                                                                                             | [context.Context](https://pkg.go.dev/context#Context)                                                             | :heavy_check_mark:                                                                                                | The context to use for the request.                                                                               |                                                                                                                   |
+| `assessmentID`                                                                                                    | `string`                                                                                                          | :heavy_check_mark:                                                                                                | Path segment, matched case-sensitively. A value that does not match the assessment_id shape answers 404, not 400. | asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM                                                                                    |
+| `responseMode`                                                                                                    | [*components.ResponseMode](../../models/components/responsemode.md)                                               | :heavy_minus_sign:                                                                                                | Optional standard or separately authorised detailed customer view; raw is rejected.                               |                                                                                                                   |
+| `opts`                                                                                                            | [][operations.Option](../../models/operations/option.md)                                                          | :heavy_minus_sign:                                                                                                | The options for this request.                                                                                     |                                                                                                                   |
 
 ### Response
 
@@ -534,6 +730,9 @@ func main() {
 
     res, err := s.Assessments.RecordOutcome(ctx, "<id>", "<value>", components.AssessmentOutcomeRequest{
         Outcome: components.OutcomeLegitimate,
+        ObservedAt: noresponse.Pointer("2026-10-14T09:04:30.000Z"),
+        ExternalRef: noresponse.Pointer("case-48213"),
+        Notes: noresponse.Pointer("Chargeback filed two days after signup."),
     })
     if err != nil {
         log.Fatal(err)
@@ -578,13 +777,13 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                                                                                                      | Type                                                                                                                                                           | Required                                                                                                                                                       | Description                                                                                                                                                    |
-| -------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ctx`                                                                                                                                                          | [context.Context](https://pkg.go.dev/context#Context)                                                                                                          | :heavy_check_mark:                                                                                                                                             | The context to use for the request.                                                                                                                            |
-| `assessmentID`                                                                                                                                                 | `string`                                                                                                                                                       | :heavy_check_mark:                                                                                                                                             | Path segment, matched case-sensitively. A value that does not match the assessment_id shape answers 404, not 400.                                              |
-| `idempotencyKey`                                                                                                                                               | `string`                                                                                                                                                       | :heavy_check_mark:                                                                                                                                             | Opaque client key, 16 to 128 characters of [A-Za-z0-9._:-] (a UUID or ULID fits). Scoped to the tenant principal and bound to the canonical body for 24 hours. |
-| `body`                                                                                                                                                         | [components.AssessmentOutcomeRequest](../../models/components/assessmentoutcomerequest.md)                                                                     | :heavy_check_mark:                                                                                                                                             | N/A                                                                                                                                                            |
-| `opts`                                                                                                                                                         | [][operations.Option](../../models/operations/option.md)                                                                                                       | :heavy_minus_sign:                                                                                                                                             | The options for this request.                                                                                                                                  |
+| Parameter                                                                                                                                                      | Type                                                                                                                                                           | Required                                                                                                                                                       | Description                                                                                                                                                    | Example                                                                                                                                                        |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ctx`                                                                                                                                                          | [context.Context](https://pkg.go.dev/context#Context)                                                                                                          | :heavy_check_mark:                                                                                                                                             | The context to use for the request.                                                                                                                            |                                                                                                                                                                |
+| `assessmentID`                                                                                                                                                 | `string`                                                                                                                                                       | :heavy_check_mark:                                                                                                                                             | Path segment, matched case-sensitively. A value that does not match the assessment_id shape answers 404, not 400.                                              | asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM                                                                                                                                 |
+| `idempotencyKey`                                                                                                                                               | `string`                                                                                                                                                       | :heavy_check_mark:                                                                                                                                             | Opaque client key, 16 to 128 characters of [A-Za-z0-9._:-] (a UUID or ULID fits). Scoped to the tenant principal and bound to the canonical body for 24 hours. | signup-7f3a9c-0001                                                                                                                                             |
+| `body`                                                                                                                                                         | [components.AssessmentOutcomeRequest](../../models/components/assessmentoutcomerequest.md)                                                                     | :heavy_check_mark:                                                                                                                                             | N/A                                                                                                                                                            |                                                                                                                                                                |
+| `opts`                                                                                                                                                         | [][operations.Option](../../models/operations/option.md)                                                                                                       | :heavy_minus_sign:                                                                                                                                             | The options for this request.                                                                                                                                  |                                                                                                                                                                |
 
 ### Response
 
@@ -673,6 +872,7 @@ func main() {
 
     res, err := s.Assessments.Query(ctx, components.AssessmentQuery{
         AccountID: "<id>",
+        Cursor: noresponse.Pointer("eyJvIjoyMH0"),
     })
     if err != nil {
         log.Fatal(err)

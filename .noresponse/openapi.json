@@ -449,21 +449,24 @@
           "assessment_id": {
             "type": "string",
             "pattern": "^asm_[0-9A-HJKMNP-TV-Z]{26}$",
-            "description": "Opaque, server-assigned assessment id: 'asm_' and a 26-character Crockford base32 ULID. Unique within the tenant; another tenant's assessment id answers 404."
+            "description": "Opaque, server-assigned assessment id: 'asm_' and a 26-character Crockford base32 ULID. Unique within the tenant; another tenant's assessment id answers 404.",
+            "example": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
           },
           "account_id": {
             "type": "string",
             "minLength": 1,
             "maxLength": 128,
             "pattern": "^[A-Za-z0-9][A-Za-z0-9._:|-]{0,127}$",
-            "description": "Your own opaque identifier for the account being checked, scoped to your tenant. Use an id you mint, with no direct identifier (email, phone, name or national id) in it. '|' is accepted so an Auth0 user id such as 'auth0|64abc' passes unchanged; '@', '+', '$' and whitespace are refused, as is a JWT; a hex digest such as a SHA-256 is allowed. It travels only in request bodies."
+            "description": "Your own opaque identifier for the account being checked, scoped to your tenant. Use an id you mint, with no direct identifier (email, phone, name or national id) in it. '|' is accepted so an Auth0 user id such as 'auth0|64abc' passes unchanged; '@', '+', '$' and whitespace are refused, as is a JWT; a hex digest such as a SHA-256 is allowed. It travels only in request bodies.",
+            "example": "acct_7f3a9c"
           },
           "request_id": {
             "type": "string",
             "minLength": 1,
             "maxLength": 128,
             "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
-            "description": "An optional provider correlation id, echoed back. It is not an idempotency key. Refuses an exact-shape JWT or a bare 40, 64 or 128 character hex digest; a UUID is accepted."
+            "description": "An optional provider correlation id, echoed back. It is not an idempotency key. Refuses an exact-shape JWT or a bare 40, 64 or 128 character hex digest; a UUID is accepted.",
+            "example": "req-2026-10-14-0001"
           },
           "status": {
             "$ref": "#/components/schemas/Status"
@@ -498,7 +501,8 @@
             "minLength": 1,
             "maxLength": 64,
             "pattern": "^[a-z0-9][a-z0-9._-]{0,63}(\\+t[1-9][0-9]{0,8})?$",
-            "description": "Version of the hand-authored heuristic weights that produced the recommendation, for example 'risk-2026-10.7'. A tenant threshold override adds a +t<N> suffix, e.g. 'risk-2026-10.7+t3'."
+            "description": "Version of the hand-authored heuristic weights that produced the recommendation, for example 'risk-2026-10.7'. A tenant threshold override adds a +t<N> suffix, e.g. 'risk-2026-10.7+t3'.",
+            "example": "heuristic-2026-10.1"
           },
           "policy_basis": {
             "const": "heuristic_unvalidated",
@@ -512,20 +516,24 @@
           },
           "created_at": {
             "type": "string",
-            "description": "When the assessment was created. Fixed for the life of the assessment: every revision carries the same created_at."
+            "description": "When the assessment was created. Fixed for the life of the assessment: every revision carries the same created_at.",
+            "example": "2026-10-14T09:00:00.000Z"
           },
           "updated_at": {
-            "type": "string"
+            "type": "string",
+            "example": "2026-10-14T09:00:00.412Z"
           },
           "expires_at": {
             "type": "string",
-            "description": "After this instant the assessment is no longer served: GET /v1/assessments/{assessment_id} answers 404 and it leaves the account history. It is created_at plus your retention period at creation (default and maximum 365 days) and is fixed per record: a later revision keeps it, and a new assessment for the same account starts its own clock. If you later shorten retention, the effective expiry becomes created_at plus the shorter of the two periods."
+            "description": "After this instant the assessment is no longer served: GET /v1/assessments/{assessment_id} answers 404 and it leaves the account history. It is created_at plus your retention period at creation (default and maximum 365 days) and is fixed per record: a later revision keeps it, and a new assessment for the same account starts its own clock. If you later shorten retention, the effective expiry becomes created_at plus the shorter of the two periods.",
+            "example": "2027-10-14T09:00:00.000Z"
           },
           "assessment_url": {
             "type": "string",
             "maxLength": 64,
             "pattern": "^/v1/assessments/asm_[0-9A-HJKMNP-TV-Z]{26}$",
-            "description": "Server-relative path of the authoritative assessment, GET /v1/assessments/{assessment_id}."
+            "description": "Server-relative path of the authoritative assessment, GET /v1/assessments/{assessment_id}.",
+            "example": "/v1/assessments/asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
           },
           "timing": {
             "$ref": "#/components/schemas/AssessmentTiming"
@@ -552,7 +560,8 @@
             "minLength": 1,
             "maxLength": 128,
             "pattern": "^[A-Za-z0-9][A-Za-z0-9._:|-]{0,127}$",
-            "description": "Your own opaque identifier for the account being checked, scoped to your tenant. Use an id you mint, with no direct identifier (email, phone, name or national id) in it. '|' is accepted so an Auth0 user id such as 'auth0|64abc' passes unchanged; '@', '+', '$' and whitespace are refused, as is a JWT; a hex digest such as a SHA-256 is allowed. It travels only in request bodies."
+            "description": "Your own opaque identifier for the account being checked, scoped to your tenant. Use an id you mint, with no direct identifier (email, phone, name or national id) in it. '|' is accepted so an Auth0 user id such as 'auth0|64abc' passes unchanged; '@', '+', '$' and whitespace are refused, as is a JWT; a hex digest such as a SHA-256 is allowed. It travels only in request bodies.",
+            "example": "acct_7f3a9c"
           },
           "items": {
             "type": "array",
@@ -566,7 +575,8 @@
             "minLength": 1,
             "maxLength": 256,
             "pattern": "^[A-Za-z0-9_-]+$",
-            "description": "Opaque cursor for the next page, bound to your tenant and the account_id it was issued for. Pass it back unchanged in the next query; a tampered, foreign or expired cursor answers 400 invalid_cursor."
+            "description": "Opaque cursor for the next page, bound to your tenant and the account_id it was issued for. Pass it back unchanged in the next query; a tampered, foreign or expired cursor answers 400 invalid_cursor.",
+            "example": "eyJvIjoyMH0"
           },
           "retention_days": {
             "type": "integer",
@@ -591,19 +601,22 @@
           "id": {
             "type": "string",
             "pattern": "^out_[0-9A-HJKMNP-TV-Z]{26}$",
-            "description": "Opaque, server-assigned id of one recorded outcome: 'out_' and a 26-character Crockford base32 ULID. Unique within the tenant."
+            "description": "Opaque, server-assigned id of one recorded outcome: 'out_' and a 26-character Crockford base32 ULID. Unique within the tenant.",
+            "example": "out_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
           },
           "assessment_id": {
             "type": "string",
             "pattern": "^asm_[0-9A-HJKMNP-TV-Z]{26}$",
-            "description": "Opaque, server-assigned assessment id: 'asm_' and a 26-character Crockford base32 ULID. Unique within the tenant; another tenant's assessment id answers 404."
+            "description": "Opaque, server-assigned assessment id: 'asm_' and a 26-character Crockford base32 ULID. Unique within the tenant; another tenant's assessment id answers 404.",
+            "example": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
           },
           "outcome": {
             "$ref": "#/components/schemas/Outcome"
           },
           "received_at": {
             "type": "string",
-            "description": "When NoResponse first recorded the outcome."
+            "description": "When NoResponse first recorded the outcome.",
+            "example": "2026-10-14T09:05:00.000Z"
           }
         }
       },
@@ -620,20 +633,23 @@
           },
           "observed_at": {
             "type": "string",
-            "description": "When the provider observed the outcome. Defaults to when NoResponse received it."
+            "description": "When the provider observed the outcome. Defaults to when NoResponse received it.",
+            "example": "2026-10-14T09:04:30.000Z"
           },
           "external_ref": {
             "type": "string",
             "minLength": 1,
             "maxLength": 128,
             "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
-            "description": "Your own opaque reference for the outcome, such as a case or ticket id. Stored as given and not interpreted; keep direct identifiers out of it."
+            "description": "Your own opaque reference for the outcome, such as a case or ticket id. Stored as given and not interpreted; keep direct identifiers out of it.",
+            "example": "case-48213"
           },
           "notes": {
             "type": "string",
             "minLength": 1,
             "maxLength": 500,
-            "description": "Free text for your own records, at most 500 characters. Stored only; it is left out of scoring and answers. Keep personal data out of it. Control characters other than tab and line breaks are refused."
+            "description": "Free text for your own records, at most 500 characters. Stored only; it is left out of scoring and answers. Keep personal data out of it. Control characters other than tab and line breaks are refused.",
+            "example": "Chargeback filed two days after signup."
           }
         }
       },
@@ -650,7 +666,8 @@
             "minLength": 1,
             "maxLength": 128,
             "pattern": "^[A-Za-z0-9][A-Za-z0-9._:|-]{0,127}$",
-            "description": "Your own opaque identifier for the account being checked, scoped to your tenant. Use an id you mint, with no direct identifier (email, phone, name or national id) in it. '|' is accepted so an Auth0 user id such as 'auth0|64abc' passes unchanged; '@', '+', '$' and whitespace are refused, as is a JWT; a hex digest such as a SHA-256 is allowed. It travels only in request bodies."
+            "description": "Your own opaque identifier for the account being checked, scoped to your tenant. Use an id you mint, with no direct identifier (email, phone, name or national id) in it. '|' is accepted so an Auth0 user id such as 'auth0|64abc' passes unchanged; '@', '+', '$' and whitespace are refused, as is a JWT; a hex digest such as a SHA-256 is allowed. It travels only in request bodies.",
+            "example": "acct_7f3a9c"
           },
           "limit": {
             "type": "integer",
@@ -663,7 +680,8 @@
             "minLength": 1,
             "maxLength": 256,
             "pattern": "^[A-Za-z0-9_-]+$",
-            "description": "next_cursor from the previous page, unchanged. Opaque, MAC'd and bound to the tenant and account_id."
+            "description": "next_cursor from the previous page, unchanged. Opaque, MAC'd and bound to the tenant and account_id.",
+            "example": "eyJvIjoyMH0"
           },
           "response_mode": {
             "$ref": "#/components/schemas/ResponseMode",
@@ -686,7 +704,8 @@
             "minLength": 1,
             "maxLength": 128,
             "pattern": "^[A-Za-z0-9][A-Za-z0-9._:|-]{0,127}$",
-            "description": "Your own opaque identifier for the account being checked, scoped to your tenant. Use an id you mint, with no direct identifier (email, phone, name or national id) in it. '|' is accepted so an Auth0 user id such as 'auth0|64abc' passes unchanged; '@', '+', '$' and whitespace are refused, as is a JWT; a hex digest such as a SHA-256 is allowed. It travels only in request bodies."
+            "description": "Your own opaque identifier for the account being checked, scoped to your tenant. Use an id you mint, with no direct identifier (email, phone, name or national id) in it. '|' is accepted so an Auth0 user id such as 'auth0|64abc' passes unchanged; '@', '+', '$' and whitespace are refused, as is a JWT; a hex digest such as a SHA-256 is allowed. It travels only in request bodies.",
+            "example": "acct_7f3a9c"
           },
           "identifiers": {
             "$ref": "#/components/schemas/AssessmentRequestIdentifiers",
@@ -700,7 +719,8 @@
             "minLength": 1,
             "maxLength": 128,
             "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
-            "description": "An optional provider correlation id, echoed back. It is not an idempotency key. Refuses an exact-shape JWT or a bare 40, 64 or 128 character hex digest; a UUID is accepted."
+            "description": "An optional provider correlation id, echoed back. It is not an idempotency key. Refuses an exact-shape JWT or a bare 40, 64 or 128 character hex digest; a UUID is accepted.",
+            "example": "req-2026-10-14-0001"
           },
           "deadline_ms": {
             "type": "integer",
@@ -731,13 +751,15 @@
             "type": "string",
             "maxLength": 64,
             "pattern": "^(?:UTC|[A-Za-z_]+(?:/[A-Za-z0-9_+.-]+)+)$",
-            "description": "IANA time-zone name such as Europe/London or America/Los_Angeles. Fixed numeric offsets are not accepted."
+            "description": "IANA time-zone name such as Europe/London or America/Los_Angeles. Fixed numeric offsets are not accepted.",
+            "example": "Australia/Sydney"
           },
           "locale": {
             "type": "string",
             "maxLength": 35,
             "pattern": "^[A-Za-z]{2,8}(?:-[A-Za-z0-9]{1,8})*$",
-            "description": "BCP 47 locale, for example en-AU. Treat as a presentation hint, not a nationality signal."
+            "description": "BCP 47 locale, for example en-AU. Treat as a presentation hint, not a nationality signal.",
+            "example": "en-AU"
           },
           "platform": {
             "$ref": "#/components/schemas/Platform",
@@ -747,24 +769,28 @@
             "type": "string",
             "maxLength": 32,
             "pattern": "^[A-Za-z0-9][A-Za-z0-9._+-]{0,31}$",
-            "description": "Customer application version, without build metadata that contains secrets."
+            "description": "Customer application version, without build metadata that contains secrets.",
+            "example": "4.12.0"
           },
           "user_agent": {
             "type": "string",
             "maxLength": 512,
-            "description": "The raw User-Agent header of the signup request, at most 512 characters. It is parsed into coarse features and left out of every answer."
+            "description": "The raw User-Agent header of the signup request, at most 512 characters. It is parsed into coarse features and left out of every answer.",
+            "example": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36"
           },
           "device_id": {
             "type": "string",
             "maxLength": 128,
             "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
-            "description": "Tenant-scoped opaque identifier your application mints and rotates when the account or device changes. Send an id of your own, not a hardware fingerprint."
+            "description": "Tenant-scoped opaque identifier your application mints and rotates when the account or device changes. Send an id of your own, not a hardware fingerprint.",
+            "example": "dev_5c1e8a"
           },
           "session_id": {
             "type": "string",
             "maxLength": 128,
             "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
-            "description": "Opaque signup session identifier. It is used for tenant-scoped velocity and replay checks only."
+            "description": "Opaque signup session identifier. It is used for tenant-scoped velocity and replay checks only.",
+            "example": "sess_9b2d41"
           },
           "form_duration_ms": {
             "type": "integer",
@@ -775,7 +801,8 @@
           "client_observed_at": {
             "type": "string",
             "maxLength": 64,
-            "description": "RFC 3339 timestamp observed by the client. Server ingress time remains authoritative; a large clock skew is only a low-confidence feature."
+            "description": "RFC 3339 timestamp observed by the client. Server ingress time remains authoritative; a large clock skew is only a low-confidence feature.",
+            "example": "2026-10-14T08:59:58.000Z"
           }
         }
       },
@@ -788,35 +815,40 @@
             "minLength": 3,
             "maxLength": 254,
             "pattern": "^[^\\s@<>\\x00-\\x1f\\x7f-\\x9f­؜᠎​-‏‪-‮⁠-⁤⁦-⁯﻿￹-￻]{1,64}@(?:[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?\\.)+[A-Za-z]{2,63}$",
-            "description": "One address: a 1 to 64 character local part without whitespace, angle brackets, control or invisible characters, '@', and a domain with a letter TLD. Send an internationalised domain in punycode. Nothing is trimmed. The local part keeps its case and the domain is lower-cased; no alias rewriting ('+tag', dots or provider heuristics) is applied."
+            "description": "One address: a 1 to 64 character local part without whitespace, angle brackets, control or invisible characters, '@', and a domain with a letter TLD. Send an internationalised domain in punycode. Nothing is trimmed. The local part keeps its case and the domain is lower-cased; no alias rewriting ('+tag', dots or provider heuristics) is applied.",
+            "example": "new.user@example.com"
           },
           "username": {
             "type": "string",
             "minLength": 1,
             "maxLength": 64,
             "pattern": "^[^\\s\\x00-\\x1f\\x7f-\\x9f­؜᠎​-‏‪-‮⁠-⁤⁦-⁯﻿￹-￻]{1,64}$",
-            "description": "The handle the account is signing up with: 1 to 64 characters, no whitespace, control or invisible characters, and not a credential hash or token. Echoed as received; compared case-insensitively."
+            "description": "The handle the account is signing up with: 1 to 64 characters, no whitespace, control or invisible characters, and not a credential hash or token. Echoed as received; compared case-insensitively.",
+            "example": "new.user"
           },
           "phone": {
             "type": "string",
             "minLength": 9,
             "maxLength": 16,
             "pattern": "^\\+[1-9][0-9]{7,14}$",
-            "description": "Strict E.164: '+', then 8 to 15 digits, the first not 0, with no separators. Phone evidence is gathered asynchronously, so a phone-only request answers 202 pending and the phone is listed in incomplete_sources on the synchronous answer."
+            "description": "Strict E.164: '+', then 8 to 15 digits, the first not 0, with no separators. Phone evidence is gathered asynchronously, so a phone-only request answers 202 pending and the phone is listed in incomplete_sources on the synchronous answer.",
+            "example": "+61412345678"
           },
           "name": {
             "type": "string",
             "minLength": 1,
             "maxLength": 128,
             "pattern": "^[^\\x00-\\x1f\\x7f-\\x9f­؜᠎​-‏‪-‮⁠-⁤⁦-⁯﻿￹-￻]{1,128}$",
-            "description": "The full name as the user typed it, 1 to 128 characters with no control or invisible characters. It is used only to match names in the evidence."
+            "description": "The full name as the user typed it, 1 to 128 characters with no control or invisible characters. It is used only to match names in the evidence.",
+            "example": "Alex Example"
           },
           "ip": {
             "type": "string",
             "minLength": 2,
             "maxLength": 39,
             "pattern": "^(?:(?:25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])(?:\\.(?:25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])){3}|[0-9a-f]{0,4}(?::[0-9a-f]{0,4}){2,7})$",
-            "description": "The signup's client IP address: an IPv4 dotted quad without leading zeros, or an IPv6 address in its RFC 5952 text form (lower case, no leading zeros, the longest zero run compressed). Send an IPv4 client as a dotted quad, not IPv4-mapped. No zone, port or prefix. The server refuses a non-canonical IPv6 spelling, and every private, loopback, link-local, multicast, documentation or otherwise reserved address (the IANA special-purpose registries), with 400: only a public address says anything about a signup."
+            "description": "The signup's client IP address: an IPv4 dotted quad without leading zeros, or an IPv6 address in its RFC 5952 text form (lower case, no leading zeros, the longest zero run compressed). Send an IPv4 client as a dotted quad, not IPv4-mapped. No zone, port or prefix. The server refuses a non-canonical IPv6 spelling, and every private, loopback, link-local, multicast, documentation or otherwise reserved address (the IANA special-purpose registries), with 400: only a public address says anything about a signup.",
+            "example": "203.0.113.45"
           }
         },
         "description": "At least one of email, username or phone. name and ip refine the match and travel beside a lookup identifier; a body with only name or ip is refused with 400."
@@ -832,7 +864,8 @@
           "region": {
             "type": "string",
             "pattern": "^[A-Z]{2}$",
-            "description": "ISO 3166-1 alpha-2 region of the signup, as the provider determines it."
+            "description": "ISO 3166-1 alpha-2 region of the signup, as the provider determines it.",
+            "example": "AU"
           }
         }
       },
@@ -876,19 +909,22 @@
           "provider": {
             "type": "string",
             "pattern": "^[a-z0-9][a-z0-9._-]{1,31}$",
-            "description": "Lowercase provider slug. WorkOS, Clerk and Auth0 have first-class adapters; every other provider uses a customer-specific OIDC slug. Provider brand is metadata; it does not change risk by itself."
+            "description": "Lowercase provider slug. WorkOS, Clerk and Auth0 have first-class adapters; every other provider uses a customer-specific OIDC slug. Provider brand is metadata; it does not change risk by itself.",
+            "example": "clerk"
           },
           "issuer": {
             "type": "string",
             "maxLength": 256,
             "pattern": "^https://[^\\s]+$",
-            "description": "The verified token issuer, normally the provider's HTTPS issuer URL."
+            "description": "The verified token issuer, normally the provider's HTTPS issuer URL.",
+            "example": "https://example-app.clerk.accounts.dev"
           },
           "audience": {
             "type": "string",
             "maxLength": 256,
             "pattern": "^[A-Za-z0-9._:/-]{1,256}$",
-            "description": "The verified audience/resource identifier used by the customer's API. Use audiences when the provider emits multiple values."
+            "description": "The verified audience/resource identifier used by the customer's API. Use audiences when the provider emits multiple values.",
+            "example": "https://app.example.com"
           },
           "audiences": {
             "type": "array",
@@ -896,7 +932,8 @@
             "items": {
               "type": "string",
               "maxLength": 256,
-              "pattern": "^[A-Za-z0-9._:/-]{1,256}$"
+              "pattern": "^[A-Za-z0-9._:/-]{1,256}$",
+              "example": "https://app.example.com"
             },
             "description": "All verified audience/resource identifiers from an OAuth or OIDC token. The first value may also be copied to audience for simple integrations."
           },
@@ -904,56 +941,66 @@
             "type": "string",
             "maxLength": 256,
             "pattern": "^[A-Za-z0-9._:@/|+=~-]{1,256}$",
-            "description": "The verified stable subject identifier (`sub`), opaque to NoResponse."
+            "description": "The verified stable subject identifier (`sub`), opaque to NoResponse.",
+            "example": "user_2EXAMPLE"
           },
           "session_id": {
             "type": "string",
             "maxLength": 256,
             "pattern": "^[A-Za-z0-9._:@/|+=~-]{1,256}$",
-            "description": "The verified session identifier (`sid` or provider equivalent)."
+            "description": "The verified session identifier (`sid` or provider equivalent).",
+            "example": "sess_2EXAMPLE"
           },
           "organization_id": {
             "type": "string",
             "maxLength": 256,
             "pattern": "^[A-Za-z0-9._:@/|+=~-]{1,256}$",
-            "description": "The active organization or workspace identifier, when the provider issued one."
+            "description": "The active organization or workspace identifier, when the provider issued one.",
+            "example": "org_2EXAMPLE"
           },
           "tenant_id": {
             "type": "string",
             "maxLength": 256,
             "pattern": "^[A-Za-z0-9._:@/|+=~-]{1,256}$",
-            "description": "The provider tenant identifier, when distinct from organization_id."
+            "description": "The provider tenant identifier, when distinct from organization_id.",
+            "example": "tenant_2EXAMPLE"
           },
           "token_id": {
             "type": "string",
             "maxLength": 256,
             "pattern": "^[A-Za-z0-9._:@/|+=~-]{1,256}$",
-            "description": "The verified token identifier (`jti`), used for replay and rotation correlation."
+            "description": "The verified token identifier (`jti`), used for replay and rotation correlation.",
+            "example": "2EXAMPLEJTI"
           },
           "issued_at": {
             "type": "string",
             "maxLength": 64,
-            "description": "Verified token issue time (`iat`)."
+            "description": "Verified token issue time (`iat`).",
+            "example": "2026-10-14T08:59:40.000Z"
           },
           "expires_at": {
             "type": "string",
             "maxLength": 64,
-            "description": "Verified token expiry (`exp`)."
+            "description": "Verified token expiry (`exp`).",
+            "example": "2026-10-14T09:00:40.000Z"
           },
           "session_created_at": {
             "type": "string",
             "maxLength": 64,
-            "description": "Creation time of the provider session from the verified backend session record (for example Clerk Session.createdAt or WorkOS Session.created_at). This is separate from token issuance and auth_time."
+            "description": "Creation time of the provider session from the verified backend session record (for example Clerk Session.createdAt or WorkOS Session.created_at). This is separate from token issuance and auth_time.",
+            "example": "2026-10-14T08:57:00.000Z"
           },
           "auth_time": {
             "type": "string",
             "maxLength": 64,
-            "description": "Verified end-user authentication time (`auth_time`), when present."
+            "description": "Verified end-user authentication time (`auth_time`), when present.",
+            "example": "2026-10-14T08:55:00.000Z"
           },
           "account_created_at": {
             "type": "string",
             "maxLength": 64,
-            "description": "Account creation time from the customer's verified provider record, when available."
+            "description": "Account creation time from the customer's verified provider record, when available.",
+            "example": "2026-10-14T08:56:00.000Z"
           },
           "email_verified": {
             "type": "boolean",
@@ -990,7 +1037,8 @@
             "items": {
               "type": "string",
               "maxLength": 64,
-              "pattern": "^[A-Za-z0-9._:@/-]{1,64}$"
+              "pattern": "^[A-Za-z0-9._:@/-]{1,64}$",
+              "example": "admin"
             },
             "description": "Bounded role slugs from the verified provider; roles do not change risk by themselves."
           },
@@ -1000,7 +1048,8 @@
             "items": {
               "type": "string",
               "maxLength": 64,
-              "pattern": "^[A-Za-z0-9._:@/-]{1,64}$"
+              "pattern": "^[A-Za-z0-9._:@/-]{1,64}$",
+              "example": "org:sys_profile:manage"
             },
             "description": "Bounded scopes from the verified access token; scopes do not change risk by themselves."
           }
@@ -1025,7 +1074,8 @@
             "items": {
               "type": "string",
               "maxLength": 32,
-              "pattern": "^[A-Za-z0-9._:-]{1,32}$"
+              "pattern": "^[A-Za-z0-9._:-]{1,32}$",
+              "example": "totp"
             }
           },
           "age_seconds": {
@@ -1112,19 +1162,22 @@
           "name": {
             "type": "string",
             "minLength": 1,
-            "maxLength": 128
+            "maxLength": 128,
+            "example": "Example Forum"
           },
           "domain": {
             "type": "string",
             "minLength": 3,
             "maxLength": 253,
             "pattern": "^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\\.)+[a-z]{2,63}$",
-            "description": "The breached site's domain, lower case. Absent when the table has none (a credential list, for example)."
+            "description": "The breached site's domain, lower case. Absent when the table has none (a credential list, for example).",
+            "example": "forum.example.com"
           },
           "category": {
             "type": "string",
             "pattern": "^[a-z0-9_]{1,64}$",
-            "description": "The table's category from its name, lower case (social, gaming, combolist, ...)."
+            "description": "The table's category from its name, lower case (social, gaming, combolist, ...).",
+            "example": "forum"
           },
           "kind": {
             "$ref": "#/components/schemas/BreachKind"
@@ -1388,7 +1441,8 @@
           "country": {
             "type": "string",
             "pattern": "^[A-Z]{2}$",
-            "description": "ISO 3166-1 alpha-2 country of the address."
+            "description": "ISO 3166-1 alpha-2 country of the address.",
+            "example": "AU"
           },
           "type": {
             "$ref": "#/components/schemas/IpSummaryType",
@@ -1429,12 +1483,14 @@
           "key": {
             "type": "string",
             "pattern": "^nrk_[0-7][0-9A-HJKMNP-TV-Z]{25}_[A-Za-z0-9_-]{42}[AEIMQUYcgkosw048]$",
-            "description": "The new credential, nrk_<key id>_<secret>. It is shown only in this answer; store it now."
+            "description": "The new credential, nrk_<key id>_<secret>. It is shown only in this answer; store it now.",
+            "example": "nrk_01JA2Z8K6Q4V7W9XBCDEFGHJKM_k3Yx8pQ2mN7vR4tW6zB9cD1eF5gH0jL4sP9uV2wX7yA"
           },
           "key_id": {
             "type": "string",
             "pattern": "^[0-7][0-9A-HJKMNP-TV-Z]{25}$",
-            "description": "The public id of the new key."
+            "description": "The public id of the new key.",
+            "example": "01JA2Z8K6Q4V7W9XBCDEFGHJKM"
           },
           "scopes": {
             "type": "array",
@@ -1451,16 +1507,19 @@
             "description": "The scopes of the new key: those of the presented key."
           },
           "created_at": {
-            "type": "string"
+            "type": "string",
+            "example": "2026-10-14T09:10:00.000Z"
           },
           "previous_key_id": {
             "type": "string",
             "pattern": "^[0-7][0-9A-HJKMNP-TV-Z]{25}$",
-            "description": "The id of the key that signed this request."
+            "description": "The id of the key that signed this request.",
+            "example": "01JA2Z8K6Q4V7W9XBCDEFGHJKN"
           },
           "previous_key_expires_at": {
             "type": "string",
-            "description": "When the previous key stops authenticating. Until then both keys work."
+            "description": "When the previous key stops authenticating. Until then both keys work.",
+            "example": "2026-10-15T09:10:00.000Z"
           }
         }
       },
@@ -1577,75 +1636,93 @@
         "properties": {
           "phone": {
             "type": "string",
-            "maxLength": 8192
+            "maxLength": 8192,
+            "example": "+61412345678"
           },
           "name": {
             "type": "string",
-            "maxLength": 8192
+            "maxLength": 8192,
+            "example": "Alex Example"
           },
           "carrier": {
             "type": "string",
-            "maxLength": 8192
+            "maxLength": 8192,
+            "example": "Telstra"
           },
           "line_type": {
             "type": "string",
-            "maxLength": 8192
+            "maxLength": 8192,
+            "example": "mobile"
           },
           "entity_type": {
             "type": "string",
-            "maxLength": 8192
+            "maxLength": 8192,
+            "example": "person"
           },
           "country_code": {
             "type": "string",
-            "maxLength": 8192
+            "maxLength": 8192,
+            "example": "61"
           },
           "country": {
             "type": "string",
-            "maxLength": 8192
+            "maxLength": 8192,
+            "example": "Australia"
           },
           "state": {
             "type": "string",
-            "maxLength": 8192
+            "maxLength": 8192,
+            "example": "New South Wales"
           },
           "city": {
             "type": "string",
-            "maxLength": 8192
+            "maxLength": 8192,
+            "example": "Sydney"
           },
           "location": {
             "type": "string",
-            "maxLength": 8192
+            "maxLength": 8192,
+            "example": "Sydney, New South Wales, Australia"
           },
           "national_format": {
             "type": "string",
-            "maxLength": 8192
+            "maxLength": 8192,
+            "example": "0412 345 678"
           },
           "job_title": {
             "type": "string",
-            "maxLength": 8192
+            "maxLength": 8192,
+            "example": "Engineer"
           },
           "company_name": {
             "type": "string",
-            "maxLength": 8192
+            "maxLength": 8192,
+            "example": "Example Pty Ltd"
           },
           "email": {
             "type": "string",
-            "maxLength": 8192
+            "maxLength": 8192,
+            "example": "new.user@example.com"
           },
           "website": {
             "type": "string",
-            "maxLength": 8192
+            "maxLength": 8192,
+            "example": "https://example.com"
           },
           "first_call_at": {
             "type": "string",
-            "maxLength": 8192
+            "maxLength": 8192,
+            "example": "2026-09-01T00:00:00.000Z"
           },
           "last_call_at": {
             "type": "string",
-            "maxLength": 8192
+            "maxLength": 8192,
+            "example": "2026-10-10T00:00:00.000Z"
           },
           "matched_name": {
             "type": "string",
-            "maxLength": 8192
+            "maxLength": 8192,
+            "example": "Alex Example"
           },
           "alternate_names": {
             "type": "array",
@@ -1657,7 +1734,8 @@
                 "boolean",
                 "object",
                 "array"
-              ]
+              ],
+              "example": "Alex E."
             }
           },
           "name_candidates": {
@@ -1670,7 +1748,8 @@
                 "boolean",
                 "object",
                 "array"
-              ]
+              ],
+              "example": "Alex Example"
             }
           },
           "timezones": {
@@ -1683,7 +1762,8 @@
                 "boolean",
                 "object",
                 "array"
-              ]
+              ],
+              "example": "Australia/Sydney"
             }
           },
           "emails": {
@@ -1696,7 +1776,8 @@
                 "boolean",
                 "object",
                 "array"
-              ]
+              ],
+              "example": "new.user@example.com"
             }
           },
           "websites": {
@@ -1709,7 +1790,8 @@
                 "boolean",
                 "object",
                 "array"
-              ]
+              ],
+              "example": "https://example.com"
             }
           },
           "locations": {
@@ -1722,7 +1804,8 @@
                 "boolean",
                 "object",
                 "array"
-              ]
+              ],
+              "example": "Sydney, New South Wales, Australia"
             }
           },
           "social_profiles": {
@@ -1735,7 +1818,8 @@
                 "boolean",
                 "object",
                 "array"
-              ]
+              ],
+              "example": "https://example.com/alexexample"
             }
           },
           "report_count": {
@@ -1799,10 +1883,12 @@
         ],
         "properties": {
           "type": {
-            "type": "string"
+            "type": "string",
+            "example": "https://docs.noresponse.org/errors/invalid_request"
           },
           "title": {
-            "type": "string"
+            "type": "string",
+            "example": "Invalid request"
           },
           "status": {
             "type": "integer",
@@ -1810,17 +1896,21 @@
             "maximum": 599
           },
           "detail": {
-            "type": "string"
+            "type": "string",
+            "example": "identifiers: at least one of email, username or phone is required."
           },
           "instance": {
-            "type": "string"
+            "type": "string",
+            "example": "/v1/assessments"
           },
           "code": {
-            "type": "string"
+            "type": "string",
+            "example": "invalid_request"
           },
           "request_id": {
             "type": "string",
-            "minLength": 1
+            "minLength": 1,
+            "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
           },
           "invalid_params": {
             "type": "array",
@@ -1840,15 +1930,18 @@
         "properties": {
           "field": {
             "type": "string",
-            "minLength": 1
+            "minLength": 1,
+            "example": "identifiers"
           },
           "reason": {
             "type": "string",
-            "minLength": 1
+            "minLength": 1,
+            "example": "at least one of email, username or phone is required"
           },
           "example": {
             "type": "string",
-            "minLength": 1
+            "minLength": 1,
+            "example": "new.user@example.com"
           }
         }
       },
@@ -1980,7 +2073,8 @@
             "minLength": 1,
             "maxLength": 64,
             "pattern": "^[a-z0-9][a-z0-9._-]{0,63}(\\+t[1-9][0-9]{0,8})?$",
-            "description": "Version of the hand-authored heuristic weights that produced the recommendation, for example 'risk-2026-10.7'. A tenant threshold override adds a +t<N> suffix, e.g. 'risk-2026-10.7+t3'."
+            "description": "Version of the hand-authored heuristic weights that produced the recommendation, for example 'risk-2026-10.7'. A tenant threshold override adds a +t<N> suffix, e.g. 'risk-2026-10.7+t3'.",
+            "example": "risk-2026-10.3"
           },
           "policy_basis": {
             "const": "heuristic_unvalidated",
@@ -2084,7 +2178,8 @@
           "value": {
             "type": "string",
             "minLength": 1,
-            "maxLength": 128
+            "maxLength": 128,
+            "example": "Alex Example"
           },
           "seen_in": {
             "type": "integer",
@@ -2103,7 +2198,8 @@
           "value": {
             "type": "string",
             "minLength": 1,
-            "maxLength": 128
+            "maxLength": 128,
+            "example": "Alex Example"
           },
           "seen_by": {
             "type": "integer",
@@ -2182,7 +2278,8 @@
           },
           "country": {
             "type": "string",
-            "pattern": "^[A-Z]{2}$"
+            "pattern": "^[A-Z]{2}$",
+            "example": "AU"
           },
           "report_count": {
             "type": "integer",
@@ -2193,7 +2290,8 @@
             "type": "string",
             "minLength": 1,
             "maxLength": 128,
-            "description": "Carrier-network metadata from privately weighted sources; not upstream provider attribution."
+            "description": "Carrier-network metadata from privately weighted sources; not upstream provider attribution.",
+            "example": "Telstra"
           }
         }
       },
@@ -2228,7 +2326,8 @@
             "minLength": 1,
             "maxLength": 64,
             "pattern": "^[a-z][a-z0-9_]{0,63}$",
-            "description": "Signal kind, for example account_presence or breach_exposure. New kinds may appear; ignore any you do not know."
+            "description": "Signal kind, for example account_presence or breach_exposure. New kinds may appear; ignore any you do not know.",
+            "example": "account_presence"
           },
           "identifier": {
             "$ref": "#/components/schemas/IdentifierKind"
@@ -2241,7 +2340,8 @@
             "minLength": 1,
             "maxLength": 64,
             "pattern": "^[a-z0-9][a-z0-9_.-]{0,63}$",
-            "description": "Opaque, tenant-scoped projection of the source that produced a signal. It stays stable for your tenant while the projection key is unchanged and reveals no upstream provider, feed, breach table or source record."
+            "description": "Opaque, tenant-scoped projection of the source that produced a signal. It stays stable for your tenant while the projection key is unchanged and reveals no upstream provider, feed, breach table or source record.",
+            "example": "github"
           },
           "reason": {
             "$ref": "#/components/schemas/FailureReason"
@@ -2249,15 +2349,18 @@
           "evidence_ref": {
             "type": "string",
             "pattern": "^evr_[0-9A-HJKMNP-TV-Z]{26}$",
-            "description": "Opaque pointer to evidence NoResponse holds for this signal. It carries no breach value, credential or page body."
+            "description": "Opaque pointer to evidence NoResponse holds for this signal. It carries no breach value, credential or page body.",
+            "example": "evr_01JA2Z8K6Q4V7W9XBCDEFGHJKN"
           },
           "observed_at": {
             "type": "string",
-            "description": "When the evidence was first observed."
+            "description": "When the evidence was first observed.",
+            "example": "2026-10-14T09:00:00.210Z"
           },
           "last_checked_at": {
             "type": "string",
-            "description": "When the source was last queried for this identifier."
+            "description": "When the source was last queried for this identifier.",
+            "example": "2026-10-14T09:00:00.210Z"
           },
           "freshness": {
             "$ref": "#/components/schemas/Freshness"
@@ -2305,7 +2408,8 @@
           "type": "string",
           "minLength": 16,
           "maxLength": 128,
-          "pattern": "^[A-Za-z0-9._:-]{16,128}$"
+          "pattern": "^[A-Za-z0-9._:-]{16,128}$",
+          "example": "signup-7f3a9c-0001"
         }
       },
       "AssessmentId": {
@@ -2315,7 +2419,8 @@
         "schema": {
           "type": "string",
           "pattern": "^asm_[0-9A-HJKMNP-TV-Z]{26}$",
-          "description": "Opaque, server-assigned assessment id: 'asm_' and a 26-character Crockford base32 ULID. Unique within the tenant; another tenant's assessment id answers 404."
+          "description": "Opaque, server-assigned assessment id: 'asm_' and a 26-character Crockford base32 ULID. Unique within the tenant; another tenant's assessment id answers 404.",
+          "example": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
         },
         "description": "Path segment, matched case-sensitively. A value that does not match the assessment_id shape answers 404, not 400."
       }
@@ -2343,7 +2448,8 @@
             "description": "The request correlation id, 32 lowercase hexadecimal characters.",
             "schema": {
               "type": "string",
-              "pattern": "^[0-9a-f]{32}$"
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
             },
             "required": true
           }
@@ -2742,7 +2848,8 @@
               "type": "string",
               "maxLength": 64,
               "pattern": "^/v1/assessments/asm_[0-9A-HJKMNP-TV-Z]{26}$",
-              "description": "Server-relative path of the authoritative assessment, GET /v1/assessments/{assessment_id}."
+              "description": "Server-relative path of the authoritative assessment, GET /v1/assessments/{assessment_id}.",
+              "example": "/v1/assessments/asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
             },
             "required": true
           },
@@ -2751,7 +2858,8 @@
             "schema": {
               "type": "string",
               "pattern": "^(?:[1-9]|[1-9][0-9]|[1-9][0-9]{2}|[12][0-9]{3}|3[0-5][0-9]{2}|3600)$",
-              "description": "Whole decimal seconds; wait at least this long."
+              "description": "Whole decimal seconds; wait at least this long.",
+              "example": "2"
             },
             "required": true
           },
@@ -2759,7 +2867,8 @@
             "description": "The request correlation id, 32 lowercase hexadecimal characters.",
             "schema": {
               "type": "string",
-              "pattern": "^[0-9a-f]{32}$"
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
             },
             "required": true
           }
@@ -2838,7 +2947,8 @@
             "schema": {
               "type": "string",
               "pattern": "^(?:[1-9]|[1-9][0-9]|[1-9][0-9]{2}|[12][0-9]{3}|3[0-5][0-9]{2}|3600)$",
-              "description": "Whole decimal seconds; wait at least this long."
+              "description": "Whole decimal seconds; wait at least this long.",
+              "example": "2"
             },
             "required": false
           },
@@ -2846,7 +2956,8 @@
             "description": "The request correlation id, 32 lowercase hexadecimal characters.",
             "schema": {
               "type": "string",
-              "pattern": "^[0-9a-f]{32}$"
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
             },
             "required": true
           }
@@ -3284,7 +3395,8 @@
             "description": "The request correlation id, 32 lowercase hexadecimal characters.",
             "schema": {
               "type": "string",
-              "pattern": "^[0-9a-f]{32}$"
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
             },
             "required": true
           }
@@ -3403,7 +3515,8 @@
             "description": "The request correlation id, 32 lowercase hexadecimal characters.",
             "schema": {
               "type": "string",
-              "pattern": "^[0-9a-f]{32}$"
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
             },
             "required": true
           }
@@ -3437,7 +3550,8 @@
             "description": "The request correlation id, 32 lowercase hexadecimal characters.",
             "schema": {
               "type": "string",
-              "pattern": "^[0-9a-f]{32}$"
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
             },
             "required": true
           }
@@ -3464,7 +3578,8 @@
             "description": "The request correlation id, 32 lowercase hexadecimal characters.",
             "schema": {
               "type": "string",
-              "pattern": "^[0-9a-f]{32}$"
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
             },
             "required": true
           }
@@ -3491,7 +3606,8 @@
             "description": "The request correlation id, 32 lowercase hexadecimal characters.",
             "schema": {
               "type": "string",
-              "pattern": "^[0-9a-f]{32}$"
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
             },
             "required": true
           }
@@ -3518,7 +3634,8 @@
             "description": "The request correlation id, 32 lowercase hexadecimal characters.",
             "schema": {
               "type": "string",
-              "pattern": "^[0-9a-f]{32}$"
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
             },
             "required": true
           }
@@ -3546,7 +3663,8 @@
             "schema": {
               "type": "string",
               "pattern": "^(?:[1-9]|[1-9][0-9]|[1-9][0-9]{2}|[12][0-9]{3}|3[0-5][0-9]{2}|3600)$",
-              "description": "Whole decimal seconds; wait at least this long."
+              "description": "Whole decimal seconds; wait at least this long.",
+              "example": "2"
             },
             "required": true
           },
@@ -3554,7 +3672,8 @@
             "description": "The request correlation id, 32 lowercase hexadecimal characters.",
             "schema": {
               "type": "string",
-              "pattern": "^[0-9a-f]{32}$"
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
             },
             "required": true
           }
@@ -3581,7 +3700,8 @@
             "description": "The request correlation id, 32 lowercase hexadecimal characters.",
             "schema": {
               "type": "string",
-              "pattern": "^[0-9a-f]{32}$"
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
             },
             "required": true
           }
@@ -3616,7 +3736,8 @@
             "description": "The request correlation id, 32 lowercase hexadecimal characters.",
             "schema": {
               "type": "string",
-              "pattern": "^[0-9a-f]{32}$"
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
             },
             "required": true
           }
@@ -3653,7 +3774,8 @@
             "description": "The request correlation id, 32 lowercase hexadecimal characters.",
             "schema": {
               "type": "string",
-              "pattern": "^[0-9a-f]{32}$"
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
             },
             "required": true
           }
@@ -3680,7 +3802,8 @@
             "description": "The request correlation id, 32 lowercase hexadecimal characters.",
             "schema": {
               "type": "string",
-              "pattern": "^[0-9a-f]{32}$"
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
             },
             "required": true
           }
@@ -3722,7 +3845,8 @@
             "description": "The request correlation id, 32 lowercase hexadecimal characters.",
             "schema": {
               "type": "string",
-              "pattern": "^[0-9a-f]{32}$"
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
             },
             "required": true
           }
@@ -3749,7 +3873,8 @@
             "description": "The request correlation id, 32 lowercase hexadecimal characters.",
             "schema": {
               "type": "string",
-              "pattern": "^[0-9a-f]{32}$"
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
             },
             "required": true
           }
