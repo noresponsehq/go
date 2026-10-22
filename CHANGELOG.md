@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.10
+
+No changes detected.
+
 ## 2.0.9
 
 * `Sdk.Assessments.Create()`: 

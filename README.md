@@ -167,6 +167,17 @@ http.HandleFunc("/webhooks/noresponse", func(w http.ResponseWriter, r *http.Requ
 
 Deliveries arrive at least once and unordered. Deduplicate on `event.ID` and keep the highest `AssessmentVersion` per assessment.
 
+### Late results
+
+An assessment can rise after the signup was allowed. `HandleLateResult` verifies the `assessment.updated` delivery with `ConstructEvent`, applies a policy (default: revoke sessions on `review`) and acts through your auth provider:
+
+```go
+provider := &noresponse.ClerkActions{SecretKey: os.Getenv("CLERK_SECRET_KEY")} // or WorkOSActions, Auth0Actions
+result, err := noresponse.HandleLateResult(r.Context(), payload, r.Header, secrets, provider, nil)
+```
+
+`LateResultOptions` sets `Policy` (recommendation to `LateResultNone`, `LateResultRevokeSessions` or `LateResultBan`), `UserID` (account id to provider user id) and `Webhook` options. A refusal from the provider is a `*ProviderActionError`; answer 5xx so the delivery is retried. WorkOS has no block, so its ban deletes the user permanently.
+
 ## Other options
 
 `noresponse.WithServerURL`, `noresponse.WithClient` (any `Do(*http.Request)` implementation) and `noresponse.WithSecuritySource` (a key fetched per call, for rotation) are available on both `New` and `NewClient`.

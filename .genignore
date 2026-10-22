@@ -11,3 +11,5 @@
 /auth.go
 /auth_test.go
 /mockserver_test.go
+/late_results.go
+/late_results_test.go
