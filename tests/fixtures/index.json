@@ -3212,6 +3212,98 @@
         ]
       ],
       "why": "NOR-353 every event names its IP"
+    },
+    {
+      "file": "valid/settings.json",
+      "schema": "settings.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/settings-default.json",
+      "schema": "settings.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/settings-request.json",
+      "schema": "settings-request.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/settings-request-signup.json",
+      "schema": "settings-request.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "invalid/settings-request-signup-inherits.json",
+      "schema": "settings-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "not",
+          "/flows/signup"
+        ]
+      ],
+      "why": "NOR-360 signup has its own thresholds; only login and purchase inherit them"
+    },
+    {
+      "file": "invalid/settings-request-inherit-with-threshold.json",
+      "schema": "settings-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "not",
+          "/flows/login"
+        ]
+      ],
+      "why": "NOR-360 inherits_signup drops a flow's thresholds, so it is not combined with one"
+    },
+    {
+      "file": "invalid/settings-request-unknown-flow.json",
+      "schema": "settings-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "additionalProperties",
+          "/flows"
+        ]
+      ],
+      "why": "NOR-360 the flows are signup, login and purchase"
+    },
+    {
+      "file": "invalid/settings-request-empty-flow.json",
+      "schema": "settings-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "minProperties",
+          "/flows/login"
+        ]
+      ],
+      "why": "NOR-360 a flow named in a change changes something"
+    },
+    {
+      "file": "invalid/settings-request-tenant-id.json",
+      "schema": "settings-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "additionalProperties",
+          ""
+        ]
+      ],
+      "why": "the workspace comes from the path only"
+    },
+    {
+      "file": "invalid/settings-missing-flow.json",
+      "schema": "settings.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "required",
+          "/flows"
+        ]
+      ],
+      "why": "NOR-360 settings show every flow"
     }
   ]
 }

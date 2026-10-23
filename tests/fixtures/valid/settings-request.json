@@ -1,0 +1,1 @@
+{"retention_days": 90, "flows": {"login": {"step_up": 30, "review": 60, "block": null, "default_depth": "full"}, "purchase": {"inherits_signup": true}}}

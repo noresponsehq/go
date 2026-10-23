@@ -12,7 +12,7 @@ type Account struct {
 	// The account_id the tenant sends with its assessments.
 	ID   string      `json:"id"`
 	Risk AccountRisk `json:"risk"`
-	// The decision for each flow. Every flow uses the tenant's signup thresholds today, so all three are equal.
+	// The decision for each flow: the account's score under that flow's thresholds. A flow the workspace has not set uses its signup thresholds, so the flows differ only where it set them.
 	DecisionsByFlow AccountDecisionsByFlow `json:"decisions_by_flow"`
 	// The assessment the current risk comes from.
 	AssessmentID string `json:"assessment_id"`
