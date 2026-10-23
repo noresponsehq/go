@@ -1,5 +1,9 @@
 # Changelog
 
+## 4.0.1
+
+No changes detected.
+
 ## 4.0.0
 
 * `Sdk.WebhookEndpoints.ListDeliveries()`:  `response.Items[].EventType` **Changed** (Breaking ⚠️)

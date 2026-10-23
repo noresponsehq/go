@@ -1,0 +1,8 @@
+{
+  "workspace_id": "tnt_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+  "from": "2026-10-23",
+  "to": "2026-10-23",
+  "items": [
+    {"environment": "test", "day": "2026-10-23", "metric": "key_usage_events", "count": 0}
+  ]
+}

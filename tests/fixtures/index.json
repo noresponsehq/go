@@ -3341,6 +3341,52 @@
         ]
       ],
       "why": "NOR-360 settings show every flow"
+    },
+    {
+      "file": "valid/usage.json",
+      "schema": "usage.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/usage-empty.json",
+      "schema": "usage.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "invalid/usage-delivery-with-flow.json",
+      "schema": "usage.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "not",
+          "/items/0"
+        ]
+      ],
+      "why": "NOR-362 only assessments are counted by flow and depth"
+    },
+    {
+      "file": "invalid/usage-assessments-without-depth.json",
+      "schema": "usage.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "required",
+          "/items/0"
+        ]
+      ],
+      "why": "NOR-362 assessments are counted by flow and depth"
+    },
+    {
+      "file": "invalid/usage-zero-count.json",
+      "schema": "usage.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "minimum",
+          "/items/0/count"
+        ]
+      ],
+      "why": "NOR-362 a metric with nothing counted has no item"
     }
   ]
 }
