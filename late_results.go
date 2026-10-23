@@ -9,8 +9,10 @@ package noresponse
 // auth provider's admin API: revoke the user's sessions or ban the user.
 //
 // The handler verifies the delivery itself, so it never acts on an unverified
-// event. The provider calls are thin: you pass the credentials, and each
-// action is the provider's documented admin endpoint.
+// event, and it never acts on a test event from WebhookEndpoints.SendTestEvent.
+// The provider calls are thin: you pass the credentials, and each action is
+// the provider's documented admin endpoint. A provider 404 for a user or
+// session that is already gone counts as done, so a repeated delivery is safe.
 
 import (
 	"context"
@@ -70,9 +72,18 @@ type LateResultProvider interface {
 type LateResultOptions struct {
 	// Policy maps recommendation to action. Nil means DefaultLateResultPolicy.
 	Policy LateResultPolicy
-	// UserID returns the provider user id for the assessment's account id.
-	// Nil means the account id itself, as when you assess with the provider's
-	// user id. Return "" to take no action.
+	// ResolveUserID returns the provider user id for the assessment's account
+	// id, such as from your user store. It gets the context HandleLateResult
+	// was called with. Return "" to take no action, or an error to fail the
+	// delivery: HandleLateResult returns it unchanged and calls no provider,
+	// so answer the webhook with a 5xx and NoResponse retries it. When nil,
+	// UserID is used; when both are nil, the account id itself, as when you
+	// assess with the provider's user id.
+	ResolveUserID func(ctx context.Context, accountID string, event *Event) (string, error)
+	// UserID is the older form of ResolveUserID, with no context and no way
+	// to report a failed lookup. Ignored when ResolveUserID is set.
+	//
+	// Deprecated: use ResolveUserID.
 	UserID func(accountID string, event *Event) string
 	// Webhook options for ConstructEvent, such as WithTolerance and WithClock.
 	Webhook []WebhookOption
@@ -91,7 +102,8 @@ type LateResult struct {
 }
 
 // ProviderActionError is returned when the provider's admin API refuses a
-// call. Answer the webhook with a 5xx so NoResponse retries it.
+// call. Answer the webhook with a 5xx so NoResponse retries it. A 404 is never
+// returned: the user or session is already gone, so the action is done.
 type ProviderActionError struct {
 	Provider string
 	Status   int
@@ -101,10 +113,11 @@ type ProviderActionError struct {
 func (e *ProviderActionError) Error() string { return "noresponse: " + e.Message }
 
 // LateResultActionFor is the action your policy names for a verified event.
-// Only a served assessment with a recommendation can act. A nil policy means
+// Only a served assessment with a recommendation can act; a test event from
+// WebhookEndpoints.SendTestEvent never does. A nil policy means
 // DefaultLateResultPolicy.
 func LateResultActionFor(event *Event, policy LateResultPolicy) (LateResultAction, error) {
-	if event == nil || event.Type != EventAssessmentUpdated {
+	if event == nil || event.Type != EventAssessmentUpdated || event.Test {
 		return LateResultNone, nil
 	}
 	assessment, ok := event.Data.(*components.Assessment)
@@ -141,7 +154,8 @@ func LateResultActionFor(event *Event, policy LateResultPolicy) (LateResultActio
 //
 // payload, headers, secrets and options.Webhook are exactly what
 // ConstructEvent takes; a delivery that fails verification returns the
-// *WebhookError before any provider call. Deduplicate on result.Event.ID and
+// *WebhookError before any provider call. A test event acts on nothing.
+// Revoke and ban are safe to repeat, but deduplicate on result.Event.ID and
 // ignore versions older than one you have acted on. options may be nil.
 func HandleLateResult(ctx context.Context, payload []byte, headers http.Header, secrets map[string]string, provider LateResultProvider, options *LateResultOptions) (*LateResult, error) {
 	if options == nil {
@@ -160,7 +174,12 @@ func HandleLateResult(ctx context.Context, payload []byte, headers http.Header, 
 		return &LateResult{Event: event, Action: LateResultNone}, nil
 	}
 	userID := assessment.AccountID
-	if options.UserID != nil {
+	switch {
+	case options.ResolveUserID != nil:
+		if userID, err = options.ResolveUserID(ctx, assessment.AccountID, event); err != nil {
+			return nil, err
+		}
+	case options.UserID != nil:
 		userID = options.UserID(assessment.AccountID, event)
 	}
 	if userID == "" {
@@ -181,11 +200,10 @@ func HandleLateResult(ctx context.Context, payload []byte, headers http.Header, 
 }
 
 type adminCall struct {
-	method   string
-	path     string
-	query    url.Values
-	body     any
-	allow404 bool
+	method string
+	path   string
+	query  url.Values
+	body   any
 }
 
 type adminCaller struct {
@@ -203,7 +221,9 @@ func newAdminCaller(provider, base, token string, client *http.Client) *adminCal
 }
 
 // do sends one request and returns the response body, nil when empty or when
-// an allowed 404 answered.
+// a 404 answered. Every call names a user or a session, so a 404 means it is
+// already gone: revoke and ban count it as done and a repeated delivery does
+// not fail.
 func (c *adminCaller) do(ctx context.Context, call adminCall) ([]byte, error) {
 	target := c.base + call.path
 	if len(call.query) > 0 {
@@ -235,7 +255,7 @@ func (c *adminCaller) do(ctx context.Context, call adminCall) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	if call.allow404 && response.StatusCode == http.StatusNotFound {
+	if response.StatusCode == http.StatusNotFound {
 		return nil, nil
 	}
 	if response.StatusCode < 200 || response.StatusCode > 299 {
@@ -433,7 +453,7 @@ func (a *WorkOSActions) Ban(ctx context.Context, userID string) error {
 	if err != nil {
 		return err
 	}
-	_, err = c.do(ctx, adminCall{method: http.MethodDelete, path: "/user_management/users/" + user, allow404: true})
+	_, err = c.do(ctx, adminCall{method: http.MethodDelete, path: "/user_management/users/" + user})
 	return err
 }
 

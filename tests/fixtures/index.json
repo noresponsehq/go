@@ -187,6 +187,16 @@
       "expect": "valid"
     },
     {
+      "file": "valid/assessment-auth-context.json",
+      "schema": "assessment.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/assessment-auth-context-hook.json",
+      "schema": "assessment.schema.json",
+      "expect": "valid"
+    },
+    {
       "file": "valid/problem-tenant-forbidden-scope.json",
       "schema": "identity.openapi.json#/components/responses/TenantForbidden/content/application~1problem+json/schema",
       "expect": "valid"
@@ -612,6 +622,54 @@
         ]
       ],
       "why": "II-007 no raw breach value field"
+    },
+    {
+      "file": "invalid/response-auth-context-token-id.json",
+      "schema": "assessment.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "additionalProperties",
+          "/auth_context"
+        ]
+      ],
+      "why": "NOR-340 the auth_context echo carries identity fields only, no token"
+    },
+    {
+      "file": "invalid/response-auth-context-hook-no-hook-point.json",
+      "schema": "assessment.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "required",
+          "/auth_context"
+        ]
+      ],
+      "why": "NOR-340 a provider_hook echo names its hook point"
+    },
+    {
+      "file": "invalid/response-auth-context-hook-verified.json",
+      "schema": "assessment.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "const",
+          "/auth_context/verified"
+        ]
+      ],
+      "why": "NOR-340 a provider_hook context is never verified"
+    },
+    {
+      "file": "invalid/response-auth-context-backend-hook-point.json",
+      "schema": "assessment.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "not",
+          "/auth_context"
+        ]
+      ],
+      "why": "NOR-340 only a provider_hook echo carries a hook point"
     },
     {
       "file": "invalid/response-timeout-encoded-as-not-found.json",

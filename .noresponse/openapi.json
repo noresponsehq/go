@@ -1048,6 +1048,69 @@
           },
           "timing": {
             "$ref": "#/components/schemas/AssessmentTiming"
+          },
+          "auth_context": {
+            "$ref": "#/components/schemas/AssessmentAuthContext",
+            "description": "The identity fields of the auth context the assessment was made with, echoed for the tenant's own correlation: the request's auth_context, or the one a hosted provider hook (POST /hooks/{integration_id}) built, with transport provider_hook and its hook_point. Present exactly when the request carried an auth_context, and the same on every revision of the assessment. Values are as the request or the hook sent them; tokens, timestamps, roles and scopes are not echoed, and the echo does not change the score."
+          }
+        }
+      },
+      "AssessmentAuthContext": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "provider",
+          "issuer",
+          "verified",
+          "transport"
+        ],
+        "description": "The identity fields of the auth context the assessment was made with, echoed for the tenant's own correlation: the request's auth_context, or the one a hosted provider hook (POST /hooks/{integration_id}) built, with transport provider_hook and its hook_point. Present exactly when the request carried an auth_context, and the same on every revision of the assessment. Values are as the request or the hook sent them; tokens, timestamps, roles and scopes are not echoed, and the echo does not change the score.",
+        "properties": {
+          "provider": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9._-]{1,31}$",
+            "description": "The provider slug the context named.",
+            "example": "clerk"
+          },
+          "issuer": {
+            "type": "string",
+            "maxLength": 256,
+            "pattern": "^https://[^\\s]+$",
+            "description": "The issuer the context named.",
+            "example": "https://example-app.clerk.accounts.dev"
+          },
+          "subject": {
+            "type": "string",
+            "maxLength": 256,
+            "pattern": "^[A-Za-z0-9._:@/|+=~-]{1,256}$",
+            "description": "The subject the context named; absent when it named none (a pre_registration hook).",
+            "example": "user_2EXAMPLE"
+          },
+          "session_id": {
+            "type": "string",
+            "maxLength": 256,
+            "pattern": "^[A-Za-z0-9._:@/|+=~-]{1,256}$",
+            "description": "The session identifier the context named, when it named one.",
+            "example": "sess_2EXAMPLE"
+          },
+          "organization_id": {
+            "type": "string",
+            "maxLength": 256,
+            "pattern": "^[A-Za-z0-9._:@/|+=~-]{1,256}$",
+            "description": "The organization identifier the context named, when it named one.",
+            "example": "org_2EXAMPLE"
+          },
+          "verified": {
+            "type": "boolean",
+            "description": "The verified flag the context carried. A provider_hook context is always false."
+          },
+          "transport": {
+            "$ref": "#/components/schemas/Transport",
+            "description": "Where the context was derived: backend (also when the request named no transport), browser, or provider_hook for a hosted provider hook."
+          },
+          "hook_point": {
+            "$ref": "#/components/schemas/HookPoint",
+            "description": "The provider event a provider_hook context was sent for; absent for any other transport."
           }
         }
       },
@@ -1944,7 +2007,7 @@
           "post_login",
           "token_issuance"
         ],
-        "description": "The provider event a provider_hook context was sent for. pre_registration runs before the user exists, so subject and the request's account_id may be absent there. Sent only with transport provider_hook."
+        "description": "The provider event a provider_hook context was sent for; absent for any other transport."
       },
       "IdentifierKind": {
         "enum": [
@@ -3146,7 +3209,7 @@
           "browser",
           "provider_hook"
         ],
-        "description": "Where this context was derived. Backend is the trusted integration path; browser values are treated as weak hints. provider_hook is a hosted provider hook (an Auth0 or WorkOS Action) calling at hook_point; it needs hook_point and verified false, and its authentication facts are not scored."
+        "description": "Where the context was derived: backend (also when the request named no transport), browser, or provider_hook for a hosted provider hook."
       },
       "WebhookEndpoint": {
         "description": "One of the tenant's registered webhook endpoints. Signing secrets are not part of it: a secret is shown once, when it is issued (POST /v1/webhooks and POST /v1/webhooks/{endpoint_id}/rotate).",

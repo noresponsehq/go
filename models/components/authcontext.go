@@ -42,9 +42,9 @@ type AuthContext struct {
 	AssuranceLevel *AssuranceLevel `json:"assurance_level,omitzero"`
 	// Whether the verified session is acting on behalf of another subject.
 	Impersonated *bool `json:"impersonated,omitzero"`
-	// Where this context was derived. Backend is the trusted integration path; browser values are treated as weak hints. provider_hook is a hosted provider hook (an Auth0 or WorkOS Action) calling at hook_point; it needs hook_point and verified false, and its authentication facts are not scored.
+	// Where the context was derived: backend (also when the request named no transport), browser, or provider_hook for a hosted provider hook.
 	Transport *Transport `json:"transport,omitzero"`
-	// The provider event a provider_hook context was sent for. pre_registration runs before the user exists, so subject and the request's account_id may be absent there. Sent only with transport provider_hook.
+	// The provider event a provider_hook context was sent for; absent for any other transport.
 	HookPoint *HookPoint `json:"hook_point,omitzero"`
 	// Whether the customer completed signature, issuer, audience and expiry validation before calling NoResponse. False contexts are accepted only as weak hints.
 	Verified bool `json:"verified"`

@@ -1,11 +1,6 @@
 package components
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
-// HookPoint - The provider event a provider_hook context was sent for. pre_registration runs before the user exists, so subject and the request's account_id may be absent there. Sent only with transport provider_hook.
+// HookPoint - The provider event a provider_hook context was sent for; absent for any other transport.
 type HookPoint string
 
 const (
@@ -19,24 +14,14 @@ const (
 func (e HookPoint) ToPointer() *HookPoint {
 	return &e
 }
-func (e *HookPoint) UnmarshalJSON(data []byte) error {
-	var v string
-	if err := json.Unmarshal(data, &v); err != nil {
-		return err
+
+// IsExact returns true if the value matches a known enum value, false otherwise.
+func (e *HookPoint) IsExact() bool {
+	if e != nil {
+		switch *e {
+		case "pre_registration", "post_registration", "pre_login", "post_login", "token_issuance":
+			return true
+		}
 	}
-	switch v {
-	case "pre_registration":
-		fallthrough
-	case "post_registration":
-		fallthrough
-	case "pre_login":
-		fallthrough
-	case "post_login":
-		fallthrough
-	case "token_issuance":
-		*e = HookPoint(v)
-		return nil
-	default:
-		return fmt.Errorf("invalid value for HookPoint: %v", v)
-	}
+	return false
 }

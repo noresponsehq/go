@@ -1,6 +1,6 @@
 # HookPoint
 
-The provider event a provider_hook context was sent for. pre_registration runs before the user exists, so subject and the request's account_id may be absent there. Sent only with transport provider_hook.
+The provider event a provider_hook context was sent for; absent for any other transport.
 
 ## Example Usage
 
@@ -10,6 +10,9 @@ import (
 )
 
 value := components.HookPointPreRegistration
+
+// Open enum: custom values can be created with a direct type cast
+custom := components.HookPoint("custom_value")
 ```
 
 

@@ -1,6 +1,6 @@
 # Transport
 
-Where this context was derived. Backend is the trusted integration path; browser values are treated as weak hints. provider_hook is a hosted provider hook (an Auth0 or WorkOS Action) calling at hook_point; it needs hook_point and verified false, and its authentication facts are not scored.
+Where the context was derived: backend (also when the request named no transport), browser, or provider_hook for a hosted provider hook.
 
 ## Example Usage
 
@@ -10,6 +10,9 @@ import (
 )
 
 value := components.TransportBackend
+
+// Open enum: custom values can be created with a direct type cast
+custom := components.Transport("custom_value")
 ```
 
 

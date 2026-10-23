@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.0.14
+
+* `Sdk.Assessments.Create()`:  `response.AuthContext` **Added**
+* `Sdk.Assessments.Get()`:  `response.AuthContext` **Added**
+* `Sdk.Assessments.Query()`:  `response.Items[].AuthContext` **Added**
+
 ## 2.0.13
 
 * `Sdk.WebhookEndpoints.List()`: **Added**

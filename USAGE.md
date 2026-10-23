@@ -1,23 +1,28 @@
-<!-- Start SDK Example Usage [usage] -->
+# Usage
+
+Create an assessment for a new signup. Give every signup its own idempotency key from `noresponse.NewIdempotencyKey()` and store it beside the signup, so a retry after a crash sends the same key. README.md is the full guide.
+
 ```go
 package main
 
 import (
 	"context"
-	noresponse "github.com/noresponsehq/go/v2"
-	"github.com/noresponsehq/go/v2/models/components"
+	"fmt"
 	"log"
 	"os"
+
+	noresponse "github.com/noresponsehq/go/v2"
+	"github.com/noresponsehq/go/v2/models/components"
 )
 
 func main() {
-	ctx := context.Background()
+	client := noresponse.NewClient(os.Getenv("NORESPONSE_API_KEY"))
 
-	s := noresponse.New(
-		noresponse.WithSecurity(os.Getenv("NORESPONSE_API_KEY")),
-	)
+	// Make one key per signup and save it with the signup record before this
+	// call. A retry for the same signup reads the saved key back and sends it.
+	key := noresponse.NewIdempotencyKey()
 
-	res, err := s.Assessments.Create(ctx, "<value>", components.AssessmentRequest{
+	res, err := client.Assessments.Create(context.Background(), key, components.AssessmentRequest{
 		AccountID: "acct_7f3a9c",
 		Identifiers: components.AssessmentRequestIdentifiers{
 			Email: noresponse.Pointer("new.user@example.com"),
@@ -26,10 +31,13 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	if res != nil {
-		// handle response
-	}
-}
 
+	assessment := res.Result
+	if assessment.Status == components.StatusPending {
+		// No recommendation yet. Apply your own fallback, then wait for the
+		// webhook or call noresponse.WaitForAssessment.
+		return
+	}
+	fmt.Println(*assessment.Recommendation, assessment.Risk.Score)
+}
 ```
-<!-- End SDK Example Usage [usage] -->

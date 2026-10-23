@@ -36,8 +36,8 @@ func main() {
         noresponse.WithSecurity(os.Getenv("NORESPONSE_API_KEY")),
     )
 
-    res, err := s.Assessments.Create(ctx, "<value>", components.AssessmentRequest{
-        AccountID: "<id>",
+    res, err := s.Assessments.Create(ctx, "signup-7f3a9c-0001", components.AssessmentRequest{
+        AccountID: "acct_7f3a9c",
         Identifiers: components.AssessmentRequestIdentifiers{
             Email: noresponse.Pointer("new.user@example.com"),
             Username: noresponse.Pointer("new.user"),
@@ -121,8 +121,8 @@ func main() {
         noresponse.WithSecurity(os.Getenv("NORESPONSE_API_KEY")),
     )
 
-    res, err := s.Assessments.Create(ctx, "<value>", components.AssessmentRequest{
-        AccountID: "<id>",
+    res, err := s.Assessments.Create(ctx, "signup-7f3a9c-0001", components.AssessmentRequest{
+        AccountID: "acct_7f3a9c",
         Identifiers: components.AssessmentRequestIdentifiers{
             Email: noresponse.Pointer("new.user@example.com"),
             Username: noresponse.Pointer("new.user"),
@@ -206,7 +206,7 @@ func main() {
         noresponse.WithSecurity(os.Getenv("NORESPONSE_API_KEY")),
     )
 
-    res, err := s.Assessments.Create(ctx, "<value>", components.AssessmentRequest{
+    res, err := s.Assessments.Create(ctx, "signup-7f3a9c-0001", components.AssessmentRequest{
         AccountID: "acct_7f3a9c",
         Identifiers: components.AssessmentRequestIdentifiers{
             Email: noresponse.Pointer("new.user@example.com"),
@@ -249,7 +249,7 @@ func main() {
         noresponse.WithSecurity(os.Getenv("NORESPONSE_API_KEY")),
     )
 
-    res, err := s.Assessments.Create(ctx, "<value>", components.AssessmentRequest{
+    res, err := s.Assessments.Create(ctx, "signup-7f3a9c-0001", components.AssessmentRequest{
         AccountID: "acct_7f3a9c",
         Identifiers: components.AssessmentRequestIdentifiers{
             Email: noresponse.Pointer("new.user@example.com"),
@@ -284,7 +284,7 @@ func main() {
         noresponse.WithSecurity(os.Getenv("NORESPONSE_API_KEY")),
     )
 
-    res, err := s.Assessments.Create(ctx, "<value>", components.AssessmentRequest{
+    res, err := s.Assessments.Create(ctx, "signup-7f3a9c-0001", components.AssessmentRequest{
         AccountID: "acct_8412",
         Identifiers: components.AssessmentRequestIdentifiers{
             Email: noresponse.Pointer("jane.doe@example.com"),
@@ -330,8 +330,8 @@ func main() {
         noresponse.WithSecurity(os.Getenv("NORESPONSE_API_KEY")),
     )
 
-    res, err := s.Assessments.Create(ctx, "<value>", components.AssessmentRequest{
-        AccountID: "<id>",
+    res, err := s.Assessments.Create(ctx, "signup-7f3a9c-0001", components.AssessmentRequest{
+        AccountID: "acct_7f3a9c",
         Identifiers: components.AssessmentRequestIdentifiers{
             Email: noresponse.Pointer("new.user@example.com"),
             Username: noresponse.Pointer("new.user"),
@@ -415,8 +415,8 @@ func main() {
         noresponse.WithSecurity(os.Getenv("NORESPONSE_API_KEY")),
     )
 
-    res, err := s.Assessments.Create(ctx, "<value>", components.AssessmentRequest{
-        AccountID: "<id>",
+    res, err := s.Assessments.Create(ctx, "signup-7f3a9c-0001", components.AssessmentRequest{
+        AccountID: "acct_7f3a9c",
         Identifiers: components.AssessmentRequestIdentifiers{
             Email: noresponse.Pointer("new.user@example.com"),
             Username: noresponse.Pointer("new.user"),
@@ -529,7 +529,7 @@ func main() {
         noresponse.WithSecurity(os.Getenv("NORESPONSE_API_KEY")),
     )
 
-    res, err := s.Assessments.Get(ctx, "<id>", nil)
+    res, err := s.Assessments.Get(ctx, "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM", nil)
     if err != nil {
         log.Fatal(err)
     }
@@ -558,7 +558,7 @@ func main() {
         noresponse.WithSecurity(os.Getenv("NORESPONSE_API_KEY")),
     )
 
-    res, err := s.Assessments.Get(ctx, "<id>", nil)
+    res, err := s.Assessments.Get(ctx, "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM", nil)
     if err != nil {
         log.Fatal(err)
     }
@@ -587,7 +587,7 @@ func main() {
         noresponse.WithSecurity(os.Getenv("NORESPONSE_API_KEY")),
     )
 
-    res, err := s.Assessments.Get(ctx, "<id>", nil)
+    res, err := s.Assessments.Get(ctx, "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM", nil)
     if err != nil {
         log.Fatal(err)
     }
@@ -616,7 +616,7 @@ func main() {
         noresponse.WithSecurity(os.Getenv("NORESPONSE_API_KEY")),
     )
 
-    res, err := s.Assessments.Get(ctx, "<id>", nil)
+    res, err := s.Assessments.Get(ctx, "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM", nil)
     if err != nil {
         log.Fatal(err)
     }
@@ -645,7 +645,7 @@ func main() {
         noresponse.WithSecurity(os.Getenv("NORESPONSE_API_KEY")),
     )
 
-    res, err := s.Assessments.Get(ctx, "<id>", nil)
+    res, err := s.Assessments.Get(ctx, "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM", nil)
     if err != nil {
         log.Fatal(err)
     }
@@ -705,7 +705,7 @@ func main() {
         noresponse.WithSecurity(os.Getenv("NORESPONSE_API_KEY")),
     )
 
-    res, err := s.Assessments.RecordOutcome(ctx, "<id>", "<value>", components.AssessmentOutcomeRequest{
+    res, err := s.Assessments.RecordOutcome(ctx, "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM", "signup-7f3a9c-0001", components.AssessmentOutcomeRequest{
         Outcome: components.OutcomeConfirmedAbuse,
         ObservedAt: noresponse.Pointer("2026-10-20T05:00:00Z"),
         ExternalRef: noresponse.Pointer("case-123"),
@@ -740,7 +740,7 @@ func main() {
         noresponse.WithSecurity(os.Getenv("NORESPONSE_API_KEY")),
     )
 
-    res, err := s.Assessments.RecordOutcome(ctx, "<id>", "<value>", components.AssessmentOutcomeRequest{
+    res, err := s.Assessments.RecordOutcome(ctx, "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM", "signup-7f3a9c-0001", components.AssessmentOutcomeRequest{
         Outcome: components.OutcomeLegitimate,
         ObservedAt: noresponse.Pointer("2026-10-14T09:04:30.000Z"),
         ExternalRef: noresponse.Pointer("case-48213"),
@@ -775,7 +775,7 @@ func main() {
         noresponse.WithSecurity(os.Getenv("NORESPONSE_API_KEY")),
     )
 
-    res, err := s.Assessments.RecordOutcome(ctx, "<id>", "<value>", components.AssessmentOutcomeRequest{
+    res, err := s.Assessments.RecordOutcome(ctx, "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM", "signup-7f3a9c-0001", components.AssessmentOutcomeRequest{
         Outcome: components.OutcomeFalsePositive,
     })
     if err != nil {
@@ -883,7 +883,7 @@ func main() {
     )
 
     res, err := s.Assessments.Query(ctx, components.AssessmentQuery{
-        AccountID: "<id>",
+        AccountID: "acct_7f3a9c",
         Cursor: noresponse.Pointer("eyJvIjoyMH0"),
     })
     if err != nil {

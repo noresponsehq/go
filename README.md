@@ -174,6 +174,9 @@ http.HandleFunc("/webhooks/noresponse", func(w http.ResponseWriter, r *http.Requ
 	}
 	switch data := event.Data.(type) {
 	case *components.Assessment:
+		if event.Test {
+			break // SendTestEvent's fixed example assessment: apply nothing
+		}
 		// The full assessment, as Get returns it.
 	case *noresponse.AssessmentExpired:
 		// Delete what you hold for data.AssessmentID.
@@ -202,7 +205,7 @@ provider := &noresponse.ClerkActions{SecretKey: os.Getenv("CLERK_SECRET_KEY")} /
 result, err := noresponse.HandleLateResult(r.Context(), payload, r.Header, secrets, provider, nil)
 ```
 
-`LateResultOptions` sets `Policy` (recommendation to `LateResultNone`, `LateResultRevokeSessions` or `LateResultBan`), `UserID` (account id to provider user id) and `Webhook` options. A refusal from the provider is a `*ProviderActionError`; answer 5xx so the delivery is retried. WorkOS has no block, so its ban deletes the user permanently.
+`LateResultOptions` sets `Policy` (recommendation to `LateResultNone`, `LateResultRevokeSessions` or `LateResultBan`), `ResolveUserID` (account id to provider user id, with the context; an error it returns fails the delivery so it is retried) and `Webhook` options. A test event from `SendTestEvent` acts on nothing. A refusal from the provider is a `*ProviderActionError`; answer 5xx so the delivery is retried. A provider 404 means the user or session is already gone and counts as done, so a repeated delivery is safe. WorkOS has no block, so its ban deletes the user permanently.
 
 ## Other options
 

@@ -45,6 +45,12 @@ func lateFixture(t *testing.T, name string) map[string]any {
 // lateDelivery signs an assessment.updated delivery of data, overriding account_id when given.
 func lateDelivery(t *testing.T, data map[string]any, accountID string) ([]byte, http.Header) {
 	t.Helper()
+	return lateDeliveryWith(t, data, accountID, nil)
+}
+
+// lateDeliveryWith is lateDelivery with extra top-level body fields, such as "test": true.
+func lateDeliveryWith(t *testing.T, data map[string]any, accountID string, extra map[string]any) ([]byte, http.Header) {
+	t.Helper()
 	copied := map[string]any{}
 	for k, v := range data {
 		copied[k] = v
@@ -53,7 +59,11 @@ func lateDelivery(t *testing.T, data map[string]any, accountID string) ([]byte, 
 		copied["account_id"] = accountID
 	}
 	id := "evt_01JA2ZB4N5P6Q7R8S9T0VWXYZ2"
-	raw, err := json.Marshal(map[string]any{"id": id, "type": "assessment.updated", "created_at": "2026-10-18T11:00:04Z", "data": copied})
+	body := map[string]any{"id": id, "type": "assessment.updated", "created_at": "2026-10-18T11:00:04Z", "data": copied}
+	for k, v := range extra {
+		body[k] = v
+	}
+	raw, err := json.Marshal(body)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -493,5 +503,114 @@ func TestEmptyUserIDAndMissingCredentialsAreErrors(t *testing.T) {
 	}
 	if err := (&Auth0Actions{}).Ban(ctx, "u"); err == nil {
 		t.Fatal("auth0 without a token must fail")
+	}
+}
+
+func TestWebhookTestEventActsOnNothing(t *testing.T) {
+	mock := startMock(t, func(c mockCall) (int, any) { return 200, map[string]any{} })
+	workos := &WorkOSActions{APIKey: "sk_test_workos", BaseURL: mock.URL}
+	raw, headers := lateDeliveryWith(t, lateFixture(t, "assessment-complete.json"), "acct_7f3a9c", map[string]any{"test": true})
+	resolved := 0
+	ban := LateResultPolicy{components.RecommendationAllow: LateResultBan, components.RecommendationStepUp: LateResultBan, components.RecommendationReview: LateResultBan}
+	for name, extra := range map[string]*LateResultOptions{
+		"UserID":        {Policy: ban, UserID: func(string, *Event) string { resolved++; return "user_01WORKOS" }},
+		"ResolveUserID": {Policy: ban, ResolveUserID: func(context.Context, string, *Event) (string, error) { resolved++; return "user_01WORKOS", nil }},
+		"default":       {Policy: ban},
+	} {
+		result, err := HandleLateResult(context.Background(), raw, headers, lateSecrets, workos, lateOptions(extra))
+		if err != nil || !result.Event.Test || result.Action != LateResultNone || result.UserID != "" {
+			t.Fatalf("%s: %+v, %v", name, result, err)
+		}
+		if action, err := LateResultActionFor(result.Event, ban); err != nil || action != LateResultNone {
+			t.Fatalf("%s: LateResultActionFor = %q, %v", name, action, err)
+		}
+	}
+	if resolved != 0 {
+		t.Fatalf("resolver called %d times for a test event", resolved)
+	}
+	if n := len(mock.summary()); n != 0 {
+		t.Fatalf("%d provider calls for a test event", n)
+	}
+}
+
+func TestRepeatedDeliveryTreatsAProvider404AsDone(t *testing.T) {
+	// Every user and session is already gone, as after a first WorkOS ban deleted the user.
+	mock := startMock(t, func(c mockCall) (int, any) { return 404, map[string]string{"error": "not_found"} })
+	raw, headers := lateDelivery(t, lateFixture(t, "assessment-phone-uncovered-complete.json"), "user_gone")
+	for _, provider := range []LateResultProvider{
+		&WorkOSActions{APIKey: "k", BaseURL: mock.URL},
+		&ClerkActions{SecretKey: "k", BaseURL: mock.URL + "/v1"},
+		&Auth0Actions{Token: "k", BaseURL: mock.URL + "/api/v2"},
+	} {
+		for _, action := range []LateResultAction{LateResultBan, LateResultRevokeSessions} {
+			for attempt := 0; attempt < 2; attempt++ {
+				policy := LateResultPolicy{components.RecommendationReview: action}
+				result, err := HandleLateResult(context.Background(), raw, headers, lateSecrets, provider, lateOptions(&LateResultOptions{Policy: policy}))
+				if err != nil || result.Action != action || result.UserID != "user_gone" {
+					t.Fatalf("%s %s attempt %d: %+v, %v", provider.Name(), action, attempt, result, err)
+				}
+			}
+		}
+	}
+}
+
+func TestClerkSessionGoneBetweenListAndRevokeIsDoneAndOtherRefusalsStillFail(t *testing.T) {
+	mock := startMock(t, func(c mockCall) (int, any) {
+		switch {
+		case c.Method == "GET" && c.Path == "/v1/sessions":
+			return 200, []any{map[string]any{"id": "sess_1", "status": "active"}}
+		case c.Method == "POST" && c.Path == "/v1/sessions/sess_1/revoke":
+			return 404, map[string]any{"errors": []any{map[string]string{"code": "resource_not_found"}}}
+		case c.Method == "POST" && c.Path == "/v1/users/user_2EXAMPLE/ban":
+			return 500, map[string]string{"error": "boom"}
+		}
+		return 0, nil
+	})
+	clerk := &ClerkActions{SecretKey: "k", BaseURL: mock.URL + "/v1"}
+	ctx := context.Background()
+	if err := clerk.RevokeSessions(ctx, "user_2EXAMPLE"); err != nil {
+		t.Fatalf("revoke = %v", err)
+	}
+	var refusal *ProviderActionError
+	if err := clerk.Ban(ctx, "user_2EXAMPLE"); !errors.As(err, &refusal) || refusal.Status != 500 {
+		t.Fatalf("ban = %v", err)
+	}
+}
+
+func TestResolveUserIDGetsTheContextAndItsErrorFailsTheDelivery(t *testing.T) {
+	mock := startMock(t, func(c mockCall) (int, any) { return 202, nil })
+	auth0 := &Auth0Actions{Token: "k", BaseURL: mock.URL + "/api/v2"}
+	raw, headers := lateDelivery(t, lateFixture(t, "assessment-phone-uncovered-complete.json"), "acct_7f3a9c")
+	type key struct{}
+	ctx := context.WithValue(context.Background(), key{}, "request")
+	storeDown := errors.New("store unavailable")
+
+	_, err := HandleLateResult(ctx, raw, headers, lateSecrets, auth0, lateOptions(&LateResultOptions{
+		ResolveUserID: func(ctx context.Context, accountID string, event *Event) (string, error) {
+			if ctx.Value(key{}) != "request" || accountID != "acct_7f3a9c" || event == nil {
+				t.Fatalf("resolver got ctx %v, account %q, event %v", ctx.Value(key{}), accountID, event)
+			}
+			return "", storeDown
+		},
+		UserID: func(string, *Event) string { t.Fatal("UserID must not run when ResolveUserID is set"); return "" },
+	}))
+	if !errors.Is(err, storeDown) {
+		t.Fatalf("err = %v, want the resolver's error", err)
+	}
+	if n := len(mock.summary()); n != 0 {
+		t.Fatalf("%d provider calls after a failed resolve", n)
+	}
+
+	result, err := HandleLateResult(ctx, raw, headers, lateSecrets, auth0, lateOptions(&LateResultOptions{
+		ResolveUserID: func(context.Context, string, *Event) (string, error) { return "auth0|abc", nil },
+	}))
+	if err != nil || result.Action != LateResultRevokeSessions || result.UserID != "auth0|abc" {
+		t.Fatalf("%+v, %v", result, err)
+	}
+	result, err = HandleLateResult(ctx, raw, headers, lateSecrets, auth0, lateOptions(&LateResultOptions{
+		ResolveUserID: func(context.Context, string, *Event) (string, error) { return "", nil },
+	}))
+	if err != nil || result.Action != LateResultNone {
+		t.Fatalf("empty resolve: %+v, %v", result, err)
 	}
 }
