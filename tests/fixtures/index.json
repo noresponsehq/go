@@ -2913,6 +2913,131 @@
         ]
       ],
       "why": "NOR-350 flow moved to the top level"
+    },
+    {
+      "file": "valid/signup-request.json",
+      "schema": "signup-request.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/signup-accepted.json",
+      "schema": "signup-accepted.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/signup-verification-request.json",
+      "schema": "signup-verification-request.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/signup-verification.json",
+      "schema": "signup-verification.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/signup-verification-held.json",
+      "schema": "signup-verification.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/signup-list.json",
+      "schema": "signup-list.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/signup-approved.json",
+      "schema": "signup.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/signup-decision-request.json",
+      "schema": "signup-decision-request.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/problem-signup-rejected.json",
+      "schema": "problem-details.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "invalid/signup-request-tenant-id.json",
+      "schema": "signup-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "additionalProperties",
+          ""
+        ]
+      ],
+      "why": "a signup names only its address"
+    },
+    {
+      "file": "invalid/signup-verification-request-invite-token.json",
+      "schema": "signup-verification-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "pattern",
+          "/token"
+        ]
+      ],
+      "why": "only an nrsu_ signup token verifies a signup"
+    },
+    {
+      "file": "invalid/signup-verification-test-key-as-live.json",
+      "schema": "signup-verification.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "required",
+          ""
+        ],
+        [
+          "pattern",
+          "/live_key"
+        ]
+      ],
+      "why": "a live key is an nrk_live_ key, and a held signup's answer carries its test key"
+    },
+    {
+      "file": "invalid/signup-list-pending-with-token.json",
+      "schema": "signup-list.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "additionalProperties",
+          "/items/0"
+        ],
+        [
+          "enum",
+          "/items/0/status"
+        ]
+      ],
+      "why": "an unverified signup is never listed, and no signup carries its token"
+    },
+    {
+      "file": "invalid/signup-decision-request-unknown.json",
+      "schema": "signup-decision-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "enum",
+          "/decision"
+        ]
+      ],
+      "why": "an operator approves or rejects"
+    },
+    {
+      "file": "invalid/signup-verification-active-without-live-key.json",
+      "schema": "signup-verification.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "required",
+          ""
+        ]
+      ],
+      "why": "an active signup's answer is the only place its live key is shown"
     }
   ]
 }
