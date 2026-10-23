@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.0.16
+
+* `Sdk.Accounts.Get()`: **Added**
+* `Sdk.Accounts.ListAssessments()`: **Added**
+
 ## 2.0.15
 
 No changes detected.

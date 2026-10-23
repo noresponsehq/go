@@ -50,6 +50,8 @@ type NoResponse struct {
 	SDKVersion string
 	// Signup and gateway assessments.
 	Assessments *Assessments
+	// Your accounts, each with one current risk, and their assessment history.
+	Accounts *Accounts
 	// Your own API keys.
 	Keys *Keys
 	// Hosted endpoints that answer your sign-up and sign-in hooks.
@@ -132,10 +134,10 @@ func WithTimeout(timeout time.Duration) SDKOption {
 // New creates a new instance of the SDK with the provided options
 func New(opts ...SDKOption) *NoResponse {
 	sdk := &NoResponse{
-		SDKVersion: "2.0.15",
+		SDKVersion: "2.0.16",
 		sdkConfiguration: config.SDKConfiguration{
-			UserAgent:         "noresponse-sdk/go 2.0.15",
-			SDKVersion:        "2.0.15",
+			UserAgent:         "noresponse-sdk/go 2.0.16",
+			SDKVersion:        "2.0.16",
 			GenVersion:        "internal",
 			OpenAPIDocVersion: "1",
 			ServerList:        ServerList,
@@ -161,6 +163,7 @@ func New(opts ...SDKOption) *NoResponse {
 	sdk.sdkConfiguration = sdk.hooks.SDKInit(sdk.sdkConfiguration)
 
 	sdk.Assessments = newAssessments(sdk, sdk.sdkConfiguration, sdk.hooks)
+	sdk.Accounts = newAccounts(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Keys = newKeys(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Integrations = newIntegrations(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.WebhookEndpoints = newWebhookEndpoints(sdk, sdk.sdkConfiguration, sdk.hooks)

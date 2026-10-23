@@ -42,6 +42,10 @@
       "description": "Signup and gateway assessments."
     },
     {
+      "name": "accounts",
+      "description": "Your accounts, each with one current risk, and their assessment history."
+    },
+    {
       "name": "keys",
       "description": "Your own API keys."
     },
@@ -348,6 +352,143 @@
             {
               "name": "cursor",
               "in": "requestBody",
+              "type": "cursor"
+            }
+          ],
+          "outputs": {
+            "nextCursor": "$.next_cursor"
+          }
+        }
+      }
+    },
+    "/v1/accounts/{account_id}": {
+      "get": {
+        "operationId": "getAccount",
+        "x-noresponse-group": "accounts",
+        "x-noresponse-name-override": "get",
+        "tags": [
+          "accounts"
+        ],
+        "summary": "Read an account's one current risk.",
+        "description": "An account is the account_id you send with your assessments. Its current risk is the risk of its latest assessment with a decision (status complete or partial), scored as GET /v1/assessments/{assessment_id} scores that assessment, with a decision for each flow. Every assessment updates its account: once an assessment completes, the account carries its risk. Requires the history scope. Read-only and safe to retry. An account with no unexpired assessment that has a decision answers 404 not_found, and a malformed account_id answers 400 invalid_request.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/AccountId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Account"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidAccountRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/TenantForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/AccountNotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/IdempotencyConflict"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/v1/accounts/{account_id}/assessments": {
+      "get": {
+        "operationId": "listAccountAssessments",
+        "x-noresponse-group": "accounts",
+        "x-noresponse-name-override": "listAssessments",
+        "tags": [
+          "accounts"
+        ],
+        "summary": "Page through one account's unexpired assessments.",
+        "description": "The account's history: the same page as POST /v1/assessments/query for this account_id, newest first, each at its latest assessment_version. Requires the history scope. Read-only and safe to retry. An account with no assessments answers 200 with empty items. The cursor is opaque and bound to your tenant and the account; a tampered or expired cursor answers 400 invalid_cursor. response_mode=detailed needs the detailed scope. The account_id travels in the URL; use POST /v1/assessments/query to keep it out of access logs.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/AccountId"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "Items per page.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50,
+              "default": 20
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "description": "next_cursor from the previous page, unchanged.",
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          },
+          {
+            "name": "response_mode",
+            "in": "query",
+            "required": false,
+            "description": "Optional standard or separately authorised detailed customer view; raw is rejected.",
+            "schema": {
+              "$ref": "#/components/schemas/ResponseMode",
+              "default": "standard"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/AssessmentList"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidAccountRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/TenantForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/IdempotencyConflict"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ],
+        "x-noresponse-pagination": {
+          "type": "cursor",
+          "inputs": [
+            {
+              "name": "cursor",
+              "in": "parameters",
               "type": "cursor"
             }
           ],
@@ -933,6 +1074,130 @@
       }
     },
     "schemas": {
+      "Account": {
+        "description": "Body of the 200 answer to GET /v1/accounts/{account_id}: the one current risk of one of the calling tenant's accounts. It is the risk of the account's latest assessment that has a decision (status complete or partial), by created_at and then assessment_id, scored exactly as GET /v1/assessments/{assessment_id} scores that assessment. Its assessments are the account's history (GET /v1/accounts/{account_id}/assessments).",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schema_version",
+          "id",
+          "risk",
+          "decisions_by_flow",
+          "assessment_id",
+          "updated_at"
+        ],
+        "properties": {
+          "schema_version": {
+            "const": "1",
+            "description": "Version of the body shape."
+          },
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:|-]{0,127}$",
+            "description": "The account_id the tenant sends with its assessments.",
+            "example": "acct_7f3a9c"
+          },
+          "risk": {
+            "$ref": "#/components/schemas/AccountRisk"
+          },
+          "decisions_by_flow": {
+            "$ref": "#/components/schemas/AccountDecisionsByFlow",
+            "description": "The decision for each flow. Every flow uses the tenant's signup thresholds today, so all three equal risk.decision."
+          },
+          "assessment_id": {
+            "type": "string",
+            "pattern": "^asm_[0-9A-HJKMNP-TV-Z]{26}$",
+            "description": "The assessment the current risk comes from.",
+            "example": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          },
+          "updated_at": {
+            "type": "string",
+            "description": "updated_at of that assessment's latest revision.",
+            "example": "2026-10-14T09:00:00.412Z"
+          }
+        }
+      },
+      "AccountDecision": {
+        "enum": [
+          "allow",
+          "step_up",
+          "review",
+          "block"
+        ],
+        "description": "block when the score reached your block threshold (risk.block of the assessment), otherwise the assessment's recommendation. Your application applies it."
+      },
+      "AccountDecisionsByFlow": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "signup",
+          "login",
+          "purchase"
+        ],
+        "description": "The decision for each flow. Every flow uses the tenant's signup thresholds today, so all three equal risk.decision.",
+        "properties": {
+          "signup": {
+            "$ref": "#/components/schemas/AccountDecision"
+          },
+          "login": {
+            "$ref": "#/components/schemas/AccountDecision"
+          },
+          "purchase": {
+            "$ref": "#/components/schemas/AccountDecision"
+          }
+        }
+      },
+      "AccountRisk": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "score",
+          "decision",
+          "reasons"
+        ],
+        "properties": {
+          "score": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100,
+            "description": "0 (safe) to 100 (risky), as risk.score of the assessment."
+          },
+          "decision": {
+            "$ref": "#/components/schemas/AccountDecision"
+          },
+          "reasons": {
+            "type": "array",
+            "maxItems": 32,
+            "description": "Every reason that fired, highest weight first. The weights sum to score before clamping.",
+            "items": {
+              "$ref": "#/components/schemas/AccountRiskReason"
+            }
+          }
+        }
+      },
+      "AccountRiskReason": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "code",
+          "weight"
+        ],
+        "properties": {
+          "code": {
+            "$ref": "#/components/schemas/ReasonCode"
+          },
+          "weight": {
+            "type": "integer",
+            "minimum": -100,
+            "maximum": 100
+          },
+          "identifier": {
+            "$ref": "#/components/schemas/ReasonIdentifier"
+          }
+        }
+      },
       "Assessment": {
         "description": "One assessment of one account, as POST /v1/assessments, GET /v1/assessments/{assessment_id} and the assessment.updated webhook return it. status says whether it is final (complete), usable with a source still running (partial) or not yet usable (pending). risk and recommendation are present for complete and partial; assessment_url is present for pending. Keep the highest assessment_version.",
         "type": "object",
@@ -968,7 +1233,7 @@
             "minLength": 1,
             "maxLength": 128,
             "pattern": "^[A-Za-z0-9][A-Za-z0-9._:|-]{0,127}$",
-            "description": "Your own opaque identifier for the account being checked, scoped to your tenant. Use an id you mint, with no direct identifier (email, phone, name or national id) in it. '|' is accepted so an Auth0 user id such as 'auth0|64abc' passes unchanged; '@', '+', '$' and whitespace are refused, as is a JWT; a hex digest such as a SHA-256 is allowed. It travels only in request bodies. An assessment requested by a provider hook at pre_registration, which has no account yet, carries the server-issued account_id pre: followed by its assessment_id.",
+            "description": "Your own opaque identifier for the account being checked, scoped to your tenant. Use an id you mint, with no direct identifier (email, phone, name or national id) in it. '|' is accepted so an Auth0 user id such as 'auth0|64abc' passes unchanged; '@', '+', '$' and whitespace are refused by the pattern, as is an exact-shape JWT; a hex digest such as a SHA-256 is allowed, because hashing an internal id is a common pseudonymous scheme. A value such as '07700900123' or 'jane.doe.gmail.com' cannot be told apart from an opaque id. It travels in bodies, and in a URL only as the path segment of GET /v1/accounts/{account_id} and its /assessments. An assessment requested by a provider hook at pre_registration, which has no account yet, carries the server-issued account_id pre: followed by its assessment_id.",
             "example": "acct_7f3a9c"
           },
           "request_id": {
@@ -1134,7 +1399,7 @@
             "minLength": 1,
             "maxLength": 128,
             "pattern": "^[A-Za-z0-9][A-Za-z0-9._:|-]{0,127}$",
-            "description": "Your own opaque identifier for the account being checked, scoped to your tenant. Use an id you mint, with no direct identifier (email, phone, name or national id) in it. '|' is accepted so an Auth0 user id such as 'auth0|64abc' passes unchanged; '@', '+', '$' and whitespace are refused, as is a JWT; a hex digest such as a SHA-256 is allowed. It travels only in request bodies. An assessment requested by a provider hook at pre_registration, which has no account yet, carries the server-issued account_id pre: followed by its assessment_id.",
+            "description": "Your own opaque identifier for the account being checked, scoped to your tenant. Use an id you mint, with no direct identifier (email, phone, name or national id) in it. '|' is accepted so an Auth0 user id such as 'auth0|64abc' passes unchanged; '@', '+', '$' and whitespace are refused by the pattern, as is an exact-shape JWT; a hex digest such as a SHA-256 is allowed, because hashing an internal id is a common pseudonymous scheme. A value such as '07700900123' or 'jane.doe.gmail.com' cannot be told apart from an opaque id. It travels in bodies, and in a URL only as the path segment of GET /v1/accounts/{account_id} and its /assessments. An assessment requested by a provider hook at pre_registration, which has no account yet, carries the server-issued account_id pre: followed by its assessment_id.",
             "example": "acct_7f3a9c"
           },
           "items": {
@@ -1240,7 +1505,7 @@
             "minLength": 1,
             "maxLength": 128,
             "pattern": "^[A-Za-z0-9][A-Za-z0-9._:|-]{0,127}$",
-            "description": "Your own opaque identifier for the account being checked, scoped to your tenant. Use an id you mint, with no direct identifier (email, phone, name or national id) in it. '|' is accepted so an Auth0 user id such as 'auth0|64abc' passes unchanged; '@', '+', '$' and whitespace are refused, as is a JWT; a hex digest such as a SHA-256 is allowed. It travels only in request bodies. An assessment requested by a provider hook at pre_registration, which has no account yet, carries the server-issued account_id pre: followed by its assessment_id.",
+            "description": "Your own opaque identifier for the account being checked, scoped to your tenant. Use an id you mint, with no direct identifier (email, phone, name or national id) in it. '|' is accepted so an Auth0 user id such as 'auth0|64abc' passes unchanged; '@', '+', '$' and whitespace are refused by the pattern, as is an exact-shape JWT; a hex digest such as a SHA-256 is allowed, because hashing an internal id is a common pseudonymous scheme. A value such as '07700900123' or 'jane.doe.gmail.com' cannot be told apart from an opaque id. It travels in bodies, and in a URL only as the path segment of GET /v1/accounts/{account_id} and its /assessments. An assessment requested by a provider hook at pre_registration, which has no account yet, carries the server-issued account_id pre: followed by its assessment_id.",
             "example": "acct_7f3a9c"
           },
           "limit": {
@@ -1278,7 +1543,7 @@
             "minLength": 1,
             "maxLength": 128,
             "pattern": "^[A-Za-z0-9][A-Za-z0-9._:|-]{0,127}$",
-            "description": "Your own opaque identifier for the account being checked, scoped to your tenant. Use an id you mint, with no direct identifier (email, phone, name or national id) in it. '|' is accepted so an Auth0 user id such as 'auth0|64abc' passes unchanged; '@', '+', '$' and whitespace are refused, as is a JWT; a hex digest such as a SHA-256 is allowed. It travels only in request bodies. An assessment requested by a provider hook at pre_registration, which has no account yet, carries the server-issued account_id pre: followed by its assessment_id.",
+            "description": "Your own opaque identifier for the account being checked, scoped to your tenant. Use an id you mint, with no direct identifier (email, phone, name or national id) in it. '|' is accepted so an Auth0 user id such as 'auth0|64abc' passes unchanged; '@', '+', '$' and whitespace are refused by the pattern, as is an exact-shape JWT; a hex digest such as a SHA-256 is allowed, because hashing an internal id is a common pseudonymous scheme. A value such as '07700900123' or 'jane.doe.gmail.com' cannot be told apart from an opaque id. It travels in bodies, and in a URL only as the path segment of GET /v1/accounts/{account_id} and its /assessments. An assessment requested by a provider hook at pre_registration, which has no account yet, carries the server-issued account_id pre: followed by its assessment_id.",
             "example": "acct_7f3a9c"
           },
           "identifiers": {
@@ -3476,6 +3741,20 @@
           "example": "int_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
         },
         "description": "Path segment, matched case-sensitively. A value that does not match the integration_id shape, or another tenant's id, answers 404."
+      },
+      "AccountId": {
+        "name": "account_id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:|-]{0,127}$",
+          "description": "Your own opaque identifier for the account being checked, scoped to your tenant. Use an id you mint, with no direct identifier (email, phone, name or national id) in it. '|' is accepted so an Auth0 user id such as 'auth0|64abc' passes unchanged; '@', '+', '$' and whitespace are refused by the pattern, as is an exact-shape JWT; a hex digest such as a SHA-256 is allowed, because hashing an internal id is a common pseudonymous scheme. A value such as '07700900123' or 'jane.doe.gmail.com' cannot be told apart from an opaque id. It travels in bodies, and in a URL only as the path segment of GET /v1/accounts/{account_id} and its /assessments. An assessment requested by a provider hook at pre_registration, which has no account yet, carries the server-issued account_id pre: followed by its assessment_id.",
+          "example": "acct_7f3a9c"
+        },
+        "description": "The account_id the tenant sends with its assessments, as one path segment (percent-encode '|' and ':' if the client requires it). A value that does not match the account_id shape answers 400 invalid_request."
       }
     },
     "responses": {
@@ -5559,6 +5838,154 @@
           "application/problem+json": {
             "schema": {
               "$ref": "#/components/schemas/ConflictError"
+            }
+          }
+        }
+      },
+      "Account": {
+        "description": "The account's one current risk.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Account"
+            },
+            "examples": {
+              "current": {
+                "value": {
+                  "schema_version": "1",
+                  "id": "acct_7f3a9c",
+                  "risk": {
+                    "score": 35,
+                    "decision": "step_up",
+                    "reasons": [
+                      {
+                        "code": "new_email",
+                        "weight": 20,
+                        "identifier": "email"
+                      },
+                      {
+                        "code": "proxy_ip",
+                        "weight": 15,
+                        "identifier": "ip"
+                      }
+                    ]
+                  },
+                  "decisions_by_flow": {
+                    "signup": "step_up",
+                    "login": "step_up",
+                    "purchase": "step_up"
+                  },
+                  "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+                  "updated_at": "2026-10-14T09:00:00.412Z"
+                }
+              },
+              "blocked": {
+                "value": {
+                  "schema_version": "1",
+                  "id": "acct_7f3a9c",
+                  "risk": {
+                    "score": 90,
+                    "decision": "block",
+                    "reasons": [
+                      {
+                        "code": "disposable_email",
+                        "weight": 40,
+                        "identifier": "email"
+                      },
+                      {
+                        "code": "proxy_ip",
+                        "weight": 30,
+                        "identifier": "ip"
+                      },
+                      {
+                        "code": "many_recent_signups",
+                        "weight": 20
+                      }
+                    ]
+                  },
+                  "decisions_by_flow": {
+                    "signup": "block",
+                    "login": "block",
+                    "purchase": "block"
+                  },
+                  "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+                  "updated_at": "2026-10-14T09:00:00.412Z"
+                }
+              }
+            }
+          }
+        }
+      },
+      "AccountNotFound": {
+        "description": "The calling tenant has no unexpired assessment with a decision for this account_id.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/NotFoundError"
+            }
+          }
+        }
+      },
+      "InvalidAccountRequest": {
+        "description": "account_id does not match its shape, a query parameter is unknown, repeated or out of range, or the cursor is invalid, belongs to another tenant or account, or has expired. invalid_params names the offending parameters, not their values.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/BadRequestError"
             }
           }
         }

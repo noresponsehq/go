@@ -1,0 +1,71 @@
+package components
+
+import (
+	"github.com/noresponsehq/go/v2/internal/utils"
+)
+
+// Account - Body of the 200 answer to GET /v1/accounts/{account_id}: the one current risk of one of the calling tenant's accounts. It is the risk of the account's latest assessment that has a decision (status complete or partial), by created_at and then assessment_id, scored exactly as GET /v1/assessments/{assessment_id} scores that assessment. Its assessments are the account's history (GET /v1/accounts/{account_id}/assessments).
+type Account struct {
+	// Version of the body shape.
+	//lint:ignore U1000 accessed via reflection for JSON marshaling
+	schemaVersion string `const:"1" json:"schema_version"`
+	// The account_id the tenant sends with its assessments.
+	ID   string      `json:"id"`
+	Risk AccountRisk `json:"risk"`
+	// The decision for each flow. Every flow uses the tenant's signup thresholds today, so all three equal risk.decision.
+	DecisionsByFlow AccountDecisionsByFlow `json:"decisions_by_flow"`
+	// The assessment the current risk comes from.
+	AssessmentID string `json:"assessment_id"`
+	// updated_at of that assessment's latest revision.
+	UpdatedAt string `json:"updated_at"`
+}
+
+func (a Account) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(a, "", false)
+}
+
+func (a *Account) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &a, "", false, nil); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (a *Account) GetSchemaVersion() string {
+	return "1"
+}
+
+func (a *Account) GetID() string {
+	if a == nil {
+		return ""
+	}
+	return a.ID
+}
+
+func (a *Account) GetRisk() AccountRisk {
+	if a == nil {
+		return AccountRisk{}
+	}
+	return a.Risk
+}
+
+func (a *Account) GetDecisionsByFlow() AccountDecisionsByFlow {
+	if a == nil {
+		return AccountDecisionsByFlow{}
+	}
+	return a.DecisionsByFlow
+}
+
+func (a *Account) GetAssessmentID() string {
+	if a == nil {
+		return ""
+	}
+	return a.AssessmentID
+}
+
+func (a *Account) GetUpdatedAt() string {
+	if a == nil {
+		return ""
+	}
+	return a.UpdatedAt
+}

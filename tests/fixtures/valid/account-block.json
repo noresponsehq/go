@@ -1,0 +1,31 @@
+{
+  "schema_version": "1",
+  "id": "acct_7f3a9c",
+  "risk": {
+    "score": 90,
+    "decision": "block",
+    "reasons": [
+      {
+        "code": "disposable_email",
+        "weight": 40,
+        "identifier": "email"
+      },
+      {
+        "code": "proxy_ip",
+        "weight": 30,
+        "identifier": "ip"
+      },
+      {
+        "code": "many_recent_signups",
+        "weight": 20
+      }
+    ]
+  },
+  "decisions_by_flow": {
+    "signup": "block",
+    "login": "block",
+    "purchase": "block"
+  },
+  "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+  "updated_at": "2026-10-14T09:00:00.412Z"
+}

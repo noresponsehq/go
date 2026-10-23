@@ -1,0 +1,27 @@
+{
+  "schema_version": "1",
+  "id": "acct_7f3a9c",
+  "risk": {
+    "score": 35,
+    "decision": "step_up",
+    "reasons": [
+      {
+        "code": "new_email",
+        "weight": 20,
+        "identifier": "email"
+      },
+      {
+        "code": "proxy_ip",
+        "weight": 15,
+        "identifier": "ip"
+      }
+    ]
+  },
+  "decisions_by_flow": {
+    "signup": "step_up",
+    "login": "step_up",
+    "purchase": "step_up"
+  },
+  "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+  "updated_at": "2026-10-14T09:00:00.412Z"
+}

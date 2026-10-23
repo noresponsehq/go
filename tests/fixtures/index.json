@@ -62,6 +62,16 @@
       "expect": "valid"
     },
     {
+      "file": "valid/account.json",
+      "schema": "account.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/account-block.json",
+      "schema": "account.schema.json",
+      "expect": "valid"
+    },
+    {
       "file": "valid/webhook-assessment-updated.json",
       "schema": "webhook-event.schema.json",
       "expect": "valid"
@@ -2248,6 +2258,42 @@
       "file": "valid/hook-response-fail-open.json",
       "schema": "hook-response.schema.json",
       "expect": "valid"
+    },
+    {
+      "file": "invalid/account-deny-decision.json",
+      "schema": "account.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "enum",
+          "/risk/decision"
+        ]
+      ],
+      "why": "an account decision is allow, step_up, review or block"
+    },
+    {
+      "file": "invalid/account-missing-flow.json",
+      "schema": "account.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "required",
+          "/decisions_by_flow"
+        ]
+      ],
+      "why": "every flow has a decision"
+    },
+    {
+      "file": "invalid/account-tenant-id.json",
+      "schema": "account.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "additionalProperties",
+          ""
+        ]
+      ],
+      "why": "II-006"
     },
     {
       "file": "invalid/integration-request-workos-no-secret.json",
