@@ -3024,8 +3024,8 @@
       "expect": "valid"
     },
     {
-      "file": "valid/signup-accepted.json",
-      "schema": "signup-accepted.schema.json",
+      "file": "valid/signup-created.json",
+      "schema": "signup-created.schema.json",
       "expect": "valid"
     },
     {
@@ -3093,15 +3093,23 @@
       "expect": "invalid",
       "errors": [
         [
-          "required",
-          ""
-        ],
-        [
           "pattern",
           "/live_key"
         ]
       ],
-      "why": "a live key is an nrk_live_ key, and a held signup's answer carries its test key"
+      "why": "a live key is an nrk_live_ key"
+    },
+    {
+      "file": "invalid/signup-created-live-key-at-once.json",
+      "schema": "signup-created.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "type",
+          "/live_key"
+        ]
+      ],
+      "why": "a signup answers only its test key; the live key comes once the address is verified"
     },
     {
       "file": "invalid/signup-list-pending-with-token.json",

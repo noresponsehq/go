@@ -1,0 +1,1 @@
+{"signup_id":"sgn_01JA2Z8K6Q4V7W9XBCDEFGHJKM","workspace_id":"tnt_01JA2Z8K6Q4V7W9XBCDEFGHJKN","test_key":"nrk_test_01JA2Z8K6Q4V7W9XBCDEFGHJKP_AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA","live_key":{"status":"verification_sent","message":"Verify your email to get a live key: open the link we sent, or post its token to POST /v1/signup/verify. It works once within 24 hours."}}
