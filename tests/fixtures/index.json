@@ -2686,6 +2686,79 @@
       "file": "valid/assessment-request-purchase.json",
       "schema": "assessment-request.schema.json",
       "expect": "valid"
+    },
+    {
+      "file": "valid/key-request.json",
+      "schema": "key-request.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/key-request-test.json",
+      "schema": "key-request.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/key-created.json",
+      "schema": "key.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/key-revoked.json",
+      "schema": "key.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/key-list.json",
+      "schema": "key-list.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "invalid/key-list-with-secret.json",
+      "schema": "key-list.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "not",
+          "/items/0"
+        ]
+      ],
+      "why": "a key's secret is shown once, never in a listing"
+    },
+    {
+      "file": "invalid/key-request-unknown-scope.json",
+      "schema": "key-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "enum",
+          "/scopes/0"
+        ]
+      ],
+      "why": "a key carries only the existing scopes"
+    },
+    {
+      "file": "invalid/key-request-tenant-id.json",
+      "schema": "key-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "additionalProperties",
+          ""
+        ]
+      ],
+      "why": "the workspace comes from the path, never the body"
+    },
+    {
+      "file": "invalid/key-request-no-environment.json",
+      "schema": "key-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "required",
+          ""
+        ]
+      ],
+      "why": "a key belongs to exactly one environment, named by the caller"
     }
   ]
 }

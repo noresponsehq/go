@@ -1,0 +1,12 @@
+{
+  "id": "01JA2ZE4K5M6N7P8Q9R0S1T2V3",
+  "workspace_id": "tnt_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+  "environment": "live",
+  "prefix": "nrk_live_01JA2ZE4K5M6N7P8Q9R0S1T2V3",
+  "scopes": ["assess"],
+  "status": "revoked",
+  "created_at": "2026-10-23T09:00:00.000Z",
+  "created_by": "user_2abc",
+  "revoked_at": "2026-10-23T10:00:00.000Z",
+  "revoked_by": "user_2abc"
+}

@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.27
+
+No changes detected.
+
 ## 2.0.26
 
 * `Sdk.Accounts.Delete()`: **Added**
