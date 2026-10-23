@@ -112,6 +112,11 @@
       "expect": "valid"
     },
     {
+      "file": "valid/webhook-account-risk-changed.json",
+      "schema": "webhook-event.schema.json",
+      "expect": "valid"
+    },
+    {
       "file": "valid/webhook-tenant-deleted.json",
       "schema": "webhook-event.schema.json",
       "expect": "valid"
@@ -2373,6 +2378,30 @@
         ]
       ],
       "why": "NOR-364 account.deleted fires only when an assessment went"
+    },
+    {
+      "file": "invalid/webhook-account-risk-changed-no-previous.json",
+      "schema": "webhook-event.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "required",
+          "/data"
+        ]
+      ],
+      "why": "NOR-352 account.risk_changed names the decisions it replaced"
+    },
+    {
+      "file": "invalid/webhook-account-risk-changed-deny.json",
+      "schema": "webhook-event.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "enum",
+          "/data/previous_decisions_by_flow/login"
+        ]
+      ],
+      "why": "NOR-352 the decisions are the account decisions"
     },
     {
       "file": "invalid/webhook-tenant-deleted-test-suffix.json",

@@ -22,7 +22,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/noresponsehq/go/v3/models/components"
+	"github.com/noresponsehq/go/v4/models/components"
 )
 
 const (
@@ -246,6 +246,8 @@ func TestDefaultPolicyRevokesOnReviewAndBlock(t *testing.T) {
 	expect(&Event{ID: "evt_x", Type: EventAccountDeleted, Data: &AccountDeleted{AccountID: "acct_1", AssessmentsDeleted: 1}}, nil, LateResultNone)
 	expect(&Event{ID: "evt_x", Type: EventTenantDeleted, Data: &TenantDeleted{WorkspaceID: "tnt_1", Environment: "live"}}, nil, LateResultNone)
 	expect(&Event{ID: "evt_x", Type: EventEndpointDisabled, Data: &EndpointDisabled{EndpointID: "whe_1"}}, nil, LateResultNone)
+	blocked := components.Account{ID: "acct_1", Risk: components.AccountRisk{Score: 90, Decision: components.AccountDecisionBlock}}
+	expect(&Event{ID: "evt_x", Type: EventAccountRiskChanged, Data: &AccountRiskChanged{Account: blocked}}, nil, LateResultNone)
 	expect(lateEvent("complete", "step_up"), LateResultPolicy{components.AccountDecisionStepUp: LateResultBan}, LateResultBan)
 	expect(lateEvent("complete", "review"), LateResultPolicy{components.AccountDecisionStepUp: LateResultBan}, LateResultNone)
 	expect(lateEvent("complete", "block"), LateResultPolicy{components.AccountDecisionBlock: LateResultBan}, LateResultBan)
@@ -800,6 +802,17 @@ func TestUnverifiedQuietOrUnmappedEventMakesNoProviderCallAndRefusalReturnsError
 		if err != nil || result.Action != LateResultNone || result.UserID != "" {
 			t.Fatalf("%s: %+v, %v", name, result, err)
 		}
+	}
+	// account.risk_changed is verified and typed, and acts on nothing: the
+	// assessment.updated that moved the decision does.
+	changed := lateFixture(t, "webhook-account-risk-changed.json")
+	changedRaw, changedHeaders := lateDeliveryWith(t, changed["data"].(map[string]any), "", map[string]any{"type": changed["type"]})
+	ignored, err := HandleLateResult(ctx, changedRaw, changedHeaders, lateSecrets, auth0, lateOptions(nil))
+	if err != nil || ignored.Action != LateResultNone || ignored.Event.Type != EventAccountRiskChanged {
+		t.Fatalf("account.risk_changed: %+v, %v", ignored, err)
+	}
+	if data, ok := ignored.Event.Data.(*AccountRiskChanged); !ok || data.Account.DecisionsByFlow.Login != components.AccountDecisionReview {
+		t.Fatalf("account.risk_changed data %+v", ignored.Event.Data)
 	}
 	result, err := HandleLateResult(ctx, raw, headers, lateSecrets, auth0, lateOptions(&LateResultOptions{UserID: func(string, *Event) string { return "" }}))
 	if err != nil || result.Action != LateResultNone {

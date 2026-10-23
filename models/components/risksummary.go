@@ -1,7 +1,7 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v3/internal/utils"
+	"github.com/noresponsehq/go/v4/internal/utils"
 )
 
 // RiskSummary - A few typed facts per identifier. Every fact is optional: absent means the evidence did not answer and makes no claim, while false or 0 is a definite answer. Lanes that do not exist yet leave their members absent.

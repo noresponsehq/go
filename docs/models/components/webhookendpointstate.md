@@ -6,7 +6,7 @@ unverified until the endpoint echoes an endpoint.verification challenge (send on
 
 ```go
 import (
-	"github.com/noresponsehq/go/v3/models/components"
+	"github.com/noresponsehq/go/v4/models/components"
 )
 
 value := components.WebhookEndpointStateUnverified

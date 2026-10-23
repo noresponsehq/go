@@ -1,7 +1,7 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v3/internal/utils"
+	"github.com/noresponsehq/go/v4/internal/utils"
 )
 
 // AuthContextMfa - Normalized multi-factor evidence from a verified provider session.

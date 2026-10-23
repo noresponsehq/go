@@ -6,7 +6,7 @@ The provider event a provider_hook context was sent for; absent for any other tr
 
 ```go
 import (
-	"github.com/noresponsehq/go/v3/models/components"
+	"github.com/noresponsehq/go/v4/models/components"
 )
 
 value := components.HookPointPreRegistration

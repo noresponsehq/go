@@ -2,8 +2,9 @@ package components
 
 type WebhookDeliveryAttempt struct {
 	// The event id the receiver saw as NR-Webhook-Id and as the body's id. Replay it with POST /v1/webhooks/{endpoint_id}/deliveries/{event_id}/replay.
-	EventID   string    `json:"event_id"`
-	EventType EventType `json:"event_type"`
+	EventID string `json:"event_id"`
+	// The event's type, as its body's type: assessment.updated, account.deleted or account.risk_changed.
+	EventType string `json:"event_type"`
 	// Which attempt of this delivery this was: 1 for the first send, up to 9 with retries. A replay counts its own attempts from 1.
 	Attempt int64 `json:"attempt"`
 	// true for an attempt of a replay you asked for.
@@ -27,9 +28,9 @@ func (w *WebhookDeliveryAttempt) GetEventID() string {
 	return w.EventID
 }
 
-func (w *WebhookDeliveryAttempt) GetEventType() EventType {
+func (w *WebhookDeliveryAttempt) GetEventType() string {
 	if w == nil {
-		return EventType("")
+		return ""
 	}
 	return w.EventType
 }

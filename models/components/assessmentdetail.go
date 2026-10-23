@@ -1,7 +1,7 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v3/internal/utils"
+	"github.com/noresponsehq/go/v4/internal/utils"
 )
 
 // AssessmentDetail - One assessment's own facts: its score and recommendation, the signals behind them, the lanes still running and its timing. risk here is this assessment's own score; the account's current risk is the account member of the assessment. risk and recommendation are present for complete and partial; assessment_url is present for pending.

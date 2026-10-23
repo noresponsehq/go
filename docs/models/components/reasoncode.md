@@ -6,7 +6,7 @@ A stable reason code. New codes may appear; ignore any you do not know.
 
 ```go
 import (
-	"github.com/noresponsehq/go/v3/models/components"
+	"github.com/noresponsehq/go/v4/models/components"
 )
 
 value := components.ReasonCodeNoDigitalFootprint

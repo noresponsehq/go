@@ -5,7 +5,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/noresponsehq/go/v3/retry"
+	"github.com/noresponsehq/go/v4/retry"
 	"io"
 	"math"
 	"math/rand"

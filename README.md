@@ -9,7 +9,7 @@ Call it from your server only. The API key must never reach a browser or an app.
 ## Install
 
 ```sh
-go get github.com/noresponsehq/go/v3
+go get github.com/noresponsehq/go/v4
 ```
 
 Go 1.24 or later.
@@ -25,8 +25,8 @@ import (
 	"log"
 	"os"
 
-	noresponse "github.com/noresponsehq/go/v3"
-	"github.com/noresponsehq/go/v3/models/components"
+	noresponse "github.com/noresponsehq/go/v4"
+	"github.com/noresponsehq/go/v4/models/components"
 )
 
 func main() {
@@ -108,7 +108,7 @@ case err != nil:
 }
 ```
 
-The typed errors are `BadRequestError` (400), `AuthenticationError` (401), `PermissionDeniedError` (403), `NotFoundError` (404), `ConflictError` (409) and `RateLimitError` (429), all in `github.com/noresponsehq/go/v3/models/apierrors`. Any other status is an `*apierrors.APIStatusError`.
+The typed errors are `BadRequestError` (400), `AuthenticationError` (401), `PermissionDeniedError` (403), `NotFoundError` (404), `ConflictError` (409) and `RateLimitError` (429), all in `github.com/noresponsehq/go/v4/models/apierrors`. Any other status is an `*apierrors.APIStatusError`.
 
 ## Retries and timeouts
 
@@ -193,6 +193,9 @@ http.HandleFunc("/webhooks/noresponse", func(w http.ResponseWriter, r *http.Requ
 		// The workspace is deleted: the last event this endpoint receives. Delete what you hold for data.Environment.
 	case *noresponse.EndpointDisabled:
 		// data.EndpointID failed for 72 hours and is disabled: fix it and verify it again.
+	case *noresponse.AccountRiskChanged:
+		// A flow's decision changed. data.Account is the account as Accounts.Get returns it,
+		// and data.PreviousDecisionsByFlow holds the decisions it replaced.
 	case *noresponse.EndpointVerification:
 		body, err := noresponse.VerificationResponse(event)
 		if err != nil {
@@ -218,7 +221,7 @@ provider := &noresponse.ClerkActions{SecretKey: os.Getenv("CLERK_SECRET_KEY")} /
 result, err := noresponse.HandleLateResult(r.Context(), payload, r.Header, secrets, provider, nil)
 ```
 
-`LateResultOptions` sets `Policy` (account decision to `LateResultNone`, `LateResultRevokeSessions` or `LateResultBan`), `ResolveUserID` (account id to provider user id, with the context; an error it returns fails the delivery so it is retried) and `Webhook` options. A test event from `SendTestEvent` acts on nothing. A refusal from the provider is a `*ProviderActionError`; answer 5xx so the delivery is retried. A provider 404 means the user or session is already gone and counts as done, so a repeated delivery is safe. WorkOS has no block, so its ban deletes the user permanently.
+`LateResultOptions` sets `Policy` (account decision to `LateResultNone`, `LateResultRevokeSessions` or `LateResultBan`), `ResolveUserID` (account id to provider user id, with the context; an error it returns fails the delivery so it is retried) and `Webhook` options. A test event from `SendTestEvent` acts on nothing. Nor does an `account.risk_changed` event: the handler acts on the `assessment.updated` that changed the decision. A refusal from the provider is a `*ProviderActionError`; answer 5xx so the delivery is retried. A provider 404 means the user or session is already gone and counts as done, so a repeated delivery is safe. WorkOS has no block, so its ban deletes the user permanently.
 
 If your app has its own login, `&noresponse.LogOnlyActions{}` logs what it would revoke or ban (an Info record on `slog.Default()`, or set `Logger`) and calls nothing. Use it to try the handler, then write your own `LateResultProvider`: `Name()`, `RevokeSessions(ctx, userID)` and `Ban(ctx, userID)`.
 

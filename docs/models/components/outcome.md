@@ -6,7 +6,7 @@ What the provider later learned about the assessed account. confirmed_abuse, acc
 
 ```go
 import (
-	"github.com/noresponsehq/go/v3/models/components"
+	"github.com/noresponsehq/go/v4/models/components"
 )
 
 value := components.OutcomeConfirmedAbuse

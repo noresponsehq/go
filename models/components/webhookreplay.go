@@ -5,8 +5,9 @@ type WebhookReplay struct {
 	// Opaque id of the endpoint registration.
 	EndpointID string `json:"endpoint_id"`
 	// The replayed event's id. The receiver sees the same id and body as the first time, with a new NR-Webhook-Timestamp and signature.
-	EventID   string    `json:"event_id"`
-	EventType EventType `json:"event_type"`
+	EventID string `json:"event_id"`
+	// The event's type, as its body's type: assessment.updated, account.deleted or account.risk_changed.
+	EventType string `json:"event_type"`
 }
 
 func (w *WebhookReplay) GetEndpointID() string {
@@ -23,9 +24,9 @@ func (w *WebhookReplay) GetEventID() string {
 	return w.EventID
 }
 
-func (w *WebhookReplay) GetEventType() EventType {
+func (w *WebhookReplay) GetEventType() string {
 	if w == nil {
-		return EventType("")
+		return ""
 	}
 	return w.EventType
 }

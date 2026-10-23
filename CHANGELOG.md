@@ -1,5 +1,10 @@
 # Changelog
 
+## 4.0.0
+
+* `Sdk.WebhookEndpoints.ListDeliveries()`:  `response.Items[].EventType` **Changed** (Breaking ⚠️)
+* `Sdk.WebhookEndpoints.ReplayDelivery()`:  `response.EventType` **Changed** (Breaking ⚠️)
+
 ## 3.0.8
 
 No changes detected.

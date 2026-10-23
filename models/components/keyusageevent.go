@@ -1,7 +1,7 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v3/internal/utils"
+	"github.com/noresponsehq/go/v4/internal/utils"
 )
 
 // KeyUsageEvent - One request made with an issued key. An event whose ip is not a public address, or whose occurred_at is more than 24 hours old or more than 5 minutes ahead, is counted in ignored and adds nothing.

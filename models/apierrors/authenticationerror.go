@@ -2,7 +2,7 @@ package apierrors
 
 import (
 	"encoding/json"
-	"github.com/noresponsehq/go/v3/models/components"
+	"github.com/noresponsehq/go/v4/models/components"
 )
 
 // AuthenticationError - HTTP 401 problem document.

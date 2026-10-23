@@ -16,7 +16,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/noresponsehq/go/v3/models/components"
+	"github.com/noresponsehq/go/v4/models/components"
 )
 
 // DefaultWebhookTolerance is how far a delivery's timestamp may be from now.
@@ -29,6 +29,7 @@ const (
 	EventAccountDeleted       = "account.deleted"
 	EventTenantDeleted        = "tenant.deleted"
 	EventEndpointDisabled     = "webhook_endpoint.disabled"
+	EventAccountRiskChanged   = "account.risk_changed"
 )
 
 var (
@@ -107,12 +108,23 @@ type EndpointDisabled struct {
 	DisabledAt   string `json:"disabled_at"`
 }
 
+// AccountRiskChanged says the account's decision for at least one flow
+// changed. Account is the account exactly as Accounts.Get returns it, with its
+// new risk and decisions; PreviousDecisionsByFlow holds the decisions it
+// replaced. It is not sent when the score moves within the same decision, nor
+// for an account's first risk.
+type AccountRiskChanged struct {
+	Account                 components.Account                `json:"account"`
+	PreviousDecisionsByFlow components.AccountDecisionsByFlow `json:"previous_decisions_by_flow"`
+}
+
 // Event is a verified delivery. Data is *components.Assessment for an
 // assessment.updated event (exactly as Assessments.Get returns it),
 // *AssessmentExpired for the terminal expiry notice, *EndpointVerification
 // for endpoint.verification, *AccountDeleted for account.deleted,
-// *TenantDeleted for tenant.deleted and *EndpointDisabled for
-// webhook_endpoint.disabled. Deliveries are at least
+// *TenantDeleted for tenant.deleted, *EndpointDisabled for
+// webhook_endpoint.disabled and *AccountRiskChanged for
+// account.risk_changed. Deliveries are at least
 // once and unordered: deduplicate on ID and keep the highest
 // Detail.AssessmentVersion per assessment.
 //
@@ -123,6 +135,7 @@ type EndpointDisabled struct {
 //	case *noresponse.AccountDeleted:
 //	case *noresponse.TenantDeleted:
 //	case *noresponse.EndpointDisabled:
+//	case *noresponse.AccountRiskChanged:
 //	}
 type Event struct {
 	ID        string
@@ -263,6 +276,26 @@ func eventData(eventType string, raw json.RawMessage) (any, error) {
 			return nil, webhookError("invalid_payload", "endpoint disabled event is malformed")
 		}
 		return &disabled, nil
+	case EventAccountRiskChanged:
+		var changed AccountRiskChanged
+		var envelope struct {
+			Account                 json.RawMessage `json:"account"`
+			PreviousDecisionsByFlow json.RawMessage `json:"previous_decisions_by_flow"`
+		}
+		var account struct {
+			Risk            json.RawMessage `json:"risk"`
+			DecisionsByFlow json.RawMessage `json:"decisions_by_flow"`
+		}
+		if json.Unmarshal(raw, &changed) != nil || json.Unmarshal(raw, &envelope) != nil ||
+			!hasRequiredFields(raw, accountRiskChangedRequired) ||
+			!hasRequiredFields(envelope.Account, accountRequired) || json.Unmarshal(envelope.Account, &account) != nil ||
+			!hasRequiredFields(account.Risk, accountRiskRequired) ||
+			!hasRequiredFields(account.DecisionsByFlow, decisionsByFlowRequired) ||
+			!hasRequiredFields(envelope.PreviousDecisionsByFlow, decisionsByFlowRequired) ||
+			!webhookAccountID.MatchString(changed.Account.ID) {
+			return nil, webhookError("invalid_payload", "account risk changed event is malformed")
+		}
+		return &changed, nil
 	case EventAssessmentUpdated:
 		var probe struct {
 			Status string `json:"status"`
@@ -325,6 +358,12 @@ func incompleteSourcesComplete(raw json.RawMessage) bool {
 var (
 	assessmentRequired       = requiredJSONFields(reflect.TypeFor[components.Assessment]())
 	assessmentDetailRequired = requiredJSONFields(reflect.TypeFor[components.AssessmentDetail]())
+	// The same for account.risk_changed: the event's data, its account (as
+	// Accounts.Get returns it), the account's risk and each decisions_by_flow.
+	accountRiskChangedRequired = requiredJSONFields(reflect.TypeFor[AccountRiskChanged]())
+	accountRequired            = requiredJSONFields(reflect.TypeFor[components.Account]())
+	accountRiskRequired        = requiredJSONFields(reflect.TypeFor[components.AccountRisk]())
+	decisionsByFlowRequired    = requiredJSONFields(reflect.TypeFor[components.AccountDecisionsByFlow]())
 )
 
 func requiredJSONFields(t reflect.Type) []string {

@@ -6,7 +6,7 @@ Machine codes an HTTP 401 answer can carry.
 
 ```go
 import (
-	"github.com/noresponsehq/go/v3/models/components"
+	"github.com/noresponsehq/go/v4/models/components"
 )
 
 value := components.AuthenticationErrorCodeUnauthorized

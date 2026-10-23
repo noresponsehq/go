@@ -12,7 +12,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/noresponsehq/go/v3/models/components"
+	"github.com/noresponsehq/go/v4/models/components"
 )
 
 type signatureVector struct {
@@ -322,6 +322,60 @@ func TestEndpointDisabledEvent(t *testing.T) {
 		func(data map[string]any) { data["disabled_at"] = "now" },
 		func(data map[string]any) { delete(data, "disabled_at") },
 	})
+}
+
+func TestAccountRiskChangedEvent(t *testing.T) {
+	const stamp = "1791968402"
+	secrets := map[string]string{"whk_sdktest01": "secret"}
+	changed := fixture(t, "valid/webhook-account-risk-changed.json", nil)
+	event, err := ConstructEvent(changed, sign(t, changed, "secret", stamp, "evt_01JA2ZE5N6P7Q8R9S0T1VWXYZ6", "whk_sdktest01"), secrets, at(1791968402))
+	if err != nil {
+		t.Fatal(err)
+	}
+	data, ok := event.Data.(*AccountRiskChanged)
+	if !ok || event.Type != EventAccountRiskChanged || event.Expired() || event.Test {
+		t.Fatalf("event %+v", event)
+	}
+	// data.Account is the same type Accounts.Get returns.
+	var account components.Account = data.Account
+	if account.ID != "acct_7f3a9c" || account.Risk.Score != 70 || account.Risk.Decision != components.AccountDecisionReview ||
+		account.AssessmentID != "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM" || account.UpdatedAt != "2026-10-23T09:00:04.812Z" {
+		t.Fatalf("account %+v", account)
+	}
+	if len(account.Risk.Reasons) != 2 || account.Risk.Reasons[0].Code != "recent_password_exposure" || account.Risk.Reasons[0].Weight != 55 {
+		t.Fatalf("reasons %+v", account.Risk.Reasons)
+	}
+	review := components.AccountDecisionsByFlow{Signup: components.AccountDecisionReview, Login: components.AccountDecisionReview, Purchase: components.AccountDecisionReview}
+	allow := components.AccountDecisionsByFlow{Signup: components.AccountDecisionAllow, Login: components.AccountDecisionAllow, Purchase: components.AccountDecisionAllow}
+	if account.DecisionsByFlow != review || data.PreviousDecisionsByFlow != allow {
+		t.Fatalf("decisions %+v, previous %+v", account.DecisionsByFlow, data.PreviousDecisionsByFlow)
+	}
+	if _, err := VerificationResponse(event); err == nil {
+		t.Fatal("an account.risk_changed event has no challenge")
+	}
+	for name, mutate := range map[string]func(map[string]any){
+		"no previous":            func(data map[string]any) { delete(data, "previous_decisions_by_flow") },
+		"previous missing login": func(data map[string]any) { delete(data["previous_decisions_by_flow"].(map[string]any), "login") },
+		"no decisions_by_flow":   func(data map[string]any) { delete(data["account"].(map[string]any), "decisions_by_flow") },
+		"no risk score":          func(data map[string]any) { delete(data["account"].(map[string]any)["risk"].(map[string]any), "score") },
+		"account is a string":    func(data map[string]any) { data["account"] = "acct_7f3a9c" },
+		"account id is an email": func(data map[string]any) { data["account"].(map[string]any)["id"] = "jane@example.com" },
+	} {
+		var body map[string]any
+		if err := json.Unmarshal(changed, &body); err != nil {
+			t.Fatal(err)
+		}
+		mutate(body["data"].(map[string]any))
+		raw, err := json.Marshal(body)
+		if err != nil {
+			t.Fatal(err)
+		}
+		_, err = ConstructEvent(raw, sign(t, raw, "secret", stamp, body["id"].(string), "whk_sdktest01"), secrets, at(1791968402))
+		if err == nil {
+			t.Fatalf("%s: accepted", name)
+		}
+		wantCode(t, err, "invalid_payload")
+	}
 }
 
 // The API adds fields without a new version, so a signed event that carries
