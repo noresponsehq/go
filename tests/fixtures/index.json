@@ -2562,6 +2562,45 @@
         ]
       ],
       "why": "listed and returned members are active"
+    },
+    {
+      "file": "valid/webhook-delivery-list.json",
+      "schema": "webhook-delivery-list.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/webhook-replay.json",
+      "schema": "webhook-replay.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "invalid/webhook-delivery-delivered-with-failure.json",
+      "schema": "webhook-delivery-list.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "not",
+          "/items/0"
+        ]
+      ],
+      "why": "a delivered attempt names no failure"
+    },
+    {
+      "file": "invalid/webhook-delivery-failed-without-failure.json",
+      "schema": "webhook-delivery-list.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "required",
+          "/items/0"
+        ]
+      ],
+      "why": "a failed attempt says why it failed"
+    },
+    {
+      "file": "valid/webhook-replay-request.json",
+      "schema": "webhook-replay-request.schema.json",
+      "expect": "valid"
     }
   ]
 }

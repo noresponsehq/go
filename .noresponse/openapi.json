@@ -1063,6 +1063,154 @@
           "strategy": "none"
         }
       }
+    },
+    "/v1/webhooks/{endpoint_id}/deliveries": {
+      "get": {
+        "operationId": "listWebhookDeliveries",
+        "x-noresponse-group": "webhookEndpoints",
+        "x-noresponse-name-override": "listDeliveries",
+        "tags": [
+          "webhookEndpoints"
+        ],
+        "summary": "List an endpoint's delivery attempts.",
+        "description": "Every POST the endpoint received, newest first: the event id and type, which attempt it was, whether it was a replay, delivered or failed, the response code, why it failed and how long it took. Attempts are kept for 30 days, or your retention_days when that is shorter, and are deleted with the assessment they carried. Requires the webhooks scope. Read-only and safe to retry. The cursor is opaque and bound to your tenant and the endpoint; a tampered or expired cursor answers 400 invalid_cursor.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/EndpointId"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "Attempts per page.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "description": "next_cursor from the previous page, unchanged.",
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/WebhookDeliveryList"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidWebhookDeliveriesRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/TenantForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/WebhookEndpointNotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/IdempotencyConflict"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ],
+        "x-noresponse-pagination": {
+          "type": "cursor",
+          "inputs": [
+            {
+              "name": "cursor",
+              "in": "parameters",
+              "type": "cursor"
+            }
+          ],
+          "outputs": {
+            "nextCursor": "$.next_cursor"
+          }
+        }
+      }
+    },
+    "/v1/webhooks/{endpoint_id}/deliveries/{event_id}/replay": {
+      "post": {
+        "operationId": "replayWebhookDelivery",
+        "x-noresponse-group": "webhookEndpoints",
+        "x-noresponse-name-override": "replayDelivery",
+        "tags": [
+          "webhookEndpoints"
+        ],
+        "summary": "Send one delivery again.",
+        "description": "Queues the event for the endpoint again: the same event id and body it received, with a new NR-Webhook-Timestamp and a signature from the endpoint's current signing key, retried like any other delivery and listed with replay: true. Your receiver deduplicates on the event id. The endpoint must be verified. Requires the webhooks scope. Not idempotent: each call, a retry included, sends the event again.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/EndpointId"
+          },
+          {
+            "$ref": "#/components/parameters/EventId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebhookReplayRequest"
+              },
+              "examples": {
+                "empty": {
+                  "value": {}
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "$ref": "#/components/responses/WebhookReplayAccepted"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidWebhookRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/TenantForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/WebhookDeliveryNotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/WebhookEndpointUnverified"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ],
+        "x-noresponse-retries": {
+          "strategy": "none"
+        }
+      }
     }
   },
   "components": {
@@ -2233,6 +2381,23 @@
           "unknown"
         ],
         "description": "IP country, phone country, breach countries and policy_context.region together."
+      },
+      "EventType": {
+        "enum": [
+          "assessment.updated"
+        ]
+      },
+      "Failure": {
+        "enum": [
+          "invalid_url",
+          "resolve_failed",
+          "address_refused",
+          "timeout",
+          "connection_failed",
+          "redirect",
+          "non_2xx"
+        ],
+        "description": "Why the attempt failed: the URL is no longer valid, the host did not resolve, it resolved to an address that is not public, no answer within 5 seconds, the connection failed, a 3xx (redirects are not followed) or another non-2xx status. Absent for a delivered attempt."
       },
       "FailureReason": {
         "enum": [
@@ -3477,6 +3642,103 @@
         ],
         "description": "Where the context was derived: backend (also when the request named no transport), browser, or provider_hook for a hosted provider hook."
       },
+      "WebhookDeliveryAttempt": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "event_id",
+          "event_type",
+          "attempt",
+          "replay",
+          "status",
+          "latency_ms",
+          "attempted_at"
+        ],
+        "properties": {
+          "event_id": {
+            "type": "string",
+            "pattern": "^evt_[0-9A-HJKMNP-TV-Z]{26}$",
+            "description": "The event id the receiver saw as NR-Webhook-Id and as the body's id. Replay it with POST /v1/webhooks/{endpoint_id}/deliveries/{event_id}/replay.",
+            "example": "evt_01JA2ZD3K4M5N6P7Q8R9S0T1V2"
+          },
+          "event_type": {
+            "$ref": "#/components/schemas/EventType"
+          },
+          "attempt": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9,
+            "description": "Which attempt of this delivery this was: 1 for the first send, up to 9 with retries. A replay counts its own attempts from 1."
+          },
+          "replay": {
+            "type": "boolean",
+            "description": "true for an attempt of a replay you asked for."
+          },
+          "status": {
+            "$ref": "#/components/schemas/WebhookDeliveryAttemptStatus",
+            "description": "delivered when the endpoint answered 2xx; failed otherwise, with failure naming why."
+          },
+          "response_code": {
+            "type": "integer",
+            "minimum": 100,
+            "maximum": 599,
+            "description": "The HTTP status the endpoint answered. Absent when no response was read."
+          },
+          "failure": {
+            "$ref": "#/components/schemas/Failure",
+            "description": "Why the attempt failed: the URL is no longer valid, the host did not resolve, it resolved to an address that is not public, no answer within 5 seconds, the connection failed, a 3xx (redirects are not followed) or another non-2xx status. Absent for a delivered attempt."
+          },
+          "latency_ms": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Milliseconds from sending the request to the answer or the failure."
+          },
+          "attempted_at": {
+            "type": "string",
+            "description": "When the request was sent. Its NR-Webhook-Timestamp is this time in Unix seconds.",
+            "example": "2026-10-22T09:00:00.951Z"
+          }
+        }
+      },
+      "WebhookDeliveryAttemptStatus": {
+        "enum": [
+          "delivered",
+          "failed"
+        ],
+        "description": "delivered when the endpoint answered 2xx; failed otherwise, with failure naming why."
+      },
+      "WebhookDeliveryList": {
+        "description": "The 200 answer of GET /v1/webhooks/{endpoint_id}/deliveries: one page of the endpoint's delivery attempts, newest first. Each item is one POST to the endpoint. Attempts are kept for 30 days, or the tenant's retention_days when that is shorter, and are deleted with the assessment they carried. next_cursor is present only when another page exists.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "endpoint_id",
+          "items"
+        ],
+        "properties": {
+          "endpoint_id": {
+            "type": "string",
+            "pattern": "^whe_[0-9A-HJKMNP-TV-Z]{26}$",
+            "description": "Opaque id of the endpoint registration.",
+            "example": "whe_01JA2ZD0E1F2G3H4J5K6M7N8P9"
+          },
+          "items": {
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+              "$ref": "#/components/schemas/WebhookDeliveryAttempt"
+            }
+          },
+          "next_cursor": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256,
+            "pattern": "^[A-Za-z0-9_-]+$",
+            "description": "Opaque cursor for the next page, MAC'd by the server and bound to the tenant and endpoint it was issued for. Pass it back unchanged as cursor; a tampered, foreign or expired cursor answers 400 invalid_cursor.",
+            "example": "eyJvIjoyMH0"
+          }
+        }
+      },
       "WebhookEndpoint": {
         "description": "One of the tenant's registered webhook endpoints. Signing secrets are not part of it: a secret is shown once, when it is issued (POST /v1/webhooks and POST /v1/webhooks/{endpoint_id}/rotate).",
         "type": "object",
@@ -3635,6 +3897,39 @@
         "additionalProperties": false,
         "properties": {}
       },
+      "WebhookReplay": {
+        "description": "The 202 answer of POST /v1/webhooks/{endpoint_id}/deliveries/{event_id}/replay: the event queued to be sent again.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "endpoint_id",
+          "event_id",
+          "event_type"
+        ],
+        "properties": {
+          "endpoint_id": {
+            "type": "string",
+            "pattern": "^whe_[0-9A-HJKMNP-TV-Z]{26}$",
+            "description": "Opaque id of the endpoint registration.",
+            "example": "whe_01JA2ZD0E1F2G3H4J5K6M7N8P9"
+          },
+          "event_id": {
+            "type": "string",
+            "pattern": "^evt_[0-9A-HJKMNP-TV-Z]{26}$",
+            "description": "The replayed event's id. The receiver sees the same id and body as the first time, with a new NR-Webhook-Timestamp and signature.",
+            "example": "evt_01JA2ZD3K4M5N6P7Q8R9S0T1V2"
+          },
+          "event_type": {
+            "$ref": "#/components/schemas/EventType"
+          }
+        }
+      },
+      "WebhookReplayRequest": {
+        "description": "POST /v1/webhooks/{endpoint_id}/deliveries/{event_id}/replay body: an empty object.",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {}
+      },
       "WebhookTest": {
         "description": "The 202 answer of POST /v1/webhooks/{endpoint_id}/test: the event that was sent or queued.",
         "type": "object",
@@ -3756,6 +4051,18 @@
           "example": "acct_7f3a9c"
         },
         "description": "The account_id the tenant sends with its assessments, as one path segment (percent-encode '|' and ':' if the client requires it). A value that does not match the account_id shape answers 400 invalid_request."
+      },
+      "EventId": {
+        "name": "event_id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^evt_[0-9A-HJKMNP-TV-Z]{26}$",
+          "description": "Opaque, tenant-scoped webhook event id. A redelivery of the same event carries the same event_id, so consumers deduplicate on it.",
+          "example": "evt_01JA2ZD3K4M5N6P7Q8R9S0T1V2"
+        },
+        "description": "The evt_ id of a delivery the endpoint's log holds, as GET /v1/webhooks/{endpoint_id}/deliveries lists it. An id that is malformed, not sent to this endpoint, past the log's retention or another tenant's answers 404."
       }
     },
     "responses": {
@@ -5554,7 +5861,7 @@
         }
       },
       "WebhookEndpointUnverified": {
-        "description": "assessment.updated was asked for an endpoint that is not verified. Send endpoint.verification first; a disabled endpoint is verified again the same way.",
+        "description": "assessment.updated or a replay was asked for an endpoint that is not verified. Send endpoint.verification first; a disabled endpoint is verified again the same way.",
         "headers": {
           "Cache-Control": {
             "schema": {
@@ -5987,6 +6294,168 @@
           "application/problem+json": {
             "schema": {
               "$ref": "#/components/schemas/BadRequestError"
+            }
+          }
+        }
+      },
+      "WebhookDeliveryList": {
+        "description": "One page of the endpoint's delivery attempts, newest first.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/WebhookDeliveryList"
+            },
+            "examples": {
+              "attempts": {
+                "value": {
+                  "endpoint_id": "whe_01JA2ZD0E1F2G3H4J5K6M7N8P9",
+                  "items": [
+                    {
+                      "event_id": "evt_01JA2ZD3K4M5N6P7Q8R9S0T1V2",
+                      "event_type": "assessment.updated",
+                      "attempt": 1,
+                      "replay": true,
+                      "status": "delivered",
+                      "response_code": 200,
+                      "latency_ms": 184,
+                      "attempted_at": "2026-10-22T10:15:02.118Z"
+                    },
+                    {
+                      "event_id": "evt_01JA2ZD3K4M5N6P7Q8R9S0T1V2",
+                      "event_type": "assessment.updated",
+                      "attempt": 2,
+                      "replay": false,
+                      "status": "failed",
+                      "response_code": 500,
+                      "failure": "non_2xx",
+                      "latency_ms": 96,
+                      "attempted_at": "2026-10-22T09:00:31.402Z"
+                    },
+                    {
+                      "event_id": "evt_01JA2ZD3K4M5N6P7Q8R9S0T1V2",
+                      "event_type": "assessment.updated",
+                      "attempt": 1,
+                      "replay": false,
+                      "status": "failed",
+                      "failure": "timeout",
+                      "latency_ms": 5000,
+                      "attempted_at": "2026-10-22T09:00:00.951Z"
+                    }
+                  ],
+                  "next_cursor": "AQAAAABpG1CXAAYqJ2gK4cQAx1dJ2Hk3Q6CjhYbJ9xU8Pz0qRkL1n3VbW2c"
+                }
+              }
+            }
+          }
+        }
+      },
+      "WebhookReplayAccepted": {
+        "description": "The event is queued to be sent again.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/WebhookReplay"
+            },
+            "examples": {
+              "replay": {
+                "value": {
+                  "endpoint_id": "whe_01JA2ZD0E1F2G3H4J5K6M7N8P9",
+                  "event_id": "evt_01JA2ZD3K4M5N6P7Q8R9S0T1V2",
+                  "event_type": "assessment.updated"
+                }
+              }
+            }
+          }
+        }
+      },
+      "InvalidWebhookDeliveriesRequest": {
+        "description": "A query parameter is unknown, repeated or out of range, or the cursor fails its MAC, belongs to another tenant or endpoint, or has expired. invalid_params names the offending parameters without their values.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/BadRequestError"
+            }
+          }
+        }
+      },
+      "WebhookDeliveryNotFound": {
+        "description": "No endpoint with this id for the calling tenant, or no delivery of this event in the endpoint's log: not sent to it, past the log's retention, deleted with its assessment, or another tenant's. A malformed id answers the same.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/NotFoundError"
             }
           }
         }
