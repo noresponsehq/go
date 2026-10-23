@@ -6,10 +6,13 @@ How long the synchronous answer waits for sources. quick waits only for the fast
 
 ```go
 import (
-	"github.com/noresponsehq/go/v2/models/components"
+	"github.com/noresponsehq/go/v3/models/components"
 )
 
 value := components.DepthQuick
+
+// Open enum: custom values can be created with a direct type cast
+custom := components.Depth("custom_value")
 ```
 
 

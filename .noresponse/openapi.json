@@ -4,7 +4,7 @@
     "title": "NoResponse API",
     "version": "1",
     "summary": "Server-side signup and gateway risk assessment: a recommendation, polling and signed webhooks.",
-    "description": "Assess a signup or gateway event, poll a pending assessment, page through an account's history, record what you later learned, rotate your API key, manage your webhook endpoints, and register hosted endpoints that answer your WorkOS or Auth0 sign-up and sign-in hooks. Every response carries X-Request-ID; every error is an RFC 9457 problem document. Keep the API key on your server.",
+    "description": "Assess a signup, login or purchase and get back the account's one current risk, poll a pending assessment, page through an account's history, record what you later learned, rotate your API key, manage your webhook endpoints, and register hosted endpoints that answer your WorkOS or Auth0 sign-up and sign-in hooks. Every response carries X-Request-ID; every error is an RFC 9457 problem document. Keep the API key on your server.",
     "license": {
       "name": "Apache-2.0",
       "identifier": "Apache-2.0"
@@ -68,7 +68,7 @@
           "assessments"
         ],
         "summary": "Assess identifiers for a signup or gateway decision.",
-        "description": "Returns within the deadline (3000 ms at most) with a complete, partial or pending assessment: 200 carries complete or partial, 202 carries pending with Location and Retry-After. A pending answer has no recommendation; apply your own fallback for pending, 429, 503 or a timeout. risk.block says when your block threshold was reached. Requires the assess scope. Idempotency-Key is required and is bound to the body for 24 hours: the same key with the same body replays the latest assessment with Idempotent-Replayed: true and starts no new work; the same key with a different body answers 409 idempotency_key_reused. response_mode defaults to standard; detailed needs the detailed scope.",
+        "description": "Assesses one signup, login or purchase (flow) and answers with the account's one current risk: account.risk.decision is the decision for this flow (allow, step_up, review or block, where block means your block threshold was reached), and detail holds this assessment's own facts. depth sets how long the answer waits for sources: quick waits only for the fast ones (500 ms), full for the whole budget (3000 ms at most); it defaults to full for signup and purchase and quick for login. 200 carries complete or partial, 202 carries pending with Location and Retry-After. While the account's first assessment is pending, account is absent: apply your own fallback for that, 429, 503 or a timeout. NoResponse blocks nothing itself; you decide. Requires the assess scope. Idempotency-Key is required and is bound to the body for 24 hours: the same key with the same body replays the latest assessment with Idempotent-Replayed: true and starts no new work; the same key with a different body answers 409 idempotency_key_reused. response_mode defaults to standard; detailed needs the detailed scope.",
         "parameters": [
           {
             "$ref": "#/components/parameters/IdempotencyKey"
@@ -172,7 +172,7 @@
           "assessments"
         ],
         "summary": "Poll the authoritative assessment of one assessment.",
-        "description": "Returns the highest assessment_version. Requires the assess or history scope. While status is pending, or partial with a source still running, the response carries Retry-After; poll no faster than it says. Another tenant's assessment, an unknown or expired assessment and a malformed assessment_id all answer 404 not_found. response_mode=detailed needs the detailed scope.",
+        "description": "Returns the highest assessment_version, with the account's current risk. Requires the assess or history scope. While status is pending, or partial with a source still running, the response carries Retry-After; poll no faster than it says. Another tenant's assessment, an unknown or expired assessment and a malformed assessment_id all answer 404 not_found. response_mode=detailed needs the detailed scope.",
         "parameters": [
           {
             "$ref": "#/components/parameters/AssessmentId"
@@ -414,7 +414,7 @@
           "accounts"
         ],
         "summary": "Read an account's one current risk.",
-        "description": "An account is the account_id you send with your assessments. Its current risk is the risk of its latest assessment with a decision (status complete or partial), scored as GET /v1/assessments/{assessment_id} scores that assessment, with a decision for each flow. Every assessment updates its account: once an assessment completes, the account carries its risk. Requires the history scope. Read-only and safe to retry. An account with no unexpired assessment that has a decision answers 404 not_found, and a malformed account_id answers 400 invalid_request.",
+        "description": "An account is the account_id you send with your assessments. Its current risk is the risk of its latest assessment with a decision (status complete or partial), scored as GET /v1/assessments/{assessment_id} scores that assessment, with a decision for each flow; risk.decision is the decision for the flow of that assessment. Every assessment answers with this same account. Every assessment updates its account: once an assessment completes, the account carries its risk. Requires the history scope. Read-only and safe to retry. An account with no unexpired assessment that has a decision answers 404 not_found, and a malformed account_id answers 400 invalid_request.",
         "parameters": [
           {
             "$ref": "#/components/parameters/AccountId"
@@ -1339,7 +1339,7 @@
           },
           "decisions_by_flow": {
             "$ref": "#/components/schemas/AccountDecisionsByFlow",
-            "description": "The decision for each flow. Every flow uses the tenant's signup thresholds today, so all three equal risk.decision."
+            "description": "The decision for each flow. Every flow uses the tenant's signup thresholds today, so all three are equal."
           },
           "assessment_id": {
             "type": "string",
@@ -1371,7 +1371,7 @@
           "login",
           "purchase"
         ],
-        "description": "The decision for each flow. Every flow uses the tenant's signup thresholds today, so all three equal risk.decision.",
+        "description": "The decision for each flow. Every flow uses the tenant's signup thresholds today, so all three are equal.",
         "properties": {
           "signup": {
             "$ref": "#/components/schemas/AccountDecision"
@@ -1439,7 +1439,8 @@
             "description": "0 (safe) to 100 (risky), as risk.score of the assessment."
           },
           "decision": {
-            "$ref": "#/components/schemas/AccountDecision"
+            "$ref": "#/components/schemas/AccountDecision",
+            "description": "The decision for the flow of the assessment this account is served with: on GET /v1/accounts/{account_id}, the flow of the current assessment; inside an assessment, that assessment's flow."
           },
           "reasons": {
             "type": "array",
@@ -1473,7 +1474,110 @@
         }
       },
       "Assessment": {
-        "description": "One assessment of one account, as POST /v1/assessments, GET /v1/assessments/{assessment_id} and the assessment.updated webhook return it. status says whether it is final (complete), usable with a source still running (partial) or not yet usable (pending). risk and recommendation are present for complete and partial; assessment_url is present for pending. Keep the highest assessment_version.",
+        "description": "One assessment, as POST /v1/assessments, GET /v1/assessments/{assessment_id} and the assessment.updated webhook return it. account is the account's one current risk: its score, the decision for this assessment's flow, the reasons and the decision for each flow. detail holds this assessment's own facts. status says whether the assessment is final (complete), usable with a source still running (partial) or not yet usable (pending). While the account's first assessment is pending, account is absent; wait for the webhook or poll the assessment. Keep the highest detail.assessment_version.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schema_version",
+          "id",
+          "status",
+          "flow",
+          "depth",
+          "detail"
+        ],
+        "properties": {
+          "schema_version": {
+            "const": "1",
+            "description": "Version of the body shape."
+          },
+          "id": {
+            "type": "string",
+            "pattern": "^asm_[0-9A-HJKMNP-TV-Z]{26}$",
+            "description": "This assessment's id, equal to detail.assessment_id.",
+            "example": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          },
+          "status": {
+            "$ref": "#/components/schemas/Status",
+            "description": "This assessment's status, equal to detail.status. While it is pending, account carries the risk of the account's previous decided assessment, or is absent."
+          },
+          "flow": {
+            "$ref": "#/components/schemas/Flow",
+            "description": "The flow the request named. account.risk.decision is the decision for it. An assessment made before flows existed reports signup."
+          },
+          "depth": {
+            "$ref": "#/components/schemas/Depth",
+            "description": "The depth the assessment was served at: the request's, or its flow's default. An assessment made before depths existed reports full."
+          },
+          "account": {
+            "$ref": "#/components/schemas/Account",
+            "description": "The account's one current risk when this assessment was served, decided for this assessment's flow: the body GET /v1/accounts/{account_id} would answer, with risk.decision equal to decisions_by_flow for flow. Absent only while the account has no assessment with a decision (its first assessment is still pending); a webhook or GET of the decided assessment then carries it."
+          },
+          "detail": {
+            "$ref": "#/components/schemas/AssessmentDetail",
+            "description": "This assessment's own facts: its score, recommendation, signals, coverage and timing."
+          }
+        }
+      },
+      "AssessmentDeletion": {
+        "description": "Body of the 200 answer to DELETE /v1/assessments/{assessment_id}: one of the calling tenant's assessments was deleted, with its versions, evidence, outcomes and the identity-graph marks its outcomes set. Afterwards GET /v1/assessments/{assessment_id} answers 404 and the assessment leaves the account's history. The account is scored again from what remains: account.current_assessment_id names the assessment GET /v1/accounts/{account_id} now serves its risk from, and is absent when the account has no assessment with a decision left. Deleting an assessment that is already gone answers 404.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schema_version",
+          "id",
+          "deleted",
+          "account",
+          "deleted_at"
+        ],
+        "properties": {
+          "schema_version": {
+            "const": "1",
+            "description": "Version of the body shape."
+          },
+          "id": {
+            "type": "string",
+            "pattern": "^asm_[0-9A-HJKMNP-TV-Z]{26}$",
+            "description": "The assessment that was deleted.",
+            "example": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          },
+          "deleted": {
+            "const": true
+          },
+          "account": {
+            "$ref": "#/components/schemas/AssessmentDeletionAccount"
+          },
+          "deleted_at": {
+            "type": "string",
+            "description": "When the deletion took effect.",
+            "example": "2026-10-23T09:00:00.000Z"
+          }
+        }
+      },
+      "AssessmentDeletionAccount": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:|-]{0,127}$",
+            "description": "The account_id of the deleted assessment.",
+            "example": "acct_7f3a9c"
+          },
+          "current_assessment_id": {
+            "type": "string",
+            "pattern": "^asm_[0-9A-HJKMNP-TV-Z]{26}$",
+            "description": "The assessment the account's current risk now comes from. Absent when the account has no assessment with a decision left, and GET /v1/accounts/{account_id} then answers 404.",
+            "example": "asm_01JB3C4D5E6F7G8H9JKMNPQRST"
+          }
+        }
+      },
+      "AssessmentDetail": {
+        "description": "One assessment's own facts: its score and recommendation, the signals behind them, the lanes still running and its timing. risk here is this assessment's own score; the account's current risk is the account member of the assessment. risk and recommendation are present for complete and partial; assessment_url is present for pending.",
         "type": "object",
         "additionalProperties": false,
         "required": [
@@ -1586,15 +1690,15 @@
             "example": "/v1/assessments/asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
           },
           "timing": {
-            "$ref": "#/components/schemas/AssessmentTiming"
+            "$ref": "#/components/schemas/AssessmentDetailTiming"
           },
           "auth_context": {
-            "$ref": "#/components/schemas/AssessmentAuthContext",
+            "$ref": "#/components/schemas/AssessmentDetailAuthContext",
             "description": "The identity fields of the auth context the assessment was made with, echoed for the tenant's own correlation: the request's auth_context, or the one a hosted provider hook (POST /hooks/{integration_id}) built, with transport provider_hook and its hook_point. Present exactly when the request carried an auth_context, and the same on every revision of the assessment. Values are as the request or the hook sent them; tokens, timestamps, roles and scopes are not echoed, and the echo does not change the score."
           }
         }
       },
-      "AssessmentAuthContext": {
+      "AssessmentDetailAuthContext": {
         "type": "object",
         "additionalProperties": false,
         "required": [
@@ -1653,74 +1757,30 @@
           }
         }
       },
-      "AssessmentDeletion": {
-        "description": "Body of the 200 answer to DELETE /v1/assessments/{assessment_id}: one of the calling tenant's assessments was deleted, with its versions, evidence, outcomes and the identity-graph marks its outcomes set. Afterwards GET /v1/assessments/{assessment_id} answers 404 and the assessment leaves the account's history. The account is scored again from what remains: account.current_assessment_id names the assessment GET /v1/accounts/{account_id} now serves its risk from, and is absent when the account has no assessment with a decision left. Deleting an assessment that is already gone answers 404.",
+      "AssessmentDetailTiming": {
         "type": "object",
         "additionalProperties": false,
         "required": [
-          "schema_version",
-          "id",
-          "deleted",
-          "account",
-          "deleted_at"
+          "deadline_ms",
+          "elapsed_ms"
         ],
         "properties": {
-          "schema_version": {
-            "const": "1",
-            "description": "Version of the body shape."
+          "deadline_ms": {
+            "type": "integer",
+            "minimum": 50,
+            "maximum": 3000,
+            "description": "The budget the server applied to the synchronous answer."
           },
-          "id": {
-            "type": "string",
-            "pattern": "^asm_[0-9A-HJKMNP-TV-Z]{26}$",
-            "description": "The assessment that was deleted.",
-            "example": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
-          },
-          "deleted": {
-            "const": true
-          },
-          "account": {
-            "$ref": "#/components/schemas/AssessmentDeletionAccount"
-          },
-          "deleted_at": {
-            "type": "string",
-            "description": "When the deletion took effect.",
-            "example": "2026-10-23T09:00:00.000Z"
+          "elapsed_ms": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 600000,
+            "description": "Server time from HTTP ingress to this revision of the assessment."
           }
         }
-      },
-      "AssessmentDeletionAccount": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": [
-          "id"
-        ],
-        "properties": {
-          "id": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 128,
-            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:|-]{0,127}$",
-            "description": "The account_id of the deleted assessment.",
-            "example": "acct_7f3a9c"
-          },
-          "current_assessment_id": {
-            "type": "string",
-            "pattern": "^asm_[0-9A-HJKMNP-TV-Z]{26}$",
-            "description": "The assessment the account's current risk now comes from. Absent when the account has no assessment with a decision left, and GET /v1/accounts/{account_id} then answers 404.",
-            "example": "asm_01JB3C4D5E6F7G8H9JKMNPQRST"
-          }
-        }
-      },
-      "AssessmentFlow": {
-        "enum": [
-          "signup",
-          "login",
-          "purchase"
-        ],
-        "description": "The customer event an assessment is made for: signup (a new account), login (a returning sign-in) or purchase (a payment or credit grant). The account's risk is reported with the decision for this flow."
       },
       "AssessmentList": {
-        "description": "Body of the 200 answer to POST /v1/assessments/query: one page of the calling tenant's unexpired assessments for one account, newest first, each at its latest assessment_version. Every item's account_id equals the page's. An assessment past its expires_at is not listed. next_cursor is present only when another page exists.",
+        "description": "Body of the 200 answer to POST /v1/assessments/query: one page of the calling tenant's unexpired assessments for one account, newest first, each at its latest assessment_version, as its detail; the account's current risk is GET /v1/accounts/{account_id}. Every item's account_id equals the page's. An assessment past its expires_at is not listed. next_cursor is present only when another page exists.",
         "type": "object",
         "additionalProperties": false,
         "required": [
@@ -1746,7 +1806,7 @@
             "type": "array",
             "maxItems": 50,
             "items": {
-              "$ref": "#/components/schemas/Assessment"
+              "$ref": "#/components/schemas/AssessmentDetail"
             }
           },
           "next_cursor": {
@@ -1875,6 +1935,7 @@
         "additionalProperties": false,
         "required": [
           "account_id",
+          "flow",
           "identifiers"
         ],
         "properties": {
@@ -1887,8 +1948,8 @@
             "example": "acct_7f3a9c"
           },
           "flow": {
-            "$ref": "#/components/schemas/AssessmentFlow",
-            "description": "The customer event this assessment gates. Absent means policy_context.flow when that names signup or login, else signup. The flow sets the default depth."
+            "$ref": "#/components/schemas/Flow",
+            "description": "The customer event this assessment gates. Required. The answer's account.risk.decision is the decision for this flow, and the flow sets the default depth."
           },
           "depth": {
             "$ref": "#/components/schemas/Depth",
@@ -1899,7 +1960,8 @@
             "description": "At least one of email, username or phone. name and ip refine the match and travel beside a lookup identifier; a body with only name or ip is refused with 400."
           },
           "policy_context": {
-            "$ref": "#/components/schemas/AssessmentRequestPolicyContext"
+            "$ref": "#/components/schemas/AssessmentRequestPolicyContext",
+            "description": "Optional policy inputs: region."
           },
           "request_id": {
             "type": "string",
@@ -2064,39 +2126,14 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "flow": {
-            "$ref": "#/components/schemas/Flow",
-            "description": "The provider flow the assessment gates. Use the top-level flow instead; this member is ignored when the top-level flow is present. Absent means signup."
-          },
           "region": {
             "type": "string",
             "pattern": "^[A-Z]{2}$",
             "description": "ISO 3166-1 alpha-2 region of the signup, as the provider determines it.",
             "example": "AU"
           }
-        }
-      },
-      "AssessmentTiming": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": [
-          "deadline_ms",
-          "elapsed_ms"
-        ],
-        "properties": {
-          "deadline_ms": {
-            "type": "integer",
-            "minimum": 50,
-            "maximum": 3000,
-            "description": "The budget the server applied to the synchronous answer."
-          },
-          "elapsed_ms": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 600000,
-            "description": "Server time from HTTP ingress to this revision of the assessment."
-          }
-        }
+        },
+        "description": "Optional policy inputs: region."
       },
       "AssuranceLevel": {
         "type": "string",
@@ -2622,10 +2659,9 @@
         "enum": [
           "signup",
           "login",
-          "recovery",
-          "profile_change"
+          "purchase"
         ],
-        "description": "The provider flow the assessment gates. Use the top-level flow instead; this member is ignored when the top-level flow is present. Absent means signup."
+        "description": "The customer event an assessment is made for: signup (a new account), login (a returning sign-in) or purchase (a payment or credit grant). The account's risk is reported with the decision for this flow."
       },
       "Freshness": {
         "enum": [
@@ -4312,362 +4348,553 @@
               "complete": {
                 "value": {
                   "schema_version": "1",
-                  "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
-                  "account_id": "acct_7f3a9c",
-                  "request_id": "req-2026-10-14-0001",
-                  "policy_version": "heuristic-2026-10.1",
-                  "policy_basis": "heuristic_unvalidated",
-                  "assessment_version": 2,
-                  "created_at": "2026-10-14T09:00:00.000Z",
-                  "updated_at": "2026-10-14T09:00:00.412Z",
-                  "expires_at": "2027-10-14T09:00:00.000Z",
-                  "timing": {
-                    "deadline_ms": 300,
-                    "elapsed_ms": 287
-                  },
+                  "id": "asm_01JB3C4D5E6F7G8H9JKMNPQRST",
                   "status": "complete",
-                  "recommendation": "step_up",
-                  "confidence": "medium",
-                  "signals": [
-                    {
-                      "type": "account_presence",
-                      "identifier": "email",
-                      "outcome": "found",
-                      "source_id": "github",
-                      "evidence_ref": "evr_01JA2Z8K6Q4V7W9XBCDEFGHJKN",
-                      "observed_at": "2026-10-14T09:00:00.210Z",
-                      "last_checked_at": "2026-10-14T09:00:00.210Z",
-                      "freshness": "fresh"
+                  "flow": "signup",
+                  "depth": "full",
+                  "account": {
+                    "schema_version": "1",
+                    "id": "acct_8412",
+                    "risk": {
+                      "score": 0,
+                      "decision": "allow",
+                      "reasons": [
+                        {
+                          "code": "voip_number",
+                          "weight": 25,
+                          "identifier": "phone"
+                        },
+                        {
+                          "code": "breach_cooccurrence",
+                          "weight": -10,
+                          "identifier": "phone"
+                        },
+                        {
+                          "code": "breach_name_match",
+                          "weight": -15,
+                          "identifier": "name"
+                        },
+                        {
+                          "code": "established_accounts",
+                          "weight": -15,
+                          "identifier": "email"
+                        },
+                        {
+                          "code": "aged_identity",
+                          "weight": -25,
+                          "identifier": "email"
+                        }
+                      ]
                     },
-                    {
-                      "type": "account_presence",
-                      "identifier": "username",
-                      "outcome": "not_found",
-                      "source_id": "gitlab",
-                      "last_checked_at": "2026-10-14T09:00:00.190Z",
-                      "freshness": "fresh"
+                    "decisions_by_flow": {
+                      "signup": "allow",
+                      "login": "allow",
+                      "purchase": "allow"
                     },
-                    {
-                      "type": "breach_exposure",
-                      "identifier": "email",
-                      "outcome": "found",
-                      "source_id": "breach.corpus",
-                      "evidence_ref": "evr_01JA2Z8K6Q4V7W9XBCDEFGHJKP",
-                      "observed_at": "2025-03-02T00:00:00Z",
-                      "last_checked_at": "2026-10-14T09:00:00.150Z",
-                      "freshness": "stale"
+                    "assessment_id": "asm_01JB3C4D5E6F7G8H9JKMNPQRST",
+                    "updated_at": "2026-10-18T11:00:04.000Z"
+                  },
+                  "detail": {
+                    "schema_version": "1",
+                    "assessment_id": "asm_01JB3C4D5E6F7G8H9JKMNPQRST",
+                    "account_id": "acct_8412",
+                    "request_id": "req_01",
+                    "status": "complete",
+                    "recommendation": "allow",
+                    "confidence": "high",
+                    "risk": {
+                      "score": 0,
+                      "band": "low",
+                      "recommendation": "allow",
+                      "block": false,
+                      "confidence": "high",
+                      "policy_version": "risk-2026-10.3",
+                      "policy_basis": "heuristic_unvalidated",
+                      "reasons": [
+                        {
+                          "code": "voip_number",
+                          "weight": 25,
+                          "identifier": "phone"
+                        },
+                        {
+                          "code": "breach_cooccurrence",
+                          "weight": -10,
+                          "identifier": "phone"
+                        },
+                        {
+                          "code": "breach_name_match",
+                          "weight": -15,
+                          "identifier": "name"
+                        },
+                        {
+                          "code": "established_accounts",
+                          "weight": -15,
+                          "identifier": "email"
+                        },
+                        {
+                          "code": "aged_identity",
+                          "weight": -25,
+                          "identifier": "email"
+                        }
+                      ],
+                      "summary": {
+                        "email": {
+                          "disposable": false,
+                          "accounts_found": 6,
+                          "breach": {
+                            "found": true,
+                            "breach_count": 7,
+                            "first_year": 2013,
+                            "last_year": 2021,
+                            "exposed": [
+                              "email",
+                              "name",
+                              "password",
+                              "phone",
+                              "ip"
+                            ],
+                            "in_credential_lists": false,
+                            "recent_password_exposure": false,
+                            "truncated": false
+                          }
+                        },
+                        "username": {
+                          "accounts_found": 3,
+                          "breach": {
+                            "found": false,
+                            "truncated": false
+                          }
+                        },
+                        "phone": {
+                          "line_type": "voip",
+                          "country": "US",
+                          "report_count": 0
+                        },
+                        "ip": {
+                          "country": "US",
+                          "type": "residential",
+                          "seen_in_tenant": 1
+                        },
+                        "consistency": {
+                          "name": "match",
+                          "phone": "match",
+                          "ip": "unknown",
+                          "country": "consistent"
+                        }
+                      },
+                      "coverage": {
+                        "answered": 14,
+                        "failed": 1,
+                        "pending": 0
+                      }
+                    },
+                    "incomplete_sources": [],
+                    "policy_version": "risk-2026-10.3",
+                    "policy_basis": "heuristic_unvalidated",
+                    "assessment_version": 3,
+                    "created_at": "2026-10-18T11:00:00.000Z",
+                    "updated_at": "2026-10-18T11:00:04.000Z",
+                    "expires_at": "2027-10-18T11:00:00.000Z",
+                    "timing": {
+                      "deadline_ms": 500,
+                      "elapsed_ms": 4000
                     }
-                  ],
-                  "incomplete_sources": []
+                  }
                 }
               },
               "partial": {
                 "value": {
                   "schema_version": "1",
-                  "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
-                  "account_id": "acct_7f3a9c",
-                  "request_id": "req-2026-10-14-0001",
-                  "policy_version": "heuristic-2026-10.1",
-                  "policy_basis": "heuristic_unvalidated",
-                  "assessment_version": 1,
-                  "created_at": "2026-10-14T09:00:00.000Z",
-                  "updated_at": "2026-10-14T09:00:00.412Z",
-                  "expires_at": "2027-10-14T09:00:00.000Z",
-                  "timing": {
-                    "deadline_ms": 300,
-                    "elapsed_ms": 287
-                  },
+                  "id": "asm_01JB3C4D5E6F7G8H9JKMNPQRST",
                   "status": "partial",
-                  "recommendation": "allow",
-                  "confidence": "low",
-                  "signals": [
-                    {
-                      "type": "account_presence",
-                      "identifier": "email",
-                      "outcome": "found",
-                      "source_id": "github",
-                      "evidence_ref": "evr_01JA2Z8K6Q4V7W9XBCDEFGHJKN",
-                      "observed_at": "2026-10-14T09:00:00.210Z",
-                      "last_checked_at": "2026-10-14T09:00:00.210Z",
-                      "freshness": "fresh"
+                  "flow": "signup",
+                  "depth": "full",
+                  "account": {
+                    "schema_version": "1",
+                    "id": "acct_8412",
+                    "risk": {
+                      "score": 15,
+                      "decision": "allow",
+                      "reasons": [
+                        {
+                          "code": "recent_password_exposure",
+                          "weight": 15,
+                          "identifier": "email"
+                        }
+                      ]
                     },
-                    {
-                      "type": "account_presence",
-                      "identifier": "username",
-                      "outcome": "not_found",
-                      "source_id": "gitlab",
-                      "last_checked_at": "2026-10-14T09:00:00.190Z",
-                      "freshness": "fresh"
+                    "decisions_by_flow": {
+                      "signup": "allow",
+                      "login": "allow",
+                      "purchase": "allow"
                     },
-                    {
-                      "type": "account_presence",
-                      "identifier": "phone",
-                      "outcome": "unavailable",
-                      "source_id": "phone_src_04",
-                      "reason": "deferred",
-                      "freshness": "unknown"
-                    }
-                  ],
-                  "incomplete_sources": [
-                    {
-                      "lane": "phone",
-                      "reason": "deferred"
-                    }
-                  ],
-                  "assessment_url": "/v1/assessments/asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
-                }
-              },
-              "standard": {
-                "value": {
-                  "schema_version": "1",
-                  "assessment_id": "asm_01JB3C4D5E6F7G8H9JKMNPQRST",
-                  "account_id": "acct_8412",
-                  "request_id": "req_01",
-                  "status": "complete",
-                  "recommendation": "allow",
-                  "confidence": "high",
-                  "risk": {
-                    "score": 0,
-                    "band": "low",
+                    "assessment_id": "asm_01JB3C4D5E6F7G8H9JKMNPQRST",
+                    "updated_at": "2026-10-18T11:00:10.000Z"
+                  },
+                  "detail": {
+                    "schema_version": "1",
+                    "assessment_id": "asm_01JB3C4D5E6F7G8H9JKMNPQRST",
+                    "account_id": "acct_8412",
+                    "request_id": "req_01",
+                    "status": "partial",
                     "recommendation": "allow",
-                    "block": false,
-                    "confidence": "high",
-                    "policy_version": "risk-2026-10.3",
-                    "policy_basis": "heuristic_unvalidated",
-                    "reasons": [
-                      {
-                        "code": "voip_number",
-                        "weight": 25,
-                        "identifier": "phone"
+                    "confidence": "medium",
+                    "risk": {
+                      "score": 15,
+                      "band": "low",
+                      "recommendation": "allow",
+                      "block": false,
+                      "confidence": "medium",
+                      "policy_version": "risk-2026-10.3",
+                      "policy_basis": "heuristic_unvalidated",
+                      "reasons": [
+                        {
+                          "code": "recent_password_exposure",
+                          "weight": 15,
+                          "identifier": "email"
+                        }
+                      ],
+                      "summary": {
+                        "email": {
+                          "disposable": false,
+                          "accounts_found": 1,
+                          "breach": {
+                            "found": true,
+                            "breach_count": 3,
+                            "first_year": 2019,
+                            "last_year": 2025,
+                            "exposed": [
+                              "email",
+                              "password"
+                            ],
+                            "recent_password_exposure": true,
+                            "truncated": false
+                          }
+                        },
+                        "username": {
+                          "breach": {
+                            "found": true,
+                            "breach_count": 25,
+                            "truncated": true
+                          }
+                        },
+                        "consistency": {
+                          "name": "unknown"
+                        }
                       },
+                      "coverage": {
+                        "answered": 5,
+                        "failed": 1,
+                        "pending": 0
+                      }
+                    },
+                    "incomplete_sources": [
                       {
-                        "code": "breach_cooccurrence",
-                        "weight": -10,
-                        "identifier": "phone"
-                      },
-                      {
-                        "code": "breach_name_match",
-                        "weight": -15,
-                        "identifier": "name"
-                      },
-                      {
-                        "code": "established_accounts",
-                        "weight": -15,
-                        "identifier": "email"
-                      },
-                      {
-                        "code": "aged_identity",
-                        "weight": -25,
-                        "identifier": "email"
+                        "lane": "accounts",
+                        "reason": "timed_out"
                       }
                     ],
-                    "summary": {
-                      "email": {
-                        "disposable": false,
-                        "accounts_found": 6,
-                        "breach": {
-                          "found": true,
-                          "breach_count": 7,
-                          "first_year": 2013,
-                          "last_year": 2021,
-                          "exposed": [
-                            "email",
-                            "name",
-                            "password",
-                            "phone",
-                            "ip"
-                          ],
-                          "in_credential_lists": false,
-                          "recent_password_exposure": false,
-                          "truncated": false
+                    "policy_version": "risk-2026-10.3",
+                    "policy_basis": "heuristic_unvalidated",
+                    "assessment_version": 2,
+                    "created_at": "2026-10-18T11:00:00.000Z",
+                    "updated_at": "2026-10-18T11:00:10.000Z",
+                    "expires_at": "2027-10-18T11:00:00.000Z",
+                    "timing": {
+                      "deadline_ms": 500,
+                      "elapsed_ms": 10000
+                    },
+                    "assessment_url": "/v1/assessments/asm_01JB3C4D5E6F7G8H9JKMNPQRST"
+                  }
+                }
+              },
+              "login": {
+                "value": {
+                  "schema_version": "1",
+                  "id": "asm_01JB3C4D5E6F7G8H9JKMNPQRST",
+                  "status": "complete",
+                  "flow": "login",
+                  "depth": "quick",
+                  "account": {
+                    "schema_version": "1",
+                    "id": "acct_8412",
+                    "risk": {
+                      "score": 0,
+                      "decision": "allow",
+                      "reasons": [
+                        {
+                          "code": "credential_list_exposure",
+                          "weight": 10,
+                          "identifier": "email"
+                        },
+                        {
+                          "code": "established_accounts",
+                          "weight": -15
+                        },
+                        {
+                          "code": "aged_identity",
+                          "weight": -25,
+                          "identifier": "email"
+                        }
+                      ]
+                    },
+                    "decisions_by_flow": {
+                      "signup": "allow",
+                      "login": "allow",
+                      "purchase": "allow"
+                    },
+                    "assessment_id": "asm_01JB3C4D5E6F7G8H9JKMNPQRST",
+                    "updated_at": "2026-10-18T11:00:00.212Z"
+                  },
+                  "detail": {
+                    "schema_version": "1",
+                    "assessment_id": "asm_01JB3C4D5E6F7G8H9JKMNPQRST",
+                    "account_id": "acct_8412",
+                    "request_id": "req_01",
+                    "status": "complete",
+                    "recommendation": "allow",
+                    "confidence": "high",
+                    "risk": {
+                      "score": 0,
+                      "band": "low",
+                      "recommendation": "allow",
+                      "block": false,
+                      "confidence": "high",
+                      "policy_version": "risk-2026-10.3",
+                      "policy_basis": "heuristic_unvalidated",
+                      "reasons": [
+                        {
+                          "code": "credential_list_exposure",
+                          "weight": 10,
+                          "identifier": "email"
+                        },
+                        {
+                          "code": "established_accounts",
+                          "weight": -15
+                        },
+                        {
+                          "code": "aged_identity",
+                          "weight": -25,
+                          "identifier": "email"
+                        }
+                      ],
+                      "summary": {
+                        "email": {
+                          "disposable": false,
+                          "accounts_found": 4,
+                          "breach": {
+                            "found": true,
+                            "breach_count": 5,
+                            "first_year": 2014,
+                            "last_year": 2022,
+                            "exposed": [
+                              "email",
+                              "name",
+                              "password_hash"
+                            ],
+                            "in_credential_lists": true,
+                            "recent_password_exposure": false,
+                            "truncated": false
+                          }
                         }
                       },
-                      "username": {
-                        "accounts_found": 3,
-                        "breach": {
-                          "found": false,
-                          "truncated": false
-                        }
-                      },
-                      "phone": {
-                        "line_type": "voip",
-                        "country": "US",
-                        "report_count": 0
-                      },
-                      "ip": {
-                        "country": "US",
-                        "type": "residential",
-                        "seen_in_tenant": 1
-                      },
-                      "consistency": {
-                        "name": "match",
-                        "phone": "match",
-                        "ip": "unknown",
-                        "country": "consistent"
+                      "coverage": {
+                        "answered": 6,
+                        "failed": 0,
+                        "pending": 0
                       }
                     },
-                    "coverage": {
-                      "answered": 14,
-                      "failed": 1,
-                      "pending": 0
+                    "incomplete_sources": [],
+                    "policy_version": "risk-2026-10.3",
+                    "policy_basis": "heuristic_unvalidated",
+                    "assessment_version": 1,
+                    "created_at": "2026-10-18T11:00:00.000Z",
+                    "updated_at": "2026-10-18T11:00:00.212Z",
+                    "expires_at": "2027-10-18T11:00:00.000Z",
+                    "timing": {
+                      "deadline_ms": 500,
+                      "elapsed_ms": 212
                     }
-                  },
-                  "incomplete_sources": [],
-                  "policy_version": "risk-2026-10.3",
-                  "policy_basis": "heuristic_unvalidated",
-                  "assessment_version": 3,
-                  "created_at": "2026-10-18T11:00:00.000Z",
-                  "updated_at": "2026-10-18T11:00:04.000Z",
-                  "expires_at": "2027-10-18T11:00:00.000Z",
-                  "timing": {
-                    "deadline_ms": 500,
-                    "elapsed_ms": 4000
                   }
                 }
               },
               "detailed": {
                 "value": {
                   "schema_version": "1",
-                  "assessment_id": "asm_01JB3C4D5E6F7G8H9JKMNPQRST",
-                  "account_id": "acct_8412",
-                  "request_id": "req_01",
+                  "id": "asm_01JB3C4D5E6F7G8H9JKMNPQRST",
                   "status": "complete",
-                  "recommendation": "allow",
-                  "confidence": "high",
-                  "risk": {
-                    "score": 10,
-                    "band": "low",
-                    "recommendation": "allow",
-                    "block": false,
-                    "confidence": "high",
-                    "policy_version": "risk-2026-10.3",
-                    "policy_basis": "heuristic_unvalidated",
-                    "reasons": [
-                      {
-                        "code": "voip_number",
-                        "weight": 25,
-                        "identifier": "phone"
-                      },
-                      {
-                        "code": "breach_name_match",
-                        "weight": -15,
-                        "identifier": "name"
-                      }
-                    ],
-                    "summary": {
-                      "email": {
-                        "disposable": false,
-                        "accounts_found": 1,
-                        "breach": {
-                          "found": true,
-                          "breach_count": 2,
-                          "first_year": 2016,
-                          "last_year": 2019,
-                          "exposed": [
-                            "email",
-                            "password",
-                            "password_hash"
-                          ],
-                          "in_credential_lists": true,
-                          "truncated": false
-                        }
-                      },
-                      "phone": {
-                        "line_type": "voip",
-                        "country": "US"
-                      },
-                      "consistency": {
-                        "name": "match"
-                      }
-                    },
-                    "coverage": {
-                      "answered": 4,
-                      "failed": 0,
-                      "pending": 0
-                    },
-                    "details": {
-                      "phone_names": [
+                  "flow": "signup",
+                  "depth": "full",
+                  "account": {
+                    "schema_version": "1",
+                    "id": "acct_8412",
+                    "risk": {
+                      "score": 10,
+                      "decision": "allow",
+                      "reasons": [
                         {
-                          "value": "Jane Doe",
-                          "seen_by": 3
-                        }
-                      ],
-                      "breaches": [
-                        {
-                          "name": "Collection #1",
-                          "category": "combolist",
-                          "kind": "credential_list",
-                          "year": 2019,
-                          "matched_on": "email",
-                          "exposed": [
-                            "email",
-                            "password"
-                          ]
+                          "code": "voip_number",
+                          "weight": 25,
+                          "identifier": "phone"
                         },
                         {
-                          "name": "LinkedIn",
-                          "domain": "linkedin.com",
-                          "category": "social",
-                          "kind": "site_breach",
-                          "year": 2016,
-                          "month": 5,
-                          "matched_on": "email",
-                          "exposed": [
-                            "email",
-                            "password_hash"
-                          ]
-                        }
-                      ],
-                      "breach_names": [
-                        {
-                          "value": "Jane Doe",
-                          "seen_in": 2
+                          "code": "breach_name_match",
+                          "weight": -15,
+                          "identifier": "name"
                         }
                       ]
-                    }
+                    },
+                    "decisions_by_flow": {
+                      "signup": "allow",
+                      "login": "allow",
+                      "purchase": "allow"
+                    },
+                    "assessment_id": "asm_01JB3C4D5E6F7G8H9JKMNPQRST",
+                    "updated_at": "2026-10-18T11:00:04.000Z"
                   },
-                  "signals": [
-                    {
-                      "type": "account_presence",
-                      "identifier": "email",
-                      "outcome": "found",
-                      "source_id": "src_3f9a1c",
-                      "evidence_ref": "evr_01JB3C4D5E6F7G8H9JKMNPQRSV",
-                      "observed_at": "2026-10-18T11:00:00.180Z",
-                      "last_checked_at": "2026-10-18T11:00:00.180Z",
-                      "freshness": "fresh"
+                  "detail": {
+                    "schema_version": "1",
+                    "assessment_id": "asm_01JB3C4D5E6F7G8H9JKMNPQRST",
+                    "account_id": "acct_8412",
+                    "request_id": "req_01",
+                    "status": "complete",
+                    "recommendation": "allow",
+                    "confidence": "high",
+                    "risk": {
+                      "score": 10,
+                      "band": "low",
+                      "recommendation": "allow",
+                      "block": false,
+                      "confidence": "high",
+                      "policy_version": "risk-2026-10.3",
+                      "policy_basis": "heuristic_unvalidated",
+                      "reasons": [
+                        {
+                          "code": "voip_number",
+                          "weight": 25,
+                          "identifier": "phone"
+                        },
+                        {
+                          "code": "breach_name_match",
+                          "weight": -15,
+                          "identifier": "name"
+                        }
+                      ],
+                      "summary": {
+                        "email": {
+                          "disposable": false,
+                          "accounts_found": 1,
+                          "breach": {
+                            "found": true,
+                            "breach_count": 2,
+                            "first_year": 2016,
+                            "last_year": 2019,
+                            "exposed": [
+                              "email",
+                              "password",
+                              "password_hash"
+                            ],
+                            "in_credential_lists": true,
+                            "truncated": false
+                          }
+                        },
+                        "phone": {
+                          "line_type": "voip",
+                          "country": "US"
+                        },
+                        "consistency": {
+                          "name": "match"
+                        }
+                      },
+                      "coverage": {
+                        "answered": 4,
+                        "failed": 0,
+                        "pending": 0
+                      },
+                      "details": {
+                        "phone_names": [
+                          {
+                            "value": "Jane Doe",
+                            "seen_by": 3
+                          }
+                        ],
+                        "breaches": [
+                          {
+                            "name": "Collection #1",
+                            "category": "combolist",
+                            "kind": "credential_list",
+                            "year": 2019,
+                            "matched_on": "email",
+                            "exposed": [
+                              "email",
+                              "password"
+                            ]
+                          },
+                          {
+                            "name": "LinkedIn",
+                            "domain": "linkedin.com",
+                            "category": "social",
+                            "kind": "site_breach",
+                            "year": 2016,
+                            "month": 5,
+                            "matched_on": "email",
+                            "exposed": [
+                              "email",
+                              "password_hash"
+                            ]
+                          }
+                        ],
+                        "breach_names": [
+                          {
+                            "value": "Jane Doe",
+                            "seen_in": 2
+                          }
+                        ]
+                      }
                     },
-                    {
-                      "type": "breach_exposure",
-                      "identifier": "email",
-                      "outcome": "found",
-                      "source_id": "src_8d27e4",
-                      "evidence_ref": "evr_01JB3C4D5E6F7G8H9JKMNPQRSW",
-                      "observed_at": "2026-10-18T11:00:01.900Z",
-                      "last_checked_at": "2026-10-18T11:00:01.900Z",
-                      "freshness": "fresh"
-                    },
-                    {
-                      "type": "account_presence",
-                      "identifier": "phone",
-                      "outcome": "found",
-                      "source_id": "src_51b0d7",
-                      "evidence_ref": "evr_01JB3C4D5E6F7G8H9JKMNPQRSX",
-                      "observed_at": "2026-10-18T11:00:03.700Z",
-                      "last_checked_at": "2026-10-18T11:00:03.700Z",
-                      "freshness": "fresh"
+                    "signals": [
+                      {
+                        "type": "account_presence",
+                        "identifier": "email",
+                        "outcome": "found",
+                        "source_id": "src_3f9a1c",
+                        "evidence_ref": "evr_01JB3C4D5E6F7G8H9JKMNPQRSV",
+                        "observed_at": "2026-10-18T11:00:00.180Z",
+                        "last_checked_at": "2026-10-18T11:00:00.180Z",
+                        "freshness": "fresh"
+                      },
+                      {
+                        "type": "breach_exposure",
+                        "identifier": "email",
+                        "outcome": "found",
+                        "source_id": "src_8d27e4",
+                        "evidence_ref": "evr_01JB3C4D5E6F7G8H9JKMNPQRSW",
+                        "observed_at": "2026-10-18T11:00:01.900Z",
+                        "last_checked_at": "2026-10-18T11:00:01.900Z",
+                        "freshness": "fresh"
+                      },
+                      {
+                        "type": "account_presence",
+                        "identifier": "phone",
+                        "outcome": "found",
+                        "source_id": "src_51b0d7",
+                        "evidence_ref": "evr_01JB3C4D5E6F7G8H9JKMNPQRSX",
+                        "observed_at": "2026-10-18T11:00:03.700Z",
+                        "last_checked_at": "2026-10-18T11:00:03.700Z",
+                        "freshness": "fresh"
+                      }
+                    ],
+                    "incomplete_sources": [],
+                    "policy_version": "risk-2026-10.3",
+                    "policy_basis": "heuristic_unvalidated",
+                    "assessment_version": 2,
+                    "created_at": "2026-10-18T11:00:00.000Z",
+                    "updated_at": "2026-10-18T11:00:04.000Z",
+                    "expires_at": "2027-10-18T11:00:00.000Z",
+                    "timing": {
+                      "deadline_ms": 500,
+                      "elapsed_ms": 4000
                     }
-                  ],
-                  "incomplete_sources": [],
-                  "policy_version": "risk-2026-10.3",
-                  "policy_basis": "heuristic_unvalidated",
-                  "assessment_version": 2,
-                  "created_at": "2026-10-18T11:00:00.000Z",
-                  "updated_at": "2026-10-18T11:00:04.000Z",
-                  "expires_at": "2027-10-18T11:00:00.000Z",
-                  "timing": {
-                    "deadline_ms": 500,
-                    "elapsed_ms": 4000
                   }
                 }
               }
@@ -4733,50 +4960,119 @@
               "pending": {
                 "value": {
                   "schema_version": "1",
-                  "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
-                  "account_id": "acct_7f3a9c",
-                  "request_id": "req-2026-10-14-0001",
-                  "policy_version": "heuristic-2026-10.1",
-                  "policy_basis": "heuristic_unvalidated",
-                  "assessment_version": 2,
-                  "created_at": "2026-10-14T09:00:00.000Z",
-                  "updated_at": "2026-10-14T09:00:00.412Z",
-                  "expires_at": "2027-10-14T09:00:00.000Z",
-                  "timing": {
-                    "deadline_ms": 300,
-                    "elapsed_ms": 301
-                  },
+                  "id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
                   "status": "pending",
-                  "confidence": "unavailable",
-                  "signals": [
-                    {
-                      "type": "account_presence",
-                      "identifier": "email",
-                      "outcome": "unavailable",
-                      "source_id": "github",
-                      "reason": "timed_out",
-                      "freshness": "unknown"
+                  "flow": "signup",
+                  "depth": "full",
+                  "detail": {
+                    "schema_version": "1",
+                    "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+                    "account_id": "acct_7f3a9c",
+                    "request_id": "req-2026-10-14-0001",
+                    "policy_version": "heuristic-2026-10.1",
+                    "policy_basis": "heuristic_unvalidated",
+                    "assessment_version": 2,
+                    "created_at": "2026-10-14T09:00:00.000Z",
+                    "updated_at": "2026-10-14T09:00:00.412Z",
+                    "expires_at": "2027-10-14T09:00:00.000Z",
+                    "timing": {
+                      "deadline_ms": 300,
+                      "elapsed_ms": 301
                     },
-                    {
-                      "type": "breach_exposure",
-                      "identifier": "email",
-                      "outcome": "unavailable",
-                      "source_id": "breach.corpus",
-                      "reason": "timed_out",
-                      "freshness": "unknown"
-                    }
-                  ],
-                  "incomplete_sources": [
-                    {
-                      "lane": "accounts",
-                      "reason": "timed_out"
+                    "status": "pending",
+                    "confidence": "unavailable",
+                    "incomplete_sources": [
+                      {
+                        "lane": "accounts",
+                        "reason": "timed_out"
+                      },
+                      {
+                        "lane": "breach",
+                        "reason": "timed_out"
+                      }
+                    ],
+                    "assessment_url": "/v1/assessments/asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+                  }
+                }
+              },
+              "pending_known_account": {
+                "value": {
+                  "schema_version": "1",
+                  "id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+                  "status": "pending",
+                  "flow": "purchase",
+                  "depth": "full",
+                  "account": {
+                    "schema_version": "1",
+                    "id": "acct_7f3a9c",
+                    "risk": {
+                      "score": 0,
+                      "decision": "allow",
+                      "reasons": [
+                        {
+                          "code": "voip_number",
+                          "weight": 25,
+                          "identifier": "phone"
+                        },
+                        {
+                          "code": "breach_cooccurrence",
+                          "weight": -10,
+                          "identifier": "phone"
+                        },
+                        {
+                          "code": "breach_name_match",
+                          "weight": -15,
+                          "identifier": "name"
+                        },
+                        {
+                          "code": "established_accounts",
+                          "weight": -15,
+                          "identifier": "email"
+                        },
+                        {
+                          "code": "aged_identity",
+                          "weight": -25,
+                          "identifier": "email"
+                        }
+                      ]
                     },
-                    {
-                      "lane": "breach",
-                      "reason": "timed_out"
-                    }
-                  ],
-                  "assessment_url": "/v1/assessments/asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+                    "decisions_by_flow": {
+                      "signup": "allow",
+                      "login": "allow",
+                      "purchase": "allow"
+                    },
+                    "assessment_id": "asm_01JA1Y7J5P3T6V8WABCDEFGHJK",
+                    "updated_at": "2026-10-12T16:20:03.000Z"
+                  },
+                  "detail": {
+                    "schema_version": "1",
+                    "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+                    "account_id": "acct_7f3a9c",
+                    "request_id": "req-2026-10-14-0001",
+                    "policy_version": "heuristic-2026-10.1",
+                    "policy_basis": "heuristic_unvalidated",
+                    "assessment_version": 2,
+                    "created_at": "2026-10-14T09:00:00.000Z",
+                    "updated_at": "2026-10-14T09:00:00.412Z",
+                    "expires_at": "2027-10-14T09:00:00.000Z",
+                    "timing": {
+                      "deadline_ms": 300,
+                      "elapsed_ms": 301
+                    },
+                    "status": "pending",
+                    "confidence": "unavailable",
+                    "incomplete_sources": [
+                      {
+                        "lane": "accounts",
+                        "reason": "timed_out"
+                      },
+                      {
+                        "lane": "breach",
+                        "reason": "timed_out"
+                      }
+                    ],
+                    "assessment_url": "/v1/assessments/asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+                  }
                 }
               }
             }
@@ -4822,411 +5118,671 @@
               "complete": {
                 "value": {
                   "schema_version": "1",
-                  "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
-                  "account_id": "acct_7f3a9c",
-                  "request_id": "req-2026-10-14-0001",
-                  "policy_version": "heuristic-2026-10.1",
-                  "policy_basis": "heuristic_unvalidated",
-                  "assessment_version": 2,
-                  "created_at": "2026-10-14T09:00:00.000Z",
-                  "updated_at": "2026-10-14T09:00:00.412Z",
-                  "expires_at": "2027-10-14T09:00:00.000Z",
-                  "timing": {
-                    "deadline_ms": 300,
-                    "elapsed_ms": 287
-                  },
+                  "id": "asm_01JB3C4D5E6F7G8H9JKMNPQRST",
                   "status": "complete",
-                  "recommendation": "step_up",
-                  "confidence": "medium",
-                  "signals": [
-                    {
-                      "type": "account_presence",
-                      "identifier": "email",
-                      "outcome": "found",
-                      "source_id": "github",
-                      "evidence_ref": "evr_01JA2Z8K6Q4V7W9XBCDEFGHJKN",
-                      "observed_at": "2026-10-14T09:00:00.210Z",
-                      "last_checked_at": "2026-10-14T09:00:00.210Z",
-                      "freshness": "fresh"
+                  "flow": "signup",
+                  "depth": "full",
+                  "account": {
+                    "schema_version": "1",
+                    "id": "acct_8412",
+                    "risk": {
+                      "score": 0,
+                      "decision": "allow",
+                      "reasons": [
+                        {
+                          "code": "voip_number",
+                          "weight": 25,
+                          "identifier": "phone"
+                        },
+                        {
+                          "code": "breach_cooccurrence",
+                          "weight": -10,
+                          "identifier": "phone"
+                        },
+                        {
+                          "code": "breach_name_match",
+                          "weight": -15,
+                          "identifier": "name"
+                        },
+                        {
+                          "code": "established_accounts",
+                          "weight": -15,
+                          "identifier": "email"
+                        },
+                        {
+                          "code": "aged_identity",
+                          "weight": -25,
+                          "identifier": "email"
+                        }
+                      ]
                     },
-                    {
-                      "type": "account_presence",
-                      "identifier": "username",
-                      "outcome": "not_found",
-                      "source_id": "gitlab",
-                      "last_checked_at": "2026-10-14T09:00:00.190Z",
-                      "freshness": "fresh"
+                    "decisions_by_flow": {
+                      "signup": "allow",
+                      "login": "allow",
+                      "purchase": "allow"
                     },
-                    {
-                      "type": "breach_exposure",
-                      "identifier": "email",
-                      "outcome": "found",
-                      "source_id": "breach.corpus",
-                      "evidence_ref": "evr_01JA2Z8K6Q4V7W9XBCDEFGHJKP",
-                      "observed_at": "2025-03-02T00:00:00Z",
-                      "last_checked_at": "2026-10-14T09:00:00.150Z",
-                      "freshness": "stale"
+                    "assessment_id": "asm_01JB3C4D5E6F7G8H9JKMNPQRST",
+                    "updated_at": "2026-10-18T11:00:04.000Z"
+                  },
+                  "detail": {
+                    "schema_version": "1",
+                    "assessment_id": "asm_01JB3C4D5E6F7G8H9JKMNPQRST",
+                    "account_id": "acct_8412",
+                    "request_id": "req_01",
+                    "status": "complete",
+                    "recommendation": "allow",
+                    "confidence": "high",
+                    "risk": {
+                      "score": 0,
+                      "band": "low",
+                      "recommendation": "allow",
+                      "block": false,
+                      "confidence": "high",
+                      "policy_version": "risk-2026-10.3",
+                      "policy_basis": "heuristic_unvalidated",
+                      "reasons": [
+                        {
+                          "code": "voip_number",
+                          "weight": 25,
+                          "identifier": "phone"
+                        },
+                        {
+                          "code": "breach_cooccurrence",
+                          "weight": -10,
+                          "identifier": "phone"
+                        },
+                        {
+                          "code": "breach_name_match",
+                          "weight": -15,
+                          "identifier": "name"
+                        },
+                        {
+                          "code": "established_accounts",
+                          "weight": -15,
+                          "identifier": "email"
+                        },
+                        {
+                          "code": "aged_identity",
+                          "weight": -25,
+                          "identifier": "email"
+                        }
+                      ],
+                      "summary": {
+                        "email": {
+                          "disposable": false,
+                          "accounts_found": 6,
+                          "breach": {
+                            "found": true,
+                            "breach_count": 7,
+                            "first_year": 2013,
+                            "last_year": 2021,
+                            "exposed": [
+                              "email",
+                              "name",
+                              "password",
+                              "phone",
+                              "ip"
+                            ],
+                            "in_credential_lists": false,
+                            "recent_password_exposure": false,
+                            "truncated": false
+                          }
+                        },
+                        "username": {
+                          "accounts_found": 3,
+                          "breach": {
+                            "found": false,
+                            "truncated": false
+                          }
+                        },
+                        "phone": {
+                          "line_type": "voip",
+                          "country": "US",
+                          "report_count": 0
+                        },
+                        "ip": {
+                          "country": "US",
+                          "type": "residential",
+                          "seen_in_tenant": 1
+                        },
+                        "consistency": {
+                          "name": "match",
+                          "phone": "match",
+                          "ip": "unknown",
+                          "country": "consistent"
+                        }
+                      },
+                      "coverage": {
+                        "answered": 14,
+                        "failed": 1,
+                        "pending": 0
+                      }
+                    },
+                    "incomplete_sources": [],
+                    "policy_version": "risk-2026-10.3",
+                    "policy_basis": "heuristic_unvalidated",
+                    "assessment_version": 3,
+                    "created_at": "2026-10-18T11:00:00.000Z",
+                    "updated_at": "2026-10-18T11:00:04.000Z",
+                    "expires_at": "2027-10-18T11:00:00.000Z",
+                    "timing": {
+                      "deadline_ms": 500,
+                      "elapsed_ms": 4000
                     }
-                  ],
-                  "incomplete_sources": []
+                  }
                 }
               },
               "partial": {
                 "value": {
                   "schema_version": "1",
-                  "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
-                  "account_id": "acct_7f3a9c",
-                  "request_id": "req-2026-10-14-0001",
-                  "policy_version": "heuristic-2026-10.1",
-                  "policy_basis": "heuristic_unvalidated",
-                  "assessment_version": 1,
-                  "created_at": "2026-10-14T09:00:00.000Z",
-                  "updated_at": "2026-10-14T09:00:00.412Z",
-                  "expires_at": "2027-10-14T09:00:00.000Z",
-                  "timing": {
-                    "deadline_ms": 300,
-                    "elapsed_ms": 287
-                  },
+                  "id": "asm_01JB3C4D5E6F7G8H9JKMNPQRST",
                   "status": "partial",
-                  "recommendation": "allow",
-                  "confidence": "low",
-                  "signals": [
-                    {
-                      "type": "account_presence",
-                      "identifier": "email",
-                      "outcome": "found",
-                      "source_id": "github",
-                      "evidence_ref": "evr_01JA2Z8K6Q4V7W9XBCDEFGHJKN",
-                      "observed_at": "2026-10-14T09:00:00.210Z",
-                      "last_checked_at": "2026-10-14T09:00:00.210Z",
-                      "freshness": "fresh"
+                  "flow": "signup",
+                  "depth": "full",
+                  "account": {
+                    "schema_version": "1",
+                    "id": "acct_8412",
+                    "risk": {
+                      "score": 15,
+                      "decision": "allow",
+                      "reasons": [
+                        {
+                          "code": "recent_password_exposure",
+                          "weight": 15,
+                          "identifier": "email"
+                        }
+                      ]
                     },
-                    {
-                      "type": "account_presence",
-                      "identifier": "username",
-                      "outcome": "not_found",
-                      "source_id": "gitlab",
-                      "last_checked_at": "2026-10-14T09:00:00.190Z",
-                      "freshness": "fresh"
+                    "decisions_by_flow": {
+                      "signup": "allow",
+                      "login": "allow",
+                      "purchase": "allow"
                     },
-                    {
-                      "type": "account_presence",
-                      "identifier": "phone",
-                      "outcome": "unavailable",
-                      "source_id": "phone_src_04",
-                      "reason": "deferred",
-                      "freshness": "unknown"
-                    }
-                  ],
-                  "incomplete_sources": [
-                    {
-                      "lane": "phone",
-                      "reason": "deferred"
-                    }
-                  ],
-                  "assessment_url": "/v1/assessments/asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+                    "assessment_id": "asm_01JB3C4D5E6F7G8H9JKMNPQRST",
+                    "updated_at": "2026-10-18T11:00:10.000Z"
+                  },
+                  "detail": {
+                    "schema_version": "1",
+                    "assessment_id": "asm_01JB3C4D5E6F7G8H9JKMNPQRST",
+                    "account_id": "acct_8412",
+                    "request_id": "req_01",
+                    "status": "partial",
+                    "recommendation": "allow",
+                    "confidence": "medium",
+                    "risk": {
+                      "score": 15,
+                      "band": "low",
+                      "recommendation": "allow",
+                      "block": false,
+                      "confidence": "medium",
+                      "policy_version": "risk-2026-10.3",
+                      "policy_basis": "heuristic_unvalidated",
+                      "reasons": [
+                        {
+                          "code": "recent_password_exposure",
+                          "weight": 15,
+                          "identifier": "email"
+                        }
+                      ],
+                      "summary": {
+                        "email": {
+                          "disposable": false,
+                          "accounts_found": 1,
+                          "breach": {
+                            "found": true,
+                            "breach_count": 3,
+                            "first_year": 2019,
+                            "last_year": 2025,
+                            "exposed": [
+                              "email",
+                              "password"
+                            ],
+                            "recent_password_exposure": true,
+                            "truncated": false
+                          }
+                        },
+                        "username": {
+                          "breach": {
+                            "found": true,
+                            "breach_count": 25,
+                            "truncated": true
+                          }
+                        },
+                        "consistency": {
+                          "name": "unknown"
+                        }
+                      },
+                      "coverage": {
+                        "answered": 5,
+                        "failed": 1,
+                        "pending": 0
+                      }
+                    },
+                    "incomplete_sources": [
+                      {
+                        "lane": "accounts",
+                        "reason": "timed_out"
+                      }
+                    ],
+                    "policy_version": "risk-2026-10.3",
+                    "policy_basis": "heuristic_unvalidated",
+                    "assessment_version": 2,
+                    "created_at": "2026-10-18T11:00:00.000Z",
+                    "updated_at": "2026-10-18T11:00:10.000Z",
+                    "expires_at": "2027-10-18T11:00:00.000Z",
+                    "timing": {
+                      "deadline_ms": 500,
+                      "elapsed_ms": 10000
+                    },
+                    "assessment_url": "/v1/assessments/asm_01JB3C4D5E6F7G8H9JKMNPQRST"
+                  }
                 }
               },
               "pending": {
                 "value": {
                   "schema_version": "1",
-                  "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
-                  "account_id": "acct_7f3a9c",
-                  "request_id": "req-2026-10-14-0001",
-                  "policy_version": "heuristic-2026-10.1",
-                  "policy_basis": "heuristic_unvalidated",
-                  "assessment_version": 2,
-                  "created_at": "2026-10-14T09:00:00.000Z",
-                  "updated_at": "2026-10-14T09:00:00.412Z",
-                  "expires_at": "2027-10-14T09:00:00.000Z",
-                  "timing": {
-                    "deadline_ms": 300,
-                    "elapsed_ms": 301
-                  },
+                  "id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
                   "status": "pending",
-                  "confidence": "unavailable",
-                  "signals": [
-                    {
-                      "type": "account_presence",
-                      "identifier": "email",
-                      "outcome": "unavailable",
-                      "source_id": "github",
-                      "reason": "timed_out",
-                      "freshness": "unknown"
-                    },
-                    {
-                      "type": "breach_exposure",
-                      "identifier": "email",
-                      "outcome": "unavailable",
-                      "source_id": "breach.corpus",
-                      "reason": "timed_out",
-                      "freshness": "unknown"
-                    }
-                  ],
-                  "incomplete_sources": [
-                    {
-                      "lane": "accounts",
-                      "reason": "timed_out"
-                    },
-                    {
-                      "lane": "breach",
-                      "reason": "timed_out"
-                    }
-                  ],
-                  "assessment_url": "/v1/assessments/asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
-                }
-              },
-              "standard": {
-                "value": {
-                  "schema_version": "1",
-                  "assessment_id": "asm_01JB3C4D5E6F7G8H9JKMNPQRST",
-                  "account_id": "acct_8412",
-                  "request_id": "req_01",
-                  "status": "complete",
-                  "recommendation": "allow",
-                  "confidence": "high",
-                  "risk": {
-                    "score": 0,
-                    "band": "low",
-                    "recommendation": "allow",
-                    "block": false,
-                    "confidence": "high",
-                    "policy_version": "risk-2026-10.3",
+                  "flow": "signup",
+                  "depth": "full",
+                  "detail": {
+                    "schema_version": "1",
+                    "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+                    "account_id": "acct_7f3a9c",
+                    "request_id": "req-2026-10-14-0001",
+                    "policy_version": "heuristic-2026-10.1",
                     "policy_basis": "heuristic_unvalidated",
-                    "reasons": [
+                    "assessment_version": 2,
+                    "created_at": "2026-10-14T09:00:00.000Z",
+                    "updated_at": "2026-10-14T09:00:00.412Z",
+                    "expires_at": "2027-10-14T09:00:00.000Z",
+                    "timing": {
+                      "deadline_ms": 300,
+                      "elapsed_ms": 301
+                    },
+                    "status": "pending",
+                    "confidence": "unavailable",
+                    "incomplete_sources": [
                       {
-                        "code": "voip_number",
-                        "weight": 25,
-                        "identifier": "phone"
+                        "lane": "accounts",
+                        "reason": "timed_out"
                       },
                       {
-                        "code": "breach_cooccurrence",
-                        "weight": -10,
-                        "identifier": "phone"
-                      },
-                      {
-                        "code": "breach_name_match",
-                        "weight": -15,
-                        "identifier": "name"
-                      },
-                      {
-                        "code": "established_accounts",
-                        "weight": -15,
-                        "identifier": "email"
-                      },
-                      {
-                        "code": "aged_identity",
-                        "weight": -25,
-                        "identifier": "email"
+                        "lane": "breach",
+                        "reason": "timed_out"
                       }
                     ],
-                    "summary": {
-                      "email": {
-                        "disposable": false,
-                        "accounts_found": 6,
-                        "breach": {
-                          "found": true,
-                          "breach_count": 7,
-                          "first_year": 2013,
-                          "last_year": 2021,
-                          "exposed": [
-                            "email",
-                            "name",
-                            "password",
-                            "phone",
-                            "ip"
-                          ],
-                          "in_credential_lists": false,
-                          "recent_password_exposure": false,
-                          "truncated": false
+                    "assessment_url": "/v1/assessments/asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+                  }
+                }
+              },
+              "pending_known_account": {
+                "value": {
+                  "schema_version": "1",
+                  "id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+                  "status": "pending",
+                  "flow": "purchase",
+                  "depth": "full",
+                  "account": {
+                    "schema_version": "1",
+                    "id": "acct_7f3a9c",
+                    "risk": {
+                      "score": 0,
+                      "decision": "allow",
+                      "reasons": [
+                        {
+                          "code": "voip_number",
+                          "weight": 25,
+                          "identifier": "phone"
+                        },
+                        {
+                          "code": "breach_cooccurrence",
+                          "weight": -10,
+                          "identifier": "phone"
+                        },
+                        {
+                          "code": "breach_name_match",
+                          "weight": -15,
+                          "identifier": "name"
+                        },
+                        {
+                          "code": "established_accounts",
+                          "weight": -15,
+                          "identifier": "email"
+                        },
+                        {
+                          "code": "aged_identity",
+                          "weight": -25,
+                          "identifier": "email"
+                        }
+                      ]
+                    },
+                    "decisions_by_flow": {
+                      "signup": "allow",
+                      "login": "allow",
+                      "purchase": "allow"
+                    },
+                    "assessment_id": "asm_01JA1Y7J5P3T6V8WABCDEFGHJK",
+                    "updated_at": "2026-10-12T16:20:03.000Z"
+                  },
+                  "detail": {
+                    "schema_version": "1",
+                    "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+                    "account_id": "acct_7f3a9c",
+                    "request_id": "req-2026-10-14-0001",
+                    "policy_version": "heuristic-2026-10.1",
+                    "policy_basis": "heuristic_unvalidated",
+                    "assessment_version": 2,
+                    "created_at": "2026-10-14T09:00:00.000Z",
+                    "updated_at": "2026-10-14T09:00:00.412Z",
+                    "expires_at": "2027-10-14T09:00:00.000Z",
+                    "timing": {
+                      "deadline_ms": 300,
+                      "elapsed_ms": 301
+                    },
+                    "status": "pending",
+                    "confidence": "unavailable",
+                    "incomplete_sources": [
+                      {
+                        "lane": "accounts",
+                        "reason": "timed_out"
+                      },
+                      {
+                        "lane": "breach",
+                        "reason": "timed_out"
+                      }
+                    ],
+                    "assessment_url": "/v1/assessments/asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+                  }
+                }
+              },
+              "login": {
+                "value": {
+                  "schema_version": "1",
+                  "id": "asm_01JB3C4D5E6F7G8H9JKMNPQRST",
+                  "status": "complete",
+                  "flow": "login",
+                  "depth": "quick",
+                  "account": {
+                    "schema_version": "1",
+                    "id": "acct_8412",
+                    "risk": {
+                      "score": 0,
+                      "decision": "allow",
+                      "reasons": [
+                        {
+                          "code": "credential_list_exposure",
+                          "weight": 10,
+                          "identifier": "email"
+                        },
+                        {
+                          "code": "established_accounts",
+                          "weight": -15
+                        },
+                        {
+                          "code": "aged_identity",
+                          "weight": -25,
+                          "identifier": "email"
+                        }
+                      ]
+                    },
+                    "decisions_by_flow": {
+                      "signup": "allow",
+                      "login": "allow",
+                      "purchase": "allow"
+                    },
+                    "assessment_id": "asm_01JB3C4D5E6F7G8H9JKMNPQRST",
+                    "updated_at": "2026-10-18T11:00:00.212Z"
+                  },
+                  "detail": {
+                    "schema_version": "1",
+                    "assessment_id": "asm_01JB3C4D5E6F7G8H9JKMNPQRST",
+                    "account_id": "acct_8412",
+                    "request_id": "req_01",
+                    "status": "complete",
+                    "recommendation": "allow",
+                    "confidence": "high",
+                    "risk": {
+                      "score": 0,
+                      "band": "low",
+                      "recommendation": "allow",
+                      "block": false,
+                      "confidence": "high",
+                      "policy_version": "risk-2026-10.3",
+                      "policy_basis": "heuristic_unvalidated",
+                      "reasons": [
+                        {
+                          "code": "credential_list_exposure",
+                          "weight": 10,
+                          "identifier": "email"
+                        },
+                        {
+                          "code": "established_accounts",
+                          "weight": -15
+                        },
+                        {
+                          "code": "aged_identity",
+                          "weight": -25,
+                          "identifier": "email"
+                        }
+                      ],
+                      "summary": {
+                        "email": {
+                          "disposable": false,
+                          "accounts_found": 4,
+                          "breach": {
+                            "found": true,
+                            "breach_count": 5,
+                            "first_year": 2014,
+                            "last_year": 2022,
+                            "exposed": [
+                              "email",
+                              "name",
+                              "password_hash"
+                            ],
+                            "in_credential_lists": true,
+                            "recent_password_exposure": false,
+                            "truncated": false
+                          }
                         }
                       },
-                      "username": {
-                        "accounts_found": 3,
-                        "breach": {
-                          "found": false,
-                          "truncated": false
-                        }
-                      },
-                      "phone": {
-                        "line_type": "voip",
-                        "country": "US",
-                        "report_count": 0
-                      },
-                      "ip": {
-                        "country": "US",
-                        "type": "residential",
-                        "seen_in_tenant": 1
-                      },
-                      "consistency": {
-                        "name": "match",
-                        "phone": "match",
-                        "ip": "unknown",
-                        "country": "consistent"
+                      "coverage": {
+                        "answered": 6,
+                        "failed": 0,
+                        "pending": 0
                       }
                     },
-                    "coverage": {
-                      "answered": 14,
-                      "failed": 1,
-                      "pending": 0
+                    "incomplete_sources": [],
+                    "policy_version": "risk-2026-10.3",
+                    "policy_basis": "heuristic_unvalidated",
+                    "assessment_version": 1,
+                    "created_at": "2026-10-18T11:00:00.000Z",
+                    "updated_at": "2026-10-18T11:00:00.212Z",
+                    "expires_at": "2027-10-18T11:00:00.000Z",
+                    "timing": {
+                      "deadline_ms": 500,
+                      "elapsed_ms": 212
                     }
-                  },
-                  "incomplete_sources": [],
-                  "policy_version": "risk-2026-10.3",
-                  "policy_basis": "heuristic_unvalidated",
-                  "assessment_version": 3,
-                  "created_at": "2026-10-18T11:00:00.000Z",
-                  "updated_at": "2026-10-18T11:00:04.000Z",
-                  "expires_at": "2027-10-18T11:00:00.000Z",
-                  "timing": {
-                    "deadline_ms": 500,
-                    "elapsed_ms": 4000
                   }
                 }
               },
               "detailed": {
                 "value": {
                   "schema_version": "1",
-                  "assessment_id": "asm_01JB3C4D5E6F7G8H9JKMNPQRST",
-                  "account_id": "acct_8412",
-                  "request_id": "req_01",
+                  "id": "asm_01JB3C4D5E6F7G8H9JKMNPQRST",
                   "status": "complete",
-                  "recommendation": "allow",
-                  "confidence": "high",
-                  "risk": {
-                    "score": 10,
-                    "band": "low",
-                    "recommendation": "allow",
-                    "block": false,
-                    "confidence": "high",
-                    "policy_version": "risk-2026-10.3",
-                    "policy_basis": "heuristic_unvalidated",
-                    "reasons": [
-                      {
-                        "code": "voip_number",
-                        "weight": 25,
-                        "identifier": "phone"
-                      },
-                      {
-                        "code": "breach_name_match",
-                        "weight": -15,
-                        "identifier": "name"
-                      }
-                    ],
-                    "summary": {
-                      "email": {
-                        "disposable": false,
-                        "accounts_found": 1,
-                        "breach": {
-                          "found": true,
-                          "breach_count": 2,
-                          "first_year": 2016,
-                          "last_year": 2019,
-                          "exposed": [
-                            "email",
-                            "password",
-                            "password_hash"
-                          ],
-                          "in_credential_lists": true,
-                          "truncated": false
-                        }
-                      },
-                      "phone": {
-                        "line_type": "voip",
-                        "country": "US"
-                      },
-                      "consistency": {
-                        "name": "match"
-                      }
-                    },
-                    "coverage": {
-                      "answered": 4,
-                      "failed": 0,
-                      "pending": 0
-                    },
-                    "details": {
-                      "phone_names": [
+                  "flow": "signup",
+                  "depth": "full",
+                  "account": {
+                    "schema_version": "1",
+                    "id": "acct_8412",
+                    "risk": {
+                      "score": 10,
+                      "decision": "allow",
+                      "reasons": [
                         {
-                          "value": "Jane Doe",
-                          "seen_by": 3
-                        }
-                      ],
-                      "breaches": [
-                        {
-                          "name": "Collection #1",
-                          "category": "combolist",
-                          "kind": "credential_list",
-                          "year": 2019,
-                          "matched_on": "email",
-                          "exposed": [
-                            "email",
-                            "password"
-                          ]
+                          "code": "voip_number",
+                          "weight": 25,
+                          "identifier": "phone"
                         },
                         {
-                          "name": "LinkedIn",
-                          "domain": "linkedin.com",
-                          "category": "social",
-                          "kind": "site_breach",
-                          "year": 2016,
-                          "month": 5,
-                          "matched_on": "email",
-                          "exposed": [
-                            "email",
-                            "password_hash"
-                          ]
-                        }
-                      ],
-                      "breach_names": [
-                        {
-                          "value": "Jane Doe",
-                          "seen_in": 2
+                          "code": "breach_name_match",
+                          "weight": -15,
+                          "identifier": "name"
                         }
                       ]
-                    }
+                    },
+                    "decisions_by_flow": {
+                      "signup": "allow",
+                      "login": "allow",
+                      "purchase": "allow"
+                    },
+                    "assessment_id": "asm_01JB3C4D5E6F7G8H9JKMNPQRST",
+                    "updated_at": "2026-10-18T11:00:04.000Z"
                   },
-                  "signals": [
-                    {
-                      "type": "account_presence",
-                      "identifier": "email",
-                      "outcome": "found",
-                      "source_id": "src_3f9a1c",
-                      "evidence_ref": "evr_01JB3C4D5E6F7G8H9JKMNPQRSV",
-                      "observed_at": "2026-10-18T11:00:00.180Z",
-                      "last_checked_at": "2026-10-18T11:00:00.180Z",
-                      "freshness": "fresh"
+                  "detail": {
+                    "schema_version": "1",
+                    "assessment_id": "asm_01JB3C4D5E6F7G8H9JKMNPQRST",
+                    "account_id": "acct_8412",
+                    "request_id": "req_01",
+                    "status": "complete",
+                    "recommendation": "allow",
+                    "confidence": "high",
+                    "risk": {
+                      "score": 10,
+                      "band": "low",
+                      "recommendation": "allow",
+                      "block": false,
+                      "confidence": "high",
+                      "policy_version": "risk-2026-10.3",
+                      "policy_basis": "heuristic_unvalidated",
+                      "reasons": [
+                        {
+                          "code": "voip_number",
+                          "weight": 25,
+                          "identifier": "phone"
+                        },
+                        {
+                          "code": "breach_name_match",
+                          "weight": -15,
+                          "identifier": "name"
+                        }
+                      ],
+                      "summary": {
+                        "email": {
+                          "disposable": false,
+                          "accounts_found": 1,
+                          "breach": {
+                            "found": true,
+                            "breach_count": 2,
+                            "first_year": 2016,
+                            "last_year": 2019,
+                            "exposed": [
+                              "email",
+                              "password",
+                              "password_hash"
+                            ],
+                            "in_credential_lists": true,
+                            "truncated": false
+                          }
+                        },
+                        "phone": {
+                          "line_type": "voip",
+                          "country": "US"
+                        },
+                        "consistency": {
+                          "name": "match"
+                        }
+                      },
+                      "coverage": {
+                        "answered": 4,
+                        "failed": 0,
+                        "pending": 0
+                      },
+                      "details": {
+                        "phone_names": [
+                          {
+                            "value": "Jane Doe",
+                            "seen_by": 3
+                          }
+                        ],
+                        "breaches": [
+                          {
+                            "name": "Collection #1",
+                            "category": "combolist",
+                            "kind": "credential_list",
+                            "year": 2019,
+                            "matched_on": "email",
+                            "exposed": [
+                              "email",
+                              "password"
+                            ]
+                          },
+                          {
+                            "name": "LinkedIn",
+                            "domain": "linkedin.com",
+                            "category": "social",
+                            "kind": "site_breach",
+                            "year": 2016,
+                            "month": 5,
+                            "matched_on": "email",
+                            "exposed": [
+                              "email",
+                              "password_hash"
+                            ]
+                          }
+                        ],
+                        "breach_names": [
+                          {
+                            "value": "Jane Doe",
+                            "seen_in": 2
+                          }
+                        ]
+                      }
                     },
-                    {
-                      "type": "breach_exposure",
-                      "identifier": "email",
-                      "outcome": "found",
-                      "source_id": "src_8d27e4",
-                      "evidence_ref": "evr_01JB3C4D5E6F7G8H9JKMNPQRSW",
-                      "observed_at": "2026-10-18T11:00:01.900Z",
-                      "last_checked_at": "2026-10-18T11:00:01.900Z",
-                      "freshness": "fresh"
-                    },
-                    {
-                      "type": "account_presence",
-                      "identifier": "phone",
-                      "outcome": "found",
-                      "source_id": "src_51b0d7",
-                      "evidence_ref": "evr_01JB3C4D5E6F7G8H9JKMNPQRSX",
-                      "observed_at": "2026-10-18T11:00:03.700Z",
-                      "last_checked_at": "2026-10-18T11:00:03.700Z",
-                      "freshness": "fresh"
+                    "signals": [
+                      {
+                        "type": "account_presence",
+                        "identifier": "email",
+                        "outcome": "found",
+                        "source_id": "src_3f9a1c",
+                        "evidence_ref": "evr_01JB3C4D5E6F7G8H9JKMNPQRSV",
+                        "observed_at": "2026-10-18T11:00:00.180Z",
+                        "last_checked_at": "2026-10-18T11:00:00.180Z",
+                        "freshness": "fresh"
+                      },
+                      {
+                        "type": "breach_exposure",
+                        "identifier": "email",
+                        "outcome": "found",
+                        "source_id": "src_8d27e4",
+                        "evidence_ref": "evr_01JB3C4D5E6F7G8H9JKMNPQRSW",
+                        "observed_at": "2026-10-18T11:00:01.900Z",
+                        "last_checked_at": "2026-10-18T11:00:01.900Z",
+                        "freshness": "fresh"
+                      },
+                      {
+                        "type": "account_presence",
+                        "identifier": "phone",
+                        "outcome": "found",
+                        "source_id": "src_51b0d7",
+                        "evidence_ref": "evr_01JB3C4D5E6F7G8H9JKMNPQRSX",
+                        "observed_at": "2026-10-18T11:00:03.700Z",
+                        "last_checked_at": "2026-10-18T11:00:03.700Z",
+                        "freshness": "fresh"
+                      }
+                    ],
+                    "incomplete_sources": [],
+                    "policy_version": "risk-2026-10.3",
+                    "policy_basis": "heuristic_unvalidated",
+                    "assessment_version": 2,
+                    "created_at": "2026-10-18T11:00:00.000Z",
+                    "updated_at": "2026-10-18T11:00:04.000Z",
+                    "expires_at": "2027-10-18T11:00:00.000Z",
+                    "timing": {
+                      "deadline_ms": 500,
+                      "elapsed_ms": 4000
                     }
-                  ],
-                  "incomplete_sources": [],
-                  "policy_version": "risk-2026-10.3",
-                  "policy_basis": "heuristic_unvalidated",
-                  "assessment_version": 2,
-                  "created_at": "2026-10-18T11:00:00.000Z",
-                  "updated_at": "2026-10-18T11:00:04.000Z",
-                  "expires_at": "2027-10-18T11:00:00.000Z",
-                  "timing": {
-                    "deadline_ms": 500,
-                    "elapsed_ms": 4000
                   }
                 }
               }

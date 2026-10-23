@@ -20,7 +20,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/noresponsehq/go/v2/models/components"
+	"github.com/noresponsehq/go/v3/models/components"
 )
 
 const (
@@ -44,7 +44,29 @@ func lateFixture(t *testing.T, name string) map[string]any {
 	return out
 }
 
-// lateDelivery signs an assessment.updated delivery of data, overriding account_id when given.
+// lateView wraps the assessment detail fixture name in the assessment
+// envelope, with the account's decision set to the detail's recommendation.
+// A pending detail has no decision, so its envelope has no account, as for an
+// account's first assessment.
+func lateView(t *testing.T, name string) map[string]any {
+	t.Helper()
+	detail := lateFixture(t, name)
+	view := lateFixture(t, "assessment-view-complete.json")
+	view["id"] = detail["assessment_id"]
+	view["status"] = detail["status"]
+	view["detail"] = detail
+	recommendation, ok := detail["recommendation"].(string)
+	if !ok {
+		delete(view, "account")
+		return view
+	}
+	account := view["account"].(map[string]any)
+	account["assessment_id"] = detail["assessment_id"]
+	account["risk"].(map[string]any)["decision"] = recommendation
+	return view
+}
+
+// lateDelivery signs an assessment.updated delivery of data, overriding detail.account_id when given.
 func lateDelivery(t *testing.T, data map[string]any, accountID string) ([]byte, http.Header) {
 	t.Helper()
 	return lateDeliveryWith(t, data, accountID, nil)
@@ -58,7 +80,12 @@ func lateDeliveryWith(t *testing.T, data map[string]any, accountID string, extra
 		copied[k] = v
 	}
 	if accountID != "" {
-		copied["account_id"] = accountID
+		detail := map[string]any{}
+		for k, v := range copied["detail"].(map[string]any) {
+			detail[k] = v
+		}
+		detail["account_id"] = accountID
+		copied["detail"] = detail
 	}
 	id := "evt_01JA2ZB4N5P6Q7R8S9T0VWXYZ2"
 	body := map[string]any{"id": id, "type": "assessment.updated", "created_at": "2026-10-18T11:00:04Z", "data": copied}
@@ -190,15 +217,15 @@ func assertEveryCall(t *testing.T, m *mockProvider, auth string) {
 	}
 }
 
-func lateEvent(status string, recommendation string) *Event {
+func lateEvent(status string, decision string) *Event {
 	data := &components.Assessment{Status: components.Status(status)}
-	if recommendation != "" {
-		data.Recommendation = components.Recommendation(recommendation).ToPointer()
+	if decision != "" {
+		data.Account = &components.Account{Risk: components.AccountRisk{Decision: components.AccountDecision(decision)}}
 	}
 	return &Event{ID: "evt_x", Type: EventAssessmentUpdated, CreatedAt: "2026-10-18T11:00:04Z", Data: data}
 }
 
-func TestDefaultPolicyRevokesOnReviewOnly(t *testing.T) {
+func TestDefaultPolicyRevokesOnReviewAndBlock(t *testing.T) {
 	expect := func(event *Event, policy LateResultPolicy, want LateResultAction) {
 		t.Helper()
 		got, err := LateResultActionFor(event, policy)
@@ -207,23 +234,26 @@ func TestDefaultPolicyRevokesOnReviewOnly(t *testing.T) {
 		}
 	}
 	expect(lateEvent("complete", "review"), nil, LateResultRevokeSessions)
+	expect(lateEvent("complete", "block"), nil, LateResultRevokeSessions)
 	expect(lateEvent("complete", "step_up"), nil, LateResultNone)
+	expect(lateEvent("pending", "review"), nil, LateResultNone)
 	expect(lateEvent("partial", "allow"), nil, LateResultNone)
 	expect(lateEvent("pending", ""), nil, LateResultNone)
 	expect(&Event{ID: "evt_x", Type: EventAssessmentUpdated, Data: &AssessmentExpired{Status: "expired", ChangeReason: "expired"}}, nil, LateResultNone)
 	expect(&Event{ID: "evt_x", Type: EventEndpointVerification, Data: &EndpointVerification{}}, nil, LateResultNone)
 	expect(&Event{ID: "evt_x", Type: EventAccountDeleted, Data: &AccountDeleted{AccountID: "acct_1", AssessmentsDeleted: 1}}, nil, LateResultNone)
-	expect(lateEvent("complete", "step_up"), LateResultPolicy{components.RecommendationStepUp: LateResultBan}, LateResultBan)
-	expect(lateEvent("complete", "review"), LateResultPolicy{components.RecommendationStepUp: LateResultBan}, LateResultNone)
+	expect(lateEvent("complete", "step_up"), LateResultPolicy{components.AccountDecisionStepUp: LateResultBan}, LateResultBan)
+	expect(lateEvent("complete", "review"), LateResultPolicy{components.AccountDecisionStepUp: LateResultBan}, LateResultNone)
+	expect(lateEvent("complete", "block"), LateResultPolicy{components.AccountDecisionBlock: LateResultBan}, LateResultBan)
 
-	// The recommendation falls back to risk.recommendation.
-	fallback := &Event{Type: EventAssessmentUpdated, Data: &components.Assessment{Status: "complete", Risk: &components.Risk{Recommendation: components.RecommendationReview}}}
-	expect(fallback, nil, LateResultRevokeSessions)
+	// Only the account's decision counts: the detail's recommendation alone acts on nothing.
+	detailOnly := &Event{Type: EventAssessmentUpdated, Data: &components.Assessment{Status: "complete", Detail: components.AssessmentDetail{Recommendation: components.RecommendationReview.ToPointer()}}}
+	expect(detailOnly, nil, LateResultNone)
 
-	if _, err := LateResultActionFor(lateEvent("complete", "review"), LateResultPolicy{components.RecommendationReview: "delete"}); !errors.Is(err, ErrUnknownLateResultAction) {
+	if _, err := LateResultActionFor(lateEvent("complete", "review"), LateResultPolicy{components.AccountDecisionReview: "delete"}); !errors.Is(err, ErrUnknownLateResultAction) {
 		t.Fatalf("unknown action error = %v", err)
 	}
-	want := LateResultPolicy{"allow": "none", "step_up": "none", "review": "revoke_sessions"}
+	want := LateResultPolicy{"allow": "none", "step_up": "none", "review": "revoke_sessions", "block": "revoke_sessions"}
 	if got := DefaultLateResultPolicy(); !reflect.DeepEqual(got, want) {
 		t.Fatalf("default policy = %v", got)
 	}
@@ -245,7 +275,7 @@ func TestClerkReviewRevokesActiveSessionsAndBanPolicyBans(t *testing.T) {
 		return 0, nil
 	})
 	clerk := &ClerkActions{SecretKey: "sk_test_mock", BaseURL: mock.URL + "/v1"}
-	review := lateFixture(t, "assessment-phone-uncovered-complete.json")
+	review := lateView(t, "assessment-phone-uncovered-complete.json")
 	raw, headers := lateDelivery(t, review, "user_2EXAMPLE")
 	ctx := context.Background()
 
@@ -256,7 +286,7 @@ func TestClerkReviewRevokesActiveSessionsAndBanPolicyBans(t *testing.T) {
 	if result.Action != LateResultRevokeSessions || result.UserID != "user_2EXAMPLE" {
 		t.Fatalf("result = %+v", result)
 	}
-	if assessment, ok := result.Event.Data.(*components.Assessment); !ok || assessment.AssessmentID != review["assessment_id"] {
+	if assessment, ok := result.Event.Data.(*components.Assessment); !ok || assessment.ID != review["id"] {
 		t.Fatalf("event data = %+v", result.Event.Data)
 	}
 	assertCalls(t, mock, []string{"GET /v1/sessions", "POST /v1/sessions/sess_1/revoke", "POST /v1/sessions/sess_2/revoke"})
@@ -266,7 +296,7 @@ func TestClerkReviewRevokesActiveSessionsAndBanPolicyBans(t *testing.T) {
 	assertEveryCall(t, mock, "Bearer sk_test_mock")
 
 	mock.reset()
-	banned, err := HandleLateResult(ctx, raw, headers, lateSecrets, clerk, lateOptions(&LateResultOptions{Policy: LateResultPolicy{components.RecommendationReview: LateResultBan}}))
+	banned, err := HandleLateResult(ctx, raw, headers, lateSecrets, clerk, lateOptions(&LateResultOptions{Policy: LateResultPolicy{components.AccountDecisionReview: LateResultBan}}))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -328,10 +358,10 @@ func TestWorkOSRevokePagesThroughSessionsAndBanRevokesThenDeletes(t *testing.T) 
 		return 0, nil
 	})
 	workos := &WorkOSActions{APIKey: "sk_test_workos", BaseURL: mock.URL}
-	step := lateFixture(t, "assessment-complete.json")
+	step := lateView(t, "assessment-complete.json")
 	raw, headers := lateDelivery(t, step, "acct_7f3a9c")
 	result, err := HandleLateResult(context.Background(), raw, headers, lateSecrets, workos, lateOptions(&LateResultOptions{
-		Policy: LateResultPolicy{components.RecommendationStepUp: LateResultBan},
+		Policy: LateResultPolicy{components.AccountDecisionStepUp: LateResultBan},
 		UserID: func(accountID string, _ *Event) string {
 			if accountID == "acct_7f3a9c" {
 				return "user_01WORKOS"
@@ -398,7 +428,7 @@ func TestAuth0ReviewDeletesSessionsAndRefreshTokensBanBlocksFirstPipeIsEscaped(t
 		return 0, nil
 	})
 	auth0 := &Auth0Actions{BaseURL: mock.URL + "/api/v2", Token: "mgmt_token"}
-	review := lateFixture(t, "assessment-phone-uncovered-complete.json")
+	review := lateView(t, "assessment-phone-uncovered-complete.json")
 	raw, headers := lateDelivery(t, review, id)
 	ctx := context.Background()
 
@@ -412,7 +442,7 @@ func TestAuth0ReviewDeletesSessionsAndRefreshTokensBanBlocksFirstPipeIsEscaped(t
 	assertCalls(t, mock, []string{"DELETE /api/v2/users/" + escaped + "/sessions", "DELETE /api/v2/users/" + escaped + "/refresh-tokens"})
 
 	mock.reset()
-	if _, err := HandleLateResult(ctx, raw, headers, lateSecrets, auth0, lateOptions(&LateResultOptions{Policy: LateResultPolicy{components.RecommendationReview: LateResultBan}})); err != nil {
+	if _, err := HandleLateResult(ctx, raw, headers, lateSecrets, auth0, lateOptions(&LateResultOptions{Policy: LateResultPolicy{components.AccountDecisionReview: LateResultBan}})); err != nil {
 		t.Fatal(err)
 	}
 	assertCalls(t, mock, []string{"PATCH /api/v2/users/" + escaped, "DELETE /api/v2/users/" + escaped + "/sessions", "DELETE /api/v2/users/" + escaped + "/refresh-tokens"})
@@ -499,7 +529,7 @@ func TestAuth0WithoutSessionsAPIBlocksDeletesDeviceCredentialsAndReportsBan(t *t
 	tenant := newAuth0WithoutSessionsAPI(escaped, false)
 	mock := startMock(t, tenant.route)
 	auth0 := &Auth0Actions{BaseURL: mock.URL + "/api/v2", Token: "mgmt_token"}
-	raw, headers := lateDelivery(t, lateFixture(t, "assessment-phone-uncovered-complete.json"), id)
+	raw, headers := lateDelivery(t, lateView(t, "assessment-phone-uncovered-complete.json"), id)
 	ctx := context.Background()
 
 	result, err := HandleLateResult(ctx, raw, headers, lateSecrets, auth0, lateOptions(nil))
@@ -542,7 +572,7 @@ func TestAuth0WithoutSessionsAPIBlocksDeletesDeviceCredentialsAndReportsBan(t *t
 	// Ban blocks first, and the plan refusing the sessions endpoint is no failure.
 	tenant.set(false, auth0Credential{"dcr_c", "refresh_token"})
 	mock.reset()
-	ban := lateOptions(&LateResultOptions{Policy: LateResultPolicy{components.RecommendationReview: LateResultBan}})
+	ban := lateOptions(&LateResultOptions{Policy: LateResultPolicy{components.AccountDecisionReview: LateResultBan}})
 	if result, err = HandleLateResult(ctx, raw, headers, lateSecrets, auth0, ban); err != nil || result.Action != LateResultBan {
 		t.Fatalf("ban = %+v, %v", result, err)
 	}
@@ -566,7 +596,7 @@ func TestAuth0WithoutSessionsAPIBlocksDeletesDeviceCredentialsAndReportsBan(t *t
 func TestAuth0WithRefreshTokensButNoSessionsAPIStillBlocksAndAScopeRefusalNeverFallsBack(t *testing.T) {
 	tenant := newAuth0WithoutSessionsAPI("auth0%7Cabc", true)
 	mock := startMock(t, tenant.route)
-	raw, headers := lateDelivery(t, lateFixture(t, "assessment-phone-uncovered-complete.json"), "auth0|abc")
+	raw, headers := lateDelivery(t, lateView(t, "assessment-phone-uncovered-complete.json"), "auth0|abc")
 	ctx := context.Background()
 	result, err := HandleLateResult(ctx, raw, headers, lateSecrets, &Auth0Actions{BaseURL: mock.URL + "/api/v2", Token: "t"}, lateOptions(nil))
 	if err != nil || result.Action != LateResultBan {
@@ -608,14 +638,14 @@ func (p *plainProvider) Ban(_ context.Context, userID string) error {
 }
 
 func TestAProviderWithoutActReportsTheActionAskedFor(t *testing.T) {
-	raw, headers := lateDelivery(t, lateFixture(t, "assessment-phone-uncovered-complete.json"), "u_1")
+	raw, headers := lateDelivery(t, lateView(t, "assessment-phone-uncovered-complete.json"), "u_1")
 	ctx := context.Background()
 	p := &plainProvider{}
 	result, err := HandleLateResult(ctx, raw, headers, lateSecrets, p, lateOptions(nil))
 	if err != nil || result.Action != LateResultRevokeSessions {
 		t.Fatalf("revoke = %+v, %v", result, err)
 	}
-	result, err = HandleLateResult(ctx, raw, headers, lateSecrets, p, lateOptions(&LateResultOptions{Policy: LateResultPolicy{components.RecommendationReview: LateResultBan}}))
+	result, err = HandleLateResult(ctx, raw, headers, lateSecrets, p, lateOptions(&LateResultOptions{Policy: LateResultPolicy{components.AccountDecisionReview: LateResultBan}}))
 	if err != nil || result.Action != LateResultBan {
 		t.Fatalf("ban = %+v, %v", result, err)
 	}
@@ -642,7 +672,7 @@ func TestUnverifiedQuietOrUnmappedEventMakesNoProviderCallAndRefusalReturnsError
 		return 0, nil
 	})
 	auth0 := &Auth0Actions{BaseURL: mock.URL + "/api/v2", Token: "mgmt_token"}
-	review := lateFixture(t, "assessment-phone-uncovered-complete.json")
+	review := lateView(t, "assessment-phone-uncovered-complete.json")
 	raw, headers := lateDelivery(t, review, "auth0|abc")
 	ctx := context.Background()
 
@@ -655,8 +685,8 @@ func TestUnverifiedQuietOrUnmappedEventMakesNoProviderCallAndRefusalReturnsError
 
 	expired := lateFixture(t, "webhook-assessment-expired.json")["data"].(map[string]any)
 	for name, data := range map[string]map[string]any{
-		"step_up": lateFixture(t, "assessment-complete.json"),
-		"pending": lateFixture(t, "assessment-pending.json"),
+		"step_up": lateView(t, "assessment-complete.json"),
+		"pending": lateView(t, "assessment-pending.json"),
 		"expired": expired,
 	} {
 		raw, headers := lateDelivery(t, data, "")
@@ -714,9 +744,9 @@ func TestEmptyUserIDAndMissingCredentialsAreErrors(t *testing.T) {
 func TestWebhookTestEventActsOnNothing(t *testing.T) {
 	mock := startMock(t, func(c mockCall) (int, any) { return 200, map[string]any{} })
 	workos := &WorkOSActions{APIKey: "sk_test_workos", BaseURL: mock.URL}
-	raw, headers := lateDeliveryWith(t, lateFixture(t, "assessment-complete.json"), "acct_7f3a9c", map[string]any{"test": true})
+	raw, headers := lateDeliveryWith(t, lateView(t, "assessment-complete.json"), "acct_7f3a9c", map[string]any{"test": true})
 	resolved := 0
-	ban := LateResultPolicy{components.RecommendationAllow: LateResultBan, components.RecommendationStepUp: LateResultBan, components.RecommendationReview: LateResultBan}
+	ban := LateResultPolicy{components.AccountDecisionAllow: LateResultBan, components.AccountDecisionStepUp: LateResultBan, components.AccountDecisionReview: LateResultBan}
 	for name, extra := range map[string]*LateResultOptions{
 		"UserID":        {Policy: ban, UserID: func(string, *Event) string { resolved++; return "user_01WORKOS" }},
 		"ResolveUserID": {Policy: ban, ResolveUserID: func(context.Context, string, *Event) (string, error) { resolved++; return "user_01WORKOS", nil }},
@@ -741,7 +771,7 @@ func TestWebhookTestEventActsOnNothing(t *testing.T) {
 func TestRepeatedDeliveryTreatsAProvider404AsDone(t *testing.T) {
 	// Every user and session is already gone, as after a first WorkOS ban deleted the user.
 	mock := startMock(t, func(c mockCall) (int, any) { return 404, map[string]string{"error": "not_found"} })
-	raw, headers := lateDelivery(t, lateFixture(t, "assessment-phone-uncovered-complete.json"), "user_gone")
+	raw, headers := lateDelivery(t, lateView(t, "assessment-phone-uncovered-complete.json"), "user_gone")
 	for _, provider := range []LateResultProvider{
 		&WorkOSActions{APIKey: "k", BaseURL: mock.URL},
 		&ClerkActions{SecretKey: "k", BaseURL: mock.URL + "/v1"},
@@ -749,7 +779,7 @@ func TestRepeatedDeliveryTreatsAProvider404AsDone(t *testing.T) {
 	} {
 		for _, action := range []LateResultAction{LateResultBan, LateResultRevokeSessions} {
 			for attempt := 0; attempt < 2; attempt++ {
-				policy := LateResultPolicy{components.RecommendationReview: action}
+				policy := LateResultPolicy{components.AccountDecisionReview: action}
 				result, err := HandleLateResult(context.Background(), raw, headers, lateSecrets, provider, lateOptions(&LateResultOptions{Policy: policy}))
 				if err != nil || result.Action != action || result.UserID != "user_gone" {
 					t.Fatalf("%s %s attempt %d: %+v, %v", provider.Name(), action, attempt, result, err)
@@ -785,7 +815,7 @@ func TestClerkSessionGoneBetweenListAndRevokeIsDoneAndOtherRefusalsStillFail(t *
 func TestResolveUserIDGetsTheContextAndItsErrorFailsTheDelivery(t *testing.T) {
 	mock := startMock(t, func(c mockCall) (int, any) { return 202, nil })
 	auth0 := &Auth0Actions{Token: "k", BaseURL: mock.URL + "/api/v2"}
-	raw, headers := lateDelivery(t, lateFixture(t, "assessment-phone-uncovered-complete.json"), "acct_7f3a9c")
+	raw, headers := lateDelivery(t, lateView(t, "assessment-phone-uncovered-complete.json"), "acct_7f3a9c")
 	type key struct{}
 	ctx := context.WithValue(context.Background(), key{}, "request")
 	storeDown := errors.New("store unavailable")
@@ -837,18 +867,18 @@ func TestLogOnlyActionsLogsWhatItWouldDoAndCallsNothing(t *testing.T) {
 	if logOnly.Name() != "log_only" {
 		t.Fatalf("Name() = %q", logOnly.Name())
 	}
-	raw, headers := lateDelivery(t, lateFixture(t, "assessment-phone-uncovered-complete.json"), "usr_8f2k1")
+	raw, headers := lateDelivery(t, lateView(t, "assessment-phone-uncovered-complete.json"), "usr_8f2k1")
 	ctx := context.Background()
 	revoked, err := HandleLateResult(ctx, raw, headers, lateSecrets, logOnly, lateOptions(nil))
 	if err != nil || revoked.Action != LateResultRevokeSessions || revoked.UserID != "usr_8f2k1" {
 		t.Fatalf("revoke: %+v, %v", revoked, err)
 	}
-	ban := LateResultPolicy{components.RecommendationReview: LateResultBan}
+	ban := LateResultPolicy{components.AccountDecisionReview: LateResultBan}
 	banned, err := HandleLateResult(ctx, raw, headers, lateSecrets, logOnly, lateOptions(&LateResultOptions{Policy: ban}))
 	if err != nil || banned.Action != LateResultBan {
 		t.Fatalf("ban: %+v, %v", banned, err)
 	}
-	testRaw, testHeaders := lateDeliveryWith(t, lateFixture(t, "assessment-phone-uncovered-complete.json"), "usr_8f2k1", map[string]any{"test": true})
+	testRaw, testHeaders := lateDeliveryWith(t, lateView(t, "assessment-phone-uncovered-complete.json"), "usr_8f2k1", map[string]any{"test": true})
 	if result, err := HandleLateResult(ctx, testRaw, testHeaders, lateSecrets, logOnly, lateOptions(nil)); err != nil || result.Action != LateResultNone {
 		t.Fatalf("test event: %+v, %v", result, err)
 	}

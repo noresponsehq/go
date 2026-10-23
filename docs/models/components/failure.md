@@ -6,7 +6,7 @@ Why the attempt failed: the URL is no longer valid, the host did not resolve, it
 
 ```go
 import (
-	"github.com/noresponsehq/go/v2/models/components"
+	"github.com/noresponsehq/go/v3/models/components"
 )
 
 value := components.FailureInvalidURL

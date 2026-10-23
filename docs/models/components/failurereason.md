@@ -6,7 +6,7 @@ Why a signal or source did not produce a definite found/not_found. timed_out mea
 
 ```go
 import (
-	"github.com/noresponsehq/go/v2/models/components"
+	"github.com/noresponsehq/go/v3/models/components"
 )
 
 value := components.FailureReasonTimedOut

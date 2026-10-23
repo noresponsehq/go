@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"iter"
 
-	"github.com/noresponsehq/go/v2/models/components"
+	"github.com/noresponsehq/go/v3/models/components"
 )
 
 // NewClient returns a client that authenticates with apiKey. It is New with
@@ -47,16 +47,16 @@ func NewIdempotencyKey() string {
 //		}
 //		fmt.Println(assessment.AssessmentID)
 //	}
-func AllAssessments(ctx context.Context, client *NoResponse, query components.AssessmentQuery) iter.Seq2[components.Assessment, error] {
-	return func(yield func(components.Assessment, error) bool) {
+func AllAssessments(ctx context.Context, client *NoResponse, query components.AssessmentQuery) iter.Seq2[components.AssessmentDetail, error] {
+	return func(yield func(components.AssessmentDetail, error) bool) {
 		if client == nil || client.Assessments == nil {
-			yield(components.Assessment{}, fmt.Errorf("noresponse: client is nil"))
+			yield(components.AssessmentDetail{}, fmt.Errorf("noresponse: client is nil"))
 			return
 		}
 		page, err := client.Assessments.Query(ctx, query)
 		for {
 			if err != nil {
-				yield(components.Assessment{}, err)
+				yield(components.AssessmentDetail{}, err)
 				return
 			}
 			for _, item := range page.Result.Items {

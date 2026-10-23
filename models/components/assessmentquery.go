@@ -1,7 +1,7 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v2/internal/utils"
+	"github.com/noresponsehq/go/v3/internal/utils"
 )
 
 // AssessmentQuery - POST /v1/assessments/query body. account_id travels in the body rather than the URL path so a provider value that turns out to hold personal data is not written to access logs, proxies or browser history. Read-only: no Idempotency-Key. An account with no unexpired assessments answers 200 with empty items.

@@ -10,14 +10,14 @@ import (
 	"regexp"
 	"testing"
 
-	"github.com/noresponsehq/go/v2/models/components"
+	"github.com/noresponsehq/go/v3/models/components"
 )
 
 func TestNewClientSendsTheKeyAsBearer(t *testing.T) {
 	var auth string
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		auth = r.Header.Get("Authorization")
-		body, err := os.ReadFile(filepath.Join("tests", "fixtures", "valid", "assessment-complete.json"))
+		body, err := os.ReadFile(filepath.Join("tests", "fixtures", "valid", "assessment-view-complete.json"))
 		if err != nil {
 			t.Fatal(err)
 		}

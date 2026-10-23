@@ -28,27 +28,27 @@
     },
     {
       "file": "valid/assessment-complete.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "valid"
     },
     {
       "file": "valid/assessment-complete-timed-out-lane.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "valid"
     },
     {
       "file": "valid/assessment-partial.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "valid"
     },
     {
       "file": "valid/assessment-mixed-identifier.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "valid"
     },
     {
       "file": "valid/assessment-pending.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "valid"
     },
     {
@@ -213,22 +213,22 @@
     },
     {
       "file": "valid/assessment-phone-only-pending.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "valid"
     },
     {
       "file": "valid/assessment-phone-uncovered-complete.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "valid"
     },
     {
       "file": "valid/assessment-auth-context.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "valid"
     },
     {
       "file": "valid/assessment-auth-context-hook.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "valid"
     },
     {
@@ -588,7 +588,7 @@
     },
     {
       "file": "invalid/response-deny-recommendation.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "invalid",
       "errors": [
         [
@@ -600,7 +600,7 @@
     },
     {
       "file": "invalid/response-numeric-score.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "invalid",
       "errors": [
         [
@@ -612,7 +612,7 @@
     },
     {
       "file": "invalid/response-numeric-confidence.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "invalid",
       "errors": [
         [
@@ -624,7 +624,7 @@
     },
     {
       "file": "invalid/response-missing-policy-version.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "invalid",
       "errors": [
         [
@@ -636,7 +636,7 @@
     },
     {
       "file": "invalid/response-tenant-id.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "invalid",
       "errors": [
         [
@@ -648,7 +648,7 @@
     },
     {
       "file": "invalid/response-raw-breach-value.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "invalid",
       "errors": [
         [
@@ -660,7 +660,7 @@
     },
     {
       "file": "invalid/response-auth-context-token-id.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "invalid",
       "errors": [
         [
@@ -672,7 +672,7 @@
     },
     {
       "file": "invalid/response-auth-context-hook-no-hook-point.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "invalid",
       "errors": [
         [
@@ -684,7 +684,7 @@
     },
     {
       "file": "invalid/response-auth-context-hook-verified.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "invalid",
       "errors": [
         [
@@ -696,7 +696,7 @@
     },
     {
       "file": "invalid/response-auth-context-backend-hook-point.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "invalid",
       "errors": [
         [
@@ -708,7 +708,7 @@
     },
     {
       "file": "invalid/response-timeout-encoded-as-not-found.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "invalid",
       "errors": [
         [
@@ -720,7 +720,7 @@
     },
     {
       "file": "invalid/response-complete-with-incomplete-sources.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "invalid",
       "errors": [
         [
@@ -732,7 +732,7 @@
     },
     {
       "file": "invalid/response-partial-without-incomplete-sources.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "invalid",
       "errors": [
         [
@@ -744,7 +744,7 @@
     },
     {
       "file": "invalid/response-pending-with-recommendation.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "invalid",
       "errors": [
         [
@@ -756,7 +756,7 @@
     },
     {
       "file": "invalid/response-pending-without-incomplete-sources.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "invalid",
       "errors": [
         [
@@ -768,7 +768,7 @@
     },
     {
       "file": "invalid/response-found-without-evidence-ref.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "invalid",
       "errors": [
         [
@@ -780,7 +780,7 @@
     },
     {
       "file": "invalid/response-missing-freshness.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "invalid",
       "errors": [
         [
@@ -792,7 +792,7 @@
     },
     {
       "file": "invalid/response-found-with-unknown-freshness.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "invalid",
       "errors": [
         [
@@ -804,7 +804,7 @@
     },
     {
       "file": "invalid/response-unavailable-with-observed-at.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "invalid",
       "errors": [
         [
@@ -816,7 +816,7 @@
     },
     {
       "file": "invalid/response-unknown-outcome.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "invalid",
       "errors": [
         [
@@ -828,7 +828,7 @@
     },
     {
       "file": "invalid/response-incomplete-insufficient-evidence.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "invalid",
       "errors": [
         [
@@ -840,7 +840,7 @@
     },
     {
       "file": "invalid/response-incomplete-names-source.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "invalid",
       "errors": [
         [
@@ -856,7 +856,7 @@
     },
     {
       "file": "invalid/response-request-id-trailing-newline.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "invalid",
       "errors": [
         [
@@ -868,42 +868,42 @@
     },
     {
       "file": "invalid/response-failure-as-not-found.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "semantic_invalid",
       "rule": "incomplete_lane_without_signal:phone",
       "why": "REL-001 a pair in incomplete_sources reported not_found"
     },
     {
       "file": "invalid/response-unlisted-timeout.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "semantic_invalid",
       "rule": "unsettled_source_not_listed:phone_src_04:phone",
       "why": "REL-001 a timed-out pair must be listed in incomplete_sources"
     },
     {
       "file": "invalid/response-mixed-identifier-failure-as-not-found.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "semantic_invalid",
       "rule": "incomplete_lane_without_signal:accounts",
       "why": "REL-001 per identifier: github settled for email but timed out for username, so its username signal cannot be not_found"
     },
     {
       "file": "invalid/response-mixed-identifier-unlisted.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "semantic_invalid",
       "rule": "unsettled_lane_not_listed:phone",
       "why": "REL-001 every unsettled (source, identifier) pair is listed"
     },
     {
       "file": "invalid/response-incomplete-source-without-signal.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "semantic_invalid",
       "rule": "incomplete_lane_without_signal:accounts",
       "why": "REL-001 a partial status rests on a real, signalled gap"
     },
     {
       "file": "invalid/response-duplicate-incomplete-source.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "semantic_invalid",
       "rule": "duplicate_incomplete_lane:phone",
       "why": "REL-001 one entry per (source, identifier)"
@@ -958,11 +958,11 @@
       "errors": [
         [
           "additionalProperties",
-          "/data/incomplete_sources/0"
+          "/data/detail/incomplete_sources/0"
         ],
         [
           "required",
-          "/data/incomplete_sources/0"
+          "/data/detail/incomplete_sources/0"
         ]
       ],
       "why": "§5.1 incomplete_sources names a lane, never a source"
@@ -1010,10 +1010,6 @@
       "errors": [
         [
           "additionalProperties",
-          "/data"
-        ],
-        [
-          "not",
           "/data"
         ],
         [
@@ -1137,28 +1133,28 @@
     },
     {
       "file": "invalid/response-phone-not-found-synchronously.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "semantic_invalid",
       "rule": "async_only_not_deferred:phone_src_04:phone",
       "why": "CR-05 REL-001 phone is async-only: the synchronous answer never reports it not_found"
     },
     {
       "file": "invalid/response-phone-timed-out-synchronously.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "semantic_invalid",
       "rule": "async_only_not_deferred:phone_src_04:phone",
       "why": "CR-05 phone was never attempted synchronously, so it is deferred, not timed out"
     },
     {
       "file": "invalid/response-unregistered-signal-type.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "semantic_invalid",
       "rule": "unregistered_signal_type:device_reputation",
       "why": "CR-11 a signal type must be in the reviewed registry"
     },
     {
       "file": "invalid/response-expiry-beyond-max-retention.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "semantic_invalid",
       "rule": "expiry_beyond_max_retention",
       "why": "CR-06 DATA-007 a record lives at most 365 days from its creation"
@@ -1208,33 +1204,33 @@
     },
     {
       "file": "invalid/response-deferred-not-unavailable.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "semantic_invalid",
       "rule": "deferred_not_unavailable:phone_src_04:phone",
       "why": "CR-05 deferred marks an unattempted pair, so its outcome is unavailable"
     },
     {
       "file": "invalid/response-deferred-email.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "semantic_invalid",
       "rule": "deferred_on_sync_kind:account_presence:github:email",
       "why": "CR-05 only async-only kinds are deferred; email runs on the synchronous path"
     },
     {
       "file": "invalid/response-phone-coverage-deferred.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "semantic_invalid",
       "rule": "coverage_deferred:coverage-unavailable:phone",
       "why": "NOR-112 a phone with no source offered has nothing queued, so it is unavailable and the answer settles, never deferred"
     },
     {
       "file": "valid/assessment-phone-enrichment-facts.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "valid"
     },
     {
       "file": "invalid/response-phone-enrichment-provider.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "invalid",
       "errors": [
         [
@@ -1246,7 +1242,7 @@
     },
     {
       "file": "invalid/response-phone-enrichment-provider-score.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "invalid",
       "errors": [
         [
@@ -1258,7 +1254,7 @@
     },
     {
       "file": "invalid/response-phone-enrichment-provider-verdict.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "invalid",
       "errors": [
         [
@@ -1270,22 +1266,22 @@
     },
     {
       "file": "valid/assessment-risk.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "valid"
     },
     {
       "file": "valid/assessment-risk-tenant-override.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "valid"
     },
     {
       "file": "valid/assessment-risk-block.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "valid"
     },
     {
       "file": "invalid/response-block-without-threshold.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "invalid",
       "errors": [
         [
@@ -1297,7 +1293,7 @@
     },
     {
       "file": "invalid/response-block-threshold-zero.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "invalid",
       "errors": [
         [
@@ -1309,14 +1305,14 @@
     },
     {
       "file": "invalid/response-block-mismatch.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "semantic_invalid",
       "rule": "risk_block_mismatch",
       "why": "NOR-289 block is exactly score >= block_threshold"
     },
     {
       "file": "invalid/response-policy-version-bad-suffix.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "invalid",
       "errors": [
         [
@@ -1328,7 +1324,7 @@
     },
     {
       "file": "invalid/response-risk-score-over-100.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "invalid",
       "errors": [
         [
@@ -1340,7 +1336,7 @@
     },
     {
       "file": "invalid/response-risk-unknown-reason.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "invalid",
       "errors": [
         [
@@ -1352,7 +1348,7 @@
     },
     {
       "file": "invalid/response-risk-reason-names-source.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "invalid",
       "errors": [
         [
@@ -1364,7 +1360,7 @@
     },
     {
       "file": "invalid/response-risk-on-pending.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "invalid",
       "errors": [
         [
@@ -1376,42 +1372,42 @@
     },
     {
       "file": "valid/assessment-standard-phone-only.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "valid",
       "response_mode": "standard",
       "why": "spec §5.1 standard view of a phone-only assessment once phone settled: no signals[], phone facts only, nothing claimed about lanes that did not run"
     },
     {
       "file": "valid/assessment-standard-breach-only.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "valid",
       "response_mode": "standard",
       "why": "spec §5.1 §6.7 breach facts for the email in the standard view: counts, years and exposed kinds, never a value"
     },
     {
       "file": "valid/assessment-standard-mixed.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "valid",
       "response_mode": "standard",
       "why": "spec §5.1 the standard example: every lane's summary, consistency and the breach reasons, no signals[]"
     },
     {
       "file": "valid/assessment-standard-truncated.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "valid",
       "response_mode": "standard",
       "why": "spec §6.3 a truncated username result is found with absence claims withheld (name unknown); a standard partial lists its incomplete pair without signals[]"
     },
     {
       "file": "valid/assessment-detailed.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "valid",
       "response_mode": "detailed",
       "why": "spec §5.2 the detailed view adds signals[] and risk.details: breach tables by display name and kind, breach names and phone names"
     },
     {
       "file": "invalid/response-breach-plaintext-password.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "invalid",
       "errors": [
         [
@@ -1423,7 +1419,7 @@
     },
     {
       "file": "invalid/response-breach-raw-record.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "invalid",
       "errors": [
         [
@@ -1435,7 +1431,7 @@
     },
     {
       "file": "invalid/response-breach-exposed-value.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "invalid",
       "errors": [
         [
@@ -1447,7 +1443,7 @@
     },
     {
       "file": "invalid/response-breached-boolean.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "invalid",
       "errors": [
         [
@@ -1459,7 +1455,7 @@
     },
     {
       "file": "invalid/response-breach-unknown-kind.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "invalid",
       "errors": [
         [
@@ -1471,7 +1467,7 @@
     },
     {
       "file": "invalid/response-breaches-over-cap.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "invalid",
       "errors": [
         [
@@ -1483,7 +1479,7 @@
     },
     {
       "file": "invalid/response-breach-truncated-not-found.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "invalid",
       "errors": [
         [
@@ -1495,7 +1491,7 @@
     },
     {
       "file": "invalid/response-breach-not-found-with-years.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "invalid",
       "errors": [
         [
@@ -1507,7 +1503,7 @@
     },
     {
       "file": "invalid/response-ip-unknown-type.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "invalid",
       "errors": [
         [
@@ -1519,7 +1515,7 @@
     },
     {
       "file": "invalid/response-consistency-country-match.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "invalid",
       "errors": [
         [
@@ -1531,7 +1527,7 @@
     },
     {
       "file": "invalid/response-reason-device-identifier.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "invalid",
       "errors": [
         [
@@ -1543,7 +1539,7 @@
     },
     {
       "file": "invalid/response-reason-old-breach-history.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "invalid",
       "errors": [
         [
@@ -1555,7 +1551,7 @@
     },
     {
       "file": "invalid/response-details-without-signals.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "invalid",
       "errors": [
         [
@@ -1567,7 +1563,7 @@
     },
     {
       "file": "invalid/response-standard-with-signals.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "semantic_invalid",
       "rule": "signals_in_standard_mode",
       "response_mode": "standard",
@@ -1575,7 +1571,7 @@
     },
     {
       "file": "invalid/response-detailed-without-signals.json",
-      "schema": "assessment.schema.json",
+      "schema": "assessment-detail.schema.json",
       "expect": "semantic_invalid",
       "rule": "detailed_without_signals",
       "response_mode": "detailed",
@@ -2815,6 +2811,108 @@
         ]
       ],
       "why": "a key belongs to exactly one environment, named by the caller"
+    },
+    {
+      "file": "valid/assessment-view-complete.json",
+      "schema": "assessment.schema.json",
+      "expect": "valid",
+      "response_mode": "standard"
+    },
+    {
+      "file": "valid/assessment-view-partial.json",
+      "schema": "assessment.schema.json",
+      "expect": "valid",
+      "response_mode": "standard"
+    },
+    {
+      "file": "valid/assessment-view-pending.json",
+      "schema": "assessment.schema.json",
+      "expect": "valid",
+      "response_mode": "standard"
+    },
+    {
+      "file": "valid/assessment-view-pending-known-account.json",
+      "schema": "assessment.schema.json",
+      "expect": "valid",
+      "response_mode": "standard"
+    },
+    {
+      "file": "valid/assessment-view-login-quick.json",
+      "schema": "assessment.schema.json",
+      "expect": "valid",
+      "response_mode": "standard"
+    },
+    {
+      "file": "valid/assessment-view-block.json",
+      "schema": "assessment.schema.json",
+      "expect": "valid",
+      "response_mode": "detailed"
+    },
+    {
+      "file": "valid/assessment-view-detailed.json",
+      "schema": "assessment.schema.json",
+      "expect": "valid",
+      "response_mode": "detailed"
+    },
+    {
+      "file": "invalid/assessment-view-missing-detail.json",
+      "schema": "assessment.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "required",
+          ""
+        ]
+      ],
+      "why": "NOR-350 the assessment carries its own facts under detail"
+    },
+    {
+      "file": "invalid/assessment-view-unknown-flow.json",
+      "schema": "assessment.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "enum",
+          "/flow"
+        ]
+      ],
+      "why": "NOR-350 flows are signup, login and purchase"
+    },
+    {
+      "file": "invalid/assessment-view-risk-at-top.json",
+      "schema": "assessment.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "additionalProperties",
+          ""
+        ]
+      ],
+      "why": "NOR-350 this assessment's own score is detail.risk; the account's is account.risk"
+    },
+    {
+      "file": "invalid/request-missing-flow.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "required",
+          ""
+        ]
+      ],
+      "why": "NOR-350 every assessment names its flow"
+    },
+    {
+      "file": "invalid/request-flow-in-policy-context.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "additionalProperties",
+          "/policy_context"
+        ]
+      ],
+      "why": "NOR-350 flow moved to the top level"
     }
   ]
 }

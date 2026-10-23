@@ -1,7 +1,7 @@
 package operations
 
 import (
-	"github.com/noresponsehq/go/v2/models/components"
+	"github.com/noresponsehq/go/v3/models/components"
 )
 
 type DeleteAssessmentRequest struct {

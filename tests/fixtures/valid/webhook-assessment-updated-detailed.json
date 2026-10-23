@@ -4,108 +4,141 @@
   "created_at": "2026-10-14T09:00:02.000Z",
   "data": {
     "schema_version": "1",
-    "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
-    "account_id": "acct_7f3a9c",
-    "request_id": "req-2026-10-14-0001",
-    "policy_version": "heuristic-2026-10.1",
-    "policy_basis": "heuristic_unvalidated",
-    "assessment_version": 2,
-    "created_at": "2026-10-14T09:00:00.000Z",
-    "updated_at": "2026-10-14T09:00:02.000Z",
-    "expires_at": "2027-10-14T09:00:00.000Z",
-    "timing": {
-      "deadline_ms": 300,
-      "elapsed_ms": 2000
-    },
+    "id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
     "status": "complete",
-    "recommendation": "step_up",
-    "confidence": "medium",
-    "risk": {
-      "score": 50,
-      "band": "medium",
-      "recommendation": "step_up",
-      "block": false,
-      "confidence": "medium",
-      "policy_version": "risk-2026-10.1",
-      "policy_basis": "heuristic_unvalidated",
-      "reasons": [
-        {
-          "code": "no_digital_footprint",
-          "weight": 35
-        },
-        {
-          "code": "new_email",
-          "weight": 15,
-          "identifier": "email"
-        }
-      ],
-      "summary": {
-        "email": {
-          "disposable": false,
-          "accounts_found": 0,
-          "breach": {
-            "found": false
-          }
-        },
-        "phone": {
-          "line_type": "mobile",
-          "country": "US"
-        }
-      },
-      "coverage": {
-        "answered": 4,
-        "failed": 0,
-        "pending": 0
-      },
-      "details": {
-        "phone_names": [
+    "flow": "signup",
+    "depth": "full",
+    "account": {
+      "schema_version": "1",
+      "id": "acct_7f3a9c",
+      "risk": {
+        "score": 50,
+        "decision": "step_up",
+        "reasons": [
           {
-            "value": "Jane Doe",
-            "seen_by": 2
+            "code": "no_digital_footprint",
+            "weight": 35
+          },
+          {
+            "code": "new_email",
+            "weight": 15,
+            "identifier": "email"
           }
         ]
-      }
+      },
+      "decisions_by_flow": {
+        "signup": "step_up",
+        "login": "step_up",
+        "purchase": "step_up"
+      },
+      "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+      "updated_at": "2026-10-14T09:00:02.000Z"
     },
-    "signals": [
-      {
-        "type": "account_presence",
-        "identifier": "email",
-        "outcome": "found",
-        "source_id": "src_5f0c2a9e41b7d3086c1e2f4a",
-        "evidence_ref": "evr_01JA2Z8K6Q4V7W9XBCDEFGHJKN",
-        "observed_at": "2026-10-14T09:00:00.210Z",
-        "last_checked_at": "2026-10-14T09:00:00.210Z",
-        "freshness": "fresh"
+    "detail": {
+      "schema_version": "1",
+      "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+      "account_id": "acct_7f3a9c",
+      "request_id": "req-2026-10-14-0001",
+      "policy_version": "heuristic-2026-10.1",
+      "policy_basis": "heuristic_unvalidated",
+      "assessment_version": 2,
+      "created_at": "2026-10-14T09:00:00.000Z",
+      "updated_at": "2026-10-14T09:00:02.000Z",
+      "expires_at": "2027-10-14T09:00:00.000Z",
+      "timing": {
+        "deadline_ms": 300,
+        "elapsed_ms": 2000
       },
-      {
-        "type": "account_presence",
-        "identifier": "username",
-        "outcome": "not_found",
-        "source_id": "src_a17d93c0e2b54f6810d9c3e7",
-        "last_checked_at": "2026-10-14T09:00:00.190Z",
-        "freshness": "fresh"
+      "status": "complete",
+      "recommendation": "step_up",
+      "confidence": "medium",
+      "risk": {
+        "score": 50,
+        "band": "medium",
+        "recommendation": "step_up",
+        "block": false,
+        "confidence": "medium",
+        "policy_version": "risk-2026-10.1",
+        "policy_basis": "heuristic_unvalidated",
+        "reasons": [
+          {
+            "code": "no_digital_footprint",
+            "weight": 35
+          },
+          {
+            "code": "new_email",
+            "weight": 15,
+            "identifier": "email"
+          }
+        ],
+        "summary": {
+          "email": {
+            "disposable": false,
+            "accounts_found": 0,
+            "breach": {
+              "found": false
+            }
+          },
+          "phone": {
+            "line_type": "mobile",
+            "country": "US"
+          }
+        },
+        "coverage": {
+          "answered": 4,
+          "failed": 0,
+          "pending": 0
+        },
+        "details": {
+          "phone_names": [
+            {
+              "value": "Jane Doe",
+              "seen_by": 2
+            }
+          ]
+        }
       },
-      {
-        "type": "breach_exposure",
-        "identifier": "email",
-        "outcome": "found",
-        "source_id": "src_3be80f1d7c26a945e0b1d872",
-        "evidence_ref": "evr_01JA2Z8K6Q4V7W9XBCDEFGHJKP",
-        "observed_at": "2025-03-02T00:00:00Z",
-        "last_checked_at": "2026-10-14T09:00:00.150Z",
-        "freshness": "stale"
-      },
-      {
-        "type": "account_presence",
-        "identifier": "phone",
-        "outcome": "found",
-        "source_id": "src_c94e1b7a0f3d2e58b6a1c049",
-        "evidence_ref": "evr_01JA2Z8K6Q4V7W9XBCDEFGHJKQ",
-        "observed_at": "2026-10-14T09:00:01.800Z",
-        "last_checked_at": "2026-10-14T09:00:01.800Z",
-        "freshness": "fresh"
-      }
-    ],
-    "incomplete_sources": []
+      "signals": [
+        {
+          "type": "account_presence",
+          "identifier": "email",
+          "outcome": "found",
+          "source_id": "src_5f0c2a9e41b7d3086c1e2f4a",
+          "evidence_ref": "evr_01JA2Z8K6Q4V7W9XBCDEFGHJKN",
+          "observed_at": "2026-10-14T09:00:00.210Z",
+          "last_checked_at": "2026-10-14T09:00:00.210Z",
+          "freshness": "fresh"
+        },
+        {
+          "type": "account_presence",
+          "identifier": "username",
+          "outcome": "not_found",
+          "source_id": "src_a17d93c0e2b54f6810d9c3e7",
+          "last_checked_at": "2026-10-14T09:00:00.190Z",
+          "freshness": "fresh"
+        },
+        {
+          "type": "breach_exposure",
+          "identifier": "email",
+          "outcome": "found",
+          "source_id": "src_3be80f1d7c26a945e0b1d872",
+          "evidence_ref": "evr_01JA2Z8K6Q4V7W9XBCDEFGHJKP",
+          "observed_at": "2025-03-02T00:00:00Z",
+          "last_checked_at": "2026-10-14T09:00:00.150Z",
+          "freshness": "stale"
+        },
+        {
+          "type": "account_presence",
+          "identifier": "phone",
+          "outcome": "found",
+          "source_id": "src_c94e1b7a0f3d2e58b6a1c049",
+          "evidence_ref": "evr_01JA2Z8K6Q4V7W9XBCDEFGHJKQ",
+          "observed_at": "2026-10-14T09:00:01.800Z",
+          "last_checked_at": "2026-10-14T09:00:01.800Z",
+          "freshness": "fresh"
+        }
+      ],
+      "incomplete_sources": []
+    }
   }
 }

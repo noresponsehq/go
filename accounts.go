@@ -4,13 +4,13 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"github.com/noresponsehq/go/v2/internal/config"
-	"github.com/noresponsehq/go/v2/internal/hooks"
-	"github.com/noresponsehq/go/v2/internal/utils"
-	"github.com/noresponsehq/go/v2/models/apierrors"
-	"github.com/noresponsehq/go/v2/models/components"
-	"github.com/noresponsehq/go/v2/models/operations"
-	"github.com/noresponsehq/go/v2/retry"
+	"github.com/noresponsehq/go/v3/internal/config"
+	"github.com/noresponsehq/go/v3/internal/hooks"
+	"github.com/noresponsehq/go/v3/internal/utils"
+	"github.com/noresponsehq/go/v3/models/apierrors"
+	"github.com/noresponsehq/go/v3/models/components"
+	"github.com/noresponsehq/go/v3/models/operations"
+	"github.com/noresponsehq/go/v3/retry"
 	"github.com/spyzhov/ajson"
 	"net/http"
 	"strconv"
@@ -33,7 +33,7 @@ func newAccounts(rootSDK *NoResponse, sdkConfig config.SDKConfiguration, hooks *
 }
 
 // Get - Read an account's one current risk.
-// An account is the account_id you send with your assessments. Its current risk is the risk of its latest assessment with a decision (status complete or partial), scored as GET /v1/assessments/{assessment_id} scores that assessment, with a decision for each flow. Every assessment updates its account: once an assessment completes, the account carries its risk. Requires the history scope. Read-only and safe to retry. An account with no unexpired assessment that has a decision answers 404 not_found, and a malformed account_id answers 400 invalid_request.
+// An account is the account_id you send with your assessments. Its current risk is the risk of its latest assessment with a decision (status complete or partial), scored as GET /v1/assessments/{assessment_id} scores that assessment, with a decision for each flow; risk.decision is the decision for the flow of that assessment. Every assessment answers with this same account. Every assessment updates its account: once an assessment completes, the account carries its risk. Requires the history scope. Read-only and safe to retry. An account with no unexpired assessment that has a decision answers 404 not_found, and a malformed account_id answers 400 invalid_request.
 func (s *Accounts) Get(ctx context.Context, accountID string, opts ...operations.Option) (*operations.GetAccountResponse, error) {
 	request := operations.GetAccountRequest{
 		AccountID: accountID,

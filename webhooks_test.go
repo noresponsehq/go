@@ -12,7 +12,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/noresponsehq/go/v2/models/components"
+	"github.com/noresponsehq/go/v3/models/components"
 )
 
 type signatureVector struct {
@@ -87,11 +87,11 @@ func TestSignatureVectorYieldsTypedAssessment(t *testing.T) {
 	if event.Type != EventAssessmentUpdated || event.ID != v.Headers["NR-Webhook-Id"] || event.CreatedAt != "2026-10-14T09:00:02.000Z" {
 		t.Fatalf("envelope %+v", event)
 	}
-	if assessment.AssessmentID != "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM" || assessment.AssessmentVersion != 2 {
+	if assessment.ID != "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM" || assessment.Detail.AssessmentVersion != 2 {
 		t.Fatalf("assessment %+v", assessment)
 	}
-	if assessment.Risk == nil || assessment.Risk.Recommendation != components.RecommendationStepUp {
-		t.Fatalf("risk %+v", assessment.Risk)
+	if assessment.Account == nil || assessment.Account.Risk.Decision != components.AccountDecisionStepUp {
+		t.Fatalf("account %+v", assessment.Account)
 	}
 	if event.Expired() {
 		t.Fatal("a complete assessment is not the expiry event")
@@ -140,7 +140,7 @@ func TestRefusals(t *testing.T) {
 }
 
 func TestRotationAndEventID(t *testing.T) {
-	complete := fixture(t, "valid/assessment-complete.json", nil)
+	complete := fixture(t, "valid/assessment-view-complete.json", nil)
 	const stamp = "1791968402"
 	body, _ := json.Marshal(map[string]any{"id": "evt_01JA2ZB4N5P6Q7R8S9T0VWXYZ2", "type": "assessment.updated", "created_at": "2026-10-18T11:00:04Z", "data": json.RawMessage(complete)})
 	both := map[string]string{"whk_sdktest01": "old-secret", "whk_sdktest02": "new-secret"}
@@ -159,6 +159,13 @@ func TestRotationAndEventID(t *testing.T) {
 	pointer, _ := json.Marshal(map[string]any{"id": "evt_01JA2ZB4N5P6Q7R8S9T0VWXYZ2", "type": "assessment.updated", "created_at": "2026-10-18T11:00:04Z",
 		"data": map[string]any{"assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM", "assessment_url": "/v1/assessments/x"}})
 	_, err = ConstructEvent(pointer, sign(t, pointer, "new-secret", stamp, "evt_01JA2ZB4N5P6Q7R8S9T0VWXYZ2", "whk_sdktest02"), both, at(1791968402))
+	wantCode(t, err, "invalid_payload")
+
+	// A bare assessment detail, without the account and detail envelope, is
+	// not an assessment either.
+	flat, _ := json.Marshal(map[string]any{"id": "evt_01JA2ZB4N5P6Q7R8S9T0VWXYZ2", "type": "assessment.updated", "created_at": "2026-10-18T11:00:04Z",
+		"data": json.RawMessage(fixture(t, "valid/assessment-complete.json", nil))})
+	_, err = ConstructEvent(flat, sign(t, flat, "new-secret", stamp, "evt_01JA2ZB4N5P6Q7R8S9T0VWXYZ2", "whk_sdktest02"), both, at(1791968402))
 	wantCode(t, err, "invalid_payload")
 }
 

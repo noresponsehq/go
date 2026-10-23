@@ -6,7 +6,7 @@ Client platform. Closed vocabulary keeps integrations stable.
 
 ```go
 import (
-	"github.com/noresponsehq/go/v2/models/components"
+	"github.com/noresponsehq/go/v3/models/components"
 )
 
 value := components.PlatformWeb

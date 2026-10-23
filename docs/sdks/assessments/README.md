@@ -14,7 +14,7 @@ Signup and gateway assessments.
 
 ## Create
 
-Returns within the deadline (3000 ms at most) with a complete, partial or pending assessment: 200 carries complete or partial, 202 carries pending with Location and Retry-After. A pending answer has no recommendation; apply your own fallback for pending, 429, 503 or a timeout. risk.block says when your block threshold was reached. Requires the assess scope. Idempotency-Key is required and is bound to the body for 24 hours: the same key with the same body replays the latest assessment with Idempotent-Replayed: true and starts no new work; the same key with a different body answers 409 idempotency_key_reused. response_mode defaults to standard; detailed needs the detailed scope.
+Assesses one signup, login or purchase (flow) and answers with the account's one current risk: account.risk.decision is the decision for this flow (allow, step_up, review or block, where block means your block threshold was reached), and detail holds this assessment's own facts. depth sets how long the answer waits for sources: quick waits only for the fast ones (500 ms), full for the whole budget (3000 ms at most); it defaults to full for signup and purchase and quick for login. 200 carries complete or partial, 202 carries pending with Location and Retry-After. While the account's first assessment is pending, account is absent: apply your own fallback for that, 429, 503 or a timeout. NoResponse blocks nothing itself; you decide. Requires the assess scope. Idempotency-Key is required and is bound to the body for 24 hours: the same key with the same body replays the latest assessment with Idempotent-Replayed: true and starts no new work; the same key with a different body answers 409 idempotency_key_reused. response_mode defaults to standard; detailed needs the detailed scope.
 
 ### Example Usage: complete
 
@@ -25,8 +25,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v2"
-	"github.com/noresponsehq/go/v2/models/components"
+	noresponse "github.com/noresponsehq/go/v3"
+	"github.com/noresponsehq/go/v3/models/components"
 	"log"
 )
 
@@ -39,6 +39,7 @@ func main() {
 
     res, err := s.Assessments.Create(ctx, "signup-acct_7f3a9c", components.AssessmentRequest{
         AccountID: "acct_7f3a9c",
+        Flow: components.FlowSignup,
         Identifiers: components.AssessmentRequestIdentifiers{
             Email: noresponse.Pointer("new.user@example.com"),
             Username: noresponse.Pointer("new.user"),
@@ -76,7 +77,7 @@ func main() {
             SessionCreatedAt: noresponse.Pointer("2026-10-14T08:57:00.000Z"),
             AuthTime: noresponse.Pointer("2026-10-14T08:55:00.000Z"),
             AccountCreatedAt: noresponse.Pointer("2026-10-14T08:56:00.000Z"),
-            Verified: false,
+            Verified: true,
             Mfa: &components.AuthContextMfa{
                 Methods: []string{
                     "totp",
@@ -110,8 +111,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v2"
-	"github.com/noresponsehq/go/v2/models/components"
+	noresponse "github.com/noresponsehq/go/v3"
+	"github.com/noresponsehq/go/v3/models/components"
 	"log"
 )
 
@@ -124,6 +125,7 @@ func main() {
 
     res, err := s.Assessments.Create(ctx, "signup-acct_7f3a9c", components.AssessmentRequest{
         AccountID: "acct_7f3a9c",
+        Flow: components.FlowSignup,
         Identifiers: components.AssessmentRequestIdentifiers{
             Email: noresponse.Pointer("new.user@example.com"),
             Username: noresponse.Pointer("new.user"),
@@ -161,7 +163,7 @@ func main() {
             SessionCreatedAt: noresponse.Pointer("2026-10-14T08:57:00.000Z"),
             AuthTime: noresponse.Pointer("2026-10-14T08:55:00.000Z"),
             AccountCreatedAt: noresponse.Pointer("2026-10-14T08:56:00.000Z"),
-            Verified: false,
+            Verified: true,
             Mfa: &components.AuthContextMfa{
                 Methods: []string{
                     "totp",
@@ -195,8 +197,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v2"
-	"github.com/noresponsehq/go/v2/models/components"
+	noresponse "github.com/noresponsehq/go/v3"
+	"github.com/noresponsehq/go/v3/models/components"
 	"log"
 )
 
@@ -209,7 +211,7 @@ func main() {
 
     res, err := s.Assessments.Create(ctx, "signup-acct_7f3a9c", components.AssessmentRequest{
         AccountID: "acct_7f3a9c",
-        Flow: components.AssessmentFlowSignup.ToPointer(),
+        Flow: components.FlowSignup,
         Identifiers: components.AssessmentRequestIdentifiers{
             Email: noresponse.Pointer("new.user@example.com"),
             Username: noresponse.Pointer("new_user_42"),
@@ -229,17 +231,17 @@ func main() {
     }
 }
 ```
-### Example Usage: minimal
+### Example Usage: login
 
-<!-- UsageSnippet language="go" operationID="createAssessment" method="post" path="/v1/assessments" example="minimal" -->
+<!-- UsageSnippet language="go" operationID="createAssessment" method="post" path="/v1/assessments" example="login" -->
 ```go
 package main
 
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v2"
-	"github.com/noresponsehq/go/v2/models/components"
+	noresponse "github.com/noresponsehq/go/v3"
+	"github.com/noresponsehq/go/v3/models/components"
 	"log"
 )
 
@@ -252,7 +254,93 @@ func main() {
 
     res, err := s.Assessments.Create(ctx, "signup-acct_7f3a9c", components.AssessmentRequest{
         AccountID: "acct_7f3a9c",
-        Flow: components.AssessmentFlowSignup.ToPointer(),
+        Flow: components.FlowSignup,
+        Identifiers: components.AssessmentRequestIdentifiers{
+            Email: noresponse.Pointer("new.user@example.com"),
+            Username: noresponse.Pointer("new.user"),
+            Phone: noresponse.Pointer("+61412345678"),
+            Name: noresponse.Pointer("Alex Example"),
+            IP: noresponse.Pointer("203.0.113.45"),
+        },
+        PolicyContext: &components.AssessmentRequestPolicyContext{
+            Region: noresponse.Pointer("AU"),
+        },
+        RequestID: noresponse.Pointer("req-2026-10-14-0001"),
+        ClientContext: &components.AssessmentRequestClientContext{
+            Timezone: noresponse.Pointer("Australia/Sydney"),
+            Locale: noresponse.Pointer("en-AU"),
+            AppVersion: noresponse.Pointer("4.12.0"),
+            UserAgent: noresponse.Pointer("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36"),
+            DeviceID: noresponse.Pointer("dev_5c1e8a"),
+            SessionID: noresponse.Pointer("sess_9b2d41"),
+            ClientObservedAt: noresponse.Pointer("2026-10-14T08:59:58.000Z"),
+        },
+        AuthContext: &components.AuthContext{
+            Provider: "clerk",
+            Issuer: "https://example-app.clerk.accounts.dev",
+            Audience: noresponse.Pointer("https://app.example.com"),
+            Audiences: []string{
+                "https://app.example.com",
+            },
+            Subject: "user_2EXAMPLE",
+            SessionID: noresponse.Pointer("sess_2EXAMPLE"),
+            OrganizationID: noresponse.Pointer("org_2EXAMPLE"),
+            TenantID: noresponse.Pointer("tenant_2EXAMPLE"),
+            TokenID: noresponse.Pointer("2EXAMPLEJTI"),
+            IssuedAt: noresponse.Pointer("2026-10-14T08:59:40.000Z"),
+            ExpiresAt: noresponse.Pointer("2026-10-14T09:00:40.000Z"),
+            SessionCreatedAt: noresponse.Pointer("2026-10-14T08:57:00.000Z"),
+            AuthTime: noresponse.Pointer("2026-10-14T08:55:00.000Z"),
+            AccountCreatedAt: noresponse.Pointer("2026-10-14T08:56:00.000Z"),
+            Verified: true,
+            Mfa: &components.AuthContextMfa{
+                Methods: []string{
+                    "totp",
+                },
+            },
+            Roles: []string{
+                "admin",
+            },
+            Scopes: []string{
+                "org:sys_profile:manage",
+            },
+        },
+        IssuedCredential: &components.AssessmentRequestIssuedCredential{
+            Sha256: "2bdbf5c72f2a36df0ef40fb92203612274d4546f56dba946070a6a79c2401a1b",
+        },
+    })
+    if err != nil {
+        log.Fatal(err)
+    }
+    if res != nil {
+        // handle response
+    }
+}
+```
+### Example Usage: minimal
+
+<!-- UsageSnippet language="go" operationID="createAssessment" method="post" path="/v1/assessments" example="minimal" -->
+```go
+package main
+
+import(
+	"context"
+	"os"
+	noresponse "github.com/noresponsehq/go/v3"
+	"github.com/noresponsehq/go/v3/models/components"
+	"log"
+)
+
+func main() {
+    ctx := context.Background()
+
+    s := noresponse.New(
+        noresponse.WithSecurity(os.Getenv("NORESPONSE_API_KEY")),
+    )
+
+    res, err := s.Assessments.Create(ctx, "signup-acct_7f3a9c", components.AssessmentRequest{
+        AccountID: "acct_7f3a9c",
+        Flow: components.FlowSignup,
         Identifiers: components.AssessmentRequestIdentifiers{
             Email: noresponse.Pointer("new.user@example.com"),
         },
@@ -274,8 +362,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v2"
-	"github.com/noresponsehq/go/v2/models/components"
+	noresponse "github.com/noresponsehq/go/v3"
+	"github.com/noresponsehq/go/v3/models/components"
 	"log"
 )
 
@@ -288,7 +376,7 @@ func main() {
 
     res, err := s.Assessments.Create(ctx, "signup-acct_7f3a9c", components.AssessmentRequest{
         AccountID: "acct_8412",
-        Flow: components.AssessmentFlowSignup.ToPointer(),
+        Flow: components.FlowSignup,
         Identifiers: components.AssessmentRequestIdentifiers{
             Email: noresponse.Pointer("jane.doe@example.com"),
             Username: noresponse.Pointer("janedoe"),
@@ -320,8 +408,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v2"
-	"github.com/noresponsehq/go/v2/models/components"
+	noresponse "github.com/noresponsehq/go/v3"
+	"github.com/noresponsehq/go/v3/models/components"
 	"log"
 )
 
@@ -334,6 +422,7 @@ func main() {
 
     res, err := s.Assessments.Create(ctx, "signup-acct_7f3a9c", components.AssessmentRequest{
         AccountID: "acct_7f3a9c",
+        Flow: components.FlowSignup,
         Identifiers: components.AssessmentRequestIdentifiers{
             Email: noresponse.Pointer("new.user@example.com"),
             Username: noresponse.Pointer("new.user"),
@@ -371,92 +460,7 @@ func main() {
             SessionCreatedAt: noresponse.Pointer("2026-10-14T08:57:00.000Z"),
             AuthTime: noresponse.Pointer("2026-10-14T08:55:00.000Z"),
             AccountCreatedAt: noresponse.Pointer("2026-10-14T08:56:00.000Z"),
-            Verified: false,
-            Mfa: &components.AuthContextMfa{
-                Methods: []string{
-                    "totp",
-                },
-            },
-            Roles: []string{
-                "admin",
-            },
-            Scopes: []string{
-                "org:sys_profile:manage",
-            },
-        },
-        IssuedCredential: &components.AssessmentRequestIssuedCredential{
-            Sha256: "2bdbf5c72f2a36df0ef40fb92203612274d4546f56dba946070a6a79c2401a1b",
-        },
-    })
-    if err != nil {
-        log.Fatal(err)
-    }
-    if res != nil {
-        // handle response
-    }
-}
-```
-### Example Usage: standard
-
-<!-- UsageSnippet language="go" operationID="createAssessment" method="post" path="/v1/assessments" example="standard" -->
-```go
-package main
-
-import(
-	"context"
-	"os"
-	noresponse "github.com/noresponsehq/go/v2"
-	"github.com/noresponsehq/go/v2/models/components"
-	"log"
-)
-
-func main() {
-    ctx := context.Background()
-
-    s := noresponse.New(
-        noresponse.WithSecurity(os.Getenv("NORESPONSE_API_KEY")),
-    )
-
-    res, err := s.Assessments.Create(ctx, "signup-acct_7f3a9c", components.AssessmentRequest{
-        AccountID: "acct_7f3a9c",
-        Identifiers: components.AssessmentRequestIdentifiers{
-            Email: noresponse.Pointer("new.user@example.com"),
-            Username: noresponse.Pointer("new.user"),
-            Phone: noresponse.Pointer("+61412345678"),
-            Name: noresponse.Pointer("Alex Example"),
-            IP: noresponse.Pointer("203.0.113.45"),
-        },
-        PolicyContext: &components.AssessmentRequestPolicyContext{
-            Region: noresponse.Pointer("AU"),
-        },
-        RequestID: noresponse.Pointer("req-2026-10-14-0001"),
-        ClientContext: &components.AssessmentRequestClientContext{
-            Timezone: noresponse.Pointer("Australia/Sydney"),
-            Locale: noresponse.Pointer("en-AU"),
-            AppVersion: noresponse.Pointer("4.12.0"),
-            UserAgent: noresponse.Pointer("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36"),
-            DeviceID: noresponse.Pointer("dev_5c1e8a"),
-            SessionID: noresponse.Pointer("sess_9b2d41"),
-            ClientObservedAt: noresponse.Pointer("2026-10-14T08:59:58.000Z"),
-        },
-        AuthContext: &components.AuthContext{
-            Provider: "clerk",
-            Issuer: "https://example-app.clerk.accounts.dev",
-            Audience: noresponse.Pointer("https://app.example.com"),
-            Audiences: []string{
-                "https://app.example.com",
-            },
-            Subject: "user_2EXAMPLE",
-            SessionID: noresponse.Pointer("sess_2EXAMPLE"),
-            OrganizationID: noresponse.Pointer("org_2EXAMPLE"),
-            TenantID: noresponse.Pointer("tenant_2EXAMPLE"),
-            TokenID: noresponse.Pointer("2EXAMPLEJTI"),
-            IssuedAt: noresponse.Pointer("2026-10-14T08:59:40.000Z"),
-            ExpiresAt: noresponse.Pointer("2026-10-14T09:00:40.000Z"),
-            SessionCreatedAt: noresponse.Pointer("2026-10-14T08:57:00.000Z"),
-            AuthTime: noresponse.Pointer("2026-10-14T08:55:00.000Z"),
-            AccountCreatedAt: noresponse.Pointer("2026-10-14T08:56:00.000Z"),
-            Verified: false,
+            Verified: true,
             Mfa: &components.AuthContextMfa{
                 Methods: []string{
                     "totp",
@@ -509,7 +513,7 @@ func main() {
 
 ## Get
 
-Returns the highest assessment_version. Requires the assess or history scope. While status is pending, or partial with a source still running, the response carries Retry-After; poll no faster than it says. Another tenant's assessment, an unknown or expired assessment and a malformed assessment_id all answer 404 not_found. response_mode=detailed needs the detailed scope.
+Returns the highest assessment_version, with the account's current risk. Requires the assess or history scope. While status is pending, or partial with a source still running, the response carries Retry-After; poll no faster than it says. Another tenant's assessment, an unknown or expired assessment and a malformed assessment_id all answer 404 not_found. response_mode=detailed needs the detailed scope.
 
 ### Example Usage: complete
 
@@ -520,7 +524,7 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v2"
+	noresponse "github.com/noresponsehq/go/v3"
 	"log"
 )
 
@@ -549,7 +553,36 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v2"
+	noresponse "github.com/noresponsehq/go/v3"
+	"log"
+)
+
+func main() {
+    ctx := context.Background()
+
+    s := noresponse.New(
+        noresponse.WithSecurity(os.Getenv("NORESPONSE_API_KEY")),
+    )
+
+    res, err := s.Assessments.Get(ctx, "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM", nil)
+    if err != nil {
+        log.Fatal(err)
+    }
+    if res != nil {
+        // handle response
+    }
+}
+```
+### Example Usage: login
+
+<!-- UsageSnippet language="go" operationID="getAssessment" method="get" path="/v1/assessments/{assessment_id}" example="login" -->
+```go
+package main
+
+import(
+	"context"
+	"os"
+	noresponse "github.com/noresponsehq/go/v3"
 	"log"
 )
 
@@ -578,7 +611,7 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v2"
+	noresponse "github.com/noresponsehq/go/v3"
 	"log"
 )
 
@@ -607,7 +640,7 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v2"
+	noresponse "github.com/noresponsehq/go/v3"
 	"log"
 )
 
@@ -627,16 +660,16 @@ func main() {
     }
 }
 ```
-### Example Usage: standard
+### Example Usage: pending_known_account
 
-<!-- UsageSnippet language="go" operationID="getAssessment" method="get" path="/v1/assessments/{assessment_id}" example="standard" -->
+<!-- UsageSnippet language="go" operationID="getAssessment" method="get" path="/v1/assessments/{assessment_id}" example="pending_known_account" -->
 ```go
 package main
 
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v2"
+	noresponse "github.com/noresponsehq/go/v3"
 	"log"
 )
 
@@ -695,7 +728,7 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v2"
+	noresponse "github.com/noresponsehq/go/v3"
 	"log"
 )
 
@@ -724,7 +757,7 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v2"
+	noresponse "github.com/noresponsehq/go/v3"
 	"log"
 )
 
@@ -782,8 +815,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v2"
-	"github.com/noresponsehq/go/v2/models/components"
+	noresponse "github.com/noresponsehq/go/v3"
+	"github.com/noresponsehq/go/v3/models/components"
 	"log"
 )
 
@@ -817,8 +850,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v2"
-	"github.com/noresponsehq/go/v2/models/components"
+	noresponse "github.com/noresponsehq/go/v3"
+	"github.com/noresponsehq/go/v3/models/components"
 	"log"
 )
 
@@ -852,8 +885,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v2"
-	"github.com/noresponsehq/go/v2/models/components"
+	noresponse "github.com/noresponsehq/go/v3"
+	"github.com/noresponsehq/go/v3/models/components"
 	"log"
 )
 
@@ -915,8 +948,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v2"
-	"github.com/noresponsehq/go/v2/models/components"
+	noresponse "github.com/noresponsehq/go/v3"
+	"github.com/noresponsehq/go/v3/models/components"
 	"log"
 )
 
@@ -959,8 +992,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v2"
-	"github.com/noresponsehq/go/v2/models/components"
+	noresponse "github.com/noresponsehq/go/v3"
+	"github.com/noresponsehq/go/v3/models/components"
 	"log"
 )
 

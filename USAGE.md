@@ -11,8 +11,8 @@ import (
 	"log"
 	"os"
 
-	noresponse "github.com/noresponsehq/go/v2"
-	"github.com/noresponsehq/go/v2/models/components"
+	noresponse "github.com/noresponsehq/go/v3"
+	"github.com/noresponsehq/go/v3/models/components"
 )
 
 func main() {
@@ -24,6 +24,7 @@ func main() {
 
 	res, err := client.Assessments.Create(context.Background(), key, components.AssessmentRequest{
 		AccountID: "acct_7f3a9c",
+		Flow:      components.FlowSignup,
 		Identifiers: components.AssessmentRequestIdentifiers{
 			Email: noresponse.Pointer("new.user@example.com"),
 		},
@@ -33,11 +34,11 @@ func main() {
 	}
 
 	assessment := res.Result
-	if assessment.Status == components.StatusPending {
-		// No recommendation yet. Apply your own fallback, then wait for the
-		// webhook or call noresponse.WaitForAssessment.
+	if assessment.Account == nil {
+		// The account's first assessment is still pending. Apply your own
+		// fallback, then wait for the webhook or call noresponse.WaitForAssessment.
 		return
 	}
-	fmt.Println(*assessment.Recommendation, assessment.Risk.Score)
+	fmt.Println(assessment.Account.Risk.Decision, assessment.Account.Risk.Score)
 }
 ```

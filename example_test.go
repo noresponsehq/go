@@ -10,9 +10,9 @@ import (
 	"net/http"
 	"os"
 
-	noresponse "github.com/noresponsehq/go/v2"
-	"github.com/noresponsehq/go/v2/models/apierrors"
-	"github.com/noresponsehq/go/v2/models/components"
+	noresponse "github.com/noresponsehq/go/v3"
+	"github.com/noresponsehq/go/v3/models/apierrors"
+	"github.com/noresponsehq/go/v3/models/components"
 )
 
 // These examples are compiled by go test and shown on pkg.go.dev. They have
@@ -24,6 +24,7 @@ func Example() {
 
 	res, err := client.Assessments.Create(ctx, noresponse.NewIdempotencyKey(), components.AssessmentRequest{
 		AccountID: "acct_7f3a9c",
+		Flow:      components.FlowSignup,
 		Identifiers: components.AssessmentRequestIdentifiers{
 			Email: noresponse.Pointer("new.user@example.com"),
 		},
@@ -33,12 +34,19 @@ func Example() {
 	}
 
 	assessment := res.Result
-	if assessment.Status == components.StatusPending {
-		// No recommendation yet: wait for the webhook or poll, and apply your
-		// own fallback in the meantime.
+	if assessment.Account == nil {
+		// The account's first assessment is still pending: wait for the
+		// webhook or poll, and apply your own fallback in the meantime.
 		return
 	}
-	fmt.Println(*assessment.Recommendation, assessment.Risk.Score)
+	switch assessment.Account.Risk.Decision {
+	case components.AccountDecisionBlock:
+		fmt.Println("block")
+	case components.AccountDecisionReview, components.AccountDecisionStepUp:
+		fmt.Println("challenge", assessment.Account.Risk.Score)
+	default:
+		fmt.Println("allow")
+	}
 }
 
 func ExampleAssessments_Get() {
@@ -128,7 +136,7 @@ func ExampleConstructEvent() {
 		}
 		switch data := event.Data.(type) {
 		case *components.Assessment:
-			fmt.Println(data.AssessmentID, data.AssessmentVersion)
+			fmt.Println(data.ID, data.Detail.AssessmentVersion)
 		case *noresponse.EndpointVerification:
 			body, err := noresponse.VerificationResponse(event)
 			if err != nil {

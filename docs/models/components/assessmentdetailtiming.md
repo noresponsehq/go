@@ -1,4 +1,4 @@
-# AssessmentTiming
+# AssessmentDetailTiming
 
 
 ## Fields

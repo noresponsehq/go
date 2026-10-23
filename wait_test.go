@@ -10,14 +10,14 @@ import (
 	"testing"
 	"time"
 
-	"github.com/noresponsehq/go/v2/models/components"
+	"github.com/noresponsehq/go/v3/models/components"
 )
 
 func TestWaitForAssessmentReturnsSettledResponse(t *testing.T) {
 	var calls int
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		calls++
-		body, err := os.ReadFile(filepath.Join("tests", "fixtures", "valid", "assessment-complete.json"))
+		body, err := os.ReadFile(filepath.Join("tests", "fixtures", "valid", "assessment-view-complete.json"))
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -39,7 +39,7 @@ func TestWaitForAssessmentReturnsSettledResponse(t *testing.T) {
 
 func TestWaitForAssessmentTimesOutWithLastPendingResponse(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		body, err := os.ReadFile(filepath.Join("tests", "fixtures", "valid", "assessment-pending.json"))
+		body, err := os.ReadFile(filepath.Join("tests", "fixtures", "valid", "assessment-view-pending.json"))
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -82,7 +82,7 @@ func serveFixtures(t *testing.T, names ...string) (*httptest.Server, *int) {
 }
 
 func TestWaitForAssessmentKeepsPollingPartialUntilComplete(t *testing.T) {
-	server, calls := serveFixtures(t, "assessment-partial.json", "assessment-partial.json", "assessment-complete.json")
+	server, calls := serveFixtures(t, "assessment-view-partial.json", "assessment-view-partial.json", "assessment-view-complete.json")
 	client := New(WithServerURL(server.URL), WithSecurity("nrk_test_kkkkkkkkkkkkkkkkkkkk"))
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -96,7 +96,7 @@ func TestWaitForAssessmentKeepsPollingPartialUntilComplete(t *testing.T) {
 }
 
 func TestWaitForAssessmentReturnsLatestPartialAtTimeout(t *testing.T) {
-	server, calls := serveFixtures(t, "assessment-pending.json", "assessment-partial.json")
+	server, calls := serveFixtures(t, "assessment-view-pending.json", "assessment-view-partial.json")
 	client := New(WithServerURL(server.URL), WithSecurity("nrk_test_kkkkkkkkkkkkkkkkkkkk"))
 	ctx, cancel := context.WithTimeout(context.Background(), 2500*time.Millisecond)
 	defer cancel()

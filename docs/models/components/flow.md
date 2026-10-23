@@ -1,23 +1,25 @@
 # Flow
 
-The provider flow the assessment gates. Use the top-level flow instead; this member is ignored when the top-level flow is present. Absent means signup.
+The customer event an assessment is made for: signup (a new account), login (a returning sign-in) or purchase (a payment or credit grant). The account's risk is reported with the decision for this flow.
 
 ## Example Usage
 
 ```go
 import (
-	"github.com/noresponsehq/go/v2/models/components"
+	"github.com/noresponsehq/go/v3/models/components"
 )
 
 value := components.FlowSignup
+
+// Open enum: custom values can be created with a direct type cast
+custom := components.Flow("custom_value")
 ```
 
 
 ## Values
 
-| Name                | Value               |
-| ------------------- | ------------------- |
-| `FlowSignup`        | signup              |
-| `FlowLogin`         | login               |
-| `FlowRecovery`      | recovery            |
-| `FlowProfileChange` | profile_change      |
+| Name           | Value          |
+| -------------- | -------------- |
+| `FlowSignup`   | signup         |
+| `FlowLogin`    | login          |
+| `FlowPurchase` | purchase       |

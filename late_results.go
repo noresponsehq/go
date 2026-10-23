@@ -3,7 +3,7 @@ package noresponse
 // Late-result handlers. Hand-written beside the generated client.
 //
 // An assessment can be revised after the signup was allowed: a slow source
-// settles and the recommendation rises. NoResponse sends the new version as a
+// settles and the account's decision rises. NoResponse sends the new version as a
 // signed assessment.updated webhook. HandleLateResult verifies that delivery
 // with ConstructEvent, picks an action from your policy and acts through the
 // auth provider's admin API: revoke the user's sessions or ban the user.
@@ -26,7 +26,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/noresponsehq/go/v2/models/components"
+	"github.com/noresponsehq/go/v3/models/components"
 )
 
 // LateResultAction is what to do to the user. LateResultBan also ends every session.
@@ -38,17 +38,19 @@ const (
 	LateResultBan            LateResultAction = "ban"
 )
 
-// LateResultPolicy maps each recommendation to an action. A recommendation
-// left out does nothing.
-type LateResultPolicy map[components.Recommendation]LateResultAction
+// LateResultPolicy maps each account decision (account.risk.decision) to an
+// action. A decision left out does nothing.
+type LateResultPolicy map[components.AccountDecision]LateResultAction
 
-// DefaultLateResultPolicy revokes sessions on review and does nothing on allow
-// or step_up. Banning is opt-in. It returns a fresh map each call.
+// DefaultLateResultPolicy revokes sessions on review and block and does
+// nothing on allow or step_up. Banning is opt-in. It returns a fresh map each
+// call.
 func DefaultLateResultPolicy() LateResultPolicy {
 	return LateResultPolicy{
-		components.RecommendationAllow:  LateResultNone,
-		components.RecommendationStepUp: LateResultNone,
-		components.RecommendationReview: LateResultRevokeSessions,
+		components.AccountDecisionAllow:  LateResultNone,
+		components.AccountDecisionStepUp: LateResultNone,
+		components.AccountDecisionReview: LateResultRevokeSessions,
+		components.AccountDecisionBlock:  LateResultRevokeSessions,
 	}
 }
 
@@ -83,7 +85,7 @@ type LateResultActor interface {
 
 // LateResultOptions adjusts HandleLateResult. The zero value is valid.
 type LateResultOptions struct {
-	// Policy maps recommendation to action. Nil means DefaultLateResultPolicy.
+	// Policy maps account decision to action. Nil means DefaultLateResultPolicy.
 	Policy LateResultPolicy
 	// ResolveUserID returns the provider user id for the assessment's account
 	// id, such as from your user store. It gets the context HandleLateResult
@@ -132,9 +134,9 @@ type ProviderActionError struct {
 func (e *ProviderActionError) Error() string { return "noresponse: " + e.Message }
 
 // LateResultActionFor is the action your policy names for a verified event.
-// Only a served assessment with a recommendation can act; a test event from
-// WebhookEndpoints.SendTestEvent never does. A nil policy means
-// DefaultLateResultPolicy.
+// Only a decided assessment (complete or partial) that carries the account's
+// decision can act; a test event from WebhookEndpoints.SendTestEvent never does. A nil policy
+// means DefaultLateResultPolicy.
 func LateResultActionFor(event *Event, policy LateResultPolicy) (LateResultAction, error) {
 	if event == nil || event.Type != EventAssessmentUpdated || event.Test {
 		return LateResultNone, nil
@@ -146,19 +148,17 @@ func LateResultActionFor(event *Event, policy LateResultPolicy) (LateResultActio
 	if policy == nil {
 		policy = DefaultLateResultPolicy()
 	}
-	var recommendation components.Recommendation
-	switch {
-	case assessment.Recommendation != nil:
-		recommendation = *assessment.Recommendation
-	case assessment.Risk != nil:
-		recommendation = assessment.Risk.Recommendation
+	// A pending assessment carries the decision of an earlier one, or none.
+	if assessment.Status == components.StatusPending || assessment.Account == nil {
+		return LateResultNone, nil
 	}
-	switch recommendation {
-	case components.RecommendationAllow, components.RecommendationStepUp, components.RecommendationReview:
+	decision := assessment.Account.Risk.Decision
+	switch decision {
+	case components.AccountDecisionAllow, components.AccountDecisionStepUp, components.AccountDecisionReview, components.AccountDecisionBlock:
 	default:
 		return LateResultNone, nil
 	}
-	action, ok := policy[recommendation]
+	action, ok := policy[decision]
 	if !ok || action == "" {
 		return LateResultNone, nil
 	}
@@ -192,14 +192,14 @@ func HandleLateResult(ctx context.Context, payload []byte, headers http.Header, 
 	if action == LateResultNone || !ok {
 		return &LateResult{Event: event, Action: LateResultNone}, nil
 	}
-	userID := assessment.AccountID
+	userID := assessment.Detail.AccountID
 	switch {
 	case options.ResolveUserID != nil:
-		if userID, err = options.ResolveUserID(ctx, assessment.AccountID, event); err != nil {
+		if userID, err = options.ResolveUserID(ctx, assessment.Detail.AccountID, event); err != nil {
 			return nil, err
 		}
 	case options.UserID != nil:
-		userID = options.UserID(assessment.AccountID, event)
+		userID = options.UserID(assessment.Detail.AccountID, event)
 	}
 	if userID == "" {
 		return &LateResult{Event: event, Action: LateResultNone}, nil

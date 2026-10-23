@@ -16,7 +16,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/noresponsehq/go/v2/models/components"
+	"github.com/noresponsehq/go/v3/models/components"
 )
 
 // DefaultWebhookTolerance is how far a delivery's timestamp may be from now.
@@ -92,7 +92,7 @@ type AccountDeleted struct {
 // for endpoint.verification and *AccountDeleted for account.deleted.
 // Deliveries are at least
 // once and unordered: deduplicate on ID and keep the highest
-// AssessmentVersion per assessment.
+// Detail.AssessmentVersion per assessment.
 //
 //	switch data := event.Data.(type) {
 //	case *components.Assessment:
@@ -241,8 +241,13 @@ func eventData(eventType string, raw json.RawMessage) (any, error) {
 			return &expired, nil
 		}
 		var assessment components.Assessment
-		if json.Unmarshal(raw, &assessment) != nil || !hasRequiredFields(raw, assessmentRequired) || !incompleteSourcesComplete(raw) ||
-			!webhookAssessmentID.MatchString(assessment.AssessmentID) || !webhookAccountID.MatchString(assessment.AccountID) {
+		var envelope struct {
+			Detail json.RawMessage `json:"detail"`
+		}
+		if json.Unmarshal(raw, &assessment) != nil || json.Unmarshal(raw, &envelope) != nil ||
+			!hasRequiredFields(raw, assessmentRequired) || !hasRequiredFields(envelope.Detail, assessmentDetailRequired) ||
+			!incompleteSourcesComplete(envelope.Detail) || !webhookAssessmentID.MatchString(assessment.ID) ||
+			assessment.Detail.AssessmentID != assessment.ID || !webhookAccountID.MatchString(assessment.Detail.AccountID) {
 			return nil, webhookError("invalid_payload", "webhook data is not an assessment")
 		}
 		return &assessment, nil
@@ -269,11 +274,15 @@ func incompleteSourcesComplete(raw json.RawMessage) bool {
 	return true
 }
 
-// assessmentRequired is every field components.Assessment always carries:
-// the ones whose json tag is neither omitzero nor omitempty. The generated
-// decoder does not check them, so a pointer such as {assessment_id,
-// assessment_url} would otherwise decode as an assessment.
-var assessmentRequired = requiredJSONFields(reflect.TypeFor[components.Assessment]())
+// assessmentRequired and assessmentDetailRequired are every field
+// components.Assessment and its detail always carry: the ones whose json tag
+// is neither omitzero nor omitempty. The generated decoder does not check
+// them, so a pointer such as {assessment_id, assessment_url} would otherwise
+// decode as an assessment.
+var (
+	assessmentRequired       = requiredJSONFields(reflect.TypeFor[components.Assessment]())
+	assessmentDetailRequired = requiredJSONFields(reflect.TypeFor[components.AssessmentDetail]())
+)
 
 func requiredJSONFields(t reflect.Type) []string {
 	var names []string

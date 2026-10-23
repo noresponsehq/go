@@ -7,7 +7,7 @@ Call it from your server only. The API key must never reach a browser or an app.
 ## Install
 
 ```sh
-go get github.com/noresponsehq/go/v2
+go get github.com/noresponsehq/go/v3
 ```
 
 Go 1.24 or later.
@@ -23,8 +23,8 @@ import (
 	"log"
 	"os"
 
-	noresponse "github.com/noresponsehq/go/v2"
-	"github.com/noresponsehq/go/v2/models/components"
+	noresponse "github.com/noresponsehq/go/v3"
+	"github.com/noresponsehq/go/v3/models/components"
 )
 
 func main() {
@@ -32,6 +32,7 @@ func main() {
 
 	res, err := client.Assessments.Create(context.Background(), noresponse.NewIdempotencyKey(), components.AssessmentRequest{
 		AccountID: "acct_7f3a9c",
+		Flow:      components.FlowSignup,
 		Identifiers: components.AssessmentRequestIdentifiers{
 			Email: noresponse.Pointer("new.user@example.com"),
 		},
@@ -41,18 +42,18 @@ func main() {
 	}
 
 	assessment := res.Result
-	if assessment.Status == components.StatusPending {
-		// No recommendation yet. Apply your own fallback, then wait for the
-		// webhook or call noresponse.WaitForAssessment.
+	if assessment.Account == nil {
+		// The account's first assessment is still pending. Apply your own
+		// fallback, then wait for the webhook or call noresponse.WaitForAssessment.
 		return
 	}
-	fmt.Println(*assessment.Recommendation, assessment.Risk.Score)
+	fmt.Println(assessment.Account.Risk.Decision, assessment.Account.Risk.Score)
 }
 ```
 
 `NewClient` reads nothing from the environment itself; pass the key. `noresponse.New()` with no key option reads `NORESPONSE_API_KEY`.
 
-The recommendation is `allow`, `step_up` or `review`. It is advice: your application decides what to do. A `pending` assessment has no recommendation, and a 429, a 503 or a timeout also needs your own fallback.
+Every request names its `Flow`: `components.FlowSignup`, `FlowLogin` or `FlowPurchase`. Act on `assessment.Account.Risk.Decision`: `allow`, `step_up`, `review` or `block`, where `block` means your block threshold was reached. The assessment's own facts (score, recommendation, signals, `AssessmentVersion`) are under `assessment.Detail`. `Account` is nil while the account's first assessment is pending, and a 429, a 503 or a timeout also needs your own fallback.
 
 Every method takes a `context.Context` first. Cancelling it cancels the request and any retry wait.
 
@@ -105,7 +106,7 @@ case err != nil:
 }
 ```
 
-The typed errors are `BadRequestError` (400), `AuthenticationError` (401), `PermissionDeniedError` (403), `NotFoundError` (404), `ConflictError` (409) and `RateLimitError` (429), all in `github.com/noresponsehq/go/v2/models/apierrors`. Any other status is an `*apierrors.APIStatusError`.
+The typed errors are `BadRequestError` (400), `AuthenticationError` (401), `PermissionDeniedError` (403), `NotFoundError` (404), `ConflictError` (409) and `RateLimitError` (429), all in `github.com/noresponsehq/go/v3/models/apierrors`. Any other status is an `*apierrors.APIStatusError`.
 
 ## Retries and timeouts
 
@@ -181,7 +182,7 @@ http.HandleFunc("/webhooks/noresponse", func(w http.ResponseWriter, r *http.Requ
 		if event.Test {
 			break // SendTestEvent's fixed example assessment: apply nothing
 		}
-		// The full assessment, as Get returns it.
+		// The full assessment, as Get returns it: act on data.Account.Risk.Decision.
 	case *noresponse.AssessmentExpired:
 		// Delete what you hold for data.AssessmentID.
 	case *noresponse.AccountDeleted:
@@ -200,18 +201,18 @@ http.HandleFunc("/webhooks/noresponse", func(w http.ResponseWriter, r *http.Requ
 })
 ```
 
-Deliveries arrive at least once and unordered. Deduplicate on `event.ID` and keep the highest `AssessmentVersion` per assessment.
+Deliveries arrive at least once and unordered. Deduplicate on `event.ID` and keep the highest `Detail.AssessmentVersion` per assessment.
 
 ### Late results
 
-An assessment can rise after the signup was allowed. `HandleLateResult` verifies the `assessment.updated` delivery with `ConstructEvent`, applies a policy (default: revoke sessions on `review`) and acts through your auth provider:
+An assessment can rise after the signup was allowed. `HandleLateResult` verifies the `assessment.updated` delivery with `ConstructEvent`, applies a policy to `Account.Risk.Decision` (default: revoke sessions on `review` and `block`) and acts through your auth provider:
 
 ```go
 provider := &noresponse.ClerkActions{SecretKey: os.Getenv("CLERK_SECRET_KEY")} // or WorkOSActions, Auth0Actions
 result, err := noresponse.HandleLateResult(r.Context(), payload, r.Header, secrets, provider, nil)
 ```
 
-`LateResultOptions` sets `Policy` (recommendation to `LateResultNone`, `LateResultRevokeSessions` or `LateResultBan`), `ResolveUserID` (account id to provider user id, with the context; an error it returns fails the delivery so it is retried) and `Webhook` options. A test event from `SendTestEvent` acts on nothing. A refusal from the provider is a `*ProviderActionError`; answer 5xx so the delivery is retried. A provider 404 means the user or session is already gone and counts as done, so a repeated delivery is safe. WorkOS has no block, so its ban deletes the user permanently.
+`LateResultOptions` sets `Policy` (account decision to `LateResultNone`, `LateResultRevokeSessions` or `LateResultBan`), `ResolveUserID` (account id to provider user id, with the context; an error it returns fails the delivery so it is retried) and `Webhook` options. A test event from `SendTestEvent` acts on nothing. A refusal from the provider is a `*ProviderActionError`; answer 5xx so the delivery is retried. A provider 404 means the user or session is already gone and counts as done, so a repeated delivery is safe. WorkOS has no block, so its ban deletes the user permanently.
 
 If your app has its own login, `&noresponse.LogOnlyActions{}` logs what it would revoke or ban (an Info record on `slog.Default()`, or set `Logger`) and calls nothing. Use it to try the handler, then write your own `LateResultProvider`: `Name()`, `RevokeSessions(ctx, userID)` and `Ban(ctx, userID)`.
 
