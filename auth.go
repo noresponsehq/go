@@ -298,7 +298,7 @@ func authMapRule(claims map[string]any, rule authRule) any {
 		}
 	case "marker":
 		for _, test := range rule.When {
-			if value := authLookup(claims, test.Claim); value != nil && value == test.Equals {
+			if authScalarEqual(authLookup(claims, test.Claim), test.Equals) {
 				return rule.Value
 			}
 		}
@@ -306,6 +306,25 @@ func authMapRule(claims map[string]any, rule authRule) any {
 		panic("noresponse: unknown claim map op " + rule.Op)
 	}
 	return nil
+}
+
+// authScalarEqual reports whether a claim equals a marker's JSON scalar.
+// A plain == on two any values panics when both hold the same map or slice
+// type, and a token can put an object or an array in any claim, so only
+// values of the same scalar type are compared and anything else never matches.
+func authScalarEqual(claim, want any) bool {
+	switch want := want.(type) {
+	case string:
+		got, ok := claim.(string)
+		return ok && got == want
+	case bool:
+		got, ok := claim.(bool)
+		return ok && got == want
+	case float64:
+		got, ok := claim.(float64)
+		return ok && got == want
+	}
+	return false
 }
 
 // authNormalise turns any JSON-shaped value (map, struct, json.RawMessage)
