@@ -1,0 +1,10 @@
+{
+  "id": "evt_01JA2ZE5N6P7Q8R9S0T1VWXYZ4",
+  "type": "account.deleted",
+  "created_at": "2026-10-23T09:00:00.000Z",
+  "data": {
+    "account_id": "acct_7f3a9c",
+    "assessments_deleted": 3,
+    "deleted_at": "2026-10-23T09:00:00.000Z"
+  }
+}

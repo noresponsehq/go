@@ -196,6 +196,44 @@ func TestExpiredAndVerificationEvents(t *testing.T) {
 	}
 }
 
+func TestAccountDeletedEvent(t *testing.T) {
+	const stamp = "1791968402"
+	secrets := map[string]string{"whk_sdktest01": "secret"}
+	erased := fixture(t, "valid/webhook-account-deleted.json", nil)
+	event, err := ConstructEvent(erased, sign(t, erased, "secret", stamp, "evt_01JA2ZE5N6P7Q8R9S0T1VWXYZ4", "whk_sdktest01"), secrets, at(1791968402))
+	if err != nil {
+		t.Fatal(err)
+	}
+	deleted, ok := event.Data.(*AccountDeleted)
+	if !ok || event.Type != EventAccountDeleted || event.Expired() || event.Test {
+		t.Fatalf("event %+v", event)
+	}
+	if *deleted != (AccountDeleted{AccountID: "acct_7f3a9c", AssessmentsDeleted: 3, DeletedAt: "2026-10-23T09:00:00.000Z"}) {
+		t.Fatalf("data %+v", deleted)
+	}
+	if _, err := VerificationResponse(event); err == nil {
+		t.Fatal("an account.deleted event has no challenge")
+	}
+	for _, mutate := range []func(map[string]any){
+		func(data map[string]any) { data["assessments_deleted"] = 0 },
+		func(data map[string]any) { data["assessments_deleted"] = 1.5 },
+		func(data map[string]any) { data["account_id"] = "jane@example.com" },
+		func(data map[string]any) { data["deleted_at"] = "tomorrow" },
+	} {
+		var body map[string]any
+		if err := json.Unmarshal(erased, &body); err != nil {
+			t.Fatal(err)
+		}
+		mutate(body["data"].(map[string]any))
+		raw, err := json.Marshal(body)
+		if err != nil {
+			t.Fatal(err)
+		}
+		_, err = ConstructEvent(raw, sign(t, raw, "secret", stamp, body["id"].(string), "whk_sdktest01"), secrets, at(1791968402))
+		wantCode(t, err, "invalid_payload")
+	}
+}
+
 // The API adds fields without a new version, so a signed event that carries
 // keys this SDK does not know still verifies.
 func TestUnknownFieldsAreAccepted(t *testing.T) {
@@ -204,6 +242,7 @@ func TestUnknownFieldsAreAccepted(t *testing.T) {
 		"invalid/webhook-tenant-id.json",
 		"invalid/webhook-identifier-leak.json",
 		"invalid/webhook-expired-with-assessment-url.json",
+		"invalid/webhook-account-deleted-assessment-id.json",
 	} {
 		raw := fixture(t, name, nil)
 		var body map[string]any
@@ -225,6 +264,7 @@ func TestContractInvalidFixturesAndMalformedIdentifiersAreRefused(t *testing.T) 
 		"invalid/webhook-update-pointer-only.json",
 		"invalid/webhook-update-with-expired-status.json",
 		"invalid/webhook-verification-without-challenge.json",
+		"invalid/webhook-account-deleted-none.json",
 	} {
 		t.Run(name, func(t *testing.T) {
 			raw := fixture(t, name, nil)

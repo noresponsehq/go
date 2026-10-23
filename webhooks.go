@@ -26,6 +26,7 @@ const DefaultWebhookTolerance = 300 * time.Second
 const (
 	EventAssessmentUpdated    = "assessment.updated"
 	EventEndpointVerification = "endpoint.verification"
+	EventAccountDeleted       = "account.deleted"
 )
 
 var (
@@ -76,10 +77,20 @@ type EndpointVerification struct {
 	Challenge  string `json:"challenge"`
 }
 
+// AccountDeleted says an account you erased with Accounts.Delete is gone:
+// delete what you hold for it. AssessmentsDeleted is at least 1, and
+// DeletedAt equals deleted_at in the Delete answer.
+type AccountDeleted struct {
+	AccountID          string `json:"account_id"`
+	AssessmentsDeleted int64  `json:"assessments_deleted"`
+	DeletedAt          string `json:"deleted_at"`
+}
+
 // Event is a verified delivery. Data is *components.Assessment for an
 // assessment.updated event (exactly as Assessments.Get returns it),
-// *AssessmentExpired for the terminal expiry notice and
-// *EndpointVerification for endpoint.verification. Deliveries are at least
+// *AssessmentExpired for the terminal expiry notice, *EndpointVerification
+// for endpoint.verification and *AccountDeleted for account.deleted.
+// Deliveries are at least
 // once and unordered: deduplicate on ID and keep the highest
 // AssessmentVersion per assessment.
 //
@@ -87,6 +98,7 @@ type EndpointVerification struct {
 //	case *components.Assessment:
 //	case *noresponse.AssessmentExpired:
 //	case *noresponse.EndpointVerification:
+//	case *noresponse.AccountDeleted:
 //	}
 type Event struct {
 	ID        string
@@ -204,6 +216,15 @@ func eventData(eventType string, raw json.RawMessage) (any, error) {
 			return nil, webhookError("invalid_payload", "endpoint verification event is malformed")
 		}
 		return &verification, nil
+	case EventAccountDeleted:
+		var deleted AccountDeleted
+		if err := json.Unmarshal(raw, &deleted); err != nil || !webhookAccountID.MatchString(deleted.AccountID) || deleted.AssessmentsDeleted < 1 {
+			return nil, webhookError("invalid_payload", "account deleted event is malformed")
+		}
+		if _, err := time.Parse(time.RFC3339Nano, deleted.DeletedAt); err != nil {
+			return nil, webhookError("invalid_payload", "account deleted event is malformed")
+		}
+		return &deleted, nil
 	case EventAssessmentUpdated:
 		var probe struct {
 			Status string `json:"status"`

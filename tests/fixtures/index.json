@@ -72,6 +72,16 @@
       "expect": "valid"
     },
     {
+      "file": "valid/account-deletion.json",
+      "schema": "account-deletion.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/account-deletion-repeat.json",
+      "schema": "account-deletion.schema.json",
+      "expect": "valid"
+    },
+    {
       "file": "valid/webhook-assessment-updated.json",
       "schema": "webhook-event.schema.json",
       "expect": "valid"
@@ -83,6 +93,11 @@
     },
     {
       "file": "valid/webhook-assessment-expired.json",
+      "schema": "webhook-event.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/webhook-account-deleted.json",
       "schema": "webhook-event.schema.json",
       "expect": "valid"
     },
@@ -2294,6 +2309,42 @@
         ]
       ],
       "why": "II-006"
+    },
+    {
+      "file": "invalid/account-deletion-not-deleted.json",
+      "schema": "account-deletion.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "const",
+          "/deleted"
+        ]
+      ],
+      "why": "NOR-364 a deletion receipt always says deleted"
+    },
+    {
+      "file": "invalid/webhook-account-deleted-assessment-id.json",
+      "schema": "webhook-event.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "additionalProperties",
+          "/data"
+        ]
+      ],
+      "why": "NOR-364 account.deleted names no assessment"
+    },
+    {
+      "file": "invalid/webhook-account-deleted-none.json",
+      "schema": "webhook-event.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "minimum",
+          "/data/assessments_deleted"
+        ]
+      ],
+      "why": "NOR-364 account.deleted fires only when an assessment went"
     },
     {
       "file": "invalid/integration-request-workos-no-secret.json",

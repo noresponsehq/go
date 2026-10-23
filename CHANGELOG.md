@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.26
+
+* `Sdk.Accounts.Delete()`: **Added**
+
 ## 2.0.25
 
 * `Sdk.Assessments.Create()`:  `request.Body` **Changed**

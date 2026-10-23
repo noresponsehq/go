@@ -7,6 +7,7 @@ Your accounts, each with one current risk, and their assessment history.
 ### Available Operations
 
 * [Get](#get) - Read an account's one current risk.
+* [Delete](#delete) - Erase an account and its history.
 * [ListAssessments](#listassessments) - Page through one account's unexpired assessments.
 
 ## Get
@@ -83,6 +84,93 @@ func main() {
 ### Response
 
 **[*operations.GetAccountResponse](../../models/operations/getaccountresponse.md), error**
+
+### Errors
+
+| Error Type                      | Status Code                     | Content Type                    |
+| ------------------------------- | ------------------------------- | ------------------------------- |
+| apierrors.BadRequestError       | 400                             | application/problem+json        |
+| apierrors.AuthenticationError   | 401                             | application/problem+json        |
+| apierrors.PermissionDeniedError | 403                             | application/problem+json        |
+| apierrors.NotFoundError         | 404                             | application/problem+json        |
+| apierrors.ConflictError         | 409                             | application/problem+json        |
+| apierrors.RateLimitError        | 429                             | application/problem+json        |
+| apierrors.APIStatusError        | 4XX, 5XX                        | \*/\*                           |
+
+## Delete
+
+Erases the account in the environment of your key, for an erasure request from your user: every assessment of it, with its revisions, evidence and outcomes, and the identity-graph marks its outcomes set. An assessment of the account begun before the call is refused or stopped. Afterwards the account and each erased assessment answer 404 and the history is empty. When the call deleted at least one assessment, an account.deleted event goes to your verified webhook endpoints. Requires the history scope. Idempotent and safe to retry: a repeat, or an account with nothing to erase, answers 200 with assessments_deleted 0 and sends no event. The account_id can be assessed again later, as a new account.
+
+### Example Usage: erased
+
+<!-- UsageSnippet language="go" operationID="deleteAccount" method="delete" path="/v1/accounts/{account_id}" example="erased" -->
+```go
+package main
+
+import(
+	"context"
+	"os"
+	noresponse "github.com/noresponsehq/go/v2"
+	"log"
+)
+
+func main() {
+    ctx := context.Background()
+
+    s := noresponse.New(
+        noresponse.WithSecurity(os.Getenv("NORESPONSE_API_KEY")),
+    )
+
+    res, err := s.Accounts.Delete(ctx, "acct_7f3a9c")
+    if err != nil {
+        log.Fatal(err)
+    }
+    if res != nil {
+        // handle response
+    }
+}
+```
+### Example Usage: repeat
+
+<!-- UsageSnippet language="go" operationID="deleteAccount" method="delete" path="/v1/accounts/{account_id}" example="repeat" -->
+```go
+package main
+
+import(
+	"context"
+	"os"
+	noresponse "github.com/noresponsehq/go/v2"
+	"log"
+)
+
+func main() {
+    ctx := context.Background()
+
+    s := noresponse.New(
+        noresponse.WithSecurity(os.Getenv("NORESPONSE_API_KEY")),
+    )
+
+    res, err := s.Accounts.Delete(ctx, "acct_7f3a9c")
+    if err != nil {
+        log.Fatal(err)
+    }
+    if res != nil {
+        // handle response
+    }
+}
+```
+
+### Parameters
+
+| Parameter                                                                                                                                                                                                       | Type                                                                                                                                                                                                            | Required                                                                                                                                                                                                        | Description                                                                                                                                                                                                     | Example                                                                                                                                                                                                         |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ctx`                                                                                                                                                                                                           | [context.Context](https://pkg.go.dev/context#Context)                                                                                                                                                           | :heavy_check_mark:                                                                                                                                                                                              | The context to use for the request.                                                                                                                                                                             |                                                                                                                                                                                                                 |
+| `accountID`                                                                                                                                                                                                     | `string`                                                                                                                                                                                                        | :heavy_check_mark:                                                                                                                                                                                              | The account_id the tenant sends with its assessments, as one path segment (percent-encode '\|' and ':' if the client requires it). A value that does not match the account_id shape answers 400 invalid_request. | acct_7f3a9c                                                                                                                                                                                                     |
+| `opts`                                                                                                                                                                                                          | [][operations.Option](../../models/operations/option.md)                                                                                                                                                        | :heavy_minus_sign:                                                                                                                                                                                              | The options for this request.                                                                                                                                                                                   |                                                                                                                                                                                                                 |
+
+### Response
+
+**[*operations.DeleteAccountResponse](../../models/operations/deleteaccountresponse.md), error**
 
 ### Errors
 
