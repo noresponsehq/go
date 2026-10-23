@@ -2615,6 +2615,40 @@
       "why": "listed and returned members are active"
     },
     {
+      "file": "valid/audit-event.json",
+      "schema": "audit-event.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/audit-event-list.json",
+      "schema": "audit-event-list.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "invalid/audit-event-with-email.json",
+      "schema": "audit-event.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "additionalProperties",
+          ""
+        ]
+      ],
+      "why": "an audit event never carries an email, a secret or a request body"
+    },
+    {
+      "file": "invalid/audit-event-unknown-outcome.json",
+      "schema": "audit-event.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "enum",
+          "/outcome"
+        ]
+      ],
+      "why": "a failed change records nothing, so the outcomes are succeeded and denied"
+    },
+    {
       "file": "valid/webhook-delivery-list.json",
       "schema": "webhook-delivery-list.schema.json",
       "expect": "valid"

@@ -422,6 +422,208 @@ func TestAuth0ReviewDeletesSessionsAndRefreshTokensBanBlocksFirstPipeIsEscaped(t
 	assertEveryCall(t, mock, "Bearer mgmt_token")
 }
 
+var auth0FeatureNotEnabled = map[string]any{"statusCode": 403, "error": "Forbidden", "message": "This feature is not enabled for this tenant.", "errorCode": "feature_not_enabled"}
+
+type auth0Credential struct{ id, kind string }
+
+// auth0WithoutSessionsAPI is an Auth0 tenant on a plan without the sessions
+// API, as a Free tenant answers: both bulk endpoints refuse with 403
+// feature_not_enabled, while /device-credentials and PATCH /users/{id} work.
+// It keeps the refresh tokens and the blocked flag, so a repeated delivery
+// sees what the first left.
+type auth0WithoutSessionsAPI struct {
+	mu               sync.Mutex
+	escaped          string
+	refreshTokensAPI bool
+	blocked          bool
+	credentials      []auth0Credential
+}
+
+func newAuth0WithoutSessionsAPI(escaped string, refreshTokensAPI bool) *auth0WithoutSessionsAPI {
+	return &auth0WithoutSessionsAPI{escaped: escaped, refreshTokensAPI: refreshTokensAPI, credentials: []auth0Credential{{"dcr_a", "refresh_token"}, {"dcr_b", "refresh_token"}, {"dcr_r", "rotating_refresh_token"}}}
+}
+
+func (a *auth0WithoutSessionsAPI) state() (bool, int) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	return a.blocked, len(a.credentials)
+}
+
+func (a *auth0WithoutSessionsAPI) set(blocked bool, add ...auth0Credential) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	a.blocked = blocked
+	a.credentials = append(a.credentials, add...)
+}
+
+func (a *auth0WithoutSessionsAPI) route(c mockCall) (int, any) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	user := "/api/v2/users/" + a.escaped
+	switch {
+	case c.Method == "DELETE" && c.Path == user+"/sessions":
+		return 403, auth0FeatureNotEnabled
+	case c.Method == "DELETE" && c.Path == user+"/refresh-tokens":
+		if !a.refreshTokensAPI {
+			return 403, auth0FeatureNotEnabled
+		}
+		a.credentials = nil
+		return 202, nil
+	case c.Method == "PATCH" && c.Path == user:
+		a.blocked = c.Body["blocked"] == true
+		return 200, map[string]any{"blocked": a.blocked}
+	case c.Method == "GET" && c.Path == "/api/v2/device-credentials":
+		listed := []map[string]string{}
+		for _, d := range a.credentials {
+			if d.kind == c.Query["type"] {
+				listed = append(listed, map[string]string{"id": d.id, "type": d.kind, "user_id": c.Query["user_id"]})
+			}
+		}
+		return 200, listed
+	case c.Method == "DELETE" && strings.HasPrefix(c.Path, "/api/v2/device-credentials/"):
+		id := strings.TrimPrefix(c.Path, "/api/v2/device-credentials/")
+		for i, d := range a.credentials {
+			if d.id == id {
+				a.credentials = append(a.credentials[:i:i], a.credentials[i+1:]...)
+				return 204, nil
+			}
+		}
+		return 404, map[string]string{"errorCode": "inexistent_device_credential"}
+	}
+	return 0, nil
+}
+
+func TestAuth0WithoutSessionsAPIBlocksDeletesDeviceCredentialsAndReportsBan(t *testing.T) {
+	id := "auth0|64abc0de1234567890abcdef"
+	escaped := "auth0%7C64abc0de1234567890abcdef"
+	tenant := newAuth0WithoutSessionsAPI(escaped, false)
+	mock := startMock(t, tenant.route)
+	auth0 := &Auth0Actions{BaseURL: mock.URL + "/api/v2", Token: "mgmt_token"}
+	raw, headers := lateDelivery(t, lateFixture(t, "assessment-phone-uncovered-complete.json"), id)
+	ctx := context.Background()
+
+	result, err := HandleLateResult(ctx, raw, headers, lateSecrets, auth0, lateOptions(nil))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if result.Action != LateResultBan || result.UserID != id {
+		t.Fatalf("result = %+v", result)
+	}
+	if blocked, left := tenant.state(); !blocked || left != 0 {
+		t.Fatalf("blocked %v, %d credentials left", blocked, left)
+	}
+	assertCalls(t, mock, []string{
+		"DELETE /api/v2/users/" + escaped + "/sessions",
+		"PATCH /api/v2/users/" + escaped,
+		"DELETE /api/v2/users/" + escaped + "/refresh-tokens",
+		"GET /api/v2/device-credentials",
+		"GET /api/v2/device-credentials",
+		"DELETE /api/v2/device-credentials/dcr_a",
+		"DELETE /api/v2/device-credentials/dcr_b",
+		"DELETE /api/v2/device-credentials/dcr_r",
+	})
+	calls := mock.snapshot()
+	if calls[3].Query["type"] != "refresh_token" || calls[4].Query["type"] != "rotating_refresh_token" || calls[3].Query["user_id"] != id {
+		t.Fatalf("device credential queries %v, %v", calls[3].Query, calls[4].Query)
+	}
+	assertEveryCall(t, mock, "Bearer mgmt_token")
+
+	// The same delivery again: still blocked, nothing left to delete, same report.
+	mock.reset()
+	if result, err = HandleLateResult(ctx, raw, headers, lateSecrets, auth0, lateOptions(nil)); err != nil || result.Action != LateResultBan {
+		t.Fatalf("repeat = %+v, %v", result, err)
+	}
+	for _, c := range mock.snapshot() {
+		if c.Method == "DELETE" && strings.HasPrefix(c.Path, "/api/v2/device-credentials/") {
+			t.Fatalf("repeat deleted %s", c.Path)
+		}
+	}
+
+	// Ban blocks first, and the plan refusing the sessions endpoint is no failure.
+	tenant.set(false, auth0Credential{"dcr_c", "refresh_token"})
+	mock.reset()
+	ban := lateOptions(&LateResultOptions{Policy: LateResultPolicy{components.RecommendationReview: LateResultBan}})
+	if result, err = HandleLateResult(ctx, raw, headers, lateSecrets, auth0, ban); err != nil || result.Action != LateResultBan {
+		t.Fatalf("ban = %+v, %v", result, err)
+	}
+	if first := mock.snapshot()[0]; first.Method != "PATCH" {
+		t.Fatalf("ban began with %s %s", first.Method, first.Path)
+	}
+	if blocked, left := tenant.state(); !blocked || left != 0 {
+		t.Fatalf("after ban: blocked %v, %d credentials left", blocked, left)
+	}
+
+	// Called directly, RevokeSessions takes the same fallback.
+	tenant.set(false)
+	if err := auth0.RevokeSessions(ctx, id); err != nil {
+		t.Fatal(err)
+	}
+	if blocked, _ := tenant.state(); !blocked {
+		t.Fatal("RevokeSessions did not block")
+	}
+}
+
+func TestAuth0WithRefreshTokensButNoSessionsAPIStillBlocksAndAScopeRefusalNeverFallsBack(t *testing.T) {
+	tenant := newAuth0WithoutSessionsAPI("auth0%7Cabc", true)
+	mock := startMock(t, tenant.route)
+	raw, headers := lateDelivery(t, lateFixture(t, "assessment-phone-uncovered-complete.json"), "auth0|abc")
+	ctx := context.Background()
+	result, err := HandleLateResult(ctx, raw, headers, lateSecrets, &Auth0Actions{BaseURL: mock.URL + "/api/v2", Token: "t"}, lateOptions(nil))
+	if err != nil || result.Action != LateResultBan {
+		t.Fatalf("result = %+v, %v", result, err)
+	}
+	if blocked, _ := tenant.state(); !blocked {
+		t.Fatal("not blocked")
+	}
+	for _, c := range mock.snapshot() {
+		if c.Path == "/api/v2/device-credentials" {
+			t.Fatal("listed device credentials although the refresh-token endpoint worked")
+		}
+	}
+
+	scoped := startMock(t, func(c mockCall) (int, any) {
+		if c.Method == "DELETE" {
+			return 403, map[string]any{"statusCode": 403, "error": "Forbidden", "message": "Insufficient scope, expected any of: delete:sessions", "errorCode": "insufficient_scope"}
+		}
+		return 200, map[string]any{}
+	})
+	_, err = HandleLateResult(ctx, raw, headers, lateSecrets, &Auth0Actions{BaseURL: scoped.URL + "/api/v2", Token: "t"}, lateOptions(nil))
+	var refusal *ProviderActionError
+	if !errors.As(err, &refusal) || refusal.Status != 403 || refusal.Code != "insufficient_scope" {
+		t.Fatalf("err = %v", err)
+	}
+	assertCalls(t, scoped, []string{"DELETE /api/v2/users/auth0%7Cabc/sessions"})
+}
+
+type plainProvider struct{ done []string }
+
+func (p *plainProvider) Name() string { return "plain" }
+func (p *plainProvider) RevokeSessions(_ context.Context, userID string) error {
+	p.done = append(p.done, "revoke "+userID)
+	return nil
+}
+func (p *plainProvider) Ban(_ context.Context, userID string) error {
+	p.done = append(p.done, "ban "+userID)
+	return nil
+}
+
+func TestAProviderWithoutActReportsTheActionAskedFor(t *testing.T) {
+	raw, headers := lateDelivery(t, lateFixture(t, "assessment-phone-uncovered-complete.json"), "u_1")
+	ctx := context.Background()
+	p := &plainProvider{}
+	result, err := HandleLateResult(ctx, raw, headers, lateSecrets, p, lateOptions(nil))
+	if err != nil || result.Action != LateResultRevokeSessions {
+		t.Fatalf("revoke = %+v, %v", result, err)
+	}
+	result, err = HandleLateResult(ctx, raw, headers, lateSecrets, p, lateOptions(&LateResultOptions{Policy: LateResultPolicy{components.RecommendationReview: LateResultBan}}))
+	if err != nil || result.Action != LateResultBan {
+		t.Fatalf("ban = %+v, %v", result, err)
+	}
+	if !reflect.DeepEqual(p.done, []string{"revoke u_1", "ban u_1"}) {
+		t.Fatalf("done = %v", p.done)
+	}
+}
+
 func TestAuth0DomainBuildsTheManagementBase(t *testing.T) {
 	c, err := (&Auth0Actions{Domain: "example.eu.auth0.com", Token: "t"}).caller()
 	if err != nil || c.base != "https://example.eu.auth0.com/api/v2" {

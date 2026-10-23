@@ -69,6 +69,18 @@ type LateResultProvider interface {
 	Ban(ctx context.Context, userID string) error
 }
 
+// LateResultActor is a LateResultProvider that reports the action that ran.
+// HandleLateResult calls Act when the provider implements it, and Ban or
+// RevokeSessions otherwise. A provider that has to do more than it was asked
+// implements it: Auth0Actions returns LateResultBan when the tenant's plan
+// has no sessions API and it blocked the user to end their sessions.
+type LateResultActor interface {
+	LateResultProvider
+	// Act takes action (LateResultRevokeSessions or LateResultBan) and returns
+	// the action that ran.
+	Act(ctx context.Context, action LateResultAction, userID string) (LateResultAction, error)
+}
+
 // LateResultOptions adjusts HandleLateResult. The zero value is valid.
 type LateResultOptions struct {
 	// Policy maps recommendation to action. Nil means DefaultLateResultPolicy.
@@ -95,8 +107,11 @@ type LateResult struct {
 	// Event is the verified event. Answer an endpoint.verification with
 	// VerificationResponse(event).
 	Event *Event
-	// Action taken. LateResultNone when the policy, the event or the user id
-	// called for nothing.
+	// Action is the action that ran. LateResultNone when the policy, the
+	// event or the user id called for nothing. It can be stronger than the
+	// policy's action when the provider had to fall back: Auth0Actions reports
+	// LateResultBan when it blocked the user because the tenant's plan cannot
+	// end sessions.
 	Action LateResultAction
 	// UserID is the provider user id acted on; empty when no action was taken.
 	UserID string
@@ -109,6 +124,9 @@ type ProviderActionError struct {
 	Provider string
 	Status   int
 	Message  string
+	// Code is the provider's error code from the response body, such as
+	// Auth0's errorCode "insufficient_scope", when it sent one.
+	Code string
 }
 
 func (e *ProviderActionError) Error() string { return "noresponse: " + e.Message }
@@ -189,7 +207,10 @@ func HandleLateResult(ctx context.Context, payload []byte, headers http.Header, 
 	if provider == nil {
 		return nil, errors.New("noresponse: HandleLateResult needs a provider")
 	}
-	if action == LateResultBan {
+	ran := action
+	if actor, ok := provider.(LateResultActor); ok {
+		ran, err = actor.Act(ctx, action, userID)
+	} else if action == LateResultBan {
 		err = provider.Ban(ctx, userID)
 	} else {
 		err = provider.RevokeSessions(ctx, userID)
@@ -197,7 +218,7 @@ func HandleLateResult(ctx context.Context, payload []byte, headers http.Header, 
 	if err != nil {
 		return nil, err
 	}
-	return &LateResult{Event: event, Action: action, UserID: userID}, nil
+	return &LateResult{Event: event, Action: ran, UserID: userID}, nil
 }
 
 type adminCall struct {
@@ -264,9 +285,29 @@ func (c *adminCaller) do(ctx context.Context, call adminCall) ([]byte, error) {
 			Provider: c.provider,
 			Status:   response.StatusCode,
 			Message:  fmt.Sprintf("%s %s %s answered %d", c.provider, call.method, call.path, response.StatusCode),
+			Code:     errorCode(text),
 		}
 	}
 	return text, nil
+}
+
+// errorCode is the error code in a provider's error body: Auth0's errorCode,
+// or a top-level code.
+func errorCode(body []byte) string {
+	var parsed struct {
+		ErrorCode any `json:"errorCode"`
+		Code      any `json:"code"`
+	}
+	if json.Unmarshal(body, &parsed) != nil {
+		return ""
+	}
+	if code, ok := parsed.ErrorCode.(string); ok && code != "" {
+		return code
+	}
+	if code, ok := parsed.Code.(string); ok {
+		return code
+	}
+	return ""
 }
 
 func pathSegment(id string) (string, error) {
@@ -462,6 +503,15 @@ func (a *WorkOSActions) Ban(ctx context.Context, userID string) error {
 // every session (DELETE /users/{id}/sessions) and refresh token
 // (DELETE /users/{id}/refresh-tokens). Ban first sets blocked: true
 // (PATCH /users/{id}), then does the same.
+//
+// Auth0 offers the sessions and refresh-token endpoints on Enterprise plans
+// only; on other plans they answer 403 feature_not_enabled. Then refresh
+// tokens are deleted one by one through /device-credentials (types
+// refresh_token and rotating_refresh_token), which every plan has. A login
+// session cannot be ended, so RevokeSessions blocks the user before deleting
+// the refresh tokens, and Act reports LateResultBan. Unblock the user in the
+// dashboard to undo it. Any other refusal, such as 403 insufficient_scope, is
+// returned.
 type Auth0Actions struct {
 	// Domain is your Auth0 tenant domain, such as example.eu.auth0.com. The
 	// Management API is https://{Domain}/api/v2.
@@ -469,11 +519,14 @@ type Auth0Actions struct {
 	// BaseURL is the Management API base URL, in place of Domain.
 	BaseURL string
 	// Token is a Management API access token with update:users,
-	// delete:sessions and delete:refresh_tokens.
+	// delete:sessions, delete:refresh_tokens, read:device_credentials and
+	// delete:device_credentials.
 	Token string
 	// HTTPClient defaults to http.DefaultClient.
 	HTTPClient *http.Client
 }
+
+var _ LateResultActor = (*Auth0Actions)(nil)
 
 func (a *Auth0Actions) Name() string { return "auth0" }
 
@@ -491,19 +544,96 @@ func (a *Auth0Actions) caller() (*adminCaller, error) {
 	return newAdminCaller("auth0", base, a.Token, a.HTTPClient), nil
 }
 
-func (a *Auth0Actions) RevokeSessions(ctx context.Context, userID string) error {
+// auth0NotOnPlan reports Auth0's 403 feature_not_enabled, its answer when the
+// tenant's plan does not include an endpoint.
+func auth0NotOnPlan(err error) bool {
+	var refused *ProviderActionError
+	return errors.As(err, &refused) && refused.Status == http.StatusForbidden && refused.Code == "feature_not_enabled"
+}
+
+func auth0Block(ctx context.Context, c *adminCaller, user string) error {
+	_, err := c.do(ctx, adminCall{method: http.MethodPatch, path: "/users/" + user, body: map[string]bool{"blocked": true}})
+	return err
+}
+
+// auth0DeleteSessions ends every session; false when the plan has no sessions API.
+func auth0DeleteSessions(ctx context.Context, c *adminCaller, user string) (bool, error) {
+	_, err := c.do(ctx, adminCall{method: http.MethodDelete, path: "/users/" + user + "/sessions"})
+	if auth0NotOnPlan(err) {
+		return false, nil
+	}
+	return err == nil, err
+}
+
+func auth0DeleteRefreshTokens(ctx context.Context, c *adminCaller, userID, user string) error {
+	_, err := c.do(ctx, adminCall{method: http.MethodDelete, path: "/users/" + user + "/refresh-tokens"})
+	if !auth0NotOnPlan(err) {
+		return err
+	}
+	// Collect every id before deleting any, so the pages do not shift underneath.
+	const page = 100
+	var ids []string
+	for _, kind := range []string{"refresh_token", "rotating_refresh_token"} {
+		for n := 0; n < 10; n++ {
+			query := url.Values{"user_id": {userID}, "type": {kind}, "page": {strconv.Itoa(n)}, "per_page": {strconv.Itoa(page)}}
+			body, err := c.do(ctx, adminCall{method: http.MethodGet, path: "/device-credentials", query: query})
+			if err != nil {
+				return err
+			}
+			var listed []struct {
+				ID any `json:"id"`
+			}
+			if len(body) > 0 && json.Unmarshal(body, &listed) != nil {
+				listed = nil
+			}
+			for _, credential := range listed {
+				if id, ok := credential.ID.(string); ok && id != "" {
+					ids = append(ids, id)
+				}
+			}
+			if len(listed) < page {
+				break
+			}
+		}
+	}
+	for _, id := range ids {
+		if _, err := c.do(ctx, adminCall{method: http.MethodDelete, path: "/device-credentials/" + url.PathEscape(id)}); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (a *Auth0Actions) revoke(ctx context.Context, userID string) (LateResultAction, error) {
 	user, err := pathSegment(userID)
 	if err != nil {
-		return err
+		return LateResultNone, err
 	}
 	c, err := a.caller()
 	if err != nil {
-		return err
+		return LateResultNone, err
 	}
-	if _, err := c.do(ctx, adminCall{method: http.MethodDelete, path: "/users/" + user + "/sessions"}); err != nil {
-		return err
+	ended, err := auth0DeleteSessions(ctx, c, user)
+	if err != nil {
+		return LateResultNone, err
 	}
-	_, err = c.do(ctx, adminCall{method: http.MethodDelete, path: "/users/" + user + "/refresh-tokens"})
+	// Without the sessions API a login session survives; blocking is the only way to end it.
+	if !ended {
+		if err := auth0Block(ctx, c, user); err != nil {
+			return LateResultNone, err
+		}
+	}
+	if err := auth0DeleteRefreshTokens(ctx, c, userID, user); err != nil {
+		return LateResultNone, err
+	}
+	if ended {
+		return LateResultRevokeSessions, nil
+	}
+	return LateResultBan, nil
+}
+
+func (a *Auth0Actions) RevokeSessions(ctx context.Context, userID string) error {
+	_, err := a.revoke(ctx, userID)
 	return err
 }
 
@@ -516,10 +646,26 @@ func (a *Auth0Actions) Ban(ctx context.Context, userID string) error {
 	if err != nil {
 		return err
 	}
-	if _, err := c.do(ctx, adminCall{method: http.MethodPatch, path: "/users/" + user, body: map[string]bool{"blocked": true}}); err != nil {
+	if err := auth0Block(ctx, c, user); err != nil {
 		return err
 	}
-	return a.RevokeSessions(ctx, userID)
+	// The block already ends a session the plan cannot delete.
+	if _, err := auth0DeleteSessions(ctx, c, user); err != nil {
+		return err
+	}
+	return auth0DeleteRefreshTokens(ctx, c, userID, user)
+}
+
+// Act bans or revokes and returns the action that ran: LateResultBan when
+// RevokeSessions had to block the user.
+func (a *Auth0Actions) Act(ctx context.Context, action LateResultAction, userID string) (LateResultAction, error) {
+	if action == LateResultBan {
+		if err := a.Ban(ctx, userID); err != nil {
+			return LateResultNone, err
+		}
+		return LateResultBan, nil
+	}
+	return a.revoke(ctx, userID)
 }
 
 // LogOnlyActions is a provider for an app with its own login, or for trying

@@ -1,0 +1,59 @@
+{
+  "workspace_id": "tnt_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+  "items": [
+    {
+      "id": "aud_01JA2ZG7H8J9K0M1N2P3Q4R5S6",
+      "workspace_id": "tnt_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+      "environment": "test",
+      "action": "webhook_endpoint.created",
+      "outcome": "succeeded",
+      "actor": {
+        "type": "api_key",
+        "key_id": "01JA2ZF6G7H8J9K0M1N2P3Q4R5"
+      },
+      "target": {
+        "type": "webhook_endpoint",
+        "id": "whe_01JA2ZD0E1F2G3H4J5K6M7N8P9"
+      },
+      "created_at": "2026-10-23T09:20:00.000Z"
+    },
+    {
+      "id": "aud_01JA2ZF6G7H8J9K0M1N2P3Q4R5",
+      "workspace_id": "tnt_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+      "environment": "live",
+      "action": "member.removed",
+      "outcome": "denied",
+      "actor": {
+        "type": "user",
+        "external_user_id": "auth0|65f1c2d3e4",
+        "console_credential_id": "01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+      },
+      "target": {
+        "type": "member",
+        "id": "mem_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+      },
+      "created_at": "2026-10-23T09:15:00.000Z"
+    },
+    {
+      "id": "aud_01JA2ZE5F6G7H8J9K0M1N2P3Q4",
+      "workspace_id": "tnt_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+      "environment": "live",
+      "action": "member.role_changed",
+      "outcome": "succeeded",
+      "actor": {
+        "type": "user",
+        "external_user_id": "user_2EXAMPLE",
+        "console_credential_id": "01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+      },
+      "target": {
+        "type": "member",
+        "id": "mem_01JA2ZB4C5D6E7F8G9H0JKMNPQ"
+      },
+      "detail": {
+        "role": "admin"
+      },
+      "created_at": "2026-10-23T09:10:00.000Z"
+    }
+  ],
+  "next_cursor": "AQAAAABpAAAAAAYV2Q"
+}
