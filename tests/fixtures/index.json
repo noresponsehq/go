@@ -112,6 +112,16 @@
       "expect": "valid"
     },
     {
+      "file": "valid/webhook-tenant-deleted.json",
+      "schema": "webhook-event.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/webhook-endpoint-disabled.json",
+      "schema": "webhook-event.schema.json",
+      "expect": "valid"
+    },
+    {
       "file": "valid/webhook-endpoint-verification.json",
       "schema": "webhook-event.schema.json",
       "expect": "valid"
@@ -2365,6 +2375,90 @@
       "why": "NOR-364 account.deleted fires only when an assessment went"
     },
     {
+      "file": "invalid/webhook-tenant-deleted-test-suffix.json",
+      "schema": "webhook-event.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "pattern",
+          "/data/workspace_id"
+        ]
+      ],
+      "why": "NOR-143 tenant.deleted names the workspace and its environment, never a :test tenant id"
+    },
+    {
+      "file": "invalid/webhook-tenant-deleted-unknown-environment.json",
+      "schema": "webhook-event.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "enum",
+          "/data/environment"
+        ]
+      ],
+      "why": "NOR-143 a workspace has a live and a test environment only"
+    },
+    {
+      "file": "invalid/webhook-endpoint-disabled-url.json",
+      "schema": "webhook-event.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "additionalProperties",
+          "/data"
+        ]
+      ],
+      "why": "NOR-143 webhook_endpoint.disabled names the endpoint by id, never its URL"
+    },
+    {
+      "file": "invalid/workspace-deletion-not-deleted.json",
+      "schema": "workspace-deletion.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "const",
+          "/deleted"
+        ]
+      ],
+      "why": "NOR-143 the answer exists only for a deletion that happened"
+    },
+    {
+      "file": "invalid/workspace-deletion-no-environment.json",
+      "schema": "workspace-deletion.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "minItems",
+          "/environments"
+        ]
+      ],
+      "why": "NOR-143 a workspace always has its live environment"
+    },
+    {
+      "file": "invalid/workspace-deletion-test-only.json",
+      "schema": "workspace-deletion.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "anyOf",
+          "/environments"
+        ]
+      ],
+      "why": "NOR-143 the live environment is always deleted with the workspace"
+    },
+    {
+      "file": "invalid/workspace-deletion-two-live.json",
+      "schema": "workspace-deletion.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "anyOf",
+          "/environments"
+        ]
+      ],
+      "why": "NOR-143 each environment is listed once"
+    },
+    {
       "file": "invalid/integration-request-workos-no-secret.json",
       "schema": "integration-request.schema.json",
       "expect": "invalid",
@@ -2525,6 +2619,16 @@
     {
       "file": "valid/workspace.json",
       "schema": "workspace.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/workspace-deletion.json",
+      "schema": "workspace-deletion.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/workspace-deletion-live-only.json",
+      "schema": "workspace-deletion.schema.json",
       "expect": "valid"
     },
     {

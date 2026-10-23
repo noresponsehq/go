@@ -1,0 +1,20 @@
+{
+  "description": "NOR-143 tombstone behaviour of a deleted workspace. After DELETE /v1/workspaces/{workspace_id} answered 200, every call below answers the status and problem code given, for as long as the service runs: the workspace id stays a tombstone and is never given to another workspace. credential names who calls: owner, admin and outsider are console calls acting for the workspace's former owner, a former admin and a user who was never a member; live_key and test_key are API keys of the workspace's live and test environments that were active before the deletion. {workspace_id} is the deleted workspace's id. cmd/signupapi/workspace_deletion_postgres_test.go replays every case through the real service on PostgreSQL.",
+  "cases": [
+    {"name": "owner reads the workspace", "credential": "owner", "method": "GET", "path": "/v1/workspaces/{workspace_id}", "status": 404, "code": "not_found"},
+    {"name": "owner deletes it again", "credential": "owner", "method": "DELETE", "path": "/v1/workspaces/{workspace_id}", "status": 404, "code": "not_found"},
+    {"name": "owner lists members", "credential": "owner", "method": "GET", "path": "/v1/workspaces/{workspace_id}/members", "status": 404, "code": "not_found"},
+    {"name": "owner invites", "credential": "owner", "method": "POST", "path": "/v1/workspaces/{workspace_id}/invites", "body": "{\"role\":\"viewer\"}", "status": 404, "code": "not_found"},
+    {"name": "owner creates a key", "credential": "owner", "method": "POST", "path": "/v1/workspaces/{workspace_id}/keys", "body": "{\"environment\":\"live\",\"scopes\":[\"assess\"]}", "status": 404, "code": "not_found"},
+    {"name": "owner lists keys", "credential": "owner", "method": "GET", "path": "/v1/workspaces/{workspace_id}/keys", "status": 404, "code": "not_found"},
+    {"name": "owner reads the audit log", "credential": "owner", "method": "GET", "path": "/v1/workspaces/{workspace_id}/audit_events", "status": 404, "code": "not_found"},
+    {"name": "former admin reads the workspace", "credential": "admin", "method": "GET", "path": "/v1/workspaces/{workspace_id}", "status": 404, "code": "not_found"},
+    {"name": "outsider reads the workspace", "credential": "outsider", "method": "GET", "path": "/v1/workspaces/{workspace_id}", "status": 404, "code": "not_found"},
+    {"name": "live key assesses", "credential": "live_key", "method": "POST", "path": "/v1/assessments", "body": "{\"account_id\":\"acct_after\",\"flow\":\"signup\",\"identifiers\":{\"email\":\"after@example.com\"}}", "status": 401, "code": "unauthorized"},
+    {"name": "live key reads an assessment", "credential": "live_key", "method": "GET", "path": "/v1/assessments/asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM", "status": 401, "code": "unauthorized"},
+    {"name": "live key lists webhook endpoints", "credential": "live_key", "method": "GET", "path": "/v1/webhooks", "status": 401, "code": "unauthorized"},
+    {"name": "live key rotates itself", "credential": "live_key", "method": "POST", "path": "/v1/keys/rotate", "body": "{}", "status": 401, "code": "unauthorized"},
+    {"name": "test key lists webhook endpoints", "credential": "test_key", "method": "GET", "path": "/v1/webhooks", "status": 401, "code": "unauthorized"},
+    {"name": "test key assesses", "credential": "test_key", "method": "POST", "path": "/v1/assessments", "body": "{\"account_id\":\"acct_after\",\"flow\":\"signup\",\"identifiers\":{\"email\":\"allow@test.noresponse.org\"}}", "status": 401, "code": "unauthorized"}
+  ]
+}

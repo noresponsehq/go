@@ -1,0 +1,13 @@
+{
+  "id": "tnt_founder_prod",
+  "deleted": true,
+  "deleted_at": "2026-10-23T10:00:00.000Z",
+  "environments": [
+    {
+      "environment": "live",
+      "assessments_deleted": 0,
+      "keys_revoked": 0,
+      "endpoints_notified": 0
+    }
+  ]
+}

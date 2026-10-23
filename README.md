@@ -187,6 +187,10 @@ http.HandleFunc("/webhooks/noresponse", func(w http.ResponseWriter, r *http.Requ
 		// Delete what you hold for data.AssessmentID.
 	case *noresponse.AccountDeleted:
 		// You erased data.AccountID with Accounts.Delete: delete what you hold for it.
+	case *noresponse.TenantDeleted:
+		// The workspace is deleted: the last event this endpoint receives. Delete what you hold for data.Environment.
+	case *noresponse.EndpointDisabled:
+		// data.EndpointID failed for 72 hours and is disabled: fix it and verify it again.
 	case *noresponse.EndpointVerification:
 		body, err := noresponse.VerificationResponse(event)
 		if err != nil {

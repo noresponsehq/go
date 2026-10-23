@@ -1,0 +1,13 @@
+{
+  "id": "tnt_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+  "deleted": false,
+  "deleted_at": "2026-10-23T10:00:00.000Z",
+  "environments": [
+    {
+      "environment": "live",
+      "assessments_deleted": 0,
+      "keys_revoked": 0,
+      "endpoints_notified": 0
+    }
+  ]
+}

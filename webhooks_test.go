@@ -241,6 +241,89 @@ func TestAccountDeletedEvent(t *testing.T) {
 	}
 }
 
+const (
+	tenantDeletedBody    = `{"id":"evt_01JA2ZD3K4M5N6P7Q8R9S0T1V2","type":"tenant.deleted","created_at":"2026-10-23T10:00:00.000Z","data":{"workspace_id":"tnt_01JA2Z8K6Q4V7W9XBCDEFGHJKM","environment":"live","deleted_at":"2026-10-23T10:00:00.000Z"}}`
+	endpointDisabledBody = `{"id":"evt_01JA2ZD3K4M5N6P7Q8R9S0T1V3","type":"webhook_endpoint.disabled","created_at":"2026-10-23T10:00:00.000Z","data":{"endpoint_id":"whe_01JA2ZD0E1F2G3H4J5K6M7N8P9","failing_since":"2026-10-20T10:00:00.000Z","disabled_at":"2026-10-23T10:00:00.000Z"}}`
+)
+
+// refuseMutatedData signs one copy of body per mutation of its data and checks
+// each is refused as invalid_payload.
+func refuseMutatedData(t *testing.T, body string, mutations []func(map[string]any)) {
+	t.Helper()
+	const stamp = "1791968402"
+	secrets := map[string]string{"whk_sdktest01": "secret"}
+	for _, mutate := range mutations {
+		var event map[string]any
+		if err := json.Unmarshal([]byte(body), &event); err != nil {
+			t.Fatal(err)
+		}
+		mutate(event["data"].(map[string]any))
+		raw, err := json.Marshal(event)
+		if err != nil {
+			t.Fatal(err)
+		}
+		_, err = ConstructEvent(raw, sign(t, raw, "secret", stamp, event["id"].(string), "whk_sdktest01"), secrets, at(1791968402))
+		wantCode(t, err, "invalid_payload")
+	}
+}
+
+func TestTenantDeletedEvent(t *testing.T) {
+	const stamp = "1791968402"
+	secrets := map[string]string{"whk_sdktest01": "secret"}
+	raw := []byte(tenantDeletedBody)
+	event, err := ConstructEvent(raw, sign(t, raw, "secret", stamp, "evt_01JA2ZD3K4M5N6P7Q8R9S0T1V2", "whk_sdktest01"), secrets, at(1791968402))
+	if err != nil {
+		t.Fatal(err)
+	}
+	deleted, ok := event.Data.(*TenantDeleted)
+	if !ok || event.Type != EventTenantDeleted || event.Expired() || event.Test || event.CreatedAt != "2026-10-23T10:00:00.000Z" {
+		t.Fatalf("event %+v", event)
+	}
+	if *deleted != (TenantDeleted{WorkspaceID: "tnt_01JA2Z8K6Q4V7W9XBCDEFGHJKM", Environment: "live", DeletedAt: "2026-10-23T10:00:00.000Z"}) {
+		t.Fatalf("data %+v", deleted)
+	}
+	if _, err := VerificationResponse(event); err == nil {
+		t.Fatal("a tenant.deleted event has no challenge")
+	}
+	refuseMutatedData(t, tenantDeletedBody, []func(map[string]any){
+		func(data map[string]any) { delete(data, "workspace_id") },
+		func(data map[string]any) { data["workspace_id"] = "-tnt" },
+		func(data map[string]any) { data["workspace_id"] = "tnt/01" },
+		func(data map[string]any) { data["environment"] = "staging" },
+		func(data map[string]any) { delete(data, "environment") },
+		func(data map[string]any) { data["deleted_at"] = "tomorrow" },
+		func(data map[string]any) { delete(data, "deleted_at") },
+	})
+}
+
+func TestEndpointDisabledEvent(t *testing.T) {
+	const stamp = "1791968402"
+	secrets := map[string]string{"whk_sdktest01": "secret"}
+	raw := []byte(endpointDisabledBody)
+	event, err := ConstructEvent(raw, sign(t, raw, "secret", stamp, "evt_01JA2ZD3K4M5N6P7Q8R9S0T1V3", "whk_sdktest01"), secrets, at(1791968402))
+	if err != nil {
+		t.Fatal(err)
+	}
+	disabled, ok := event.Data.(*EndpointDisabled)
+	if !ok || event.Type != EventEndpointDisabled || event.Expired() || event.Test {
+		t.Fatalf("event %+v", event)
+	}
+	if *disabled != (EndpointDisabled{EndpointID: "whe_01JA2ZD0E1F2G3H4J5K6M7N8P9", FailingSince: "2026-10-20T10:00:00.000Z", DisabledAt: "2026-10-23T10:00:00.000Z"}) {
+		t.Fatalf("data %+v", disabled)
+	}
+	if _, err := VerificationResponse(event); err == nil {
+		t.Fatal("a webhook_endpoint.disabled event has no challenge")
+	}
+	refuseMutatedData(t, endpointDisabledBody, []func(map[string]any){
+		func(data map[string]any) { data["endpoint_id"] = "whk_01JA2ZD0E1F2G3H4J5K6M7N8P9" },
+		func(data map[string]any) { delete(data, "endpoint_id") },
+		func(data map[string]any) { data["failing_since"] = "three days ago" },
+		func(data map[string]any) { delete(data, "failing_since") },
+		func(data map[string]any) { data["disabled_at"] = "now" },
+		func(data map[string]any) { delete(data, "disabled_at") },
+	})
+}
+
 // The API adds fields without a new version, so a signed event that carries
 // keys this SDK does not know still verifies.
 func TestUnknownFieldsAreAccepted(t *testing.T) {

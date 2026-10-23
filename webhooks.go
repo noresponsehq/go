@@ -27,6 +27,8 @@ const (
 	EventAssessmentUpdated    = "assessment.updated"
 	EventEndpointVerification = "endpoint.verification"
 	EventAccountDeleted       = "account.deleted"
+	EventTenantDeleted        = "tenant.deleted"
+	EventEndpointDisabled     = "webhook_endpoint.disabled"
 )
 
 var (
@@ -38,6 +40,7 @@ var (
 	webhookAssessmentID = regexp.MustCompile(`^asm_[0-9A-HJKMNP-TV-Z]{26}$`)
 	webhookAccountID    = regexp.MustCompile(`^[A-Za-z0-9][A-Za-z0-9._:|-]{0,127}$`)
 	webhookEndpointID   = regexp.MustCompile(`^whe_[0-9A-HJKMNP-TV-Z]{26}$`)
+	webhookWorkspaceID  = regexp.MustCompile(`^[A-Za-z0-9][A-Za-z0-9_.-]{0,122}$`)
 	webhookHeaders      = [...]string{"NR-Webhook-Id", "NR-Webhook-Timestamp", "NR-Webhook-Key-Id", "NR-Webhook-Signature"}
 )
 
@@ -86,11 +89,30 @@ type AccountDeleted struct {
 	DeletedAt          string `json:"deleted_at"`
 }
 
+// TenantDeleted says the workspace was deleted. It is sent once per
+// environment, before that environment's endpoints are torn down, and is the
+// last event the endpoint receives. Environment is "live" or "test".
+type TenantDeleted struct {
+	WorkspaceID string `json:"workspace_id"`
+	Environment string `json:"environment"`
+	DeletedAt   string `json:"deleted_at"`
+}
+
+// EndpointDisabled says another endpoint of this environment, EndpointID,
+// was disabled after failing continuously since FailingSince. It receives
+// nothing more until it is verified again.
+type EndpointDisabled struct {
+	EndpointID   string `json:"endpoint_id"`
+	FailingSince string `json:"failing_since"`
+	DisabledAt   string `json:"disabled_at"`
+}
+
 // Event is a verified delivery. Data is *components.Assessment for an
 // assessment.updated event (exactly as Assessments.Get returns it),
 // *AssessmentExpired for the terminal expiry notice, *EndpointVerification
-// for endpoint.verification and *AccountDeleted for account.deleted.
-// Deliveries are at least
+// for endpoint.verification, *AccountDeleted for account.deleted,
+// *TenantDeleted for tenant.deleted and *EndpointDisabled for
+// webhook_endpoint.disabled. Deliveries are at least
 // once and unordered: deduplicate on ID and keep the highest
 // Detail.AssessmentVersion per assessment.
 //
@@ -99,6 +121,8 @@ type AccountDeleted struct {
 //	case *noresponse.AssessmentExpired:
 //	case *noresponse.EndpointVerification:
 //	case *noresponse.AccountDeleted:
+//	case *noresponse.TenantDeleted:
+//	case *noresponse.EndpointDisabled:
 //	}
 type Event struct {
 	ID        string
@@ -225,6 +249,20 @@ func eventData(eventType string, raw json.RawMessage) (any, error) {
 			return nil, webhookError("invalid_payload", "account deleted event is malformed")
 		}
 		return &deleted, nil
+	case EventTenantDeleted:
+		var deleted TenantDeleted
+		if err := json.Unmarshal(raw, &deleted); err != nil || !webhookWorkspaceID.MatchString(deleted.WorkspaceID) ||
+			(deleted.Environment != "live" && deleted.Environment != "test") || !webhookTime(deleted.DeletedAt) {
+			return nil, webhookError("invalid_payload", "tenant deleted event is malformed")
+		}
+		return &deleted, nil
+	case EventEndpointDisabled:
+		var disabled EndpointDisabled
+		if err := json.Unmarshal(raw, &disabled); err != nil || !webhookEndpointID.MatchString(disabled.EndpointID) ||
+			!webhookTime(disabled.FailingSince) || !webhookTime(disabled.DisabledAt) {
+			return nil, webhookError("invalid_payload", "endpoint disabled event is malformed")
+		}
+		return &disabled, nil
 	case EventAssessmentUpdated:
 		var probe struct {
 			Status string `json:"status"`
@@ -253,6 +291,11 @@ func eventData(eventType string, raw json.RawMessage) (any, error) {
 		return &assessment, nil
 	}
 	return nil, webhookError("invalid_payload", "unknown webhook event type")
+}
+
+func webhookTime(value string) bool {
+	_, err := time.Parse(time.RFC3339Nano, value)
+	return err == nil
 }
 
 // incompleteSourcesComplete checks each incomplete_sources entry names its

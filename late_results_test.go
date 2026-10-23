@@ -244,6 +244,8 @@ func TestDefaultPolicyRevokesOnReviewAndBlock(t *testing.T) {
 	expect(&Event{ID: "evt_x", Type: EventAssessmentUpdated, Data: &AssessmentExpired{Status: "expired", ChangeReason: "expired"}}, nil, LateResultNone)
 	expect(&Event{ID: "evt_x", Type: EventEndpointVerification, Data: &EndpointVerification{}}, nil, LateResultNone)
 	expect(&Event{ID: "evt_x", Type: EventAccountDeleted, Data: &AccountDeleted{AccountID: "acct_1", AssessmentsDeleted: 1}}, nil, LateResultNone)
+	expect(&Event{ID: "evt_x", Type: EventTenantDeleted, Data: &TenantDeleted{WorkspaceID: "tnt_1", Environment: "live"}}, nil, LateResultNone)
+	expect(&Event{ID: "evt_x", Type: EventEndpointDisabled, Data: &EndpointDisabled{EndpointID: "whe_1"}}, nil, LateResultNone)
 	expect(lateEvent("complete", "step_up"), LateResultPolicy{components.AccountDecisionStepUp: LateResultBan}, LateResultBan)
 	expect(lateEvent("complete", "review"), LateResultPolicy{components.AccountDecisionStepUp: LateResultBan}, LateResultNone)
 	expect(lateEvent("complete", "block"), LateResultPolicy{components.AccountDecisionBlock: LateResultBan}, LateResultBan)

@@ -5,8 +5,8 @@ management:
   docVersion: "1"
   speakeasyVersion: internal
   generationVersion: internal
-  releaseVersion: 3.0.3
-  configChecksum: 575556e83aea516a99d2135f426eb456
+  releaseVersion: 3.0.4
+  configChecksum: a83f4bec30b4b85feedb7ecef263b55a
 features:
   go:
     additionalDependencies: 0.1.0
@@ -691,7 +691,7 @@ trackedFiles:
   models/operations/sendwebhooktestevent.go:
     last_write_checksum: sha1:c71fbd16e174c9892cc780a36e77b5c368307508
   noresponse.go:
-    last_write_checksum: sha1:8c3ed3799fcf7e40d33d2cf52f556c234d823767
+    last_write_checksum: sha1:192997cacd567701468664befb6a3baa93c37acc
   optionalnullable/optionalnullable.go:
     last_write_checksum: sha1:38cf187cd65a5213be09788f67d82dc49d46b583
   optionalnullable/optionalnullable_test.go:
