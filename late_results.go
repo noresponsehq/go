@@ -21,10 +21,12 @@ import (
 	"fmt"
 	"io"
 	"log/slog"
+	"math"
 	"net/http"
 	"net/url"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/noresponsehq/go/v3/models/components"
 )
@@ -233,6 +235,42 @@ type adminCaller struct {
 	base          string
 	authorization string
 	client        *http.Client
+	// retryRateLimits waits out a 429 and sends the call again; waited is
+	// the time spent waiting so far, in one action.
+	retryRateLimits bool
+	waited          time.Duration
+}
+
+// Rate limits. Auth0 answers 429 when the Management API rate limit is hit,
+// and a 429 means it did not act, so the call is safe to send again, a DELETE
+// included. One revoke or ban waits at most rateLimitBudget in all, and each
+// call retries at most rateLimitRetries times: it waits Retry-After seconds,
+// else until X-RateLimit-Reset (Unix seconds), else 250 ms, 500 ms, 1 s, 2 s.
+// A wait that would pass the budget is not started: the 429 returns at once
+// as a ProviderActionError, the webhook answers 5xx and NoResponse delivers
+// it again later. The budget keeps the handler inside the 5 s a delivery has
+// to be answered.
+const (
+	rateLimitRetries = 4
+	rateLimitBudget  = 3 * time.Second
+	rateLimitBackoff = 250 * time.Millisecond
+)
+
+// rateLimitWait is how long a 429 asks to wait, capped at an hour so a huge
+// header cannot overflow; anything past the budget gives up anyway.
+func rateLimitWait(header http.Header, retry int) time.Duration {
+	seconds := func(name string) (float64, bool) {
+		value, err := strconv.ParseFloat(strings.TrimSpace(header.Get(name)), 64)
+		return value, err == nil && !math.IsInf(value, 0) && !math.IsNaN(value)
+	}
+	if after, ok := seconds("Retry-After"); ok && after >= 0 {
+		return time.Duration(math.Min(after, 3600) * float64(time.Second))
+	}
+	if reset, ok := seconds("X-RateLimit-Reset"); ok {
+		left := reset - float64(time.Now().UnixNano())/float64(time.Second)
+		return time.Duration(math.Max(0, math.Min(left, 3600)) * float64(time.Second))
+	}
+	return rateLimitBackoff << retry
 }
 
 func newAdminCaller(provider, base, token string, client *http.Client) *adminCaller {
@@ -251,40 +289,72 @@ func (c *adminCaller) do(ctx context.Context, call adminCall) ([]byte, error) {
 	if len(call.query) > 0 {
 		target += "?" + call.query.Encode()
 	}
-	var reader io.Reader
+	var encoded []byte
 	if call.body != nil {
-		encoded, err := json.Marshal(call.body)
+		var err error
+		if encoded, err = json.Marshal(call.body); err != nil {
+			return nil, err
+		}
+	}
+	for retry := 0; ; retry++ {
+		status, header, text, err := c.send(ctx, call.method, target, encoded, call.body != nil)
 		if err != nil {
 			return nil, err
 		}
-		reader = strings.NewReader(string(encoded))
+		if status == http.StatusTooManyRequests && c.retryRateLimits && retry < rateLimitRetries {
+			if wait := rateLimitWait(header, retry); c.waited+wait <= rateLimitBudget {
+				c.waited += wait
+				timer := time.NewTimer(wait)
+				select {
+				case <-ctx.Done():
+					timer.Stop()
+					return nil, ctx.Err()
+				case <-timer.C:
+				}
+				continue
+			}
+		}
+		return c.answer(call, status, text)
 	}
-	request, err := http.NewRequestWithContext(ctx, call.method, target, reader)
+}
+
+// send makes one request and reads the whole answer.
+func (c *adminCaller) send(ctx context.Context, method, target string, body []byte, hasBody bool) (int, http.Header, []byte, error) {
+	var reader io.Reader
+	if hasBody {
+		reader = strings.NewReader(string(body))
+	}
+	request, err := http.NewRequestWithContext(ctx, method, target, reader)
 	if err != nil {
-		return nil, err
+		return 0, nil, nil, err
 	}
 	request.Header.Set("Authorization", c.authorization)
 	request.Header.Set("Accept", "application/json")
-	if call.body != nil {
+	if hasBody {
 		request.Header.Set("Content-Type", "application/json")
 	}
 	response, err := c.client.Do(request)
 	if err != nil {
-		return nil, err
+		return 0, nil, nil, err
 	}
 	defer response.Body.Close()
 	text, err := io.ReadAll(io.LimitReader(response.Body, 4<<20))
 	if err != nil {
-		return nil, err
+		return 0, nil, nil, err
 	}
-	if response.StatusCode == http.StatusNotFound {
+	return response.StatusCode, response.Header, text, nil
+}
+
+// answer maps a response to the body or a ProviderActionError.
+func (c *adminCaller) answer(call adminCall, status int, text []byte) ([]byte, error) {
+	if status == http.StatusNotFound {
 		return nil, nil
 	}
-	if response.StatusCode < 200 || response.StatusCode > 299 {
+	if status < 200 || status > 299 {
 		return nil, &ProviderActionError{
 			Provider: c.provider,
-			Status:   response.StatusCode,
-			Message:  fmt.Sprintf("%s %s %s answered %d", c.provider, call.method, call.path, response.StatusCode),
+			Status:   status,
+			Message:  fmt.Sprintf("%s %s %s answered %d", c.provider, call.method, call.path, status),
 			Code:     errorCode(text),
 		}
 	}
@@ -512,6 +582,11 @@ func (a *WorkOSActions) Ban(ctx context.Context, userID string) error {
 // the refresh tokens, and Act reports LateResultBan. Unblock the user in the
 // dashboard to undo it. Any other refusal, such as 403 insufficient_scope, is
 // returned.
+//
+// A 429 from the Management API is waited out and retried: Retry-After, else
+// X-RateLimit-Reset, else 250 ms doubling, at most 4 retries a call and 3 s
+// of waiting a revoke or ban. Past that the 429 is returned as a
+// ProviderActionError.
 type Auth0Actions struct {
 	// Domain is your Auth0 tenant domain, such as example.eu.auth0.com. The
 	// Management API is https://{Domain}/api/v2.
@@ -541,7 +616,10 @@ func (a *Auth0Actions) caller() (*adminCaller, error) {
 	if base == "" {
 		return nil, errors.New("noresponse: Auth0Actions needs Domain or BaseURL")
 	}
-	return newAdminCaller("auth0", base, a.Token, a.HTTPClient), nil
+	// A new caller for each action, so each revoke or ban has its own rate-limit budget.
+	c := newAdminCaller("auth0", base, a.Token, a.HTTPClient)
+	c.retryRateLimits = true
+	return c, nil
 }
 
 // auth0NotOnPlan reports Auth0's 403 feature_not_enabled, its answer when the

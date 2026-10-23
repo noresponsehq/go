@@ -16,9 +16,11 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
+	"strconv"
 	"strings"
 	"sync"
 	"testing"
+	"time"
 
 	"github.com/noresponsehq/go/v3/models/components"
 )
@@ -590,6 +592,108 @@ func TestAuth0WithoutSessionsAPIBlocksDeletesDeviceCredentialsAndReportsBan(t *t
 	}
 	if blocked, _ := tenant.state(); !blocked {
 		t.Fatal("RevokeSessions did not block")
+	}
+}
+
+var auth0TooManyRequests = map[string]any{"statusCode": 429, "error": "Too Many Requests", "message": "Global limit has been reached", "errorCode": "too_many_requests"}
+
+// rateLimited answers 429 once to each call named in limited, with that
+// entry's headers, and passes everything else to next. A GET is named by its
+// type query.
+func rateLimited(t *testing.T, limited map[string]map[string]string, next func(c mockCall) (int, any)) (*httptest.Server, *[]string, *sync.Mutex) {
+	t.Helper()
+	var mu sync.Mutex
+	var sent []string
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		text, _ := io.ReadAll(r.Body)
+		call := mockCall{Method: r.Method, Path: r.URL.EscapedPath(), Query: map[string]string{}}
+		for k, v := range r.URL.Query() {
+			call.Query[k] = v[0]
+		}
+		if len(text) > 0 {
+			_ = json.Unmarshal(text, &call.Body)
+		}
+		key := call.Method + " " + call.Path
+		if call.Method == "GET" {
+			key = "GET " + call.Query["type"]
+		}
+		mu.Lock()
+		sent = append(sent, key)
+		headers, limit := limited[key]
+		delete(limited, key)
+		mu.Unlock()
+		w.Header().Set("Content-Type", "application/json")
+		status, body := 429, any(auth0TooManyRequests)
+		if limit {
+			for k, v := range headers {
+				w.Header().Set(k, v)
+			}
+		} else if status, body = next(call); status == 0 {
+			status, body = 404, map[string]string{"error": "not found"}
+		}
+		w.WriteHeader(status)
+		if body != nil {
+			_ = json.NewEncoder(w).Encode(body)
+		}
+	}))
+	t.Cleanup(server.Close)
+	return server, &sent, &mu
+}
+
+func TestAuth0WaitsOutA429AndRetriesTheCall(t *testing.T) {
+	tenant := newAuth0WithoutSessionsAPI("auth0%7Cabc", false)
+	// One 429 each: Retry-After, an X-RateLimit-Reset already past, and no header (the backoff).
+	limited := map[string]map[string]string{
+		"GET refresh_token":                       {"Retry-After": "0"},
+		"DELETE /api/v2/device-credentials/dcr_a": {"X-RateLimit-Reset": strconv.FormatInt(time.Now().Unix()-5, 10)},
+		"DELETE /api/v2/device-credentials/dcr_b": {},
+	}
+	server, sent, mu := rateLimited(t, limited, tenant.route)
+	auth0 := &Auth0Actions{BaseURL: server.URL + "/api/v2", Token: "mgmt_token"}
+	raw, headers := lateDelivery(t, lateView(t, "assessment-phone-uncovered-complete.json"), "auth0|abc")
+	result, err := HandleLateResult(context.Background(), raw, headers, lateSecrets, auth0, lateOptions(nil))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if result.Action != LateResultBan {
+		t.Fatalf("result = %+v", result)
+	}
+	if blocked, left := tenant.state(); !blocked || left != 0 {
+		t.Fatalf("blocked %v, %d credentials left", blocked, left)
+	}
+	mu.Lock()
+	defer mu.Unlock()
+	if len(limited) != 0 {
+		t.Fatalf("calls never sent: %v", limited)
+	}
+	count := map[string]int{}
+	for _, k := range *sent {
+		count[k]++
+	}
+	for _, k := range []string{"GET refresh_token", "DELETE /api/v2/device-credentials/dcr_a", "DELETE /api/v2/device-credentials/dcr_b"} {
+		if count[k] != 2 {
+			t.Fatalf("%s sent %d times; calls %v", k, count[k], *sent)
+		}
+	}
+}
+
+func TestAuth0ReturnsA429AtOnceWhenTheWaitPassesTheBudget(t *testing.T) {
+	limited := map[string]map[string]string{"DELETE /api/v2/users/auth0%7Cabc/sessions": {"Retry-After": "60"}}
+	server, sent, mu := rateLimited(t, limited, func(mockCall) (int, any) { return 200, nil })
+	auth0 := &Auth0Actions{BaseURL: server.URL + "/api/v2", Token: "mgmt_token"}
+	started := time.Now()
+	_, err := auth0.Act(context.Background(), LateResultRevokeSessions, "auth0|abc")
+	var refused *ProviderActionError
+	if !errors.As(err, &refused) || refused.Status != 429 || refused.Code != "too_many_requests" {
+		t.Fatalf("err = %v", err)
+	}
+	if elapsed := time.Since(started); elapsed > time.Second {
+		t.Fatalf("waited %v", elapsed)
+	}
+	mu.Lock()
+	defer mu.Unlock()
+	if len(*sent) != 1 {
+		t.Fatalf("calls %v", *sent)
 	}
 }
 
