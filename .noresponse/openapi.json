@@ -2607,6 +2607,7 @@
             "type": "array",
             "minItems": 1,
             "maxItems": 2,
+            "uniqueItems": true,
             "items": {
               "$ref": "#/components/schemas/IntegrationHookPoint"
             },
@@ -2687,6 +2688,7 @@
             "type": "array",
             "minItems": 1,
             "maxItems": 2,
+            "uniqueItems": true,
             "items": {
               "$ref": "#/components/schemas/IntegrationHookPoint"
             },
@@ -6559,7 +6561,7 @@
         }
       },
       "InvalidWebhookDeliveriesRequest": {
-        "description": "A query parameter is unknown, repeated or out of range, or the cursor fails its MAC, belongs to another tenant or endpoint, or has expired. invalid_params names the offending parameters without their values.",
+        "description": "A query parameter is unknown, repeated or out of range (invalid_request), or the cursor is empty, fails its MAC, belongs to another tenant or endpoint, or has expired (invalid_cursor). invalid_params names the offending parameters without their values.",
         "headers": {
           "Cache-Control": {
             "schema": {
