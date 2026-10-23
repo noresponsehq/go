@@ -1,11 +1,11 @@
 package operations
 
 import (
-	"github.com/noresponsehq/go/v4/models/components"
+	"github.com/noresponsehq/go/v5/models/components"
 )
 
 type RecordKeyUsageRequest struct {
-	// Opaque client key, 16 to 128 characters of [A-Za-z0-9._:-] (a UUID or ULID fits). Scoped to the tenant principal and bound to the canonical body for 24 hours.
+	// Opaque client key, 16 to 128 characters of [A-Za-z0-9._:-] (a UUID or ULID fits). Scoped to the workspace principal and bound to the canonical body for 24 hours.
 	IdempotencyKey string                          `header:"style=simple,explode=false,name=Idempotency-Key"`
 	Body           components.KeyUsageBatchRequest `request:"mediaType=application/json"`
 }

@@ -18,7 +18,7 @@
     ]
   },
   "decisions_by_flow": {
-    "signup": "step_up",
+    "account_creation": "step_up",
     "login": "step_up",
     "purchase": "step_up"
   },

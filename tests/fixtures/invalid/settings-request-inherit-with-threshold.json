@@ -1,1 +1,1 @@
-{"flows": {"login": {"inherits_signup": true, "review": 60}}}
+{"flows": {"login": {"inherits_account_creation": true, "review": 60}}}

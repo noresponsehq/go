@@ -1,13 +1,13 @@
 package operations
 
 import (
-	"github.com/noresponsehq/go/v4/models/components"
+	"github.com/noresponsehq/go/v5/models/components"
 )
 
 type ReplayWebhookDeliveryRequest struct {
-	// The endpoint's whe_ id. An id that is unknown, malformed or another tenant's answers 404.
+	// The endpoint's whe_ id. An id that is unknown, malformed or another workspace's answers 404.
 	EndpointID string `pathParam:"style=simple,explode=false,name=endpoint_id"`
-	// The evt_ id of a delivery the endpoint's log holds, as GET /v1/webhooks/{endpoint_id}/deliveries lists it. An id that is malformed, not sent to this endpoint, past the log's retention or another tenant's answers 404.
+	// The evt_ id of a delivery the endpoint's log holds, as GET /v1/webhooks/{endpoint_id}/deliveries lists it. An id that is malformed, not sent to this endpoint, past the log's retention or another workspace's answers 404.
 	EventID string                          `pathParam:"style=simple,explode=false,name=event_id"`
 	Body    components.WebhookReplayRequest `request:"mediaType=application/json"`
 }

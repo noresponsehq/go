@@ -23,7 +23,7 @@
         ]
       },
       "decisions_by_flow": {
-        "signup": "review",
+        "account_creation": "review",
         "login": "review",
         "purchase": "review"
       },

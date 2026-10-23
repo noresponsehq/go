@@ -1,11 +1,11 @@
 package operations
 
 import (
-	"github.com/noresponsehq/go/v4/models/components"
+	"github.com/noresponsehq/go/v5/models/components"
 )
 
 type SendWebhookTestEventRequest struct {
-	// The endpoint's whe_ id. An id that is unknown, malformed or another tenant's answers 404.
+	// The endpoint's whe_ id. An id that is unknown, malformed or another workspace's answers 404.
 	EndpointID string                        `pathParam:"style=simple,explode=false,name=endpoint_id"`
 	Body       components.WebhookTestRequest `request:"mediaType=application/json"`
 }

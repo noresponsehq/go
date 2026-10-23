@@ -1,6 +1,6 @@
 # KeyRotationRequest
 
-POST /v1/keys/rotate body. The tenant and the key being rotated are the API key that signs the request, so neither is a body member. An empty object takes the default overlap.
+POST /v1/keys/rotate body. The workspace and the key being rotated are the API key that signs the request, so neither is a body member. An empty object takes the default overlap.
 
 
 ## Fields

@@ -16,7 +16,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/noresponsehq/go/v4/models/components"
+	"github.com/noresponsehq/go/v5/models/components"
 )
 
 // DefaultWebhookTolerance is how far a delivery's timestamp may be from now.
@@ -27,7 +27,7 @@ const (
 	EventAssessmentUpdated    = "assessment.updated"
 	EventEndpointVerification = "endpoint.verification"
 	EventAccountDeleted       = "account.deleted"
-	EventTenantDeleted        = "tenant.deleted"
+	EventWorkspaceDeleted     = "workspace.deleted"
 	EventEndpointDisabled     = "webhook_endpoint.disabled"
 	EventAccountRiskChanged   = "account.risk_changed"
 )
@@ -90,10 +90,10 @@ type AccountDeleted struct {
 	DeletedAt          string `json:"deleted_at"`
 }
 
-// TenantDeleted says the workspace was deleted. It is sent once per
+// WorkspaceDeleted says the workspace was deleted. It is sent once per
 // environment, before that environment's endpoints are torn down, and is the
 // last event the endpoint receives. Environment is "live" or "test".
-type TenantDeleted struct {
+type WorkspaceDeleted struct {
 	WorkspaceID string `json:"workspace_id"`
 	Environment string `json:"environment"`
 	DeletedAt   string `json:"deleted_at"`
@@ -122,7 +122,7 @@ type AccountRiskChanged struct {
 // assessment.updated event (exactly as Assessments.Get returns it),
 // *AssessmentExpired for the terminal expiry notice, *EndpointVerification
 // for endpoint.verification, *AccountDeleted for account.deleted,
-// *TenantDeleted for tenant.deleted, *EndpointDisabled for
+// *WorkspaceDeleted for workspace.deleted, *EndpointDisabled for
 // webhook_endpoint.disabled and *AccountRiskChanged for
 // account.risk_changed. Deliveries are at least
 // once and unordered: deduplicate on ID and keep the highest
@@ -133,7 +133,7 @@ type AccountRiskChanged struct {
 //	case *noresponse.AssessmentExpired:
 //	case *noresponse.EndpointVerification:
 //	case *noresponse.AccountDeleted:
-//	case *noresponse.TenantDeleted:
+//	case *noresponse.WorkspaceDeleted:
 //	case *noresponse.EndpointDisabled:
 //	case *noresponse.AccountRiskChanged:
 //	}
@@ -262,8 +262,8 @@ func eventData(eventType string, raw json.RawMessage) (any, error) {
 			return nil, webhookError("invalid_payload", "account deleted event is malformed")
 		}
 		return &deleted, nil
-	case EventTenantDeleted:
-		var deleted TenantDeleted
+	case EventWorkspaceDeleted:
+		var deleted WorkspaceDeleted
 		if err := json.Unmarshal(raw, &deleted); err != nil || !webhookWorkspaceID.MatchString(deleted.WorkspaceID) ||
 			(deleted.Environment != "live" && deleted.Environment != "test") || !webhookTime(deleted.DeletedAt) {
 			return nil, webhookError("invalid_payload", "tenant deleted event is malformed")

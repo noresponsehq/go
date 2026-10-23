@@ -2,7 +2,7 @@ package apierrors
 
 import (
 	"encoding/json"
-	"github.com/noresponsehq/go/v4/models/components"
+	"github.com/noresponsehq/go/v5/models/components"
 )
 
 // ConflictError - HTTP 409 problem document.

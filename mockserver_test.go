@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/noresponsehq/go/v4/models/components"
+	"github.com/noresponsehq/go/v5/models/components"
 )
 
 // Smoke test of the client against the mock server.
@@ -28,7 +28,7 @@ func TestMockServerCreate(t *testing.T) {
 	email := "new.user@example.com"
 	res, err := mockClient(t).Assessments.Create(context.Background(), "mock-server-smoke-0001", components.AssessmentRequest{
 		AccountID:   "acct_7f3a9c",
-		Flow:        components.FlowSignup,
+		Flow:        components.FlowAccountCreation,
 		Identifiers: components.AssessmentRequestIdentifiers{Email: &email},
 	})
 	if err != nil {

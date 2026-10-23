@@ -16,13 +16,13 @@
         "identifier": "ip"
       },
       {
-        "code": "many_recent_signups",
+        "code": "many_recent_accounts",
         "weight": 20
       }
     ]
   },
   "decisions_by_flow": {
-    "signup": "block",
+    "account_creation": "block",
     "login": "block",
     "purchase": "block"
   },

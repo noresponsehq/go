@@ -3,8 +3,8 @@
   "info": {
     "title": "NoResponse API",
     "version": "1",
-    "summary": "Server-side signup and gateway risk assessment: a recommendation, polling and signed webhooks.",
-    "description": "Assess a signup, login or purchase and get back the account's one current risk, poll a pending assessment, page through an account's history, record what you later learned, report usage of the API keys you issue to your accounts, rotate your API key, manage your webhook endpoints, and register hosted endpoints that answer your WorkOS or Auth0 sign-up and sign-in hooks. Every response carries X-Request-ID; every error is an RFC 9457 problem document. Keep the API key on your server.",
+    "summary": "Server-side risk assessment of account creation, login and purchase: a recommendation, polling and signed webhooks.",
+    "description": "Assess an account creation, login or purchase and get back the account's one current risk, poll a pending assessment, page through an account's history, record what you later learned, report usage of the API keys you issue to your accounts, rotate your API key, manage your webhook endpoints, and register hosted endpoints that answer your WorkOS or Auth0 sign-up and sign-in hooks. Every response carries X-Request-ID; every error is an RFC 9457 problem document. Keep the API key on your server.",
     "license": {
       "name": "Apache-2.0",
       "identifier": "Apache-2.0"
@@ -39,7 +39,7 @@
   "tags": [
     {
       "name": "assessments",
-      "description": "Signup and gateway assessments."
+      "description": "Assessments of account creation, login and purchase."
     },
     {
       "name": "accounts",
@@ -68,7 +68,7 @@
           "assessments"
         ],
         "summary": "Assess identifiers for a signup or gateway decision.",
-        "description": "Assesses one signup, login or purchase (flow) and answers with the account's one current risk: account.risk.decision is the decision for this flow (allow, step_up, review or block, where block means your block threshold was reached), and detail holds this assessment's own facts. depth sets how long the answer waits for sources: quick waits only for the fast ones (500 ms), full for the whole budget (3000 ms at most); it defaults to full for signup and purchase and quick for login. 200 carries complete or partial, 202 carries pending with Location and Retry-After. While the account's first assessment is pending, account is absent: apply your own fallback for that, 429, 503 or a timeout. NoResponse blocks nothing itself; you decide. Requires the assess scope. Idempotency-Key is required and is bound to the body for 24 hours: the same key with the same body replays the latest assessment with Idempotent-Replayed: true and starts no new work; the same key with a different body answers 409 idempotency_key_reused. response_mode defaults to standard; detailed needs the detailed scope.",
+        "description": "Assesses one account creation, login or purchase (flow) and answers with the account's one current risk: account.risk.decision is the decision for this flow (allow, step_up, review or block, where block means your block threshold was reached), and detail holds this assessment's own facts. depth sets how long the answer waits for sources: quick waits only for the fast ones (500 ms), full for the whole budget (3000 ms at most); it defaults to full for account_creation and purchase and quick for login. 200 carries complete or partial, 202 carries pending with Location and Retry-After. While the account's first assessment is pending, account is absent: apply your own fallback for that, 429, 503 or a timeout. NoResponse blocks nothing itself; you decide. Requires the assess scope. Idempotency-Key is required and is bound to the body for 24 hours: the same key with the same body replays the latest assessment with Idempotent-Replayed: true and starts no new work; the same key with a different body answers 409 idempotency_key_reused. response_mode defaults to standard; detailed needs the detailed scope.",
         "parameters": [
           {
             "$ref": "#/components/parameters/IdempotencyKey"
@@ -85,7 +85,7 @@
                 "minimal": {
                   "value": {
                     "account_id": "acct_7f3a9c",
-                    "flow": "signup",
+                    "flow": "account_creation",
                     "identifiers": {
                       "email": "new.user@example.com"
                     }
@@ -94,7 +94,7 @@
                 "full": {
                   "value": {
                     "account_id": "acct_7f3a9c",
-                    "flow": "signup",
+                    "flow": "account_creation",
                     "identifiers": {
                       "email": "new.user@example.com",
                       "username": "new_user_42",
@@ -110,7 +110,7 @@
                 "name_and_ip": {
                   "value": {
                     "account_id": "acct_8412",
-                    "flow": "signup",
+                    "flow": "account_creation",
                     "identifiers": {
                       "email": "jane.doe@example.com",
                       "username": "janedoe",
@@ -144,7 +144,7 @@
             "$ref": "#/components/responses/Unauthorized"
           },
           "403": {
-            "$ref": "#/components/responses/TenantForbidden"
+            "$ref": "#/components/responses/WorkspaceForbidden"
           },
           "404": {
             "$ref": "#/components/responses/NotFound"
@@ -172,7 +172,7 @@
           "assessments"
         ],
         "summary": "Poll the authoritative assessment of one assessment.",
-        "description": "Returns the highest assessment_version, with the account's current risk. Requires the assess or history scope. While status is pending, or partial with a source still running, the response carries Retry-After; poll no faster than it says. Another tenant's assessment, an unknown or expired assessment and a malformed assessment_id all answer 404 not_found. response_mode=detailed needs the detailed scope.",
+        "description": "Returns the highest assessment_version, with the account's current risk. Requires the assess or history scope. While status is pending, or partial with a source still running, the response carries Retry-After; poll no faster than it says. Another workspace's assessment, an unknown or expired assessment and a malformed assessment_id all answer 404 not_found. response_mode=detailed needs the detailed scope.",
         "parameters": [
           {
             "$ref": "#/components/parameters/AssessmentId"
@@ -199,7 +199,7 @@
             "$ref": "#/components/responses/Unauthorized"
           },
           "403": {
-            "$ref": "#/components/responses/TenantForbidden"
+            "$ref": "#/components/responses/WorkspaceForbidden"
           },
           "404": {
             "$ref": "#/components/responses/NotFound"
@@ -242,7 +242,7 @@
             "$ref": "#/components/responses/Unauthorized"
           },
           "403": {
-            "$ref": "#/components/responses/TenantForbidden"
+            "$ref": "#/components/responses/WorkspaceForbidden"
           },
           "404": {
             "$ref": "#/components/responses/NotFound"
@@ -315,7 +315,7 @@
             "$ref": "#/components/responses/Unauthorized"
           },
           "403": {
-            "$ref": "#/components/responses/TenantForbidden"
+            "$ref": "#/components/responses/WorkspaceForbidden"
           },
           "404": {
             "$ref": "#/components/responses/NotFound"
@@ -343,7 +343,7 @@
           "assessments"
         ],
         "summary": "Page through one account's unexpired assessments.",
-        "description": "History is a POST with account_id in the body so an account identifier stays out of URLs and access logs. Requires the history scope. Read-only and safe to retry. Newest first, each at its latest assessment_version. An account with no assessments answers 200 with empty items. The cursor is opaque and bound to your tenant and the account; a tampered or expired cursor answers 400 invalid_cursor. response_mode=detailed needs the detailed scope.",
+        "description": "History is a POST with account_id in the body so an account identifier stays out of URLs and access logs. Requires the history scope. Read-only and safe to retry. Newest first, each at its latest assessment_version. An account with no assessments answers 200 with empty items. The cursor is opaque and bound to your workspace and the account; a tampered or expired cursor answers 400 invalid_cursor. response_mode=detailed needs the detailed scope.",
         "requestBody": {
           "required": true,
           "content": {
@@ -373,7 +373,7 @@
             "$ref": "#/components/responses/Unauthorized"
           },
           "403": {
-            "$ref": "#/components/responses/TenantForbidden"
+            "$ref": "#/components/responses/WorkspaceForbidden"
           },
           "404": {
             "$ref": "#/components/responses/NotFound"
@@ -431,7 +431,7 @@
             "$ref": "#/components/responses/Unauthorized"
           },
           "403": {
-            "$ref": "#/components/responses/TenantForbidden"
+            "$ref": "#/components/responses/WorkspaceForbidden"
           },
           "404": {
             "$ref": "#/components/responses/AccountNotFound"
@@ -474,7 +474,7 @@
             "$ref": "#/components/responses/Unauthorized"
           },
           "403": {
-            "$ref": "#/components/responses/TenantForbidden"
+            "$ref": "#/components/responses/WorkspaceForbidden"
           },
           "404": {
             "$ref": "#/components/responses/NotFound"
@@ -502,7 +502,7 @@
           "accounts"
         ],
         "summary": "Page through one account's unexpired assessments.",
-        "description": "The account's history: the same page as POST /v1/assessments/query for this account_id, newest first, each at its latest assessment_version. Requires the history scope. Read-only and safe to retry. An account with no assessments answers 200 with empty items. The cursor is opaque and bound to your tenant and the account; a tampered or expired cursor answers 400 invalid_cursor. response_mode=detailed needs the detailed scope. The account_id travels in the URL; use POST /v1/assessments/query to keep it out of access logs.",
+        "description": "The account's history: the same page as POST /v1/assessments/query for this account_id, newest first, each at its latest assessment_version. Requires the history scope. Read-only and safe to retry. An account with no assessments answers 200 with empty items. The cursor is opaque and bound to your workspace and the account; a tampered or expired cursor answers 400 invalid_cursor. response_mode=detailed needs the detailed scope. The account_id travels in the URL; use POST /v1/assessments/query to keep it out of access logs.",
         "parameters": [
           {
             "$ref": "#/components/parameters/AccountId"
@@ -553,7 +553,7 @@
             "$ref": "#/components/responses/Unauthorized"
           },
           "403": {
-            "$ref": "#/components/responses/TenantForbidden"
+            "$ref": "#/components/responses/WorkspaceForbidden"
           },
           "404": {
             "$ref": "#/components/responses/NotFound"
@@ -593,8 +593,8 @@
         "tags": [
           "keyUsage"
         ],
-        "summary": "Report requests made with API keys your signup gate issued.",
-        "description": "Records requests made with API keys your signup gate issued to your accounts, one event per request: the key's SHA-256 (the issued_credential.sha256 the account's assessment carried), the client IP, the time and optionally the user agent, model and token counts. Most callers use the SDK's usage buffer, which batches events and sends them in the background. Sampling is allowed: sample_rate weights an event's request and token counts. Requires the assess scope. Idempotency-Key is required and handled as on POST /v1/assessments: a retry with the same key and body answers the same record with Idempotent-Replayed: true and counts nothing again; a different body answers 409. A batch holds 1 to 500 events and at most 256 KiB. No raw event is kept: usage is aggregated per key, and IPs, user agents and models are kept only as keyed digests, with the IP's country, for 24 hours. When one key is used from 20 or more IP addresses, or 3 or more countries, within 24 hours, every account whose assessment carried that key gets the shared_api_key reason for 30 days.",
+        "summary": "Report requests made with API keys your platform issued.",
+        "description": "Records requests made with API keys your platform issued to your accounts, one event per request: the key's SHA-256 (the issued_credential.sha256 the account's assessment carried), the client IP, the time and optionally the user agent, model and token counts. Most callers use the SDK's usage buffer, which batches events and sends them in the background. Sampling is allowed: sample_rate weights an event's request and token counts. Requires the assess scope. Idempotency-Key is required and handled as on POST /v1/assessments: a retry with the same key and body answers the same record with Idempotent-Replayed: true and counts nothing again; a different body answers 409. A batch holds 1 to 500 events and at most 256 KiB. No raw event is kept: usage is aggregated per key, and IPs, user agents and models are kept only as keyed digests, with the IP's country, for 24 hours. When one key is used from 20 or more IP addresses, or 3 or more countries, within 24 hours, every account whose assessment carried that key gets the shared_api_key reason for 30 days.",
         "parameters": [
           {
             "$ref": "#/components/parameters/IdempotencyKey"
@@ -644,7 +644,7 @@
             "$ref": "#/components/responses/Unauthorized"
           },
           "403": {
-            "$ref": "#/components/responses/TenantForbidden"
+            "$ref": "#/components/responses/WorkspaceForbidden"
           },
           "404": {
             "$ref": "#/components/responses/NotFound"
@@ -704,7 +704,7 @@
             "$ref": "#/components/responses/Unauthorized"
           },
           "403": {
-            "$ref": "#/components/responses/TenantForbidden"
+            "$ref": "#/components/responses/WorkspaceForbidden"
           },
           "404": {
             "$ref": "#/components/responses/NotFound"
@@ -774,7 +774,7 @@
             "$ref": "#/components/responses/Unauthorized"
           },
           "403": {
-            "$ref": "#/components/responses/TenantForbidden"
+            "$ref": "#/components/responses/WorkspaceForbidden"
           },
           "404": {
             "$ref": "#/components/responses/NotFound"
@@ -802,7 +802,7 @@
         "tags": [
           "integrations"
         ],
-        "summary": "List the tenant's integrations.",
+        "summary": "List the workspace's integrations.",
         "description": "Every integration, oldest first. Listings carry no secrets. Requires the integrations scope.",
         "responses": {
           "200": {
@@ -815,7 +815,7 @@
             "$ref": "#/components/responses/Unauthorized"
           },
           "403": {
-            "$ref": "#/components/responses/TenantForbidden"
+            "$ref": "#/components/responses/WorkspaceForbidden"
           },
           "404": {
             "$ref": "#/components/responses/NotFound"
@@ -860,7 +860,7 @@
             "$ref": "#/components/responses/Unauthorized"
           },
           "403": {
-            "$ref": "#/components/responses/TenantForbidden"
+            "$ref": "#/components/responses/WorkspaceForbidden"
           },
           "404": {
             "$ref": "#/components/responses/IntegrationNotFound"
@@ -925,7 +925,7 @@
             "$ref": "#/components/responses/Unauthorized"
           },
           "403": {
-            "$ref": "#/components/responses/TenantForbidden"
+            "$ref": "#/components/responses/WorkspaceForbidden"
           },
           "404": {
             "$ref": "#/components/responses/IntegrationNotFound"
@@ -955,7 +955,7 @@
         "tags": [
           "webhookEndpoints"
         ],
-        "summary": "List the tenant's webhook endpoints.",
+        "summary": "List the workspace's webhook endpoints.",
         "description": "Lists your webhook endpoints in every state, ordered by endpoint_id, with the ids of their signing keys and without secrets. Requires the webhooks scope.",
         "responses": {
           "200": {
@@ -968,7 +968,7 @@
             "$ref": "#/components/responses/Unauthorized"
           },
           "403": {
-            "$ref": "#/components/responses/TenantForbidden"
+            "$ref": "#/components/responses/WorkspaceForbidden"
           },
           "404": {
             "$ref": "#/components/responses/NotFound"
@@ -1029,7 +1029,7 @@
             "$ref": "#/components/responses/Unauthorized"
           },
           "403": {
-            "$ref": "#/components/responses/TenantForbidden"
+            "$ref": "#/components/responses/WorkspaceForbidden"
           },
           "404": {
             "$ref": "#/components/responses/NotFound"
@@ -1077,7 +1077,7 @@
             "$ref": "#/components/responses/Unauthorized"
           },
           "403": {
-            "$ref": "#/components/responses/TenantForbidden"
+            "$ref": "#/components/responses/WorkspaceForbidden"
           },
           "404": {
             "$ref": "#/components/responses/WebhookEndpointNotFound"
@@ -1137,7 +1137,7 @@
             "$ref": "#/components/responses/Unauthorized"
           },
           "403": {
-            "$ref": "#/components/responses/TenantForbidden"
+            "$ref": "#/components/responses/WorkspaceForbidden"
           },
           "404": {
             "$ref": "#/components/responses/WebhookEndpointNotFound"
@@ -1207,7 +1207,7 @@
             "$ref": "#/components/responses/Unauthorized"
           },
           "403": {
-            "$ref": "#/components/responses/TenantForbidden"
+            "$ref": "#/components/responses/WorkspaceForbidden"
           },
           "404": {
             "$ref": "#/components/responses/WebhookEndpointNotFound"
@@ -1238,7 +1238,7 @@
           "webhookEndpoints"
         ],
         "summary": "List an endpoint's delivery attempts.",
-        "description": "Every POST the endpoint received, newest first: the event id and type, which attempt it was, whether it was a replay, delivered or failed, the response code, why it failed and how long it took. Attempts are kept for 30 days, or your retention_days when that is shorter, and are deleted with the assessment they carried. Requires the webhooks scope. Read-only and safe to retry. The cursor is opaque and bound to your tenant and the endpoint; a tampered or expired cursor answers 400 invalid_cursor.",
+        "description": "Every POST the endpoint received, newest first: the event id and type, which attempt it was, whether it was a replay, delivered or failed, the response code, why it failed and how long it took. Attempts are kept for 30 days, or your retention_days when that is shorter, and are deleted with the assessment they carried. Requires the webhooks scope. Read-only and safe to retry. The cursor is opaque and bound to your workspace and the endpoint; a tampered or expired cursor answers 400 invalid_cursor.",
         "parameters": [
           {
             "$ref": "#/components/parameters/EndpointId"
@@ -1279,7 +1279,7 @@
             "$ref": "#/components/responses/Unauthorized"
           },
           "403": {
-            "$ref": "#/components/responses/TenantForbidden"
+            "$ref": "#/components/responses/WorkspaceForbidden"
           },
           "404": {
             "$ref": "#/components/responses/WebhookEndpointNotFound"
@@ -1355,7 +1355,7 @@
             "$ref": "#/components/responses/Unauthorized"
           },
           "403": {
-            "$ref": "#/components/responses/TenantForbidden"
+            "$ref": "#/components/responses/WorkspaceForbidden"
           },
           "404": {
             "$ref": "#/components/responses/WebhookDeliveryNotFound"
@@ -1383,12 +1383,12 @@
       "apiKey": {
         "type": "http",
         "scheme": "bearer",
-        "description": "Your API key, sent as `Authorization: Bearer <key>`. Keys are opaque, scoped (assess, history, webhooks, integrations, and optionally detailed) and identify one tenant. Rotate with POST /v1/keys/rotate. A missing, malformed, revoked or expired key answers 401; a key without the operation's scope answers 403."
+        "description": "Your API key, sent as `Authorization: Bearer <key>`. Keys are opaque, scoped (assess, history, webhooks, integrations, and optionally detailed) and identify one workspace. Rotate with POST /v1/keys/rotate. A missing, malformed, revoked or expired key answers 401; a key without the operation's scope answers 403."
       }
     },
     "schemas": {
       "Account": {
-        "description": "Body of the 200 answer to GET /v1/accounts/{account_id}: the one current risk of one of the calling tenant's accounts. It is the risk of the account's latest assessment that has a decision (status complete or partial), by created_at and then assessment_id, scored exactly as GET /v1/assessments/{assessment_id} scores that assessment, plus the account's own reason shared_api_key when a key issued to the account was used from many IP addresses or countries (POST /v1/key_usage/batches). Its assessments are the account's history (GET /v1/accounts/{account_id}/assessments).",
+        "description": "Body of the 200 answer to GET /v1/accounts/{account_id}: the one current risk of one of the calling workspace's accounts. It is the risk of the account's latest assessment that has a decision (status complete or partial), by created_at and then assessment_id, scored exactly as GET /v1/assessments/{assessment_id} scores that assessment, plus the account's own reason shared_api_key when a key issued to the account was used from many IP addresses or countries (POST /v1/key_usage/batches). Its assessments are the account's history (GET /v1/accounts/{account_id}/assessments).",
         "type": "object",
         "additionalProperties": false,
         "required": [
@@ -1409,7 +1409,7 @@
             "minLength": 1,
             "maxLength": 128,
             "pattern": "^[A-Za-z0-9][A-Za-z0-9._:|-]{0,127}$",
-            "description": "The account_id the tenant sends with its assessments.",
+            "description": "The account_id the workspace sends with its assessments.",
             "example": "acct_7f3a9c"
           },
           "risk": {
@@ -1417,7 +1417,7 @@
           },
           "decisions_by_flow": {
             "$ref": "#/components/schemas/AccountDecisionsByFlow",
-            "description": "The decision for each flow: the account's score under that flow's thresholds. A flow the workspace has not set uses its signup thresholds, so the flows differ only where it set them."
+            "description": "The decision for each flow: the account's score under that flow's thresholds. A flow the workspace has not set uses its account_creation thresholds, so the flows differ only where it set them."
           },
           "assessment_id": {
             "type": "string",
@@ -1445,13 +1445,13 @@
         "type": "object",
         "additionalProperties": false,
         "required": [
-          "signup",
+          "account_creation",
           "login",
           "purchase"
         ],
-        "description": "The decision for each flow: the account's score under that flow's thresholds. A flow the workspace has not set uses its signup thresholds, so the flows differ only where it set them.",
+        "description": "The decision for each flow: the account's score under that flow's thresholds. A flow the workspace has not set uses its account_creation thresholds, so the flows differ only where it set them.",
         "properties": {
-          "signup": {
+          "account_creation": {
             "$ref": "#/components/schemas/AccountDecision"
           },
           "login": {
@@ -1463,7 +1463,7 @@
         }
       },
       "AccountDeletion": {
-        "description": "Body of the 200 answer to DELETE /v1/accounts/{account_id}: the calling tenant's account was erased in the environment of the calling key. Every assessment of the account went, with its revisions, evidence, outcomes and the identity-graph marks its outcomes set, and an assessment that was still running when the call arrived is stopped. Afterwards GET /v1/accounts/{account_id} and GET /v1/assessments/{assessment_id} of each erased assessment answer 404, and the history page is empty. The call is idempotent: a repeat, or an account with nothing to erase, answers 200 with assessments_deleted 0. The account_id can be assessed again later, as a new account.",
+        "description": "Body of the 200 answer to DELETE /v1/accounts/{account_id}: the calling workspace's account was erased in the environment of the calling key. Every assessment of the account went, with its revisions, evidence, outcomes and the identity-graph marks its outcomes set, and an assessment that was still running when the call arrived is stopped. Afterwards GET /v1/accounts/{account_id} and GET /v1/assessments/{assessment_id} of each erased assessment answer 404, and the history page is empty. The call is idempotent: a repeat, or an account with nothing to erase, answers 200 with assessments_deleted 0. The account_id can be assessed again later, as a new account.",
         "type": "object",
         "additionalProperties": false,
         "required": [
@@ -1580,7 +1580,7 @@
           },
           "flow": {
             "$ref": "#/components/schemas/Flow",
-            "description": "The flow the request named. account.risk.decision is the decision for it. An assessment made before flows existed reports signup."
+            "description": "The flow the request named. account.risk.decision is the decision for it. An assessment made before flows existed reports account_creation."
           },
           "depth": {
             "$ref": "#/components/schemas/Depth",
@@ -1597,7 +1597,7 @@
         }
       },
       "AssessmentDeletion": {
-        "description": "Body of the 200 answer to DELETE /v1/assessments/{assessment_id}: one of the calling tenant's assessments was deleted, with its versions, evidence, outcomes and the identity-graph marks its outcomes set. Afterwards GET /v1/assessments/{assessment_id} answers 404 and the assessment leaves the account's history. The account is scored again from what remains: account.current_assessment_id names the assessment GET /v1/accounts/{account_id} now serves its risk from, and is absent when the account has no assessment with a decision left. Deleting an assessment that is already gone answers 404.",
+        "description": "Body of the 200 answer to DELETE /v1/assessments/{assessment_id}: one of the calling workspace's assessments was deleted, with its versions, evidence, outcomes and the identity-graph marks its outcomes set. Afterwards GET /v1/assessments/{assessment_id} answers 404 and the assessment leaves the account's history. The account is scored again from what remains: account.current_assessment_id names the assessment GET /v1/accounts/{account_id} now serves its risk from, and is absent when the account has no assessment with a decision left. Deleting an assessment that is already gone answers 404.",
         "type": "object",
         "additionalProperties": false,
         "required": [
@@ -1681,7 +1681,7 @@
           "assessment_id": {
             "type": "string",
             "pattern": "^asm_[0-9A-HJKMNP-TV-Z]{26}$",
-            "description": "Opaque, server-assigned assessment id: 'asm_' and a 26-character Crockford base32 ULID. Unique within the tenant; another tenant's assessment id answers 404.",
+            "description": "Opaque, server-assigned assessment id: 'asm_' and a 26-character Crockford base32 ULID. Unique within the workspace; another workspace's assessment id answers 404.",
             "example": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
           },
           "account_id": {
@@ -1689,7 +1689,7 @@
             "minLength": 1,
             "maxLength": 128,
             "pattern": "^[A-Za-z0-9][A-Za-z0-9._:|-]{0,127}$",
-            "description": "Your own opaque identifier for the account being checked, scoped to your tenant. Use an id you mint, with no direct identifier (email, phone, name or national id) in it. '|' is accepted so an Auth0 user id such as 'auth0|64abc' passes unchanged; '@', '+', '$' and whitespace are refused by the pattern, as is an exact-shape JWT; a hex digest such as a SHA-256 is allowed, because hashing an internal id is a common pseudonymous scheme. A value such as '07700900123' or 'jane.doe.gmail.com' cannot be told apart from an opaque id. It travels in bodies, and in a URL only as the path segment of GET /v1/accounts/{account_id} and its /assessments. An assessment requested by a provider hook at pre_registration, which has no account yet, carries the server-issued account_id pre: followed by its assessment_id.",
+            "description": "Your own opaque identifier for the account being checked, scoped to your workspace. Use an id you mint, with no direct identifier (email, phone, name or national id) in it. '|' is accepted so an Auth0 user id such as 'auth0|64abc' passes unchanged; '@', '+', '$' and whitespace are refused by the pattern, as is an exact-shape JWT; a hex digest such as a SHA-256 is allowed, because hashing an internal id is a common pseudonymous scheme. A value such as '07700900123' or 'jane.doe.gmail.com' cannot be told apart from an opaque id. It travels in bodies, and in a URL only as the path segment of GET /v1/accounts/{account_id} and its /assessments. An assessment requested by a provider hook at pre_registration, which has no account yet, carries the server-issued account_id pre: followed by its assessment_id.",
             "example": "acct_7f3a9c"
           },
           "request_id": {
@@ -1733,7 +1733,7 @@
             "minLength": 1,
             "maxLength": 64,
             "pattern": "^[a-z0-9][a-z0-9._-]{0,63}(\\+t[1-9][0-9]{0,8})?$",
-            "description": "Version of the hand-authored heuristic weights that produced the recommendation, for example 'risk-2026-10.7'. A tenant threshold override adds a +t<N> suffix, e.g. 'risk-2026-10.7+t3'.",
+            "description": "Version of the hand-authored heuristic weights that produced the recommendation, for example 'risk-2026-10.7'. A workspace threshold override adds a +t<N> suffix, e.g. 'risk-2026-10.7+t3'.",
             "example": "heuristic-2026-10.1"
           },
           "policy_basis": {
@@ -1772,7 +1772,7 @@
           },
           "auth_context": {
             "$ref": "#/components/schemas/AssessmentDetailAuthContext",
-            "description": "The identity fields of the auth context the assessment was made with, echoed for the tenant's own correlation: the request's auth_context, or the one a hosted provider hook (POST /hooks/{integration_id}) built, with transport provider_hook and its hook_point. Present exactly when the request carried an auth_context, and the same on every revision of the assessment. Values are as the request or the hook sent them; tokens, timestamps, roles and scopes are not echoed, and the echo does not change the score."
+            "description": "The identity fields of the auth context the assessment was made with, echoed for the workspace's own correlation: the request's auth_context, or the one a hosted provider hook (POST /hooks/{integration_id}) built, with transport provider_hook and its hook_point. Present exactly when the request carried an auth_context, and the same on every revision of the assessment. Values are as the request or the hook sent them; tokens, timestamps, roles and scopes are not echoed, and the echo does not change the score."
           }
         }
       },
@@ -1785,7 +1785,7 @@
           "verified",
           "transport"
         ],
-        "description": "The identity fields of the auth context the assessment was made with, echoed for the tenant's own correlation: the request's auth_context, or the one a hosted provider hook (POST /hooks/{integration_id}) built, with transport provider_hook and its hook_point. Present exactly when the request carried an auth_context, and the same on every revision of the assessment. Values are as the request or the hook sent them; tokens, timestamps, roles and scopes are not echoed, and the echo does not change the score.",
+        "description": "The identity fields of the auth context the assessment was made with, echoed for the workspace's own correlation: the request's auth_context, or the one a hosted provider hook (POST /hooks/{integration_id}) built, with transport provider_hook and its hook_point. Present exactly when the request carried an auth_context, and the same on every revision of the assessment. Values are as the request or the hook sent them; tokens, timestamps, roles and scopes are not echoed, and the echo does not change the score.",
         "properties": {
           "provider": {
             "type": "string",
@@ -1858,7 +1858,7 @@
         }
       },
       "AssessmentList": {
-        "description": "Body of the 200 answer to POST /v1/assessments/query: one page of the calling tenant's unexpired assessments for one account, newest first, each at its latest assessment_version, as its detail; the account's current risk is GET /v1/accounts/{account_id}. Every item's account_id equals the page's. An assessment past its expires_at is not listed. next_cursor is present only when another page exists.",
+        "description": "Body of the 200 answer to POST /v1/assessments/query: one page of the calling workspace's unexpired assessments for one account, newest first, each at its latest assessment_version, as its detail; the account's current risk is GET /v1/accounts/{account_id}. Every item's account_id equals the page's. An assessment past its expires_at is not listed. next_cursor is present only when another page exists.",
         "type": "object",
         "additionalProperties": false,
         "required": [
@@ -1877,7 +1877,7 @@
             "minLength": 1,
             "maxLength": 128,
             "pattern": "^[A-Za-z0-9][A-Za-z0-9._:|-]{0,127}$",
-            "description": "Your own opaque identifier for the account being checked, scoped to your tenant. Use an id you mint, with no direct identifier (email, phone, name or national id) in it. '|' is accepted so an Auth0 user id such as 'auth0|64abc' passes unchanged; '@', '+', '$' and whitespace are refused by the pattern, as is an exact-shape JWT; a hex digest such as a SHA-256 is allowed, because hashing an internal id is a common pseudonymous scheme. A value such as '07700900123' or 'jane.doe.gmail.com' cannot be told apart from an opaque id. It travels in bodies, and in a URL only as the path segment of GET /v1/accounts/{account_id} and its /assessments. An assessment requested by a provider hook at pre_registration, which has no account yet, carries the server-issued account_id pre: followed by its assessment_id.",
+            "description": "Your own opaque identifier for the account being checked, scoped to your workspace. Use an id you mint, with no direct identifier (email, phone, name or national id) in it. '|' is accepted so an Auth0 user id such as 'auth0|64abc' passes unchanged; '@', '+', '$' and whitespace are refused by the pattern, as is an exact-shape JWT; a hex digest such as a SHA-256 is allowed, because hashing an internal id is a common pseudonymous scheme. A value such as '07700900123' or 'jane.doe.gmail.com' cannot be told apart from an opaque id. It travels in bodies, and in a URL only as the path segment of GET /v1/accounts/{account_id} and its /assessments. An assessment requested by a provider hook at pre_registration, which has no account yet, carries the server-issued account_id pre: followed by its assessment_id.",
             "example": "acct_7f3a9c"
           },
           "items": {
@@ -1892,7 +1892,7 @@
             "minLength": 1,
             "maxLength": 256,
             "pattern": "^[A-Za-z0-9_-]+$",
-            "description": "Opaque cursor for the next page, bound to your tenant and the account_id it was issued for. Pass it back unchanged in the next query; a tampered, foreign or expired cursor answers 400 invalid_cursor.",
+            "description": "Opaque cursor for the next page, bound to your workspace and the account_id it was issued for. Pass it back unchanged in the next query; a tampered, foreign or expired cursor answers 400 invalid_cursor.",
             "example": "eyJvIjoyMH0"
           },
           "retention_days": {
@@ -1918,13 +1918,13 @@
           "id": {
             "type": "string",
             "pattern": "^out_[0-9A-HJKMNP-TV-Z]{26}$",
-            "description": "Opaque, server-assigned id of one recorded outcome: 'out_' and a 26-character Crockford base32 ULID. Unique within the tenant.",
+            "description": "Opaque, server-assigned id of one recorded outcome: 'out_' and a 26-character Crockford base32 ULID. Unique within the workspace.",
             "example": "out_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
           },
           "assessment_id": {
             "type": "string",
             "pattern": "^asm_[0-9A-HJKMNP-TV-Z]{26}$",
-            "description": "Opaque, server-assigned assessment id: 'asm_' and a 26-character Crockford base32 ULID. Unique within the tenant; another tenant's assessment id answers 404.",
+            "description": "Opaque, server-assigned assessment id: 'asm_' and a 26-character Crockford base32 ULID. Unique within the workspace; another workspace's assessment id answers 404.",
             "example": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
           },
           "outcome": {
@@ -1938,7 +1938,7 @@
         }
       },
       "AssessmentOutcomeRequest": {
-        "description": "POST /v1/assessments/{assessment_id}/outcomes body: what the provider later learned about the account it assessed. The assessment is named by the path and the tenant by the API key, so neither is a body member. Idempotency-Key is required and binds the body as it does on POST /v1/assessments.",
+        "description": "POST /v1/assessments/{assessment_id}/outcomes body: what the provider later learned about the account it assessed. The assessment is named by the path and the workspace by the API key, so neither is a body member. Idempotency-Key is required and binds the body as it does on POST /v1/assessments.",
         "type": "object",
         "additionalProperties": false,
         "required": [
@@ -1966,7 +1966,7 @@
             "minLength": 1,
             "maxLength": 500,
             "description": "Free text for your own records, at most 500 characters. Stored only; it is left out of scoring and answers. Keep personal data out of it. Control characters other than tab and line breaks are refused.",
-            "example": "Chargeback filed two days after signup."
+            "example": "Chargeback filed two days after account creation."
           }
         }
       },
@@ -1983,7 +1983,7 @@
             "minLength": 1,
             "maxLength": 128,
             "pattern": "^[A-Za-z0-9][A-Za-z0-9._:|-]{0,127}$",
-            "description": "Your own opaque identifier for the account being checked, scoped to your tenant. Use an id you mint, with no direct identifier (email, phone, name or national id) in it. '|' is accepted so an Auth0 user id such as 'auth0|64abc' passes unchanged; '@', '+', '$' and whitespace are refused by the pattern, as is an exact-shape JWT; a hex digest such as a SHA-256 is allowed, because hashing an internal id is a common pseudonymous scheme. A value such as '07700900123' or 'jane.doe.gmail.com' cannot be told apart from an opaque id. It travels in bodies, and in a URL only as the path segment of GET /v1/accounts/{account_id} and its /assessments. An assessment requested by a provider hook at pre_registration, which has no account yet, carries the server-issued account_id pre: followed by its assessment_id.",
+            "description": "Your own opaque identifier for the account being checked, scoped to your workspace. Use an id you mint, with no direct identifier (email, phone, name or national id) in it. '|' is accepted so an Auth0 user id such as 'auth0|64abc' passes unchanged; '@', '+', '$' and whitespace are refused by the pattern, as is an exact-shape JWT; a hex digest such as a SHA-256 is allowed, because hashing an internal id is a common pseudonymous scheme. A value such as '07700900123' or 'jane.doe.gmail.com' cannot be told apart from an opaque id. It travels in bodies, and in a URL only as the path segment of GET /v1/accounts/{account_id} and its /assessments. An assessment requested by a provider hook at pre_registration, which has no account yet, carries the server-issued account_id pre: followed by its assessment_id.",
             "example": "acct_7f3a9c"
           },
           "limit": {
@@ -1997,7 +1997,7 @@
             "minLength": 1,
             "maxLength": 256,
             "pattern": "^[A-Za-z0-9_-]+$",
-            "description": "next_cursor from the previous page, unchanged. Opaque, MAC'd and bound to the tenant and account_id.",
+            "description": "next_cursor from the previous page, unchanged. Opaque, MAC'd and bound to the workspace and account_id.",
             "example": "eyJvIjoyMH0"
           },
           "response_mode": {
@@ -2008,7 +2008,7 @@
         }
       },
       "AssessmentRequest": {
-        "description": "POST /v1/assessments body. At least one of email, username or phone is required; name and ip only refine an assessment. No field carries a password, hash, token or breach value, and unknown members are refused. The email local part is kept as received and only the domain is lower-cased; the username is compared case-insensitively; the phone is strict E.164 and is assessed asynchronously. The whole body is capped at 32768 bytes. client_context holds bounded hints from the signup client; auth_context holds normalised claims from a session your backend has verified. Raw tokens are refused.",
+        "description": "POST /v1/assessments body. At least one of email, username or phone is required; name and ip only refine an assessment. No field carries a password, hash, token or breach value, and unknown members are refused. The email local part is kept as received and only the domain is lower-cased; the username is compared case-insensitively; the phone is strict E.164 and is assessed asynchronously. The whole body is capped at 32768 bytes. client_context holds bounded hints from the client of the user; auth_context holds normalised claims from a session your backend has verified. Raw tokens are refused.",
         "type": "object",
         "additionalProperties": false,
         "required": [
@@ -2022,7 +2022,7 @@
             "minLength": 1,
             "maxLength": 128,
             "pattern": "^[A-Za-z0-9][A-Za-z0-9._:|-]{0,127}$",
-            "description": "Your own opaque identifier for the account being checked, scoped to your tenant. Use an id you mint, with no direct identifier (email, phone, name or national id) in it. '|' is accepted so an Auth0 user id such as 'auth0|64abc' passes unchanged; '@', '+', '$' and whitespace are refused by the pattern, as is an exact-shape JWT; a hex digest such as a SHA-256 is allowed, because hashing an internal id is a common pseudonymous scheme. A value such as '07700900123' or 'jane.doe.gmail.com' cannot be told apart from an opaque id. It travels in bodies, and in a URL only as the path segment of GET /v1/accounts/{account_id} and its /assessments. An assessment requested by a provider hook at pre_registration, which has no account yet, carries the server-issued account_id pre: followed by its assessment_id.",
+            "description": "Your own opaque identifier for the account being checked, scoped to your workspace. Use an id you mint, with no direct identifier (email, phone, name or national id) in it. '|' is accepted so an Auth0 user id such as 'auth0|64abc' passes unchanged; '@', '+', '$' and whitespace are refused by the pattern, as is an exact-shape JWT; a hex digest such as a SHA-256 is allowed, because hashing an internal id is a common pseudonymous scheme. A value such as '07700900123' or 'jane.doe.gmail.com' cannot be told apart from an opaque id. It travels in bodies, and in a URL only as the path segment of GET /v1/accounts/{account_id} and its /assessments. An assessment requested by a provider hook at pre_registration, which has no account yet, carries the server-issued account_id pre: followed by its assessment_id.",
             "example": "acct_7f3a9c"
           },
           "flow": {
@@ -2031,7 +2031,7 @@
           },
           "depth": {
             "$ref": "#/components/schemas/Depth",
-            "description": "Optional. Absent means the flow's default depth in the workspace's settings, which is full for signup and purchase and quick for login until changed."
+            "description": "Optional. Absent means the flow's default depth in the workspace's settings, which is full for account_creation and purchase and quick for login until changed."
           },
           "identifiers": {
             "$ref": "#/components/schemas/AssessmentRequestIdentifiers",
@@ -2062,21 +2062,21 @@
           },
           "client_context": {
             "$ref": "#/components/schemas/AssessmentRequestClientContext",
-            "description": "Optional context observed by your signup client. The server parses these hints into coarse features, leaves raw user_agent and opaque ids out of every answer, and weighs a mismatch with the other evidence."
+            "description": "Optional context observed by the client of the user. The server parses these hints into coarse features, leaves raw user_agent and opaque ids out of every answer, and weighs a mismatch with the other evidence."
           },
           "auth_context": {
             "$ref": "#/components/schemas/AuthContext"
           },
           "issued_credential": {
             "$ref": "#/components/schemas/AssessmentRequestIssuedCredential",
-            "description": "Optional. When the signup gate issues an API key to the new account, send SHA-256 of that key, so later usage of the key, or a leaked copy, ties back to this assessment. Each SDK has a helper that computes it. Send only the hash: customer keys are high-entropy, so the hash reveals nothing about them. The assessment stores it, and no response, webhook or log carries it."
+            "description": "Optional. When your platform issues an API key to the new account, send SHA-256 of that key, so later usage of the key, or a leaked copy, ties back to this assessment. Each SDK has a helper that computes it. Send only the hash: customer keys are high-entropy, so the hash reveals nothing about them. The assessment stores it, and no response, webhook or log carries it."
           }
         }
       },
       "AssessmentRequestClientContext": {
         "type": "object",
         "additionalProperties": false,
-        "description": "Optional context observed by your signup client. The server parses these hints into coarse features, leaves raw user_agent and opaque ids out of every answer, and weighs a mismatch with the other evidence.",
+        "description": "Optional context observed by the client of the user. The server parses these hints into coarse features, leaves raw user_agent and opaque ids out of every answer, and weighs a mismatch with the other evidence.",
         "properties": {
           "timezone": {
             "type": "string",
@@ -2106,21 +2106,21 @@
           "user_agent": {
             "type": "string",
             "maxLength": 512,
-            "description": "The raw User-Agent header of the signup request, at most 512 characters. It is parsed into coarse features and left out of every answer.",
+            "description": "The raw User-Agent header of the request that the user sent, at most 512 characters. It is parsed into coarse features and left out of every answer.",
             "example": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36"
           },
           "device_id": {
             "type": "string",
             "maxLength": 128,
             "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
-            "description": "Tenant-scoped opaque identifier your application mints and rotates when the account or device changes. Send an id of your own, not a hardware fingerprint.",
+            "description": "Workspace-scoped opaque identifier your application mints and rotates when the account or device changes. Send an id of your own, not a hardware fingerprint.",
             "example": "dev_5c1e8a"
           },
           "session_id": {
             "type": "string",
             "maxLength": 128,
             "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
-            "description": "Opaque signup session identifier. It is used for tenant-scoped velocity and replay checks only.",
+            "description": "Opaque signup session identifier. It is used for workspace-scoped velocity and replay checks only.",
             "example": "sess_9b2d41"
           },
           "form_duration_ms": {
@@ -2178,7 +2178,7 @@
             "minLength": 2,
             "maxLength": 39,
             "pattern": "^(?:(?:25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])(?:\\.(?:25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])){3}|[0-9a-f]{0,4}(?::[0-9a-f]{0,4}){2,7})$",
-            "description": "The signup's client IP address: an IPv4 dotted quad without leading zeros, or an IPv6 address in its RFC 5952 text form (lower case, no leading zeros, the longest zero run compressed). Send an IPv4 client as a dotted quad, not IPv4-mapped. No zone, port or prefix. The server refuses a non-canonical IPv6 spelling, and every private, loopback, link-local, multicast, documentation or otherwise reserved address (the IANA special-purpose registries), with 400: only a public address says anything about a signup.",
+            "description": "The account_creation's client IP address: an IPv4 dotted quad without leading zeros, or an IPv6 address in its RFC 5952 text form (lower case, no leading zeros, the longest zero run compressed). Send an IPv4 client as a dotted quad, not IPv4-mapped. No zone, port or prefix. The server refuses a non-canonical IPv6 spelling, and every private, loopback, link-local, multicast, documentation or otherwise reserved address (the IANA special-purpose registries), with 400: only a public address says anything about a signup.",
             "example": "203.0.113.45"
           }
         },
@@ -2190,7 +2190,7 @@
         "required": [
           "sha256"
         ],
-        "description": "Optional. When the signup gate issues an API key to the new account, send SHA-256 of that key, so later usage of the key, or a leaked copy, ties back to this assessment. Each SDK has a helper that computes it. Send only the hash: customer keys are high-entropy, so the hash reveals nothing about them. The assessment stores it, and no response, webhook or log carries it.",
+        "description": "Optional. When your platform issues an API key to the new account, send SHA-256 of that key, so later usage of the key, or a leaked copy, ties back to this assessment. Each SDK has a helper that computes it. Send only the hash: customer keys are high-entropy, so the hash reveals nothing about them. The assessment stores it, and no response, webhook or log carries it.",
         "properties": {
           "sha256": {
             "type": "string",
@@ -2207,7 +2207,7 @@
           "region": {
             "type": "string",
             "pattern": "^[A-Z]{2}$",
-            "description": "ISO 3166-1 alpha-2 region of the signup, as the provider determines it.",
+            "description": "ISO 3166-1 alpha-2 region of the user, as the provider determines it.",
             "example": "AU"
           }
         },
@@ -2284,7 +2284,7 @@
             "type": "string",
             "maxLength": 256,
             "pattern": "^[A-Za-z0-9._:@/|+=~-]{1,256}$",
-            "description": "The provider tenant identifier, when distinct from organization_id.",
+            "description": "The provider workspace identifier, when distinct from organization_id.",
             "example": "tenant_2EXAMPLE"
           },
           "token_id": {
@@ -2730,11 +2730,11 @@
       },
       "Flow": {
         "enum": [
-          "signup",
+          "account_creation",
           "login",
           "purchase"
         ],
-        "description": "The customer event an assessment is made for: signup (a new account), login (a returning sign-in) or purchase (a payment or credit grant). The account's risk is reported with the decision for this flow."
+        "description": "The event an assessment is made for: account_creation (a user creates an account), login (a user returns to an existing account) or purchase (a payment or a credit grant). The account's risk is reported with the decision for this flow."
       },
       "Freshness": {
         "enum": [
@@ -2807,7 +2807,7 @@
           "integration_id": {
             "type": "string",
             "pattern": "^int_[0-7][0-9A-HJKMNP-TV-Z]{25}$",
-            "description": "Opaque, server-assigned integration id: int_ and a 26-character Crockford base32 ULID. Another tenant's integration id answers 404.",
+            "description": "Opaque, server-assigned integration id: int_ and a 26-character Crockford base32 ULID. Another workspace's integration id answers 404.",
             "example": "int_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
           },
           "platform": {
@@ -2860,7 +2860,7 @@
         "description": "pre_registration runs before the user exists; post_login runs after a successful sign-in."
       },
       "IntegrationList": {
-        "description": "GET /v1/integrations: every integration of the tenant, oldest first, at most 10. No secret is ever listed.",
+        "description": "GET /v1/integrations: every integration of the workspace, oldest first, at most 10. No secret is ever listed.",
         "type": "object",
         "additionalProperties": false,
         "required": [
@@ -2884,7 +2884,7 @@
         "description": "The authentication provider that calls the endpoint."
       },
       "IntegrationRequest": {
-        "description": "POST /v1/integrations body. Registers a hosted endpoint for one authentication provider. The tenant is the API key that signs the request, so the body has no tenant field and refuses one like any other unknown member. A WorkOS integration needs signing_secret, the Actions secret shown in the WorkOS dashboard, which NoResponse uses to verify each Action request and to sign its answer. An Auth0 integration sends no signing_secret: NoResponse generates the shared secret and returns it once.",
+        "description": "POST /v1/integrations body. Registers a hosted endpoint for one authentication provider. The workspace is the API key that signs the request, so the body has no workspace field and refuses one like any other unknown member. A WorkOS integration needs signing_secret, the Actions secret shown in the WorkOS dashboard, which NoResponse uses to verify each Action request and to sign its answer. An Auth0 integration sends no signing_secret: NoResponse generates the shared secret and returns it once.",
         "type": "object",
         "additionalProperties": false,
         "required": [
@@ -2932,7 +2932,7 @@
       "IpSummary": {
         "type": "object",
         "additionalProperties": false,
-        "description": "Facts about the submitted IP from the offline database and this tenant's own recent assessments. Every member is optional; absent makes no claim.",
+        "description": "Facts about the submitted IP from the offline database and this workspace's own recent assessments. Every member is optional; absent makes no claim.",
         "properties": {
           "country": {
             "type": "string",
@@ -2944,10 +2944,10 @@
             "$ref": "#/components/schemas/IpSummaryType",
             "description": "The address's network type."
           },
-          "seen_in_tenant": {
+          "seen_in_workspace": {
             "type": "integer",
             "minimum": 0,
-            "description": "Assessments in this tenant with the same IP in the last 24 hours, this one included. A count only."
+            "description": "Assessments in this workspace with the same IP in the last 24 hours, this one included. A count only."
           }
         }
       },
@@ -3021,7 +3021,7 @@
         }
       },
       "KeyRotationRequest": {
-        "description": "POST /v1/keys/rotate body. The tenant and the key being rotated are the API key that signs the request, so neither is a body member. An empty object takes the default overlap.",
+        "description": "POST /v1/keys/rotate body. The workspace and the key being rotated are the API key that signs the request, so neither is a body member. An empty object takes the default overlap.",
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -3070,7 +3070,7 @@
         }
       },
       "KeyUsageBatchRequest": {
-        "description": "POST /v1/key_usage/batches body: facts about requests made with API keys your signup gate issued to your accounts, one event per request. Each event names the key by the SHA-256 that the assessment's issued_credential.sha256 carried, not the key itself. The SDKs buffer events and send them in the background. A batch holds 1 to 500 events and at most 256 KiB. Idempotency-Key is required and binds the body as on POST /v1/assessments, so a retried batch is counted once.",
+        "description": "POST /v1/key_usage/batches body: facts about requests made with API keys your platform issued to your accounts, one event per request. Each event names the key by the SHA-256 that the assessment's issued_credential.sha256 carried, not the key itself. The SDKs buffer events and send them in the background. A batch holds 1 to 500 events and at most 256 KiB. Idempotency-Key is required and binds the body as on POST /v1/assessments, so a retried batch is counted once.",
         "type": "object",
         "additionalProperties": false,
         "required": [
@@ -3204,7 +3204,7 @@
           "legitimate",
           "unknown"
         ],
-        "description": "What the provider later learned about the assessed account. confirmed_abuse, account_takeover and chargeback report abuse; false_positive and legitimate withdraw an earlier abuse report of this tenant for the assessment; unknown is recorded only. Outcomes are append-only and the latest one recorded for an assessment wins."
+        "description": "What the provider later learned about the assessed account. confirmed_abuse, account_takeover and chargeback report abuse; false_positive and legitimate withdraw an earlier abuse report of this workspace for the assessment; unknown is recorded only. Outcomes are append-only and the latest one recorded for an assessment wins."
       },
       "PermissionDeniedError": {
         "description": "HTTP 403 problem document.",
@@ -3228,7 +3228,7 @@
       "PermissionDeniedErrorCode": {
         "type": "string",
         "enum": [
-          "tenant_forbidden"
+          "workspace_forbidden"
         ],
         "description": "Machine codes an HTTP 403 answer can carry."
       },
@@ -3599,7 +3599,7 @@
           "proxy_ip",
           "seen_before",
           "shared_ip",
-          "many_recent_signups",
+          "many_recent_accounts",
           "established_accounts",
           "aged_identity",
           "breach_name_match",
@@ -3683,13 +3683,13 @@
           },
           "block": {
             "type": "boolean",
-            "description": "true when the tenant's block threshold is set and score reached it. A provider hook can deny the signup on it; the provider decides and enforces. It does not change recommendation. It is false while blocking is off, the default, and a body from before the flag existed omits it: read absent as false."
+            "description": "true when the workspace's block threshold is set and score reached it. A provider hook can deny the account creation on it; the provider decides and enforces. It does not change recommendation. It is false while blocking is off, the default, and a body from before the flag existed omits it: read absent as false."
           },
           "block_threshold": {
             "type": "integer",
             "minimum": 1,
             "maximum": 100,
-            "description": "The block threshold this answer used: block is true exactly when score is at least this value. Absent while blocking is off. NoResponse sets it per tenant on request, at or above the review threshold."
+            "description": "The block threshold this answer used: block is true exactly when score is at least this value. Absent while blocking is off. NoResponse sets it per workspace on request, at or above the review threshold."
           },
           "confidence": {
             "$ref": "#/components/schemas/RiskConfidence",
@@ -3700,7 +3700,7 @@
             "minLength": 1,
             "maxLength": 64,
             "pattern": "^[a-z0-9][a-z0-9._-]{0,63}(\\+t[1-9][0-9]{0,8})?$",
-            "description": "Version of the hand-authored heuristic weights that produced the recommendation, for example 'risk-2026-10.7'. A tenant threshold override adds a +t<N> suffix, e.g. 'risk-2026-10.7+t3'.",
+            "description": "Version of the hand-authored heuristic weights that produced the recommendation, for example 'risk-2026-10.7'. A workspace threshold override adds a +t<N> suffix, e.g. 'risk-2026-10.7+t3'.",
             "example": "risk-2026-10.3"
           },
           "policy_basis": {
@@ -3967,7 +3967,7 @@
             "minLength": 1,
             "maxLength": 64,
             "pattern": "^[a-z0-9][a-z0-9_.-]{0,63}$",
-            "description": "Opaque, tenant-scoped projection of the source that produced a signal. It stays stable for your tenant while the projection key is unchanged and reveals no upstream provider, feed, breach table or source record.",
+            "description": "Opaque, workspace-scoped projection of the source that produced a signal. It stays stable for your workspace while the projection key is unchanged and reveals no upstream provider, feed, breach table or source record.",
             "example": "github"
           },
           "reason": {
@@ -4148,7 +4148,7 @@
         "description": "delivered when the endpoint answered 2xx; failed otherwise, with failure naming why."
       },
       "WebhookDeliveryList": {
-        "description": "The 200 answer of GET /v1/webhooks/{endpoint_id}/deliveries: one page of the endpoint's delivery attempts, newest first. Each item is one POST to the endpoint. Attempts are kept for 30 days, or the tenant's retention_days when that is shorter, and are deleted with the assessment they carried. next_cursor is present only when another page exists.",
+        "description": "The 200 answer of GET /v1/webhooks/{endpoint_id}/deliveries: one page of the endpoint's delivery attempts, newest first. Each item is one POST to the endpoint. Attempts are kept for 30 days, or the workspace's retention_days when that is shorter, and are deleted with the assessment they carried. next_cursor is present only when another page exists.",
         "type": "object",
         "additionalProperties": false,
         "required": [
@@ -4174,13 +4174,13 @@
             "minLength": 1,
             "maxLength": 256,
             "pattern": "^[A-Za-z0-9_-]+$",
-            "description": "Opaque cursor for the next page, MAC'd by the server and bound to the tenant and endpoint it was issued for. Pass it back unchanged as cursor; a tampered, foreign or expired cursor answers 400 invalid_cursor.",
+            "description": "Opaque cursor for the next page, MAC'd by the server and bound to the workspace and endpoint it was issued for. Pass it back unchanged as cursor; a tampered, foreign or expired cursor answers 400 invalid_cursor.",
             "example": "eyJvIjoyMH0"
           }
         }
       },
       "WebhookEndpoint": {
-        "description": "One of the tenant's registered webhook endpoints. Signing secrets are not part of it: a secret is shown once, when it is issued (POST /v1/webhooks and POST /v1/webhooks/{endpoint_id}/rotate).",
+        "description": "One of the workspace's registered webhook endpoints. Signing secrets are not part of it: a secret is shown once, when it is issued (POST /v1/webhooks and POST /v1/webhooks/{endpoint_id}/rotate).",
         "type": "object",
         "additionalProperties": false,
         "required": [
@@ -4251,7 +4251,7 @@
         }
       },
       "WebhookEndpointList": {
-        "description": "GET /v1/webhooks answer: every endpoint of the calling tenant, in every state, ordered by endpoint_id. A tenant holds at most 5, so there is no page.",
+        "description": "GET /v1/webhooks answer: every endpoint of the calling workspace, in every state, ordered by endpoint_id. A workspace holds at most 5, so there is no page.",
         "type": "object",
         "additionalProperties": false,
         "required": [
@@ -4268,7 +4268,7 @@
         }
       },
       "WebhookEndpointRequest": {
-        "description": "POST /v1/webhooks body. The tenant is the API key that signs the request, so it is not a body member. The URL must be https on port 443 or 8443 with a DNS name, not an IP literal, and every address the name resolves to must be public.",
+        "description": "POST /v1/webhooks body. The workspace is the API key that signs the request, so it is not a body member. The URL must be https on port 443 or 8443 with a DNS name, not an IP literal, and every address the name resolves to must be public.",
         "type": "object",
         "additionalProperties": false,
         "required": [
@@ -4436,13 +4436,13 @@
         "name": "Idempotency-Key",
         "in": "header",
         "required": true,
-        "description": "Opaque client key, 16 to 128 characters of [A-Za-z0-9._:-] (a UUID or ULID fits). Scoped to the tenant principal and bound to the canonical body for 24 hours.",
+        "description": "Opaque client key, 16 to 128 characters of [A-Za-z0-9._:-] (a UUID or ULID fits). Scoped to the workspace principal and bound to the canonical body for 24 hours.",
         "schema": {
           "type": "string",
           "minLength": 16,
           "maxLength": 128,
           "pattern": "^[A-Za-z0-9._:-]{16,128}$",
-          "example": "signup-acct_7f3a9c"
+          "example": "account-acct_7f3a9c"
         }
       },
       "AssessmentId": {
@@ -4452,7 +4452,7 @@
         "schema": {
           "type": "string",
           "pattern": "^asm_[0-9A-HJKMNP-TV-Z]{26}$",
-          "description": "Opaque, server-assigned assessment id: 'asm_' and a 26-character Crockford base32 ULID. Unique within the tenant; another tenant's assessment id answers 404.",
+          "description": "Opaque, server-assigned assessment id: 'asm_' and a 26-character Crockford base32 ULID. Unique within the workspace; another workspace's assessment id answers 404.",
           "example": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
         },
         "description": "Path segment, matched case-sensitively. A value that does not match the assessment_id shape answers 404, not 400."
@@ -4467,7 +4467,7 @@
           "description": "Opaque id of the endpoint registration.",
           "example": "whe_01JA2ZD0E1F2G3H4J5K6M7N8P9"
         },
-        "description": "The endpoint's whe_ id. An id that is unknown, malformed or another tenant's answers 404."
+        "description": "The endpoint's whe_ id. An id that is unknown, malformed or another workspace's answers 404."
       },
       "IntegrationId": {
         "name": "integration_id",
@@ -4476,10 +4476,10 @@
         "schema": {
           "type": "string",
           "pattern": "^int_[0-7][0-9A-HJKMNP-TV-Z]{25}$",
-          "description": "Opaque, server-assigned integration id: int_ and a 26-character Crockford base32 ULID. Another tenant's integration id answers 404.",
+          "description": "Opaque, server-assigned integration id: int_ and a 26-character Crockford base32 ULID. Another workspace's integration id answers 404.",
           "example": "int_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
         },
-        "description": "Path segment, matched case-sensitively. A value that does not match the integration_id shape, or another tenant's id, answers 404."
+        "description": "Path segment, matched case-sensitively. A value that does not match the integration_id shape, or another workspace's id, answers 404."
       },
       "AccountId": {
         "name": "account_id",
@@ -4490,10 +4490,10 @@
           "minLength": 1,
           "maxLength": 128,
           "pattern": "^[A-Za-z0-9][A-Za-z0-9._:|-]{0,127}$",
-          "description": "Your own opaque identifier for the account being checked, scoped to your tenant. Use an id you mint, with no direct identifier (email, phone, name or national id) in it. '|' is accepted so an Auth0 user id such as 'auth0|64abc' passes unchanged; '@', '+', '$' and whitespace are refused by the pattern, as is an exact-shape JWT; a hex digest such as a SHA-256 is allowed, because hashing an internal id is a common pseudonymous scheme. A value such as '07700900123' or 'jane.doe.gmail.com' cannot be told apart from an opaque id. It travels in bodies, and in a URL only as the path segment of GET /v1/accounts/{account_id} and its /assessments. An assessment requested by a provider hook at pre_registration, which has no account yet, carries the server-issued account_id pre: followed by its assessment_id.",
+          "description": "Your own opaque identifier for the account being checked, scoped to your workspace. Use an id you mint, with no direct identifier (email, phone, name or national id) in it. '|' is accepted so an Auth0 user id such as 'auth0|64abc' passes unchanged; '@', '+', '$' and whitespace are refused by the pattern, as is an exact-shape JWT; a hex digest such as a SHA-256 is allowed, because hashing an internal id is a common pseudonymous scheme. A value such as '07700900123' or 'jane.doe.gmail.com' cannot be told apart from an opaque id. It travels in bodies, and in a URL only as the path segment of GET /v1/accounts/{account_id} and its /assessments. An assessment requested by a provider hook at pre_registration, which has no account yet, carries the server-issued account_id pre: followed by its assessment_id.",
           "example": "acct_7f3a9c"
         },
-        "description": "The account_id the tenant sends with its assessments, as one path segment (percent-encode '|' and ':' if the client requires it). A value that does not match the account_id shape answers 400 invalid_request."
+        "description": "The account_id the workspace sends with its assessments, as one path segment (percent-encode '|' and ':' if the client requires it). A value that does not match the account_id shape answers 400 invalid_request."
       },
       "EventId": {
         "name": "event_id",
@@ -4502,10 +4502,10 @@
         "schema": {
           "type": "string",
           "pattern": "^evt_[0-9A-HJKMNP-TV-Z]{26}$",
-          "description": "Opaque, tenant-scoped webhook event id. A redelivery of the same event carries the same event_id, so consumers deduplicate on it.",
+          "description": "Opaque, workspace-scoped webhook event id. A redelivery of the same event carries the same event_id, so consumers deduplicate on it.",
           "example": "evt_01JA2ZD3K4M5N6P7Q8R9S0T1V2"
         },
-        "description": "The evt_ id of a delivery the endpoint's log holds, as GET /v1/webhooks/{endpoint_id}/deliveries lists it. An id that is malformed, not sent to this endpoint, past the log's retention or another tenant's answers 404."
+        "description": "The evt_ id of a delivery the endpoint's log holds, as GET /v1/webhooks/{endpoint_id}/deliveries lists it. An id that is malformed, not sent to this endpoint, past the log's retention or another workspace's answers 404."
       }
     },
     "responses": {
@@ -4558,7 +4558,7 @@
                   "schema_version": "1",
                   "id": "asm_01JB3C4D5E6F7G8H9JKMNPQRST",
                   "status": "complete",
-                  "flow": "signup",
+                  "flow": "account_creation",
                   "depth": "full",
                   "account": {
                     "schema_version": "1",
@@ -4595,7 +4595,7 @@
                       ]
                     },
                     "decisions_by_flow": {
-                      "signup": "allow",
+                      "account_creation": "allow",
                       "login": "allow",
                       "purchase": "allow"
                     },
@@ -4681,7 +4681,7 @@
                         "ip": {
                           "country": "US",
                           "type": "residential",
-                          "seen_in_tenant": 1
+                          "seen_in_workspace": 1
                         },
                         "consistency": {
                           "name": "match",
@@ -4715,7 +4715,7 @@
                   "schema_version": "1",
                   "id": "asm_01JB3C4D5E6F7G8H9JKMNPQRST",
                   "status": "partial",
-                  "flow": "signup",
+                  "flow": "account_creation",
                   "depth": "full",
                   "account": {
                     "schema_version": "1",
@@ -4732,7 +4732,7 @@
                       ]
                     },
                     "decisions_by_flow": {
-                      "signup": "allow",
+                      "account_creation": "allow",
                       "login": "allow",
                       "purchase": "allow"
                     },
@@ -4847,7 +4847,7 @@
                       ]
                     },
                     "decisions_by_flow": {
-                      "signup": "allow",
+                      "account_creation": "allow",
                       "login": "allow",
                       "purchase": "allow"
                     },
@@ -4931,7 +4931,7 @@
                   "schema_version": "1",
                   "id": "asm_01JB3C4D5E6F7G8H9JKMNPQRST",
                   "status": "complete",
-                  "flow": "signup",
+                  "flow": "account_creation",
                   "depth": "full",
                   "account": {
                     "schema_version": "1",
@@ -4953,7 +4953,7 @@
                       ]
                     },
                     "decisions_by_flow": {
-                      "signup": "allow",
+                      "account_creation": "allow",
                       "login": "allow",
                       "purchase": "allow"
                     },
@@ -5170,7 +5170,7 @@
                   "schema_version": "1",
                   "id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
                   "status": "pending",
-                  "flow": "signup",
+                  "flow": "account_creation",
                   "depth": "full",
                   "detail": {
                     "schema_version": "1",
@@ -5245,7 +5245,7 @@
                       ]
                     },
                     "decisions_by_flow": {
-                      "signup": "allow",
+                      "account_creation": "allow",
                       "login": "allow",
                       "purchase": "allow"
                     },
@@ -5328,7 +5328,7 @@
                   "schema_version": "1",
                   "id": "asm_01JB3C4D5E6F7G8H9JKMNPQRST",
                   "status": "complete",
-                  "flow": "signup",
+                  "flow": "account_creation",
                   "depth": "full",
                   "account": {
                     "schema_version": "1",
@@ -5365,7 +5365,7 @@
                       ]
                     },
                     "decisions_by_flow": {
-                      "signup": "allow",
+                      "account_creation": "allow",
                       "login": "allow",
                       "purchase": "allow"
                     },
@@ -5451,7 +5451,7 @@
                         "ip": {
                           "country": "US",
                           "type": "residential",
-                          "seen_in_tenant": 1
+                          "seen_in_workspace": 1
                         },
                         "consistency": {
                           "name": "match",
@@ -5485,7 +5485,7 @@
                   "schema_version": "1",
                   "id": "asm_01JB3C4D5E6F7G8H9JKMNPQRST",
                   "status": "partial",
-                  "flow": "signup",
+                  "flow": "account_creation",
                   "depth": "full",
                   "account": {
                     "schema_version": "1",
@@ -5502,7 +5502,7 @@
                       ]
                     },
                     "decisions_by_flow": {
-                      "signup": "allow",
+                      "account_creation": "allow",
                       "login": "allow",
                       "purchase": "allow"
                     },
@@ -5591,7 +5591,7 @@
                   "schema_version": "1",
                   "id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
                   "status": "pending",
-                  "flow": "signup",
+                  "flow": "account_creation",
                   "depth": "full",
                   "detail": {
                     "schema_version": "1",
@@ -5666,7 +5666,7 @@
                       ]
                     },
                     "decisions_by_flow": {
-                      "signup": "allow",
+                      "account_creation": "allow",
                       "login": "allow",
                       "purchase": "allow"
                     },
@@ -5735,7 +5735,7 @@
                       ]
                     },
                     "decisions_by_flow": {
-                      "signup": "allow",
+                      "account_creation": "allow",
                       "login": "allow",
                       "purchase": "allow"
                     },
@@ -5819,7 +5819,7 @@
                   "schema_version": "1",
                   "id": "asm_01JB3C4D5E6F7G8H9JKMNPQRST",
                   "status": "complete",
-                  "flow": "signup",
+                  "flow": "account_creation",
                   "depth": "full",
                   "account": {
                     "schema_version": "1",
@@ -5841,7 +5841,7 @@
                       ]
                     },
                     "decisions_by_flow": {
-                      "signup": "allow",
+                      "account_creation": "allow",
                       "login": "allow",
                       "purchase": "allow"
                     },
@@ -6181,36 +6181,8 @@
           }
         }
       },
-      "TenantForbidden": {
-        "description": "The API key is valid but may not use this operation: it lacks the operation's scope, or its tenant is not entitled or is suspended.",
-        "headers": {
-          "Cache-Control": {
-            "schema": {
-              "type": "string",
-              "const": "no-store"
-            },
-            "required": true
-          },
-          "X-Request-ID": {
-            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
-            "schema": {
-              "type": "string",
-              "pattern": "^[0-9a-f]{32}$",
-              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
-            },
-            "required": true
-          }
-        },
-        "content": {
-          "application/problem+json": {
-            "schema": {
-              "$ref": "#/components/schemas/PermissionDeniedError"
-            }
-          }
-        }
-      },
       "NotFound": {
-        "description": "No unexpired assessment with this id for the calling tenant, or a malformed assessment_id.",
+        "description": "No unexpired assessment with this id for the calling workspace, or a malformed assessment_id.",
         "headers": {
           "Cache-Control": {
             "schema": {
@@ -6238,7 +6210,7 @@
         }
       },
       "IdempotencyConflict": {
-        "description": "The Idempotency-Key was already used by this tenant, within 24 hours, with a different body. A reuse with the same body is not a conflict, even while the first request is in flight: it replays the latest assessment.",
+        "description": "The Idempotency-Key was already used by this workspace, within 24 hours, with a different body. A reuse with the same body is not a conflict, even while the first request is in flight: it replays the latest assessment.",
         "headers": {
           "Cache-Control": {
             "schema": {
@@ -6266,7 +6238,7 @@
         }
       },
       "RateLimited": {
-        "description": "The tenant's rate or concurrency limit is exhausted. Retry-After says when to retry; the provider applies its own fallback meanwhile.",
+        "description": "The workspace's rate or concurrency limit is exhausted. Retry-After says when to retry; the provider applies its own fallback meanwhile.",
         "headers": {
           "Cache-Control": {
             "schema": {
@@ -6304,7 +6276,7 @@
         }
       },
       "InvalidHistoryQuery": {
-        "description": "The body does not match the query schema, or the cursor is invalid, belongs to another tenant or account, or has expired.",
+        "description": "The body does not match the query schema, or the cursor is invalid, belongs to another workspace or account, or has expired.",
         "headers": {
           "Cache-Control": {
             "schema": {
@@ -6585,7 +6557,7 @@
         }
       },
       "WebhookEndpointList": {
-        "description": "Every endpoint of the calling tenant.",
+        "description": "Every endpoint of the calling workspace.",
         "headers": {
           "Cache-Control": {
             "schema": {
@@ -6806,7 +6778,7 @@
         }
       },
       "WebhookEndpointNotFound": {
-        "description": "No endpoint with this id for the calling tenant, including a malformed id and another tenant's endpoint.",
+        "description": "No endpoint with this id for the calling workspace, including a malformed id and another workspace's endpoint.",
         "headers": {
           "Cache-Control": {
             "schema": {
@@ -6834,7 +6806,7 @@
         }
       },
       "WebhookEndpointLimitReached": {
-        "description": "The tenant already holds 5 webhook endpoints. Delete one first.",
+        "description": "The workspace already holds 5 webhook endpoints. Delete one first.",
         "headers": {
           "Cache-Control": {
             "schema": {
@@ -6945,7 +6917,7 @@
         }
       },
       "IntegrationListed": {
-        "description": "Every integration of the tenant, oldest first, without secrets.",
+        "description": "Every integration of the workspace, oldest first, without secrets.",
         "headers": {
           "Cache-Control": {
             "schema": {
@@ -7096,7 +7068,7 @@
         }
       },
       "IntegrationNotFound": {
-        "description": "No integration with this id for the calling tenant, or a malformed integration_id.",
+        "description": "No integration with this id for the calling workspace, or a malformed integration_id.",
         "headers": {
           "Cache-Control": {
             "schema": {
@@ -7124,7 +7096,7 @@
         }
       },
       "TooManyIntegrations": {
-        "description": "The tenant already holds 10 integrations. Delete one first.",
+        "description": "The workspace already holds 10 integrations. Delete one first.",
         "headers": {
           "Cache-Control": {
             "schema": {
@@ -7198,7 +7170,7 @@
                     ]
                   },
                   "decisions_by_flow": {
-                    "signup": "step_up",
+                    "account_creation": "step_up",
                     "login": "step_up",
                     "purchase": "step_up"
                   },
@@ -7225,13 +7197,13 @@
                         "identifier": "ip"
                       },
                       {
-                        "code": "many_recent_signups",
+                        "code": "many_recent_accounts",
                         "weight": 20
                       }
                     ]
                   },
                   "decisions_by_flow": {
-                    "signup": "block",
+                    "account_creation": "block",
                     "login": "block",
                     "purchase": "block"
                   },
@@ -7345,7 +7317,7 @@
         }
       },
       "AccountNotFound": {
-        "description": "The calling tenant has no unexpired assessment with a decision for this account_id.",
+        "description": "The calling workspace has no unexpired assessment with a decision for this account_id.",
         "headers": {
           "Cache-Control": {
             "schema": {
@@ -7373,7 +7345,7 @@
         }
       },
       "InvalidAccountRequest": {
-        "description": "account_id does not match its shape, a query parameter is unknown, repeated or out of range, or the cursor is invalid, belongs to another tenant or account, or has expired. invalid_params names the offending parameters, not their values.",
+        "description": "account_id does not match its shape, a query parameter is unknown, repeated or out of range, or the cursor is invalid, belongs to another workspace or account, or has expired. invalid_params names the offending parameters, not their values.",
         "headers": {
           "Cache-Control": {
             "schema": {
@@ -7581,7 +7553,7 @@
         }
       },
       "InvalidWebhookDeliveriesRequest": {
-        "description": "A query parameter is unknown, repeated or out of range (invalid_request), or the cursor is empty, fails its MAC, belongs to another tenant or endpoint, or has expired (invalid_cursor). invalid_params names the offending parameters without their values.",
+        "description": "A query parameter is unknown, repeated or out of range (invalid_request), or the cursor is empty, fails its MAC, belongs to another workspace or endpoint, or has expired (invalid_cursor). invalid_params names the offending parameters without their values.",
         "headers": {
           "Cache-Control": {
             "schema": {
@@ -7609,7 +7581,7 @@
         }
       },
       "WebhookDeliveryNotFound": {
-        "description": "No endpoint with this id for the calling tenant, or no delivery of this event in the endpoint's log: not sent to it, past the log's retention, deleted with its assessment, or another tenant's. A malformed id answers the same.",
+        "description": "No endpoint with this id for the calling workspace, or no delivery of this event in the endpoint's log: not sent to it, past the log's retention, deleted with its assessment, or another workspace's. A malformed id answers the same.",
         "headers": {
           "Cache-Control": {
             "schema": {
@@ -7632,6 +7604,34 @@
           "application/problem+json": {
             "schema": {
               "$ref": "#/components/schemas/NotFoundError"
+            }
+          }
+        }
+      },
+      "WorkspaceForbidden": {
+        "description": "The API key is valid but may not use this operation: it lacks the operation's scope, or its workspace is not entitled or is suspended.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/PermissionDeniedError"
             }
           }
         }

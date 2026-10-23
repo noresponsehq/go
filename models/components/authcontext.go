@@ -1,7 +1,7 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v4/internal/utils"
+	"github.com/noresponsehq/go/v5/internal/utils"
 )
 
 // AuthContext - Normalised claims from a session your backend has already verified with WorkOS, Clerk, Auth0 or any OIDC provider. Pass the output of the SDK's auth adapters, not a raw token.
@@ -20,7 +20,7 @@ type AuthContext struct {
 	SessionID *string `json:"session_id,omitzero"`
 	// The active organization or workspace identifier, when the provider issued one.
 	OrganizationID *string `json:"organization_id,omitzero"`
-	// The provider tenant identifier, when distinct from organization_id.
+	// The provider workspace identifier, when distinct from organization_id.
 	TenantID *string `json:"tenant_id,omitzero"`
 	// The verified token identifier (`jti`), used for replay and rotation correlation.
 	TokenID *string `json:"token_id,omitzero"`

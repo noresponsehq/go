@@ -1,6 +1,6 @@
 {
   "account_id": "acct_8412",
-  "flow": "signup",
+  "flow": "account_creation",
   "identifiers": {
     "email": "jane.doe@example.com",
     "ip": "169.254.169.254"

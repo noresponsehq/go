@@ -4,13 +4,13 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"github.com/noresponsehq/go/v4/internal/config"
-	"github.com/noresponsehq/go/v4/internal/hooks"
-	"github.com/noresponsehq/go/v4/internal/utils"
-	"github.com/noresponsehq/go/v4/models/apierrors"
-	"github.com/noresponsehq/go/v4/models/components"
-	"github.com/noresponsehq/go/v4/models/operations"
-	"github.com/noresponsehq/go/v4/retry"
+	"github.com/noresponsehq/go/v5/internal/config"
+	"github.com/noresponsehq/go/v5/internal/hooks"
+	"github.com/noresponsehq/go/v5/internal/utils"
+	"github.com/noresponsehq/go/v5/models/apierrors"
+	"github.com/noresponsehq/go/v5/models/components"
+	"github.com/noresponsehq/go/v5/models/operations"
+	"github.com/noresponsehq/go/v5/retry"
 	"net/http"
 	"net/url"
 )
@@ -316,7 +316,7 @@ func (s *Integrations) Create(ctx context.Context, request components.Integratio
 
 }
 
-// List the tenant's integrations.
+// List the workspace's integrations.
 // Every integration, oldest first. Listings carry no secrets. Requires the integrations scope.
 func (s *Integrations) List(ctx context.Context, opts ...operations.Option) (*operations.ListIntegrationsResponse, error) {
 	o := operations.Options{}

@@ -4,7 +4,7 @@ package components
 type PermissionDeniedErrorCode string
 
 const (
-	PermissionDeniedErrorCodeTenantForbidden PermissionDeniedErrorCode = "tenant_forbidden"
+	PermissionDeniedErrorCodeWorkspaceForbidden PermissionDeniedErrorCode = "workspace_forbidden"
 )
 
 func (e PermissionDeniedErrorCode) ToPointer() *PermissionDeniedErrorCode {
@@ -15,7 +15,7 @@ func (e PermissionDeniedErrorCode) ToPointer() *PermissionDeniedErrorCode {
 func (e *PermissionDeniedErrorCode) IsExact() bool {
 	if e != nil {
 		switch *e {
-		case "tenant_forbidden":
+		case "workspace_forbidden":
 			return true
 		}
 	}

@@ -1,5 +1,40 @@
 # Changelog
 
+## 5.0.0
+
+* `Sdk.Assessments.Create()`: 
+  *  `request.Body.Flow` **Changed** (Breaking ⚠️)
+  *  `response` **Changed** (Breaking ⚠️)
+  *  `error.Code` **Changed** (Breaking ⚠️)
+* `Sdk.Assessments.Get()`: 
+  *  `response` **Changed** (Breaking ⚠️)
+  *  `error.Code` **Changed** (Breaking ⚠️)
+* `Sdk.Assessments.Delete()`:  `error.Code` **Changed** (Breaking ⚠️)
+* `Sdk.Assessments.RecordOutcome()`:  `error.Code` **Changed** (Breaking ⚠️)
+* `Sdk.Assessments.Query()`: 
+  *  `response.Items[].Risk` **Changed** (Breaking ⚠️)
+  *  `error.Code` **Changed** (Breaking ⚠️)
+* `Sdk.Accounts.Get()`: 
+  *  `response` **Changed** (Breaking ⚠️)
+  *  `error.Code` **Changed** (Breaking ⚠️)
+* `Sdk.Accounts.Delete()`:  `error.Code` **Changed** (Breaking ⚠️)
+* `Sdk.Accounts.ListAssessments()`: 
+  *  `response.Items[].Risk` **Changed** (Breaking ⚠️)
+  *  `error.Code` **Changed** (Breaking ⚠️)
+* `Sdk.KeyUsage.Record()`:  `error.Code` **Changed** (Breaking ⚠️)
+* `Sdk.Keys.Rotate()`:  `error.Code` **Changed** (Breaking ⚠️)
+* `Sdk.Integrations.Create()`:  `error.Code` **Changed** (Breaking ⚠️)
+* `Sdk.Integrations.List()`:  `error.Code` **Changed** (Breaking ⚠️)
+* `Sdk.Integrations.Delete()`:  `error.Code` **Changed** (Breaking ⚠️)
+* `Sdk.Integrations.Rotate()`:  `error.Code` **Changed** (Breaking ⚠️)
+* `Sdk.WebhookEndpoints.List()`:  `error.Code` **Changed** (Breaking ⚠️)
+* `Sdk.WebhookEndpoints.Create()`:  `error.Code` **Changed** (Breaking ⚠️)
+* `Sdk.WebhookEndpoints.Delete()`:  `error.Code` **Changed** (Breaking ⚠️)
+* `Sdk.WebhookEndpoints.RotateSigningKey()`:  `error.Code` **Changed** (Breaking ⚠️)
+* `Sdk.WebhookEndpoints.SendTestEvent()`:  `error.Code` **Changed** (Breaking ⚠️)
+* `Sdk.WebhookEndpoints.ListDeliveries()`:  `error.Code` **Changed** (Breaking ⚠️)
+* `Sdk.WebhookEndpoints.ReplayDelivery()`:  `error.Code` **Changed** (Breaking ⚠️)
+
 ## 4.0.1
 
 No changes detected.

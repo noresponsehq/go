@@ -4,13 +4,13 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"github.com/noresponsehq/go/v4/internal/config"
-	"github.com/noresponsehq/go/v4/internal/hooks"
-	"github.com/noresponsehq/go/v4/internal/utils"
-	"github.com/noresponsehq/go/v4/models/apierrors"
-	"github.com/noresponsehq/go/v4/models/components"
-	"github.com/noresponsehq/go/v4/models/operations"
-	"github.com/noresponsehq/go/v4/retry"
+	"github.com/noresponsehq/go/v5/internal/config"
+	"github.com/noresponsehq/go/v5/internal/hooks"
+	"github.com/noresponsehq/go/v5/internal/utils"
+	"github.com/noresponsehq/go/v5/models/apierrors"
+	"github.com/noresponsehq/go/v5/models/components"
+	"github.com/noresponsehq/go/v5/models/operations"
+	"github.com/noresponsehq/go/v5/retry"
 	"net/http"
 	"net/url"
 )
@@ -29,8 +29,8 @@ func newKeyUsage(rootSDK *NoResponse, sdkConfig config.SDKConfiguration, hooks *
 	}
 }
 
-// Record - Report requests made with API keys your signup gate issued.
-// Records requests made with API keys your signup gate issued to your accounts, one event per request: the key's SHA-256 (the issued_credential.sha256 the account's assessment carried), the client IP, the time and optionally the user agent, model and token counts. Most callers use the SDK's usage buffer, which batches events and sends them in the background. Sampling is allowed: sample_rate weights an event's request and token counts. Requires the assess scope. Idempotency-Key is required and handled as on POST /v1/assessments: a retry with the same key and body answers the same record with Idempotent-Replayed: true and counts nothing again; a different body answers 409. A batch holds 1 to 500 events and at most 256 KiB. No raw event is kept: usage is aggregated per key, and IPs, user agents and models are kept only as keyed digests, with the IP's country, for 24 hours. When one key is used from 20 or more IP addresses, or 3 or more countries, within 24 hours, every account whose assessment carried that key gets the shared_api_key reason for 30 days.
+// Record - Report requests made with API keys your platform issued.
+// Records requests made with API keys your platform issued to your accounts, one event per request: the key's SHA-256 (the issued_credential.sha256 the account's assessment carried), the client IP, the time and optionally the user agent, model and token counts. Most callers use the SDK's usage buffer, which batches events and sends them in the background. Sampling is allowed: sample_rate weights an event's request and token counts. Requires the assess scope. Idempotency-Key is required and handled as on POST /v1/assessments: a retry with the same key and body answers the same record with Idempotent-Replayed: true and counts nothing again; a different body answers 409. A batch holds 1 to 500 events and at most 256 KiB. No raw event is kept: usage is aggregated per key, and IPs, user agents and models are kept only as keyed digests, with the IP's country, for 24 hours. When one key is used from 20 or more IP addresses, or 3 or more countries, within 24 hours, every account whose assessment carried that key gets the shared_api_key reason for 30 days.
 func (s *KeyUsage) Record(ctx context.Context, idempotencyKey string, body components.KeyUsageBatchRequest, opts ...operations.Option) (*operations.RecordKeyUsageResponse, error) {
 	request := operations.RecordKeyUsageRequest{
 		IdempotencyKey: idempotencyKey,

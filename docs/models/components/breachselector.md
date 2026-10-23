@@ -6,7 +6,7 @@ The submitted identifier a breach table matched on: email or username. Phone and
 
 ```go
 import (
-	"github.com/noresponsehq/go/v4/models/components"
+	"github.com/noresponsehq/go/v5/models/components"
 )
 
 value := components.BreachSelectorEmail

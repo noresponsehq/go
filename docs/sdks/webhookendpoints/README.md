@@ -6,7 +6,7 @@ Your webhook endpoints: register, list, rotate signing keys, send test events an
 
 ### Available Operations
 
-* [List](#list) - List the tenant's webhook endpoints.
+* [List](#list) - List the workspace's webhook endpoints.
 * [Create](#create) - Register a webhook endpoint.
 * [Delete](#delete) - Delete a webhook endpoint.
 * [RotateSigningKey](#rotatesigningkey) - Rotate an endpoint's signing key.
@@ -27,7 +27,7 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v4"
+	noresponse "github.com/noresponsehq/go/v5"
 	"log"
 )
 
@@ -84,8 +84,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v4"
-	"github.com/noresponsehq/go/v4/models/components"
+	noresponse "github.com/noresponsehq/go/v5"
+	"github.com/noresponsehq/go/v5/models/components"
 	"log"
 )
 
@@ -116,8 +116,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v4"
-	"github.com/noresponsehq/go/v4/models/components"
+	noresponse "github.com/noresponsehq/go/v5"
+	"github.com/noresponsehq/go/v5/models/components"
 	"log"
 )
 
@@ -149,8 +149,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v4"
-	"github.com/noresponsehq/go/v4/models/components"
+	noresponse "github.com/noresponsehq/go/v5"
+	"github.com/noresponsehq/go/v5/models/components"
 	"log"
 )
 
@@ -209,7 +209,7 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v4"
+	noresponse "github.com/noresponsehq/go/v5"
 	"log"
 )
 
@@ -232,11 +232,11 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                                 | Type                                                                                      | Required                                                                                  | Description                                                                               | Example                                                                                   |
-| ----------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| `ctx`                                                                                     | [context.Context](https://pkg.go.dev/context#Context)                                     | :heavy_check_mark:                                                                        | The context to use for the request.                                                       |                                                                                           |
-| `endpointID`                                                                              | `string`                                                                                  | :heavy_check_mark:                                                                        | The endpoint's whe_ id. An id that is unknown, malformed or another tenant's answers 404. | whe_01JA2ZD0E1F2G3H4J5K6M7N8P9                                                            |
-| `opts`                                                                                    | [][operations.Option](../../models/operations/option.md)                                  | :heavy_minus_sign:                                                                        | The options for this request.                                                             |                                                                                           |
+| Parameter                                                                                    | Type                                                                                         | Required                                                                                     | Description                                                                                  | Example                                                                                      |
+| -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `ctx`                                                                                        | [context.Context](https://pkg.go.dev/context#Context)                                        | :heavy_check_mark:                                                                           | The context to use for the request.                                                          |                                                                                              |
+| `endpointID`                                                                                 | `string`                                                                                     | :heavy_check_mark:                                                                           | The endpoint's whe_ id. An id that is unknown, malformed or another workspace's answers 404. | whe_01JA2ZD0E1F2G3H4J5K6M7N8P9                                                               |
+| `opts`                                                                                       | [][operations.Option](../../models/operations/option.md)                                     | :heavy_minus_sign:                                                                           | The options for this request.                                                                |                                                                                              |
 
 ### Response
 
@@ -267,8 +267,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v4"
-	"github.com/noresponsehq/go/v4/models/components"
+	noresponse "github.com/noresponsehq/go/v5"
+	"github.com/noresponsehq/go/v5/models/components"
 	"log"
 )
 
@@ -297,8 +297,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v4"
-	"github.com/noresponsehq/go/v4/models/components"
+	noresponse "github.com/noresponsehq/go/v5"
+	"github.com/noresponsehq/go/v5/models/components"
 	"log"
 )
 
@@ -324,7 +324,7 @@ func main() {
 | Parameter                                                                                    | Type                                                                                         | Required                                                                                     | Description                                                                                  | Example                                                                                      |
 | -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
 | `ctx`                                                                                        | [context.Context](https://pkg.go.dev/context#Context)                                        | :heavy_check_mark:                                                                           | The context to use for the request.                                                          |                                                                                              |
-| `endpointID`                                                                                 | `string`                                                                                     | :heavy_check_mark:                                                                           | The endpoint's whe_ id. An id that is unknown, malformed or another tenant's answers 404.    | whe_01JA2ZD0E1F2G3H4J5K6M7N8P9                                                               |
+| `endpointID`                                                                                 | `string`                                                                                     | :heavy_check_mark:                                                                           | The endpoint's whe_ id. An id that is unknown, malformed or another workspace's answers 404. | whe_01JA2ZD0E1F2G3H4J5K6M7N8P9                                                               |
 | `body`                                                                                       | [components.WebhookKeyRotationRequest](../../models/components/webhookkeyrotationrequest.md) | :heavy_check_mark:                                                                           | N/A                                                                                          |                                                                                              |
 
 ### Response
@@ -356,8 +356,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v4"
-	"github.com/noresponsehq/go/v4/models/components"
+	noresponse "github.com/noresponsehq/go/v5"
+	"github.com/noresponsehq/go/v5/models/components"
 	"log"
 )
 
@@ -388,8 +388,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v4"
-	"github.com/noresponsehq/go/v4/models/components"
+	noresponse "github.com/noresponsehq/go/v5"
+	"github.com/noresponsehq/go/v5/models/components"
 	"log"
 )
 
@@ -414,11 +414,11 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                                 | Type                                                                                      | Required                                                                                  | Description                                                                               | Example                                                                                   |
-| ----------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| `ctx`                                                                                     | [context.Context](https://pkg.go.dev/context#Context)                                     | :heavy_check_mark:                                                                        | The context to use for the request.                                                       |                                                                                           |
-| `endpointID`                                                                              | `string`                                                                                  | :heavy_check_mark:                                                                        | The endpoint's whe_ id. An id that is unknown, malformed or another tenant's answers 404. | whe_01JA2ZD0E1F2G3H4J5K6M7N8P9                                                            |
-| `body`                                                                                    | [components.WebhookTestRequest](../../models/components/webhooktestrequest.md)            | :heavy_check_mark:                                                                        | N/A                                                                                       |                                                                                           |
+| Parameter                                                                                    | Type                                                                                         | Required                                                                                     | Description                                                                                  | Example                                                                                      |
+| -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `ctx`                                                                                        | [context.Context](https://pkg.go.dev/context#Context)                                        | :heavy_check_mark:                                                                           | The context to use for the request.                                                          |                                                                                              |
+| `endpointID`                                                                                 | `string`                                                                                     | :heavy_check_mark:                                                                           | The endpoint's whe_ id. An id that is unknown, malformed or another workspace's answers 404. | whe_01JA2ZD0E1F2G3H4J5K6M7N8P9                                                               |
+| `body`                                                                                       | [components.WebhookTestRequest](../../models/components/webhooktestrequest.md)               | :heavy_check_mark:                                                                           | N/A                                                                                          |                                                                                              |
 
 ### Response
 
@@ -438,7 +438,7 @@ func main() {
 
 ## ListDeliveries
 
-Every POST the endpoint received, newest first: the event id and type, which attempt it was, whether it was a replay, delivered or failed, the response code, why it failed and how long it took. Attempts are kept for 30 days, or your retention_days when that is shorter, and are deleted with the assessment they carried. Requires the webhooks scope. Read-only and safe to retry. The cursor is opaque and bound to your tenant and the endpoint; a tampered or expired cursor answers 400 invalid_cursor.
+Every POST the endpoint received, newest first: the event id and type, which attempt it was, whether it was a replay, delivered or failed, the response code, why it failed and how long it took. Attempts are kept for 30 days, or your retention_days when that is shorter, and are deleted with the assessment they carried. Requires the webhooks scope. Read-only and safe to retry. The cursor is opaque and bound to your workspace and the endpoint; a tampered or expired cursor answers 400 invalid_cursor.
 
 ### Example Usage
 
@@ -449,7 +449,7 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v4"
+	noresponse "github.com/noresponsehq/go/v5"
 	"log"
 )
 
@@ -484,13 +484,13 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                                 | Type                                                                                      | Required                                                                                  | Description                                                                               | Example                                                                                   |
-| ----------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| `ctx`                                                                                     | [context.Context](https://pkg.go.dev/context#Context)                                     | :heavy_check_mark:                                                                        | The context to use for the request.                                                       |                                                                                           |
-| `endpointID`                                                                              | `string`                                                                                  | :heavy_check_mark:                                                                        | The endpoint's whe_ id. An id that is unknown, malformed or another tenant's answers 404. | whe_01JA2ZD0E1F2G3H4J5K6M7N8P9                                                            |
-| `limit`                                                                                   | `*int64`                                                                                  | :heavy_minus_sign:                                                                        | Attempts per page.                                                                        |                                                                                           |
-| `cursor`                                                                                  | `*string`                                                                                 | :heavy_minus_sign:                                                                        | next_cursor from the previous page, unchanged.                                            |                                                                                           |
-| `opts`                                                                                    | [][operations.Option](../../models/operations/option.md)                                  | :heavy_minus_sign:                                                                        | The options for this request.                                                             |                                                                                           |
+| Parameter                                                                                    | Type                                                                                         | Required                                                                                     | Description                                                                                  | Example                                                                                      |
+| -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `ctx`                                                                                        | [context.Context](https://pkg.go.dev/context#Context)                                        | :heavy_check_mark:                                                                           | The context to use for the request.                                                          |                                                                                              |
+| `endpointID`                                                                                 | `string`                                                                                     | :heavy_check_mark:                                                                           | The endpoint's whe_ id. An id that is unknown, malformed or another workspace's answers 404. | whe_01JA2ZD0E1F2G3H4J5K6M7N8P9                                                               |
+| `limit`                                                                                      | `*int64`                                                                                     | :heavy_minus_sign:                                                                           | Attempts per page.                                                                           |                                                                                              |
+| `cursor`                                                                                     | `*string`                                                                                    | :heavy_minus_sign:                                                                           | next_cursor from the previous page, unchanged.                                               |                                                                                              |
+| `opts`                                                                                       | [][operations.Option](../../models/operations/option.md)                                     | :heavy_minus_sign:                                                                           | The options for this request.                                                                |                                                                                              |
 
 ### Response
 
@@ -521,8 +521,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v4"
-	"github.com/noresponsehq/go/v4/models/components"
+	noresponse "github.com/noresponsehq/go/v5"
+	"github.com/noresponsehq/go/v5/models/components"
 	"log"
 )
 
@@ -551,8 +551,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v4"
-	"github.com/noresponsehq/go/v4/models/components"
+	noresponse "github.com/noresponsehq/go/v5"
+	"github.com/noresponsehq/go/v5/models/components"
 	"log"
 )
 
@@ -575,12 +575,12 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                                                                                                                                                                | Type                                                                                                                                                                                                                     | Required                                                                                                                                                                                                                 | Description                                                                                                                                                                                                              | Example                                                                                                                                                                                                                  |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `ctx`                                                                                                                                                                                                                    | [context.Context](https://pkg.go.dev/context#Context)                                                                                                                                                                    | :heavy_check_mark:                                                                                                                                                                                                       | The context to use for the request.                                                                                                                                                                                      |                                                                                                                                                                                                                          |
-| `endpointID`                                                                                                                                                                                                             | `string`                                                                                                                                                                                                                 | :heavy_check_mark:                                                                                                                                                                                                       | The endpoint's whe_ id. An id that is unknown, malformed or another tenant's answers 404.                                                                                                                                | whe_01JA2ZD0E1F2G3H4J5K6M7N8P9                                                                                                                                                                                           |
-| `eventID`                                                                                                                                                                                                                | `string`                                                                                                                                                                                                                 | :heavy_check_mark:                                                                                                                                                                                                       | The evt_ id of a delivery the endpoint's log holds, as GET /v1/webhooks/{endpoint_id}/deliveries lists it. An id that is malformed, not sent to this endpoint, past the log's retention or another tenant's answers 404. | evt_01JA2ZD3K4M5N6P7Q8R9S0T1V2                                                                                                                                                                                           |
-| `body`                                                                                                                                                                                                                   | [components.WebhookReplayRequest](../../models/components/webhookreplayrequest.md)                                                                                                                                       | :heavy_check_mark:                                                                                                                                                                                                       | N/A                                                                                                                                                                                                                      |                                                                                                                                                                                                                          |
+| Parameter                                                                                                                                                                                                                   | Type                                                                                                                                                                                                                        | Required                                                                                                                                                                                                                    | Description                                                                                                                                                                                                                 | Example                                                                                                                                                                                                                     |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ctx`                                                                                                                                                                                                                       | [context.Context](https://pkg.go.dev/context#Context)                                                                                                                                                                       | :heavy_check_mark:                                                                                                                                                                                                          | The context to use for the request.                                                                                                                                                                                         |                                                                                                                                                                                                                             |
+| `endpointID`                                                                                                                                                                                                                | `string`                                                                                                                                                                                                                    | :heavy_check_mark:                                                                                                                                                                                                          | The endpoint's whe_ id. An id that is unknown, malformed or another workspace's answers 404.                                                                                                                                | whe_01JA2ZD0E1F2G3H4J5K6M7N8P9                                                                                                                                                                                              |
+| `eventID`                                                                                                                                                                                                                   | `string`                                                                                                                                                                                                                    | :heavy_check_mark:                                                                                                                                                                                                          | The evt_ id of a delivery the endpoint's log holds, as GET /v1/webhooks/{endpoint_id}/deliveries lists it. An id that is malformed, not sent to this endpoint, past the log's retention or another workspace's answers 404. | evt_01JA2ZD3K4M5N6P7Q8R9S0T1V2                                                                                                                                                                                              |
+| `body`                                                                                                                                                                                                                      | [components.WebhookReplayRequest](../../models/components/webhookreplayrequest.md)                                                                                                                                          | :heavy_check_mark:                                                                                                                                                                                                          | N/A                                                                                                                                                                                                                         |                                                                                                                                                                                                                             |
 
 ### Response
 

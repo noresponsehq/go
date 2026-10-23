@@ -4,13 +4,13 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"github.com/noresponsehq/go/v4/internal/config"
-	"github.com/noresponsehq/go/v4/internal/hooks"
-	"github.com/noresponsehq/go/v4/internal/utils"
-	"github.com/noresponsehq/go/v4/models/apierrors"
-	"github.com/noresponsehq/go/v4/models/components"
-	"github.com/noresponsehq/go/v4/models/operations"
-	"github.com/noresponsehq/go/v4/retry"
+	"github.com/noresponsehq/go/v5/internal/config"
+	"github.com/noresponsehq/go/v5/internal/hooks"
+	"github.com/noresponsehq/go/v5/internal/utils"
+	"github.com/noresponsehq/go/v5/models/apierrors"
+	"github.com/noresponsehq/go/v5/models/components"
+	"github.com/noresponsehq/go/v5/models/operations"
+	"github.com/noresponsehq/go/v5/retry"
 	"github.com/spyzhov/ajson"
 	"net/http"
 	"strconv"
@@ -741,7 +741,7 @@ func (s *Accounts) Delete(ctx context.Context, accountID string, opts ...operati
 }
 
 // ListAssessments - Page through one account's unexpired assessments.
-// The account's history: the same page as POST /v1/assessments/query for this account_id, newest first, each at its latest assessment_version. Requires the history scope. Read-only and safe to retry. An account with no assessments answers 200 with empty items. The cursor is opaque and bound to your tenant and the account; a tampered or expired cursor answers 400 invalid_cursor. response_mode=detailed needs the detailed scope. The account_id travels in the URL; use POST /v1/assessments/query to keep it out of access logs.
+// The account's history: the same page as POST /v1/assessments/query for this account_id, newest first, each at its latest assessment_version. Requires the history scope. Read-only and safe to retry. An account with no assessments answers 200 with empty items. The cursor is opaque and bound to your workspace and the account; a tampered or expired cursor answers 400 invalid_cursor. response_mode=detailed needs the detailed scope. The account_id travels in the URL; use POST /v1/assessments/query to keep it out of access logs.
 func (s *Accounts) ListAssessments(ctx context.Context, accountID string, limit *int64, cursor *string, responseMode *components.ResponseMode, opts ...operations.Option) (*operations.ListAccountAssessmentsResponse, error) {
 	request := operations.ListAccountAssessmentsRequest{
 		AccountID:    accountID,

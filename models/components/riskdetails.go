@@ -1,7 +1,7 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v4/internal/utils"
+	"github.com/noresponsehq/go/v5/internal/utils"
 )
 
 // RiskDetails - Detailed view only (response_mode=detailed, which needs the detailed scope); a standard answer leaves it out. Merged observations without provider, source, origin, raw breach record, value or score.

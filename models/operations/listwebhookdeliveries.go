@@ -1,12 +1,12 @@
 package operations
 
 import (
-	"github.com/noresponsehq/go/v4/internal/utils"
-	"github.com/noresponsehq/go/v4/models/components"
+	"github.com/noresponsehq/go/v5/internal/utils"
+	"github.com/noresponsehq/go/v5/models/components"
 )
 
 type ListWebhookDeliveriesRequest struct {
-	// The endpoint's whe_ id. An id that is unknown, malformed or another tenant's answers 404.
+	// The endpoint's whe_ id. An id that is unknown, malformed or another workspace's answers 404.
 	EndpointID string `pathParam:"style=simple,explode=false,name=endpoint_id"`
 	// Attempts per page.
 	Limit *int64 `default:"20" queryParam:"style=form,explode=true,name=limit"`

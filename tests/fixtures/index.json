@@ -1,10 +1,16 @@
 {
-  "description": "Every signup assessment contract fixture, the schema it is checked against and the expected verdict. expect=valid must validate. For the request schema the Go decoder (assesswire.DecodeAssessmentRequest) also applies server normalisation, whose refusals use the keywords normalisation, format and public_address. response_mode, when set, names the view a response fixture is: assesswire.ModeViolations must accept a valid one and report `rule` for a semantic_invalid one. expect=invalid must fail schema validation, and the set of top-level (keyword, JSON pointer) errors must equal `errors` plus `also` under python-jsonschema, and jsonschema-rs must reach the same valid/invalid verdict, where `also` lists errors intrinsic to the same bad value (an over-long value that also breaks its pattern). expect=semantic_invalid is schema-valid and runtime/contracts/the Go contract implementation.semantic_violations (history_violations for a page) must report `rule`. A schema of the form identity.openapi.json#/... names a schema inside the OpenAPI document. tests/contracts/test_the Go contract implementation.py enforces all of this and that every file here is listed.",
+  "description": "Every assessment contract fixture, the schema it is checked against and the expected verdict. expect=valid must validate. For the request schema the Go decoder (assesswire.DecodeAssessmentRequest) also applies server normalisation, whose refusals use the keywords normalisation, format and public_address. response_mode, when set, names the view a response fixture is: assesswire.ModeViolations must accept a valid one and report `rule` for a semantic_invalid one. expect=invalid must fail schema validation, and the set of top-level (keyword, JSON pointer) errors must equal `errors` plus `also` under python-jsonschema, and jsonschema-rs must reach the same valid/invalid verdict, where `also` lists errors intrinsic to the same bad value (an over-long value that also breaks its pattern). expect=semantic_invalid is schema-valid and runtime/contracts/the Go contract implementation.semantic_violations (history_violations for a page) must report `rule`. A schema of the form identity.openapi.json#/... names a schema inside the OpenAPI document. tests/contracts/test_the Go contract implementation.py enforces all of this and that every file here is listed.",
   "cases": [
     {
       "file": "valid/assessment-request-minimal.json",
       "schema": "assessment-request.schema.json",
       "expect": "valid"
+    },
+    {
+      "file": "valid/assessment-request-signup-alias.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "valid",
+      "why": "signup is an alias of account_creation that requests keep"
     },
     {
       "file": "valid/assessment-request-issued-credential.json",
@@ -117,7 +123,7 @@
       "expect": "valid"
     },
     {
-      "file": "valid/webhook-tenant-deleted.json",
+      "file": "valid/webhook-workspace-deleted.json",
       "schema": "webhook-event.schema.json",
       "expect": "valid"
     },
@@ -247,8 +253,8 @@
       "expect": "valid"
     },
     {
-      "file": "valid/problem-tenant-forbidden-scope.json",
-      "schema": "identity.openapi.json#/components/responses/TenantForbidden/content/application~1problem+json/schema",
+      "file": "valid/problem-workspace-forbidden-scope.json",
+      "schema": "identity.openapi.json#/components/responses/WorkspaceForbidden/content/application~1problem+json/schema",
       "expect": "valid"
     },
     {
@@ -2404,7 +2410,7 @@
       "why": "NOR-352 the decisions are the account decisions"
     },
     {
-      "file": "invalid/webhook-tenant-deleted-test-suffix.json",
+      "file": "invalid/webhook-workspace-deleted-test-suffix.json",
       "schema": "webhook-event.schema.json",
       "expect": "invalid",
       "errors": [
@@ -2413,10 +2419,10 @@
           "/data/workspace_id"
         ]
       ],
-      "why": "NOR-143 tenant.deleted names the workspace and its environment, never a :test tenant id"
+      "why": "NOR-143 workspace.deleted names the workspace and its environment, never a :test tenant id"
     },
     {
-      "file": "invalid/webhook-tenant-deleted-unknown-environment.json",
+      "file": "invalid/webhook-workspace-deleted-unknown-environment.json",
       "schema": "webhook-event.schema.json",
       "expect": "invalid",
       "errors": [
@@ -3088,7 +3094,7 @@
       "expect": "valid"
     },
     {
-      "file": "valid/problem-signup-rejected.json",
+      "file": "valid/problem-workspace-refused.json",
       "schema": "problem-details.schema.json",
       "expect": "valid"
     },
@@ -3277,7 +3283,7 @@
       "errors": [
         [
           "not",
-          "/flows/signup"
+          "/flows/account_creation"
         ]
       ],
       "why": "NOR-360 signup has its own thresholds; only login and purchase inherit them"
@@ -3292,7 +3298,7 @@
           "/flows/login"
         ]
       ],
-      "why": "NOR-360 inherits_signup drops a flow's thresholds, so it is not combined with one"
+      "why": "NOR-360 inherits_account_creation drops a flow's thresholds, so it is not combined with one"
     },
     {
       "file": "invalid/settings-request-unknown-flow.json",

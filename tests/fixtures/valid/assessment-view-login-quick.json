@@ -28,7 +28,7 @@
       ]
     },
     "decisions_by_flow": {
-      "signup": "allow",
+      "account_creation": "allow",
       "login": "allow",
       "purchase": "allow"
     },

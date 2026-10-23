@@ -6,7 +6,7 @@ The authentication provider that calls the endpoint.
 
 ```go
 import (
-	"github.com/noresponsehq/go/v4/models/components"
+	"github.com/noresponsehq/go/v5/models/components"
 )
 
 value := components.IntegrationPlatformWorkos

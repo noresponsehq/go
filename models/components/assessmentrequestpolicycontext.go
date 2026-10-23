@@ -2,7 +2,7 @@ package components
 
 // AssessmentRequestPolicyContext - Optional policy inputs: region.
 type AssessmentRequestPolicyContext struct {
-	// ISO 3166-1 alpha-2 region of the signup, as the provider determines it.
+	// ISO 3166-1 alpha-2 region of the user, as the provider determines it.
 	Region *string `json:"region,omitzero"`
 }
 

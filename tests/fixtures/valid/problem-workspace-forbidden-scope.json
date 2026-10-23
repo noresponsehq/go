@@ -1,8 +1,8 @@
 {
-  "type": "https://docs.noresponse.org/problems/tenant-forbidden",
+  "type": "https://docs.noresponse.org/problems/workspace-forbidden",
   "title": "Forbidden",
   "status": 403,
   "detail": "The API key does not carry a scope this operation accepts.",
-  "code": "tenant_forbidden",
+  "code": "workspace_forbidden",
   "request_id": "0123456789abcdef0123456789abcdef"
 }

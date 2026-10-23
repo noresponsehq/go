@@ -2,14 +2,14 @@
 
 # NoResponse Go SDK
 
-The Go client for the [NoResponse API](https://docs.noresponse.org): assess a signup or gateway event, wait for a pending result, page through an account's history, record what you later learned and verify webhooks.
+The Go client for the [NoResponse API](https://docs.noresponse.org): assess an account creation, login or purchase, wait for a pending result, page through an account's history, record what you later learned and verify webhooks.
 
 Call it from your server only. The API key must never reach a browser or an app.
 
 ## Install
 
 ```sh
-go get github.com/noresponsehq/go/v4
+go get github.com/noresponsehq/go/v5
 ```
 
 Go 1.24 or later.
@@ -25,8 +25,8 @@ import (
 	"log"
 	"os"
 
-	noresponse "github.com/noresponsehq/go/v4"
-	"github.com/noresponsehq/go/v4/models/components"
+	noresponse "github.com/noresponsehq/go/v5"
+	"github.com/noresponsehq/go/v5/models/components"
 )
 
 func main() {
@@ -34,7 +34,7 @@ func main() {
 
 	res, err := client.Assessments.Create(context.Background(), noresponse.NewIdempotencyKey(), components.AssessmentRequest{
 		AccountID: "acct_7f3a9c",
-		Flow:      components.FlowSignup,
+		Flow:      components.FlowAccountCreation,
 		Identifiers: components.AssessmentRequestIdentifiers{
 			Email: noresponse.Pointer("new.user@example.com"),
 		},
@@ -55,7 +55,7 @@ func main() {
 
 `NewClient` reads nothing from the environment itself; pass the key. `noresponse.New()` with no key option reads `NORESPONSE_API_KEY`.
 
-Every request names its `Flow`: `components.FlowSignup`, `FlowLogin` or `FlowPurchase`. Act on `assessment.Account.Risk.Decision`: `allow`, `step_up`, `review` or `block`, where `block` means your block threshold was reached. The assessment's own facts (score, recommendation, signals, `AssessmentVersion`) are under `assessment.Detail`. `Account` is nil while the account's first assessment is pending, and a 429, a 503 or a timeout also needs your own fallback.
+Every request names its `Flow`: `components.FlowAccountCreation`, `FlowLogin` or `FlowPurchase`. Act on `assessment.Account.Risk.Decision`: `allow`, `step_up`, `review` or `block`, where `block` means your block threshold was reached. The assessment's own facts (score, recommendation, signals, `AssessmentVersion`) are under `assessment.Detail`. `Account` is nil while the account's first assessment is pending, and a 429, a 503 or a timeout also needs your own fallback.
 
 Every method takes a `context.Context` first. Cancelling it cancels the request and any retry wait.
 
@@ -108,7 +108,7 @@ case err != nil:
 }
 ```
 
-The typed errors are `BadRequestError` (400), `AuthenticationError` (401), `PermissionDeniedError` (403), `NotFoundError` (404), `ConflictError` (409) and `RateLimitError` (429), all in `github.com/noresponsehq/go/v4/models/apierrors`. Any other status is an `*apierrors.APIStatusError`.
+The typed errors are `BadRequestError` (400), `AuthenticationError` (401), `PermissionDeniedError` (403), `NotFoundError` (404), `ConflictError` (409) and `RateLimitError` (429), all in `github.com/noresponsehq/go/v5/models/apierrors`. Any other status is an `*apierrors.APIStatusError`.
 
 ## Retries and timeouts
 
@@ -141,7 +141,7 @@ for assessment, err := range noresponse.AllAssessments(ctx, client, query) {
 
 ## Issued keys
 
-When your signup gate issues an API key to the new account, send only its hash, as `issued_credential.sha256`; the key itself never leaves your backend.
+When your platform issues an API key to the new account, send only its hash, as `issued_credential.sha256`; the key itself never leaves your backend.
 
 ```go
 sha256, err := noresponse.HashIssuedCredential(issuedKey) // 64 lower-case hex characters
@@ -189,7 +189,7 @@ http.HandleFunc("/webhooks/noresponse", func(w http.ResponseWriter, r *http.Requ
 		// Delete what you hold for data.AssessmentID.
 	case *noresponse.AccountDeleted:
 		// You erased data.AccountID with Accounts.Delete: delete what you hold for it.
-	case *noresponse.TenantDeleted:
+	case *noresponse.WorkspaceDeleted:
 		// The workspace is deleted: the last event this endpoint receives. Delete what you hold for data.Environment.
 	case *noresponse.EndpointDisabled:
 		// data.EndpointID failed for 72 hours and is disabled: fix it and verify it again.
@@ -214,7 +214,7 @@ Deliveries arrive at least once and unordered. Deduplicate on `event.ID` and kee
 
 ### Late results
 
-An assessment can rise after the signup was allowed. `HandleLateResult` verifies the `assessment.updated` delivery with `ConstructEvent`, applies a policy to `Account.Risk.Decision` (default: revoke sessions on `review` and `block`) and acts through your auth provider:
+An assessment can rise after the account creation was allowed. `HandleLateResult` verifies the `assessment.updated` delivery with `ConstructEvent`, applies a policy to `Account.Risk.Decision` (default: revoke sessions on `review` and `block`) and acts through your auth provider:
 
 ```go
 provider := &noresponse.ClerkActions{SecretKey: os.Getenv("CLERK_SECRET_KEY")} // or WorkOSActions, Auth0Actions

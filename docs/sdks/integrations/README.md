@@ -7,7 +7,7 @@ Hosted endpoints that answer your sign-up and sign-in hooks.
 ### Available Operations
 
 * [Create](#create) - Register a hosted provider integration.
-* [List](#list) - List the tenant's integrations.
+* [List](#list) - List the workspace's integrations.
 * [Delete](#delete) - Delete an integration.
 * [Rotate](#rotate) - Replace an integration's secret.
 
@@ -24,8 +24,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v4"
-	"github.com/noresponsehq/go/v4/models/components"
+	noresponse "github.com/noresponsehq/go/v5"
+	"github.com/noresponsehq/go/v5/models/components"
 	"log"
 )
 
@@ -56,8 +56,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v4"
-	"github.com/noresponsehq/go/v4/models/components"
+	noresponse "github.com/noresponsehq/go/v5"
+	"github.com/noresponsehq/go/v5/models/components"
 	"log"
 )
 
@@ -121,7 +121,7 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v4"
+	noresponse "github.com/noresponsehq/go/v5"
 	"log"
 )
 
@@ -178,7 +178,7 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v4"
+	noresponse "github.com/noresponsehq/go/v5"
 	"log"
 )
 
@@ -201,11 +201,11 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                                                                          | Type                                                                                                                               | Required                                                                                                                           | Description                                                                                                                        | Example                                                                                                                            |
-| ---------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| `ctx`                                                                                                                              | [context.Context](https://pkg.go.dev/context#Context)                                                                              | :heavy_check_mark:                                                                                                                 | The context to use for the request.                                                                                                |                                                                                                                                    |
-| `integrationID`                                                                                                                    | `string`                                                                                                                           | :heavy_check_mark:                                                                                                                 | Path segment, matched case-sensitively. A value that does not match the integration_id shape, or another tenant's id, answers 404. | int_01JA2Z8K6Q4V7W9XBCDEFGHJKM                                                                                                     |
-| `opts`                                                                                                                             | [][operations.Option](../../models/operations/option.md)                                                                           | :heavy_minus_sign:                                                                                                                 | The options for this request.                                                                                                      |                                                                                                                                    |
+| Parameter                                                                                                                             | Type                                                                                                                                  | Required                                                                                                                              | Description                                                                                                                           | Example                                                                                                                               |
+| ------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `ctx`                                                                                                                                 | [context.Context](https://pkg.go.dev/context#Context)                                                                                 | :heavy_check_mark:                                                                                                                    | The context to use for the request.                                                                                                   |                                                                                                                                       |
+| `integrationID`                                                                                                                       | `string`                                                                                                                              | :heavy_check_mark:                                                                                                                    | Path segment, matched case-sensitively. A value that does not match the integration_id shape, or another workspace's id, answers 404. | int_01JA2Z8K6Q4V7W9XBCDEFGHJKM                                                                                                        |
+| `opts`                                                                                                                                | [][operations.Option](../../models/operations/option.md)                                                                              | :heavy_minus_sign:                                                                                                                    | The options for this request.                                                                                                         |                                                                                                                                       |
 
 ### Response
 
@@ -236,8 +236,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v4"
-	"github.com/noresponsehq/go/v4/models/components"
+	noresponse "github.com/noresponsehq/go/v5"
+	"github.com/noresponsehq/go/v5/models/components"
 	"log"
 )
 
@@ -266,8 +266,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v4"
-	"github.com/noresponsehq/go/v4/models/components"
+	noresponse "github.com/noresponsehq/go/v5"
+	"github.com/noresponsehq/go/v5/models/components"
 	"log"
 )
 
@@ -292,11 +292,11 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                                                                          | Type                                                                                                                               | Required                                                                                                                           | Description                                                                                                                        | Example                                                                                                                            |
-| ---------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| `ctx`                                                                                                                              | [context.Context](https://pkg.go.dev/context#Context)                                                                              | :heavy_check_mark:                                                                                                                 | The context to use for the request.                                                                                                |                                                                                                                                    |
-| `integrationID`                                                                                                                    | `string`                                                                                                                           | :heavy_check_mark:                                                                                                                 | Path segment, matched case-sensitively. A value that does not match the integration_id shape, or another tenant's id, answers 404. | int_01JA2Z8K6Q4V7W9XBCDEFGHJKM                                                                                                     |
-| `body`                                                                                                                             | [components.IntegrationRotationRequest](../../models/components/integrationrotationrequest.md)                                     | :heavy_check_mark:                                                                                                                 | N/A                                                                                                                                |                                                                                                                                    |
+| Parameter                                                                                                                             | Type                                                                                                                                  | Required                                                                                                                              | Description                                                                                                                           | Example                                                                                                                               |
+| ------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `ctx`                                                                                                                                 | [context.Context](https://pkg.go.dev/context#Context)                                                                                 | :heavy_check_mark:                                                                                                                    | The context to use for the request.                                                                                                   |                                                                                                                                       |
+| `integrationID`                                                                                                                       | `string`                                                                                                                              | :heavy_check_mark:                                                                                                                    | Path segment, matched case-sensitively. A value that does not match the integration_id shape, or another workspace's id, answers 404. | int_01JA2Z8K6Q4V7W9XBCDEFGHJKM                                                                                                        |
+| `body`                                                                                                                                | [components.IntegrationRotationRequest](../../models/components/integrationrotationrequest.md)                                        | :heavy_check_mark:                                                                                                                    | N/A                                                                                                                                   |                                                                                                                                       |
 
 ### Response
 

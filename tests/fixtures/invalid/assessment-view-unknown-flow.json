@@ -39,7 +39,7 @@
       ]
     },
     "decisions_by_flow": {
-      "signup": "allow",
+      "account_creation": "allow",
       "login": "allow",
       "purchase": "allow"
     },
@@ -125,7 +125,7 @@
         "ip": {
           "country": "US",
           "type": "residential",
-          "seen_in_tenant": 1
+          "seen_in_workspace": 1
         },
         "consistency": {
           "name": "match",

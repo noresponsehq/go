@@ -1,6 +1,6 @@
 {
   "account_id": "acct_1\n",
-  "flow": "signup",
+  "flow": "account_creation",
   "identifiers": {
     "email": "new.user@example.com"
   }

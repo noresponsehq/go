@@ -1,6 +1,6 @@
 # IntegrationList
 
-GET /v1/integrations: every integration of the tenant, oldest first, at most 10. No secret is ever listed.
+GET /v1/integrations: every integration of the workspace, oldest first, at most 10. No secret is ever listed.
 
 
 ## Fields

@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/noresponsehq/go/v4/internal/utils"
+	"github.com/noresponsehq/go/v5/internal/utils"
 )
 
 type AlternateName struct {

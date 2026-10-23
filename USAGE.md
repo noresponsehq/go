@@ -11,8 +11,8 @@ import (
 	"log"
 	"os"
 
-	noresponse "github.com/noresponsehq/go/v4"
-	"github.com/noresponsehq/go/v4/models/components"
+	noresponse "github.com/noresponsehq/go/v5"
+	"github.com/noresponsehq/go/v5/models/components"
 )
 
 func main() {
@@ -24,7 +24,7 @@ func main() {
 
 	res, err := client.Assessments.Create(context.Background(), key, components.AssessmentRequest{
 		AccountID: "acct_7f3a9c",
-		Flow:      components.FlowSignup,
+		Flow:      components.FlowAccountCreation,
 		Identifiers: components.AssessmentRequestIdentifiers{
 			Email: noresponse.Pointer("new.user@example.com"),
 		},

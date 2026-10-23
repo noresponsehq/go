@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"iter"
 
-	"github.com/noresponsehq/go/v4/models/components"
+	"github.com/noresponsehq/go/v5/models/components"
 )
 
 // NewClient returns a client that authenticates with apiKey. It is New with
@@ -26,7 +26,7 @@ func WithAPIKey(apiKey string) SDKOption {
 // NewIdempotencyKey returns a random key for Assessments.Create and
 // Assessments.RecordOutcome: a version 4 UUID, which is 36 characters from
 // the allowed set. Generate one per logical request and store it beside the
-// signup so that a retry after a crash sends the same key.
+// account creation so that a retry after a crash sends the same key.
 func NewIdempotencyKey() string {
 	var b [16]byte
 	if _, err := rand.Read(b[:]); err != nil {

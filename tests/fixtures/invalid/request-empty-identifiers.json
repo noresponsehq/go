@@ -1,5 +1,5 @@
 {
   "account_id": "acct_7f3a9c",
-  "flow": "signup",
+  "flow": "account_creation",
   "identifiers": {}
 }

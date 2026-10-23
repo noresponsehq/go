@@ -10,9 +10,9 @@ import (
 	"net/http"
 	"os"
 
-	noresponse "github.com/noresponsehq/go/v4"
-	"github.com/noresponsehq/go/v4/models/apierrors"
-	"github.com/noresponsehq/go/v4/models/components"
+	noresponse "github.com/noresponsehq/go/v5"
+	"github.com/noresponsehq/go/v5/models/apierrors"
+	"github.com/noresponsehq/go/v5/models/components"
 )
 
 // These examples are compiled by go test and shown on pkg.go.dev. They have
@@ -24,7 +24,7 @@ func Example() {
 
 	res, err := client.Assessments.Create(ctx, noresponse.NewIdempotencyKey(), components.AssessmentRequest{
 		AccountID: "acct_7f3a9c",
-		Flow:      components.FlowSignup,
+		Flow:      components.FlowAccountCreation,
 		Identifiers: components.AssessmentRequestIdentifiers{
 			Email: noresponse.Pointer("new.user@example.com"),
 		},

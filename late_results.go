@@ -2,7 +2,7 @@ package noresponse
 
 // Late-result handlers. Hand-written beside the generated client.
 //
-// An assessment can be revised after the signup was allowed: a slow source
+// An assessment can be revised after the account creation was allowed: a slow source
 // settles and the account's decision rises. NoResponse sends the new version as a
 // signed assessment.updated webhook. HandleLateResult verifies that delivery
 // with ConstructEvent, picks an action from your policy and acts through the
@@ -28,7 +28,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/noresponsehq/go/v4/models/components"
+	"github.com/noresponsehq/go/v5/models/components"
 )
 
 // LateResultAction is what to do to the user. LateResultBan also ends every session.

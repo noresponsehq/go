@@ -1,7 +1,7 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v4/internal/utils"
+	"github.com/noresponsehq/go/v5/internal/utils"
 )
 
 type Signal struct {
@@ -11,7 +11,7 @@ type Signal struct {
 	Identifier IdentifierKind `json:"identifier"`
 	// Per-signal outcome. A source that timed out, was blocked or errored reports blocked, unavailable or inconclusive with a reason and is listed in incomplete_sources; not_found is a definite absence.
 	Outcome SignalOutcome `json:"outcome"`
-	// Opaque, tenant-scoped projection of the source that produced a signal. It stays stable for your tenant while the projection key is unchanged and reveals no upstream provider, feed, breach table or source record.
+	// Opaque, workspace-scoped projection of the source that produced a signal. It stays stable for your workspace while the projection key is unchanged and reveals no upstream provider, feed, breach table or source record.
 	SourceID string `json:"source_id"`
 	// Why a signal or source did not produce a definite found/not_found. timed_out means the source missed the request deadline; a continuation may still settle it. deferred means the (source, identifier) pair is async-only and was not attempted on the synchronous path; a continuation settles it.
 	Reason *FailureReason `json:"reason,omitzero"`

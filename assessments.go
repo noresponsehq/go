@@ -4,13 +4,13 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"github.com/noresponsehq/go/v4/internal/config"
-	"github.com/noresponsehq/go/v4/internal/hooks"
-	"github.com/noresponsehq/go/v4/internal/utils"
-	"github.com/noresponsehq/go/v4/models/apierrors"
-	"github.com/noresponsehq/go/v4/models/components"
-	"github.com/noresponsehq/go/v4/models/operations"
-	"github.com/noresponsehq/go/v4/retry"
+	"github.com/noresponsehq/go/v5/internal/config"
+	"github.com/noresponsehq/go/v5/internal/hooks"
+	"github.com/noresponsehq/go/v5/internal/utils"
+	"github.com/noresponsehq/go/v5/models/apierrors"
+	"github.com/noresponsehq/go/v5/models/components"
+	"github.com/noresponsehq/go/v5/models/operations"
+	"github.com/noresponsehq/go/v5/retry"
 	"github.com/spyzhov/ajson"
 	"net/http"
 	"net/url"
@@ -18,7 +18,7 @@ import (
 	"strings"
 )
 
-// Assessments - Signup and gateway assessments.
+// Assessments of account creation, login and purchase.
 type Assessments struct {
 	rootSDK          *NoResponse
 	sdkConfiguration config.SDKConfiguration
@@ -34,7 +34,7 @@ func newAssessments(rootSDK *NoResponse, sdkConfig config.SDKConfiguration, hook
 }
 
 // Create - Assess identifiers for a signup or gateway decision.
-// Assesses one signup, login or purchase (flow) and answers with the account's one current risk: account.risk.decision is the decision for this flow (allow, step_up, review or block, where block means your block threshold was reached), and detail holds this assessment's own facts. depth sets how long the answer waits for sources: quick waits only for the fast ones (500 ms), full for the whole budget (3000 ms at most); it defaults to full for signup and purchase and quick for login. 200 carries complete or partial, 202 carries pending with Location and Retry-After. While the account's first assessment is pending, account is absent: apply your own fallback for that, 429, 503 or a timeout. NoResponse blocks nothing itself; you decide. Requires the assess scope. Idempotency-Key is required and is bound to the body for 24 hours: the same key with the same body replays the latest assessment with Idempotent-Replayed: true and starts no new work; the same key with a different body answers 409 idempotency_key_reused. response_mode defaults to standard; detailed needs the detailed scope.
+// Assesses one account creation, login or purchase (flow) and answers with the account's one current risk: account.risk.decision is the decision for this flow (allow, step_up, review or block, where block means your block threshold was reached), and detail holds this assessment's own facts. depth sets how long the answer waits for sources: quick waits only for the fast ones (500 ms), full for the whole budget (3000 ms at most); it defaults to full for account_creation and purchase and quick for login. 200 carries complete or partial, 202 carries pending with Location and Retry-After. While the account's first assessment is pending, account is absent: apply your own fallback for that, 429, 503 or a timeout. NoResponse blocks nothing itself; you decide. Requires the assess scope. Idempotency-Key is required and is bound to the body for 24 hours: the same key with the same body replays the latest assessment with Idempotent-Replayed: true and starts no new work; the same key with a different body answers 409 idempotency_key_reused. response_mode defaults to standard; detailed needs the detailed scope.
 func (s *Assessments) Create(ctx context.Context, idempotencyKey string, body components.AssessmentRequest, opts ...operations.Option) (*operations.CreateAssessmentResponse, error) {
 	request := operations.CreateAssessmentRequest{
 		IdempotencyKey: idempotencyKey,
@@ -400,7 +400,7 @@ func (s *Assessments) Create(ctx context.Context, idempotencyKey string, body co
 }
 
 // Get - Poll the authoritative assessment of one assessment.
-// Returns the highest assessment_version, with the account's current risk. Requires the assess or history scope. While status is pending, or partial with a source still running, the response carries Retry-After; poll no faster than it says. Another tenant's assessment, an unknown or expired assessment and a malformed assessment_id all answer 404 not_found. response_mode=detailed needs the detailed scope.
+// Returns the highest assessment_version, with the account's current risk. Requires the assess or history scope. While status is pending, or partial with a source still running, the response carries Retry-After; poll no faster than it says. Another workspace's assessment, an unknown or expired assessment and a malformed assessment_id all answer 404 not_found. response_mode=detailed needs the detailed scope.
 func (s *Assessments) Get(ctx context.Context, assessmentID string, responseMode *components.ResponseMode, opts ...operations.Option) (*operations.GetAssessmentResponse, error) {
 	request := operations.GetAssessmentRequest{
 		AssessmentID: assessmentID,
@@ -1478,7 +1478,7 @@ func (s *Assessments) RecordOutcome(ctx context.Context, assessmentID string, id
 }
 
 // Query - Page through one account's unexpired assessments.
-// History is a POST with account_id in the body so an account identifier stays out of URLs and access logs. Requires the history scope. Read-only and safe to retry. Newest first, each at its latest assessment_version. An account with no assessments answers 200 with empty items. The cursor is opaque and bound to your tenant and the account; a tampered or expired cursor answers 400 invalid_cursor. response_mode=detailed needs the detailed scope.
+// History is a POST with account_id in the body so an account identifier stays out of URLs and access logs. Requires the history scope. Read-only and safe to retry. Newest first, each at its latest assessment_version. An account with no assessments answers 200 with empty items. The cursor is opaque and bound to your workspace and the account; a tampered or expired cursor answers 400 invalid_cursor. response_mode=detailed needs the detailed scope.
 func (s *Assessments) Query(ctx context.Context, request components.AssessmentQuery, opts ...operations.Option) (*operations.QueryAccountAssessmentsResponse, error) {
 	o := operations.Options{}
 	supportedOptions := []string{

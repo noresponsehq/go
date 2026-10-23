@@ -4,13 +4,13 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"github.com/noresponsehq/go/v4/internal/config"
-	"github.com/noresponsehq/go/v4/internal/hooks"
-	"github.com/noresponsehq/go/v4/internal/utils"
-	"github.com/noresponsehq/go/v4/models/apierrors"
-	"github.com/noresponsehq/go/v4/models/components"
-	"github.com/noresponsehq/go/v4/models/operations"
-	"github.com/noresponsehq/go/v4/retry"
+	"github.com/noresponsehq/go/v5/internal/config"
+	"github.com/noresponsehq/go/v5/internal/hooks"
+	"github.com/noresponsehq/go/v5/internal/utils"
+	"github.com/noresponsehq/go/v5/models/apierrors"
+	"github.com/noresponsehq/go/v5/models/components"
+	"github.com/noresponsehq/go/v5/models/operations"
+	"github.com/noresponsehq/go/v5/retry"
 	"github.com/spyzhov/ajson"
 	"net/http"
 	"net/url"
@@ -33,7 +33,7 @@ func newWebhookEndpoints(rootSDK *NoResponse, sdkConfig config.SDKConfiguration,
 	}
 }
 
-// List the tenant's webhook endpoints.
+// List the workspace's webhook endpoints.
 // Lists your webhook endpoints in every state, ordered by endpoint_id, with the ids of their signing keys and without secrets. Requires the webhooks scope.
 func (s *WebhookEndpoints) List(ctx context.Context, opts ...operations.Option) (*operations.ListWebhookEndpointsResponse, error) {
 	o := operations.Options{}
@@ -1591,7 +1591,7 @@ func (s *WebhookEndpoints) SendTestEvent(ctx context.Context, endpointID string,
 }
 
 // ListDeliveries - List an endpoint's delivery attempts.
-// Every POST the endpoint received, newest first: the event id and type, which attempt it was, whether it was a replay, delivered or failed, the response code, why it failed and how long it took. Attempts are kept for 30 days, or your retention_days when that is shorter, and are deleted with the assessment they carried. Requires the webhooks scope. Read-only and safe to retry. The cursor is opaque and bound to your tenant and the endpoint; a tampered or expired cursor answers 400 invalid_cursor.
+// Every POST the endpoint received, newest first: the event id and type, which attempt it was, whether it was a replay, delivered or failed, the response code, why it failed and how long it took. Attempts are kept for 30 days, or your retention_days when that is shorter, and are deleted with the assessment they carried. Requires the webhooks scope. Read-only and safe to retry. The cursor is opaque and bound to your workspace and the endpoint; a tampered or expired cursor answers 400 invalid_cursor.
 func (s *WebhookEndpoints) ListDeliveries(ctx context.Context, endpointID string, limit *int64, cursor *string, opts ...operations.Option) (*operations.ListWebhookDeliveriesResponse, error) {
 	request := operations.ListWebhookDeliveriesRequest{
 		EndpointID: endpointID,

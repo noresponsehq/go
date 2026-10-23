@@ -2,7 +2,7 @@
   "schema_version": "1",
   "id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
   "status": "pending",
-  "flow": "signup",
+  "flow": "account_creation",
   "depth": "full",
   "detail": {
     "schema_version": "1",

@@ -7,7 +7,7 @@
     "schema_version": "1",
     "id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
     "status": "complete",
-    "flow": "signup",
+    "flow": "account_creation",
     "depth": "full",
     "account": {
       "schema_version": "1",
@@ -28,7 +28,7 @@
         ]
       },
       "decisions_by_flow": {
-        "signup": "step_up",
+        "account_creation": "step_up",
         "login": "step_up",
         "purchase": "step_up"
       },

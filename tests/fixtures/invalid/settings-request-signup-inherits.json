@@ -1,1 +1,1 @@
-{"flows": {"signup": {"inherits_signup": true}}}
+{"flows": {"account_creation": {"inherits_account_creation": true}}}

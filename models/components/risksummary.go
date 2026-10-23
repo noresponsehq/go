@@ -1,7 +1,7 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v4/internal/utils"
+	"github.com/noresponsehq/go/v5/internal/utils"
 )
 
 // RiskSummary - A few typed facts per identifier. Every fact is optional: absent means the evidence did not answer and makes no claim, while false or 0 is a definite answer. Lanes that do not exist yet leave their members absent.
@@ -9,7 +9,7 @@ type RiskSummary struct {
 	Phone    *RiskSummaryPhone    `json:"phone,omitzero"`
 	Email    *RiskSummaryEmail    `json:"email,omitzero"`
 	Username *RiskSummaryUsername `json:"username,omitzero"`
-	// Facts about the submitted IP from the offline database and this tenant's own recent assessments. Every member is optional; absent makes no claim.
+	// Facts about the submitted IP from the offline database and this workspace's own recent assessments. Every member is optional; absent makes no claim.
 	IP *IPSummary `json:"ip,omitzero"`
 	// Cross-identifier agreement, computed from facts only. Every member is optional; absent makes no claim.
 	Consistency *Consistency `json:"consistency,omitzero"`

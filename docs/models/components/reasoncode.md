@@ -6,7 +6,7 @@ A stable reason code. New codes may appear; ignore any you do not know.
 
 ```go
 import (
-	"github.com/noresponsehq/go/v4/models/components"
+	"github.com/noresponsehq/go/v5/models/components"
 )
 
 value := components.ReasonCodeNoDigitalFootprint
@@ -31,7 +31,7 @@ custom := components.ReasonCode("custom_value")
 | `ReasonCodeProxyIP`                    | proxy_ip                               |
 | `ReasonCodeSeenBefore`                 | seen_before                            |
 | `ReasonCodeSharedIP`                   | shared_ip                              |
-| `ReasonCodeManyRecentSignups`          | many_recent_signups                    |
+| `ReasonCodeManyRecentAccounts`         | many_recent_accounts                   |
 | `ReasonCodeEstablishedAccounts`        | established_accounts                   |
 | `ReasonCodeAgedIdentity`               | aged_identity                          |
 | `ReasonCodeBreachNameMatch`            | breach_name_match                      |

@@ -10,11 +10,11 @@
     {"name": "owner reads the audit log", "credential": "owner", "method": "GET", "path": "/v1/workspaces/{workspace_id}/audit_events", "status": 404, "code": "not_found"},
     {"name": "former admin reads the workspace", "credential": "admin", "method": "GET", "path": "/v1/workspaces/{workspace_id}", "status": 404, "code": "not_found"},
     {"name": "outsider reads the workspace", "credential": "outsider", "method": "GET", "path": "/v1/workspaces/{workspace_id}", "status": 404, "code": "not_found"},
-    {"name": "live key assesses", "credential": "live_key", "method": "POST", "path": "/v1/assessments", "body": "{\"account_id\":\"acct_after\",\"flow\":\"signup\",\"identifiers\":{\"email\":\"after@example.com\"}}", "status": 401, "code": "unauthorized"},
+    {"name": "live key assesses", "credential": "live_key", "method": "POST", "path": "/v1/assessments", "body": "{\"account_id\":\"acct_after\",\"flow\":\"account_creation\",\"identifiers\":{\"email\":\"after@example.com\"}}", "status": 401, "code": "unauthorized"},
     {"name": "live key reads an assessment", "credential": "live_key", "method": "GET", "path": "/v1/assessments/asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM", "status": 401, "code": "unauthorized"},
     {"name": "live key lists webhook endpoints", "credential": "live_key", "method": "GET", "path": "/v1/webhooks", "status": 401, "code": "unauthorized"},
     {"name": "live key rotates itself", "credential": "live_key", "method": "POST", "path": "/v1/keys/rotate", "body": "{}", "status": 401, "code": "unauthorized"},
     {"name": "test key lists webhook endpoints", "credential": "test_key", "method": "GET", "path": "/v1/webhooks", "status": 401, "code": "unauthorized"},
-    {"name": "test key assesses", "credential": "test_key", "method": "POST", "path": "/v1/assessments", "body": "{\"account_id\":\"acct_after\",\"flow\":\"signup\",\"identifiers\":{\"email\":\"allow@test.noresponse.org\"}}", "status": 401, "code": "unauthorized"}
+    {"name": "test key assesses", "credential": "test_key", "method": "POST", "path": "/v1/assessments", "body": "{\"account_id\":\"acct_after\",\"flow\":\"account_creation\",\"identifiers\":{\"email\":\"allow@test.noresponse.org\"}}", "status": 401, "code": "unauthorized"}
   ]
 }

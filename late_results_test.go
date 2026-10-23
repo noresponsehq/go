@@ -22,7 +22,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/noresponsehq/go/v4/models/components"
+	"github.com/noresponsehq/go/v5/models/components"
 )
 
 const (
@@ -244,7 +244,7 @@ func TestDefaultPolicyRevokesOnReviewAndBlock(t *testing.T) {
 	expect(&Event{ID: "evt_x", Type: EventAssessmentUpdated, Data: &AssessmentExpired{Status: "expired", ChangeReason: "expired"}}, nil, LateResultNone)
 	expect(&Event{ID: "evt_x", Type: EventEndpointVerification, Data: &EndpointVerification{}}, nil, LateResultNone)
 	expect(&Event{ID: "evt_x", Type: EventAccountDeleted, Data: &AccountDeleted{AccountID: "acct_1", AssessmentsDeleted: 1}}, nil, LateResultNone)
-	expect(&Event{ID: "evt_x", Type: EventTenantDeleted, Data: &TenantDeleted{WorkspaceID: "tnt_1", Environment: "live"}}, nil, LateResultNone)
+	expect(&Event{ID: "evt_x", Type: EventWorkspaceDeleted, Data: &WorkspaceDeleted{WorkspaceID: "tnt_1", Environment: "live"}}, nil, LateResultNone)
 	expect(&Event{ID: "evt_x", Type: EventEndpointDisabled, Data: &EndpointDisabled{EndpointID: "whe_1"}}, nil, LateResultNone)
 	blocked := components.Account{ID: "acct_1", Risk: components.AccountRisk{Score: 90, Decision: components.AccountDecisionBlock}}
 	expect(&Event{ID: "evt_x", Type: EventAccountRiskChanged, Data: &AccountRiskChanged{Account: blocked}}, nil, LateResultNone)

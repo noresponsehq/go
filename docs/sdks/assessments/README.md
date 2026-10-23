@@ -2,7 +2,7 @@
 
 ## Overview
 
-Signup and gateway assessments.
+Assessments of account creation, login and purchase.
 
 ### Available Operations
 
@@ -14,7 +14,7 @@ Signup and gateway assessments.
 
 ## Create
 
-Assesses one signup, login or purchase (flow) and answers with the account's one current risk: account.risk.decision is the decision for this flow (allow, step_up, review or block, where block means your block threshold was reached), and detail holds this assessment's own facts. depth sets how long the answer waits for sources: quick waits only for the fast ones (500 ms), full for the whole budget (3000 ms at most); it defaults to full for signup and purchase and quick for login. 200 carries complete or partial, 202 carries pending with Location and Retry-After. While the account's first assessment is pending, account is absent: apply your own fallback for that, 429, 503 or a timeout. NoResponse blocks nothing itself; you decide. Requires the assess scope. Idempotency-Key is required and is bound to the body for 24 hours: the same key with the same body replays the latest assessment with Idempotent-Replayed: true and starts no new work; the same key with a different body answers 409 idempotency_key_reused. response_mode defaults to standard; detailed needs the detailed scope.
+Assesses one account creation, login or purchase (flow) and answers with the account's one current risk: account.risk.decision is the decision for this flow (allow, step_up, review or block, where block means your block threshold was reached), and detail holds this assessment's own facts. depth sets how long the answer waits for sources: quick waits only for the fast ones (500 ms), full for the whole budget (3000 ms at most); it defaults to full for account_creation and purchase and quick for login. 200 carries complete or partial, 202 carries pending with Location and Retry-After. While the account's first assessment is pending, account is absent: apply your own fallback for that, 429, 503 or a timeout. NoResponse blocks nothing itself; you decide. Requires the assess scope. Idempotency-Key is required and is bound to the body for 24 hours: the same key with the same body replays the latest assessment with Idempotent-Replayed: true and starts no new work; the same key with a different body answers 409 idempotency_key_reused. response_mode defaults to standard; detailed needs the detailed scope.
 
 ### Example Usage: complete
 
@@ -25,8 +25,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v4"
-	"github.com/noresponsehq/go/v4/models/components"
+	noresponse "github.com/noresponsehq/go/v5"
+	"github.com/noresponsehq/go/v5/models/components"
 	"log"
 )
 
@@ -37,9 +37,9 @@ func main() {
         noresponse.WithSecurity(os.Getenv("NORESPONSE_API_KEY")),
     )
 
-    res, err := s.Assessments.Create(ctx, "signup-acct_7f3a9c", components.AssessmentRequest{
+    res, err := s.Assessments.Create(ctx, "account-acct_7f3a9c", components.AssessmentRequest{
         AccountID: "acct_7f3a9c",
-        Flow: components.FlowSignup,
+        Flow: components.FlowAccountCreation,
         Identifiers: components.AssessmentRequestIdentifiers{
             Email: noresponse.Pointer("new.user@example.com"),
             Username: noresponse.Pointer("new.user"),
@@ -111,8 +111,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v4"
-	"github.com/noresponsehq/go/v4/models/components"
+	noresponse "github.com/noresponsehq/go/v5"
+	"github.com/noresponsehq/go/v5/models/components"
 	"log"
 )
 
@@ -123,9 +123,9 @@ func main() {
         noresponse.WithSecurity(os.Getenv("NORESPONSE_API_KEY")),
     )
 
-    res, err := s.Assessments.Create(ctx, "signup-acct_7f3a9c", components.AssessmentRequest{
+    res, err := s.Assessments.Create(ctx, "account-acct_7f3a9c", components.AssessmentRequest{
         AccountID: "acct_7f3a9c",
-        Flow: components.FlowSignup,
+        Flow: components.FlowAccountCreation,
         Identifiers: components.AssessmentRequestIdentifiers{
             Email: noresponse.Pointer("new.user@example.com"),
             Username: noresponse.Pointer("new.user"),
@@ -197,8 +197,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v4"
-	"github.com/noresponsehq/go/v4/models/components"
+	noresponse "github.com/noresponsehq/go/v5"
+	"github.com/noresponsehq/go/v5/models/components"
 	"log"
 )
 
@@ -209,9 +209,9 @@ func main() {
         noresponse.WithSecurity(os.Getenv("NORESPONSE_API_KEY")),
     )
 
-    res, err := s.Assessments.Create(ctx, "signup-acct_7f3a9c", components.AssessmentRequest{
+    res, err := s.Assessments.Create(ctx, "account-acct_7f3a9c", components.AssessmentRequest{
         AccountID: "acct_7f3a9c",
-        Flow: components.FlowSignup,
+        Flow: components.FlowAccountCreation,
         Identifiers: components.AssessmentRequestIdentifiers{
             Email: noresponse.Pointer("new.user@example.com"),
             Username: noresponse.Pointer("new_user_42"),
@@ -240,8 +240,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v4"
-	"github.com/noresponsehq/go/v4/models/components"
+	noresponse "github.com/noresponsehq/go/v5"
+	"github.com/noresponsehq/go/v5/models/components"
 	"log"
 )
 
@@ -252,9 +252,9 @@ func main() {
         noresponse.WithSecurity(os.Getenv("NORESPONSE_API_KEY")),
     )
 
-    res, err := s.Assessments.Create(ctx, "signup-acct_7f3a9c", components.AssessmentRequest{
+    res, err := s.Assessments.Create(ctx, "account-acct_7f3a9c", components.AssessmentRequest{
         AccountID: "acct_7f3a9c",
-        Flow: components.FlowSignup,
+        Flow: components.FlowAccountCreation,
         Identifiers: components.AssessmentRequestIdentifiers{
             Email: noresponse.Pointer("new.user@example.com"),
             Username: noresponse.Pointer("new.user"),
@@ -326,8 +326,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v4"
-	"github.com/noresponsehq/go/v4/models/components"
+	noresponse "github.com/noresponsehq/go/v5"
+	"github.com/noresponsehq/go/v5/models/components"
 	"log"
 )
 
@@ -338,9 +338,9 @@ func main() {
         noresponse.WithSecurity(os.Getenv("NORESPONSE_API_KEY")),
     )
 
-    res, err := s.Assessments.Create(ctx, "signup-acct_7f3a9c", components.AssessmentRequest{
+    res, err := s.Assessments.Create(ctx, "account-acct_7f3a9c", components.AssessmentRequest{
         AccountID: "acct_7f3a9c",
-        Flow: components.FlowSignup,
+        Flow: components.FlowAccountCreation,
         Identifiers: components.AssessmentRequestIdentifiers{
             Email: noresponse.Pointer("new.user@example.com"),
         },
@@ -362,8 +362,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v4"
-	"github.com/noresponsehq/go/v4/models/components"
+	noresponse "github.com/noresponsehq/go/v5"
+	"github.com/noresponsehq/go/v5/models/components"
 	"log"
 )
 
@@ -374,9 +374,9 @@ func main() {
         noresponse.WithSecurity(os.Getenv("NORESPONSE_API_KEY")),
     )
 
-    res, err := s.Assessments.Create(ctx, "signup-acct_7f3a9c", components.AssessmentRequest{
+    res, err := s.Assessments.Create(ctx, "account-acct_7f3a9c", components.AssessmentRequest{
         AccountID: "acct_8412",
-        Flow: components.FlowSignup,
+        Flow: components.FlowAccountCreation,
         Identifiers: components.AssessmentRequestIdentifiers{
             Email: noresponse.Pointer("jane.doe@example.com"),
             Username: noresponse.Pointer("janedoe"),
@@ -408,8 +408,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v4"
-	"github.com/noresponsehq/go/v4/models/components"
+	noresponse "github.com/noresponsehq/go/v5"
+	"github.com/noresponsehq/go/v5/models/components"
 	"log"
 )
 
@@ -420,9 +420,9 @@ func main() {
         noresponse.WithSecurity(os.Getenv("NORESPONSE_API_KEY")),
     )
 
-    res, err := s.Assessments.Create(ctx, "signup-acct_7f3a9c", components.AssessmentRequest{
+    res, err := s.Assessments.Create(ctx, "account-acct_7f3a9c", components.AssessmentRequest{
         AccountID: "acct_7f3a9c",
-        Flow: components.FlowSignup,
+        Flow: components.FlowAccountCreation,
         Identifiers: components.AssessmentRequestIdentifiers{
             Email: noresponse.Pointer("new.user@example.com"),
             Username: noresponse.Pointer("new.user"),
@@ -488,12 +488,12 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                                                                                                      | Type                                                                                                                                                           | Required                                                                                                                                                       | Description                                                                                                                                                    | Example                                                                                                                                                        |
-| -------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ctx`                                                                                                                                                          | [context.Context](https://pkg.go.dev/context#Context)                                                                                                          | :heavy_check_mark:                                                                                                                                             | The context to use for the request.                                                                                                                            |                                                                                                                                                                |
-| `idempotencyKey`                                                                                                                                               | `string`                                                                                                                                                       | :heavy_check_mark:                                                                                                                                             | Opaque client key, 16 to 128 characters of [A-Za-z0-9._:-] (a UUID or ULID fits). Scoped to the tenant principal and bound to the canonical body for 24 hours. | signup-acct_7f3a9c                                                                                                                                             |
-| `body`                                                                                                                                                         | [components.AssessmentRequest](../../models/components/assessmentrequest.md)                                                                                   | :heavy_check_mark:                                                                                                                                             | N/A                                                                                                                                                            |                                                                                                                                                                |
-| `opts`                                                                                                                                                         | [][operations.Option](../../models/operations/option.md)                                                                                                       | :heavy_minus_sign:                                                                                                                                             | The options for this request.                                                                                                                                  |                                                                                                                                                                |
+| Parameter                                                                                                                                                         | Type                                                                                                                                                              | Required                                                                                                                                                          | Description                                                                                                                                                       | Example                                                                                                                                                           |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ctx`                                                                                                                                                             | [context.Context](https://pkg.go.dev/context#Context)                                                                                                             | :heavy_check_mark:                                                                                                                                                | The context to use for the request.                                                                                                                               |                                                                                                                                                                   |
+| `idempotencyKey`                                                                                                                                                  | `string`                                                                                                                                                          | :heavy_check_mark:                                                                                                                                                | Opaque client key, 16 to 128 characters of [A-Za-z0-9._:-] (a UUID or ULID fits). Scoped to the workspace principal and bound to the canonical body for 24 hours. | account-acct_7f3a9c                                                                                                                                               |
+| `body`                                                                                                                                                            | [components.AssessmentRequest](../../models/components/assessmentrequest.md)                                                                                      | :heavy_check_mark:                                                                                                                                                | N/A                                                                                                                                                               |                                                                                                                                                                   |
+| `opts`                                                                                                                                                            | [][operations.Option](../../models/operations/option.md)                                                                                                          | :heavy_minus_sign:                                                                                                                                                | The options for this request.                                                                                                                                     |                                                                                                                                                                   |
 
 ### Response
 
@@ -513,7 +513,7 @@ func main() {
 
 ## Get
 
-Returns the highest assessment_version, with the account's current risk. Requires the assess or history scope. While status is pending, or partial with a source still running, the response carries Retry-After; poll no faster than it says. Another tenant's assessment, an unknown or expired assessment and a malformed assessment_id all answer 404 not_found. response_mode=detailed needs the detailed scope.
+Returns the highest assessment_version, with the account's current risk. Requires the assess or history scope. While status is pending, or partial with a source still running, the response carries Retry-After; poll no faster than it says. Another workspace's assessment, an unknown or expired assessment and a malformed assessment_id all answer 404 not_found. response_mode=detailed needs the detailed scope.
 
 ### Example Usage: complete
 
@@ -524,7 +524,7 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v4"
+	noresponse "github.com/noresponsehq/go/v5"
 	"log"
 )
 
@@ -553,7 +553,7 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v4"
+	noresponse "github.com/noresponsehq/go/v5"
 	"log"
 )
 
@@ -582,7 +582,7 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v4"
+	noresponse "github.com/noresponsehq/go/v5"
 	"log"
 )
 
@@ -611,7 +611,7 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v4"
+	noresponse "github.com/noresponsehq/go/v5"
 	"log"
 )
 
@@ -640,7 +640,7 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v4"
+	noresponse "github.com/noresponsehq/go/v5"
 	"log"
 )
 
@@ -669,7 +669,7 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v4"
+	noresponse "github.com/noresponsehq/go/v5"
 	"log"
 )
 
@@ -728,7 +728,7 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v4"
+	noresponse "github.com/noresponsehq/go/v5"
 	"log"
 )
 
@@ -757,7 +757,7 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v4"
+	noresponse "github.com/noresponsehq/go/v5"
 	"log"
 )
 
@@ -815,8 +815,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v4"
-	"github.com/noresponsehq/go/v4/models/components"
+	noresponse "github.com/noresponsehq/go/v5"
+	"github.com/noresponsehq/go/v5/models/components"
 	"log"
 )
 
@@ -827,7 +827,7 @@ func main() {
         noresponse.WithSecurity(os.Getenv("NORESPONSE_API_KEY")),
     )
 
-    res, err := s.Assessments.RecordOutcome(ctx, "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM", "signup-acct_7f3a9c", components.AssessmentOutcomeRequest{
+    res, err := s.Assessments.RecordOutcome(ctx, "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM", "account-acct_7f3a9c", components.AssessmentOutcomeRequest{
         Outcome: components.OutcomeConfirmedAbuse,
         ObservedAt: noresponse.Pointer("2026-10-20T05:00:00Z"),
         ExternalRef: noresponse.Pointer("case-123"),
@@ -850,8 +850,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v4"
-	"github.com/noresponsehq/go/v4/models/components"
+	noresponse "github.com/noresponsehq/go/v5"
+	"github.com/noresponsehq/go/v5/models/components"
 	"log"
 )
 
@@ -862,11 +862,11 @@ func main() {
         noresponse.WithSecurity(os.Getenv("NORESPONSE_API_KEY")),
     )
 
-    res, err := s.Assessments.RecordOutcome(ctx, "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM", "signup-acct_7f3a9c", components.AssessmentOutcomeRequest{
+    res, err := s.Assessments.RecordOutcome(ctx, "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM", "account-acct_7f3a9c", components.AssessmentOutcomeRequest{
         Outcome: components.OutcomeLegitimate,
         ObservedAt: noresponse.Pointer("2026-10-14T09:04:30.000Z"),
         ExternalRef: noresponse.Pointer("case-48213"),
-        Notes: noresponse.Pointer("Chargeback filed two days after signup."),
+        Notes: noresponse.Pointer("Chargeback filed two days after account creation."),
     })
     if err != nil {
         log.Fatal(err)
@@ -885,8 +885,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v4"
-	"github.com/noresponsehq/go/v4/models/components"
+	noresponse "github.com/noresponsehq/go/v5"
+	"github.com/noresponsehq/go/v5/models/components"
 	"log"
 )
 
@@ -897,7 +897,7 @@ func main() {
         noresponse.WithSecurity(os.Getenv("NORESPONSE_API_KEY")),
     )
 
-    res, err := s.Assessments.RecordOutcome(ctx, "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM", "signup-acct_7f3a9c", components.AssessmentOutcomeRequest{
+    res, err := s.Assessments.RecordOutcome(ctx, "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM", "account-acct_7f3a9c", components.AssessmentOutcomeRequest{
         Outcome: components.OutcomeFalsePositive,
     })
     if err != nil {
@@ -911,13 +911,13 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                                                                                                                      | Type                                                                                                                                                           | Required                                                                                                                                                       | Description                                                                                                                                                    | Example                                                                                                                                                        |
-| -------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ctx`                                                                                                                                                          | [context.Context](https://pkg.go.dev/context#Context)                                                                                                          | :heavy_check_mark:                                                                                                                                             | The context to use for the request.                                                                                                                            |                                                                                                                                                                |
-| `assessmentID`                                                                                                                                                 | `string`                                                                                                                                                       | :heavy_check_mark:                                                                                                                                             | Path segment, matched case-sensitively. A value that does not match the assessment_id shape answers 404, not 400.                                              | asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM                                                                                                                                 |
-| `idempotencyKey`                                                                                                                                               | `string`                                                                                                                                                       | :heavy_check_mark:                                                                                                                                             | Opaque client key, 16 to 128 characters of [A-Za-z0-9._:-] (a UUID or ULID fits). Scoped to the tenant principal and bound to the canonical body for 24 hours. | signup-acct_7f3a9c                                                                                                                                             |
-| `body`                                                                                                                                                         | [components.AssessmentOutcomeRequest](../../models/components/assessmentoutcomerequest.md)                                                                     | :heavy_check_mark:                                                                                                                                             | N/A                                                                                                                                                            |                                                                                                                                                                |
-| `opts`                                                                                                                                                         | [][operations.Option](../../models/operations/option.md)                                                                                                       | :heavy_minus_sign:                                                                                                                                             | The options for this request.                                                                                                                                  |                                                                                                                                                                |
+| Parameter                                                                                                                                                         | Type                                                                                                                                                              | Required                                                                                                                                                          | Description                                                                                                                                                       | Example                                                                                                                                                           |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ctx`                                                                                                                                                             | [context.Context](https://pkg.go.dev/context#Context)                                                                                                             | :heavy_check_mark:                                                                                                                                                | The context to use for the request.                                                                                                                               |                                                                                                                                                                   |
+| `assessmentID`                                                                                                                                                    | `string`                                                                                                                                                          | :heavy_check_mark:                                                                                                                                                | Path segment, matched case-sensitively. A value that does not match the assessment_id shape answers 404, not 400.                                                 | asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM                                                                                                                                    |
+| `idempotencyKey`                                                                                                                                                  | `string`                                                                                                                                                          | :heavy_check_mark:                                                                                                                                                | Opaque client key, 16 to 128 characters of [A-Za-z0-9._:-] (a UUID or ULID fits). Scoped to the workspace principal and bound to the canonical body for 24 hours. | account-acct_7f3a9c                                                                                                                                               |
+| `body`                                                                                                                                                            | [components.AssessmentOutcomeRequest](../../models/components/assessmentoutcomerequest.md)                                                                        | :heavy_check_mark:                                                                                                                                                | N/A                                                                                                                                                               |                                                                                                                                                                   |
+| `opts`                                                                                                                                                            | [][operations.Option](../../models/operations/option.md)                                                                                                          | :heavy_minus_sign:                                                                                                                                                | The options for this request.                                                                                                                                     |                                                                                                                                                                   |
 
 ### Response
 
@@ -937,7 +937,7 @@ func main() {
 
 ## Query
 
-History is a POST with account_id in the body so an account identifier stays out of URLs and access logs. Requires the history scope. Read-only and safe to retry. Newest first, each at its latest assessment_version. An account with no assessments answers 200 with empty items. The cursor is opaque and bound to your tenant and the account; a tampered or expired cursor answers 400 invalid_cursor. response_mode=detailed needs the detailed scope.
+History is a POST with account_id in the body so an account identifier stays out of URLs and access logs. Requires the history scope. Read-only and safe to retry. Newest first, each at its latest assessment_version. An account with no assessments answers 200 with empty items. The cursor is opaque and bound to your workspace and the account; a tampered or expired cursor answers 400 invalid_cursor. response_mode=detailed needs the detailed scope.
 
 ### Example Usage: firstPage
 
@@ -948,8 +948,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v4"
-	"github.com/noresponsehq/go/v4/models/components"
+	noresponse "github.com/noresponsehq/go/v5"
+	"github.com/noresponsehq/go/v5/models/components"
 	"log"
 )
 
@@ -992,8 +992,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v4"
-	"github.com/noresponsehq/go/v4/models/components"
+	noresponse "github.com/noresponsehq/go/v5"
+	"github.com/noresponsehq/go/v5/models/components"
 	"log"
 )
 

@@ -1,6 +1,6 @@
 {
   "account_id": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIn0.c2lnbmF0dXJl",
-  "flow": "signup",
+  "flow": "account_creation",
   "identifiers": {
     "email": "new.user@example.com"
   }

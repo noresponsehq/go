@@ -2,7 +2,7 @@
   "schema_version": "1",
   "id": "asm_01JB3C4D5E6F7G8H9JKMNPQRST",
   "status": "complete",
-  "flow": "signup",
+  "flow": "account_creation",
   "depth": "full",
   "account": {
     "schema_version": "1",
@@ -39,7 +39,7 @@
       ]
     },
     "decisions_by_flow": {
-      "signup": "allow",
+      "account_creation": "allow",
       "login": "allow",
       "purchase": "allow"
     },
@@ -125,7 +125,7 @@
         "ip": {
           "country": "US",
           "type": "residential",
-          "seen_in_tenant": 1
+          "seen_in_workspace": 1
         },
         "consistency": {
           "name": "match",
@@ -223,7 +223,7 @@
       "ip": {
         "country": "US",
         "type": "residential",
-        "seen_in_tenant": 1
+        "seen_in_workspace": 1
       },
       "consistency": {
         "name": "match",

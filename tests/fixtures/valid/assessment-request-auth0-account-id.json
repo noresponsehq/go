@@ -1,6 +1,6 @@
 {
   "account_id": "auth0|64abc0de1234567890abcdef",
-  "flow": "signup",
+  "flow": "account_creation",
   "identifiers": {
     "email": "new.user@example.com"
   }

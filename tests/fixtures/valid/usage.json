@@ -4,9 +4,9 @@
   "to": "2026-10-23",
   "items": [
     {"environment": "live", "day": "2026-10-22", "metric": "assessments", "flow": "login", "depth": "quick", "count": 412},
-    {"environment": "live", "day": "2026-10-22", "metric": "assessments", "flow": "signup", "depth": "full", "count": 96},
+    {"environment": "live", "day": "2026-10-22", "metric": "assessments", "flow": "account_creation", "depth": "full", "count": 96},
     {"environment": "live", "day": "2026-10-22", "metric": "webhook_deliveries", "count": 508},
-    {"environment": "live", "day": "2026-10-23", "metric": "assessments", "flow": "signup", "depth": "full", "count": 101},
+    {"environment": "live", "day": "2026-10-23", "metric": "assessments", "flow": "account_creation", "depth": "full", "count": 101},
     {"environment": "live", "day": "2026-10-23", "metric": "key_usage_events", "count": 2330},
     {"environment": "test", "day": "2026-10-23", "metric": "assessments", "flow": "purchase", "depth": "full", "count": 7}
   ]

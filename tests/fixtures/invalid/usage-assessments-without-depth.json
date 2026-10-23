@@ -3,6 +3,6 @@
   "from": "2026-10-23",
   "to": "2026-10-23",
   "items": [
-    {"environment": "live", "day": "2026-10-23", "metric": "assessments", "flow": "signup", "count": 3}
+    {"environment": "live", "day": "2026-10-23", "metric": "assessments", "flow": "account_creation", "count": 3}
   ]
 }

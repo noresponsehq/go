@@ -6,10 +6,10 @@ Machine codes an HTTP 403 answer can carry.
 
 ```go
 import (
-	"github.com/noresponsehq/go/v4/models/components"
+	"github.com/noresponsehq/go/v5/models/components"
 )
 
-value := components.PermissionDeniedErrorCodeTenantForbidden
+value := components.PermissionDeniedErrorCodeWorkspaceForbidden
 
 // Open enum: custom values can be created with a direct type cast
 custom := components.PermissionDeniedErrorCode("custom_value")
@@ -18,6 +18,6 @@ custom := components.PermissionDeniedErrorCode("custom_value")
 
 ## Values
 
-| Name                                       | Value                                      |
-| ------------------------------------------ | ------------------------------------------ |
-| `PermissionDeniedErrorCodeTenantForbidden` | tenant_forbidden                           |
+| Name                                          | Value                                         |
+| --------------------------------------------- | --------------------------------------------- |
+| `PermissionDeniedErrorCodeWorkspaceForbidden` | workspace_forbidden                           |
