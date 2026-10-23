@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: 25ddae46-795d-45f5-b455-3f48c41d440e
 management:
-  docChecksum: 0ba8c72441139f7cb0de6724ef1f48af
+  docChecksum: 1154b96455629ed85a6987823fbb8772
   docVersion: "1"
   speakeasyVersion: internal
   generationVersion: internal
-  releaseVersion: 2.0.14
-  configChecksum: 1162ce573c30ed7d4a50d032e77e182c
+  releaseVersion: 2.0.15
+  configChecksum: 28519e14a8e942d5fb8f921d7c433ccc
 features:
   go:
     additionalDependencies: 0.1.0
@@ -33,7 +33,7 @@ trackedFiles:
   .gitattributes:
     last_write_checksum: sha1:84b0115789fc3ea52e31df701d8a27f76077e29f
   assessments.go:
-    last_write_checksum: sha1:0dec62ed5576510fbd644d9567cc9286465a5a94
+    last_write_checksum: sha1:716e4d14691cdc94d4ea30163d5ba31aff0b81b9
   docs/models/apierrors/authenticationerror.md:
     last_write_checksum: sha1:cc1099148053d8aa7c9a85961a3e111791495fe2
   docs/models/apierrors/badrequesterror.md:
@@ -63,7 +63,7 @@ trackedFiles:
   docs/models/components/assessmentquery.md:
     last_write_checksum: sha1:c93dc9fb5a5e54e987e77a224ecc29a3ac83c395
   docs/models/components/assessmentrequest.md:
-    last_write_checksum: sha1:95ef9328a00bc17ee5bca96c10c65f71191d866c
+    last_write_checksum: sha1:83465d0abb365b8a0072332bc5c9bb2e7e08aa17
   docs/models/components/assessmentrequestclientcontext.md:
     last_write_checksum: sha1:872a7a4550b3202b8332d7707a17d6929f726a78
   docs/models/components/assessmentrequestidentifiers.md:
@@ -297,7 +297,7 @@ trackedFiles:
   docs/models/operations/sendwebhooktesteventresponse.md:
     last_write_checksum: sha1:8ceb9322a16104601a1ec8ae2e3e356177865923
   docs/sdks/assessments/README.md:
-    last_write_checksum: sha1:3f515c45c62d5e1ad1df439fdf2b3df98a2cde2b
+    last_write_checksum: sha1:3266fb30a127a977995d7be6c642af4ca02f57f2
   docs/sdks/integrations/README.md:
     last_write_checksum: sha1:b9c271fa180c9f116455599ef7e4d230cb173cab
   docs/sdks/keys/README.md:
@@ -369,7 +369,7 @@ trackedFiles:
   models/components/assessmentquery.go:
     last_write_checksum: sha1:5ef9e784f6fc8cc4377c908fdea88afa740278f7
   models/components/assessmentrequest.go:
-    last_write_checksum: sha1:1ad39b2f82acb3286c7b34be653cbe017b001c6a
+    last_write_checksum: sha1:5e2079cd8fd9349dfe09c99ca5106f646a480049
   models/components/assessmentrequestclientcontext.go:
     last_write_checksum: sha1:ecb3e604c96afa8782120a3029443100b3cdcb65
   models/components/assessmentrequestidentifiers.go:
@@ -561,7 +561,7 @@ trackedFiles:
   models/operations/sendwebhooktestevent.go:
     last_write_checksum: sha1:02c30a05836ce0685d5eed7d642bce211c830828
   noresponse.go:
-    last_write_checksum: sha1:d9dcdfadc36af21a04de062f54b91a56b6a8710d
+    last_write_checksum: sha1:0cc1991f710fb78b77f58490ecfac12421f674a3
   optionalnullable/optionalnullable.go:
     last_write_checksum: sha1:38cf187cd65a5213be09788f67d82dc49d46b583
   optionalnullable/optionalnullable_test.go:

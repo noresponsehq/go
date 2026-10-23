@@ -13,7 +13,7 @@ type AssessmentRequest struct {
 	PolicyContext *AssessmentRequestPolicyContext `json:"policy_context,omitzero"`
 	// An optional provider correlation id, echoed back. It is not an idempotency key. Refuses an exact-shape JWT or a bare 40, 64 or 128 character hex digest; a UUID is accepted.
 	RequestID *string `json:"request_id,omitzero"`
-	// Optional tighter budget, 50 to 500 ms, measured from the moment the request reaches NoResponse. Absent means the 500 ms ceiling; a value above it is refused with 400 rather than clamped.
+	// Optional tighter budget, 50 to 3000 ms, measured from the moment the request reaches NoResponse. Absent means the 3000 ms ceiling; a value above it is refused with 400 rather than clamped.
 	DeadlineMs *int64 `json:"deadline_ms,omitzero"`
 	// standard returns the consolidated risk response; detailed adds merged provider-neutral facts when the key has detailed scope. There is no raw mode.
 	ResponseMode *ResponseMode `json:"response_mode,omitzero"`

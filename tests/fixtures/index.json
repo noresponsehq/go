@@ -413,7 +413,7 @@
           "/deadline_ms"
         ]
       ],
-      "why": "II-002 client deadline above the 500 ms ceiling"
+      "why": "II-002 client deadline above the 3000 ms ceiling"
     },
     {
       "file": "invalid/request-email-trailing-newline.json",
@@ -1098,7 +1098,7 @@
           "/deadline_ms"
         ]
       ],
-      "why": "II-002 CR-04 deadline_ms is 50 to 500"
+      "why": "II-002 CR-04 deadline_ms is 50 to 3000"
     },
     {
       "file": "invalid/response-phone-not-found-synchronously.json",

@@ -3,5 +3,5 @@
   "identifiers": {
     "email": "new.user@example.com"
   },
-  "deadline_ms": 1000
+  "deadline_ms": 3001
 }

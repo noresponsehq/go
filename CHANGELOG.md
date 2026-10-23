@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.15
+
+No changes detected.
+
 ## 2.0.14
 
 * `Sdk.Assessments.Create()`:  `response.AuthContext` **Added**
