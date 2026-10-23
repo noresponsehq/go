@@ -3703,7 +3703,7 @@
           "minLength": 16,
           "maxLength": 128,
           "pattern": "^[A-Za-z0-9._:-]{16,128}$",
-          "example": "signup-7f3a9c-0001"
+          "example": "signup-acct_7f3a9c"
         }
       },
       "AssessmentId": {

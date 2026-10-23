@@ -204,7 +204,7 @@ func TestCreateUsesNewKey(t *testing.T) {
 		{"key := noresponse.NewIdempotencyKey()\nclient.Assessments.Create(ctx, key, req)", true},
 		{"var key = noresponse.NewIdempotencyKey()\nclient.Assessments.Create(ctx, key, req)", true},
 		{"key := noresponse.NewIdempotencyKey()\nclient.Assessments.Create(ctx, key, req)\nkey = \"fixed\"", true},
-		{`client.Assessments.Create(ctx, "signup-7f3a9c-0001", req)`, false},
+		{`client.Assessments.Create(ctx, "signup-acct_7f3a9c", req)`, false},
 		{"_ = noresponse.NewIdempotencyKey()\nclient.Assessments.Create(ctx, \"signup-1\", req)", false},
 		{"key := \"signup-1\"\n_ = noresponse.NewIdempotencyKey()\nclient.Assessments.Create(ctx, key, req)", false},
 		{"key := noresponse.NewIdempotencyKey()\nkey = \"fixed\"\nclient.Assessments.Create(ctx, key, req)", false},

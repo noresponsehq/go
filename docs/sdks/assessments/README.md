@@ -36,7 +36,7 @@ func main() {
         noresponse.WithSecurity(os.Getenv("NORESPONSE_API_KEY")),
     )
 
-    res, err := s.Assessments.Create(ctx, "signup-7f3a9c-0001", components.AssessmentRequest{
+    res, err := s.Assessments.Create(ctx, "signup-acct_7f3a9c", components.AssessmentRequest{
         AccountID: "acct_7f3a9c",
         Identifiers: components.AssessmentRequestIdentifiers{
             Email: noresponse.Pointer("new.user@example.com"),
@@ -121,7 +121,7 @@ func main() {
         noresponse.WithSecurity(os.Getenv("NORESPONSE_API_KEY")),
     )
 
-    res, err := s.Assessments.Create(ctx, "signup-7f3a9c-0001", components.AssessmentRequest{
+    res, err := s.Assessments.Create(ctx, "signup-acct_7f3a9c", components.AssessmentRequest{
         AccountID: "acct_7f3a9c",
         Identifiers: components.AssessmentRequestIdentifiers{
             Email: noresponse.Pointer("new.user@example.com"),
@@ -206,7 +206,7 @@ func main() {
         noresponse.WithSecurity(os.Getenv("NORESPONSE_API_KEY")),
     )
 
-    res, err := s.Assessments.Create(ctx, "signup-7f3a9c-0001", components.AssessmentRequest{
+    res, err := s.Assessments.Create(ctx, "signup-acct_7f3a9c", components.AssessmentRequest{
         AccountID: "acct_7f3a9c",
         Identifiers: components.AssessmentRequestIdentifiers{
             Email: noresponse.Pointer("new.user@example.com"),
@@ -249,7 +249,7 @@ func main() {
         noresponse.WithSecurity(os.Getenv("NORESPONSE_API_KEY")),
     )
 
-    res, err := s.Assessments.Create(ctx, "signup-7f3a9c-0001", components.AssessmentRequest{
+    res, err := s.Assessments.Create(ctx, "signup-acct_7f3a9c", components.AssessmentRequest{
         AccountID: "acct_7f3a9c",
         Identifiers: components.AssessmentRequestIdentifiers{
             Email: noresponse.Pointer("new.user@example.com"),
@@ -284,7 +284,7 @@ func main() {
         noresponse.WithSecurity(os.Getenv("NORESPONSE_API_KEY")),
     )
 
-    res, err := s.Assessments.Create(ctx, "signup-7f3a9c-0001", components.AssessmentRequest{
+    res, err := s.Assessments.Create(ctx, "signup-acct_7f3a9c", components.AssessmentRequest{
         AccountID: "acct_8412",
         Identifiers: components.AssessmentRequestIdentifiers{
             Email: noresponse.Pointer("jane.doe@example.com"),
@@ -330,7 +330,7 @@ func main() {
         noresponse.WithSecurity(os.Getenv("NORESPONSE_API_KEY")),
     )
 
-    res, err := s.Assessments.Create(ctx, "signup-7f3a9c-0001", components.AssessmentRequest{
+    res, err := s.Assessments.Create(ctx, "signup-acct_7f3a9c", components.AssessmentRequest{
         AccountID: "acct_7f3a9c",
         Identifiers: components.AssessmentRequestIdentifiers{
             Email: noresponse.Pointer("new.user@example.com"),
@@ -415,7 +415,7 @@ func main() {
         noresponse.WithSecurity(os.Getenv("NORESPONSE_API_KEY")),
     )
 
-    res, err := s.Assessments.Create(ctx, "signup-7f3a9c-0001", components.AssessmentRequest{
+    res, err := s.Assessments.Create(ctx, "signup-acct_7f3a9c", components.AssessmentRequest{
         AccountID: "acct_7f3a9c",
         Identifiers: components.AssessmentRequestIdentifiers{
             Email: noresponse.Pointer("new.user@example.com"),
@@ -485,7 +485,7 @@ func main() {
 | Parameter                                                                                                                                                      | Type                                                                                                                                                           | Required                                                                                                                                                       | Description                                                                                                                                                    | Example                                                                                                                                                        |
 | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `ctx`                                                                                                                                                          | [context.Context](https://pkg.go.dev/context#Context)                                                                                                          | :heavy_check_mark:                                                                                                                                             | The context to use for the request.                                                                                                                            |                                                                                                                                                                |
-| `idempotencyKey`                                                                                                                                               | `string`                                                                                                                                                       | :heavy_check_mark:                                                                                                                                             | Opaque client key, 16 to 128 characters of [A-Za-z0-9._:-] (a UUID or ULID fits). Scoped to the tenant principal and bound to the canonical body for 24 hours. | signup-7f3a9c-0001                                                                                                                                             |
+| `idempotencyKey`                                                                                                                                               | `string`                                                                                                                                                       | :heavy_check_mark:                                                                                                                                             | Opaque client key, 16 to 128 characters of [A-Za-z0-9._:-] (a UUID or ULID fits). Scoped to the tenant principal and bound to the canonical body for 24 hours. | signup-acct_7f3a9c                                                                                                                                             |
 | `body`                                                                                                                                                         | [components.AssessmentRequest](../../models/components/assessmentrequest.md)                                                                                   | :heavy_check_mark:                                                                                                                                             | N/A                                                                                                                                                            |                                                                                                                                                                |
 | `opts`                                                                                                                                                         | [][operations.Option](../../models/operations/option.md)                                                                                                       | :heavy_minus_sign:                                                                                                                                             | The options for this request.                                                                                                                                  |                                                                                                                                                                |
 
@@ -705,7 +705,7 @@ func main() {
         noresponse.WithSecurity(os.Getenv("NORESPONSE_API_KEY")),
     )
 
-    res, err := s.Assessments.RecordOutcome(ctx, "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM", "signup-7f3a9c-0001", components.AssessmentOutcomeRequest{
+    res, err := s.Assessments.RecordOutcome(ctx, "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM", "signup-acct_7f3a9c", components.AssessmentOutcomeRequest{
         Outcome: components.OutcomeConfirmedAbuse,
         ObservedAt: noresponse.Pointer("2026-10-20T05:00:00Z"),
         ExternalRef: noresponse.Pointer("case-123"),
@@ -740,7 +740,7 @@ func main() {
         noresponse.WithSecurity(os.Getenv("NORESPONSE_API_KEY")),
     )
 
-    res, err := s.Assessments.RecordOutcome(ctx, "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM", "signup-7f3a9c-0001", components.AssessmentOutcomeRequest{
+    res, err := s.Assessments.RecordOutcome(ctx, "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM", "signup-acct_7f3a9c", components.AssessmentOutcomeRequest{
         Outcome: components.OutcomeLegitimate,
         ObservedAt: noresponse.Pointer("2026-10-14T09:04:30.000Z"),
         ExternalRef: noresponse.Pointer("case-48213"),
@@ -775,7 +775,7 @@ func main() {
         noresponse.WithSecurity(os.Getenv("NORESPONSE_API_KEY")),
     )
 
-    res, err := s.Assessments.RecordOutcome(ctx, "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM", "signup-7f3a9c-0001", components.AssessmentOutcomeRequest{
+    res, err := s.Assessments.RecordOutcome(ctx, "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM", "signup-acct_7f3a9c", components.AssessmentOutcomeRequest{
         Outcome: components.OutcomeFalsePositive,
     })
     if err != nil {
@@ -793,7 +793,7 @@ func main() {
 | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `ctx`                                                                                                                                                          | [context.Context](https://pkg.go.dev/context#Context)                                                                                                          | :heavy_check_mark:                                                                                                                                             | The context to use for the request.                                                                                                                            |                                                                                                                                                                |
 | `assessmentID`                                                                                                                                                 | `string`                                                                                                                                                       | :heavy_check_mark:                                                                                                                                             | Path segment, matched case-sensitively. A value that does not match the assessment_id shape answers 404, not 400.                                              | asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM                                                                                                                                 |
-| `idempotencyKey`                                                                                                                                               | `string`                                                                                                                                                       | :heavy_check_mark:                                                                                                                                             | Opaque client key, 16 to 128 characters of [A-Za-z0-9._:-] (a UUID or ULID fits). Scoped to the tenant principal and bound to the canonical body for 24 hours. | signup-7f3a9c-0001                                                                                                                                             |
+| `idempotencyKey`                                                                                                                                               | `string`                                                                                                                                                       | :heavy_check_mark:                                                                                                                                             | Opaque client key, 16 to 128 characters of [A-Za-z0-9._:-] (a UUID or ULID fits). Scoped to the tenant principal and bound to the canonical body for 24 hours. | signup-acct_7f3a9c                                                                                                                                             |
 | `body`                                                                                                                                                         | [components.AssessmentOutcomeRequest](../../models/components/assessmentoutcomerequest.md)                                                                     | :heavy_check_mark:                                                                                                                                             | N/A                                                                                                                                                            |                                                                                                                                                                |
 | `opts`                                                                                                                                                         | [][operations.Option](../../models/operations/option.md)                                                                                                       | :heavy_minus_sign:                                                                                                                                             | The options for this request.                                                                                                                                  |                                                                                                                                                                |
 
