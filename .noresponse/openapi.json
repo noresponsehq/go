@@ -193,7 +193,7 @@
             "$ref": "#/components/responses/AssessmentPolled"
           },
           "400": {
-            "$ref": "#/components/responses/InvalidRequest"
+            "$ref": "#/components/responses/InvalidQuery"
           },
           "401": {
             "$ref": "#/components/responses/Unauthorized"
@@ -236,7 +236,7 @@
             "$ref": "#/components/responses/AssessmentDeleted"
           },
           "400": {
-            "$ref": "#/components/responses/InvalidRequest"
+            "$ref": "#/components/responses/InvalidQuery"
           },
           "401": {
             "$ref": "#/components/responses/Unauthorized"
@@ -809,7 +809,7 @@
             "$ref": "#/components/responses/IntegrationListed"
           },
           "400": {
-            "$ref": "#/components/responses/InvalidRequest"
+            "$ref": "#/components/responses/InvalidQuery"
           },
           "401": {
             "$ref": "#/components/responses/Unauthorized"
@@ -4526,6 +4526,16 @@
             },
             "required": false
           },
+          "Retry-After": {
+            "description": "Whole seconds to wait before polling again. Present on a partial answer while a source is still continuing.",
+            "schema": {
+              "type": "string",
+              "pattern": "^(?:[1-9]|[1-9][0-9]|[1-9][0-9]{2}|[12][0-9]{3}|3[0-5][0-9]{2}|3600)$",
+              "description": "Whole decimal seconds; wait at least this long.",
+              "example": "2"
+            },
+            "required": false
+          },
           "X-Request-ID": {
             "description": "The request correlation id, 32 lowercase hexadecimal characters.",
             "schema": {
@@ -5287,7 +5297,7 @@
             "required": true
           },
           "Retry-After": {
-            "description": "Whole seconds to wait before polling or retrying. Required on 202, 429 and 503.",
+            "description": "Whole seconds to wait before polling again. Present on a partial answer while a source is still continuing.",
             "schema": {
               "type": "string",
               "pattern": "^(?:[1-9]|[1-9][0-9]|[1-9][0-9]{2}|[12][0-9]{3}|3[0-5][0-9]{2}|3600)$",
@@ -6294,6 +6304,34 @@
       },
       "InvalidHistoryQuery": {
         "description": "The body does not match the query schema, or the cursor is invalid, belongs to another tenant or account, or has expired.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/BadRequestError"
+            }
+          }
+        }
+      },
+      "InvalidQuery": {
+        "description": "A query parameter is unknown, repeated or outside its documented values, or the route takes no query parameters and one was sent. For a refused value invalid_params names the parameter; for an unknown or repeated parameter, or any parameter on a route that takes none, its field is query.",
         "headers": {
           "Cache-Control": {
             "schema": {

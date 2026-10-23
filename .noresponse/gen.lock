@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: 25ddae46-795d-45f5-b455-3f48c41d440e
 management:
-  docChecksum: 606551273115d3fa55d4ed033a82ae4e
+  docChecksum: 5e16070b0416143c4eb4064783b46276
   docVersion: "1"
   speakeasyVersion: internal
   generationVersion: internal
-  releaseVersion: 3.0.4
-  configChecksum: a83f4bec30b4b85feedb7ecef263b55a
+  releaseVersion: 3.0.5
+  configChecksum: 5afa01b982013f0e1fc59fe18a38cdb5
 features:
   go:
     additionalDependencies: 0.1.0
@@ -691,7 +691,7 @@ trackedFiles:
   models/operations/sendwebhooktestevent.go:
     last_write_checksum: sha1:c71fbd16e174c9892cc780a36e77b5c368307508
   noresponse.go:
-    last_write_checksum: sha1:192997cacd567701468664befb6a3baa93c37acc
+    last_write_checksum: sha1:3309f1f264255b8eb7c61468afda4243cc34bc34
   optionalnullable/optionalnullable.go:
     last_write_checksum: sha1:38cf187cd65a5213be09788f67d82dc49d46b583
   optionalnullable/optionalnullable_test.go:
