@@ -1,6 +1,7 @@
 package noresponse
 
 import (
+	"bytes"
 	"context"
 	"crypto/hmac"
 	"crypto/sha256"
@@ -9,6 +10,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log/slog"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -612,5 +614,68 @@ func TestResolveUserIDGetsTheContextAndItsErrorFailsTheDelivery(t *testing.T) {
 	}))
 	if err != nil || result.Action != LateResultNone {
 		t.Fatalf("empty resolve: %+v, %v", result, err)
+	}
+}
+
+type refuseTransport struct{ t *testing.T }
+
+func (r refuseTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+	r.t.Errorf("the log-only provider called out: %s %s", req.Method, req.URL)
+	return nil, errors.New("refused")
+}
+
+func TestLogOnlyActionsLogsWhatItWouldDoAndCallsNothing(t *testing.T) {
+	saved := http.DefaultTransport
+	http.DefaultTransport = refuseTransport{t}
+	t.Cleanup(func() { http.DefaultTransport = saved })
+
+	var buf bytes.Buffer
+	logOnly := &LogOnlyActions{Logger: slog.New(slog.NewJSONHandler(&buf, nil))}
+	if logOnly.Name() != "log_only" {
+		t.Fatalf("Name() = %q", logOnly.Name())
+	}
+	raw, headers := lateDelivery(t, lateFixture(t, "assessment-phone-uncovered-complete.json"), "usr_8f2k1")
+	ctx := context.Background()
+	revoked, err := HandleLateResult(ctx, raw, headers, lateSecrets, logOnly, lateOptions(nil))
+	if err != nil || revoked.Action != LateResultRevokeSessions || revoked.UserID != "usr_8f2k1" {
+		t.Fatalf("revoke: %+v, %v", revoked, err)
+	}
+	ban := LateResultPolicy{components.RecommendationReview: LateResultBan}
+	banned, err := HandleLateResult(ctx, raw, headers, lateSecrets, logOnly, lateOptions(&LateResultOptions{Policy: ban}))
+	if err != nil || banned.Action != LateResultBan {
+		t.Fatalf("ban: %+v, %v", banned, err)
+	}
+	testRaw, testHeaders := lateDeliveryWith(t, lateFixture(t, "assessment-phone-uncovered-complete.json"), "usr_8f2k1", map[string]any{"test": true})
+	if result, err := HandleLateResult(ctx, testRaw, testHeaders, lateSecrets, logOnly, lateOptions(nil)); err != nil || result.Action != LateResultNone {
+		t.Fatalf("test event: %+v, %v", result, err)
+	}
+
+	type record struct {
+		Level  string `json:"level"`
+		Msg    string `json:"msg"`
+		Action string `json:"action"`
+		UserID string `json:"user_id"`
+	}
+	var got []record
+	for _, line := range strings.Split(strings.TrimSpace(buf.String()), "\n") {
+		var r record
+		if err := json.Unmarshal([]byte(line), &r); err != nil {
+			t.Fatalf("%q: %v", line, err)
+		}
+		got = append(got, r)
+	}
+	want := []record{
+		{"INFO", "NoResponse late result (log only): would revoke every session of user usr_8f2k1", "revoke_sessions", "usr_8f2k1"},
+		{"INFO", "NoResponse late result (log only): would ban user usr_8f2k1 and end their sessions", "ban", "usr_8f2k1"},
+	}
+	if !reflect.DeepEqual(got, want) {
+		t.Fatalf("log = %+v, want %+v", got, want)
+	}
+	if err := logOnly.Ban(ctx, ""); !errors.Is(err, ErrEmptyUserID) {
+		t.Fatalf("empty user id: %v", err)
+	}
+	var zero LogOnlyActions
+	if err := zero.RevokeSessions(ctx, "usr_8f2k1"); err != nil {
+		t.Fatalf("zero value: %v", err)
 	}
 }

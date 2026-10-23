@@ -20,6 +20,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log/slog"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -519,4 +520,40 @@ func (a *Auth0Actions) Ban(ctx context.Context, userID string) error {
 		return err
 	}
 	return a.RevokeSessions(ctx, userID)
+}
+
+// LogOnlyActions is a provider for an app with its own login, or for trying
+// the handler before you wire up a real one. RevokeSessions and Ban each log
+// one line saying what they would do and call nothing: no request leaves your
+// process. Replace it with your own LateResultProvider once you know what
+// revoking and banning mean in your app. The zero value logs to
+// slog.Default().
+type LogOnlyActions struct {
+	// Logger receives one Info record per action, with "action" and "user_id"
+	// attributes. Nil means slog.Default().
+	Logger *slog.Logger
+}
+
+func (a *LogOnlyActions) Name() string { return "log_only" }
+
+func (a *LogOnlyActions) log(ctx context.Context, action LateResultAction, userID, message string) error {
+	if userID == "" {
+		return ErrEmptyUserID
+	}
+	logger := slog.Default()
+	if a != nil && a.Logger != nil {
+		logger = a.Logger
+	}
+	logger.InfoContext(ctx, message, "action", string(action), "user_id", userID)
+	return nil
+}
+
+// RevokeSessions logs that it would end every session of the user.
+func (a *LogOnlyActions) RevokeSessions(ctx context.Context, userID string) error {
+	return a.log(ctx, LateResultRevokeSessions, userID, "NoResponse late result (log only): would revoke every session of user "+userID)
+}
+
+// Ban logs that it would ban the user and end their sessions.
+func (a *LogOnlyActions) Ban(ctx context.Context, userID string) error {
+	return a.log(ctx, LateResultBan, userID, "NoResponse late result (log only): would ban user "+userID+" and end their sessions")
 }

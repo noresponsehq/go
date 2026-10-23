@@ -209,6 +209,8 @@ result, err := noresponse.HandleLateResult(r.Context(), payload, r.Header, secre
 
 `LateResultOptions` sets `Policy` (recommendation to `LateResultNone`, `LateResultRevokeSessions` or `LateResultBan`), `ResolveUserID` (account id to provider user id, with the context; an error it returns fails the delivery so it is retried) and `Webhook` options. A test event from `SendTestEvent` acts on nothing. A refusal from the provider is a `*ProviderActionError`; answer 5xx so the delivery is retried. A provider 404 means the user or session is already gone and counts as done, so a repeated delivery is safe. WorkOS has no block, so its ban deletes the user permanently.
 
+If your app has its own login, `&noresponse.LogOnlyActions{}` logs what it would revoke or ban (an Info record on `slog.Default()`, or set `Logger`) and calls nothing. Use it to try the handler, then write your own `LateResultProvider`: `Name()`, `RevokeSessions(ctx, userID)` and `Ban(ctx, userID)`.
+
 ## Other options
 
 `noresponse.WithServerURL`, `noresponse.WithClient` (any `Do(*http.Request)` implementation) and `noresponse.WithSecuritySource` (a key fetched per call, for rotation) are available on both `New` and `NewClient`.
