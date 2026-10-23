@@ -2447,6 +2447,121 @@
       "file": "valid/hook-request-pre-registration-sparse.json",
       "schema": "hook-request.schema.json",
       "expect": "valid"
+    },
+    {
+      "file": "valid/workspace-request.json",
+      "schema": "workspace-request.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/workspace.json",
+      "schema": "workspace.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/workspace-list.json",
+      "schema": "workspace-list.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/member.json",
+      "schema": "member.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/member-list.json",
+      "schema": "member-list.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/member-update-request.json",
+      "schema": "member-update-request.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/invite-request.json",
+      "schema": "invite-request.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/invite-request-bound.json",
+      "schema": "invite-request.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/invite-created.json",
+      "schema": "invite.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/invite-list.json",
+      "schema": "invite-list.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/invite-accept-request.json",
+      "schema": "invite-accept-request.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "invalid/invite-list-with-token.json",
+      "schema": "invite-list.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "not",
+          "/items/0"
+        ]
+      ],
+      "why": "an invite token is shown once, never in a listing"
+    },
+    {
+      "file": "invalid/member-update-request-unknown-role.json",
+      "schema": "member-update-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "enum",
+          "/role"
+        ]
+      ],
+      "why": "the four roles are fixed"
+    },
+    {
+      "file": "invalid/invite-request-tenant-id.json",
+      "schema": "invite-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "additionalProperties",
+          ""
+        ]
+      ],
+      "why": "the workspace comes from the path, never the body"
+    },
+    {
+      "file": "invalid/workspace-request-padded-name.json",
+      "schema": "workspace-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "pattern",
+          "/name"
+        ]
+      ],
+      "why": "a name has no leading or trailing space"
+    },
+    {
+      "file": "invalid/member-removed.json",
+      "schema": "member.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "enum",
+          "/status"
+        ]
+      ],
+      "why": "listed and returned members are active"
     }
   ]
 }

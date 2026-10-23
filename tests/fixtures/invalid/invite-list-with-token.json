@@ -1,0 +1,14 @@
+{
+  "items": [
+    {
+      "id": "inv_01JA2ZC1D2E3F4G5H6J7K8M9NP",
+      "workspace_id": "tnt_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+      "role": "developer",
+      "email": "dev@example.com",
+      "created_by": "mem_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+      "created_at": "2026-10-23T09:02:00.000Z",
+      "expires_at": "2026-10-30T09:02:00.000Z",
+      "token": "nrinv_01JA2ZC1D2E3F4G5H6J7K8M9NP_k3Yx8pQ2mN7vR4tW6zB9cD1eF5gH0jL4sP9uV2wX7yA"
+    }
+  ]
+}
