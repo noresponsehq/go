@@ -63,6 +63,7 @@ Every method takes a `context.Context` first. Cancelling it cancels the request 
 | `client.Assessments.Create(ctx, idempotencyKey, request)` | Assess identifiers. Returns 200 (complete or partial) or 202 (pending) as `res.Result`. |
 | `client.Assessments.Get(ctx, assessmentID, nil)` | Fetch the latest version of one assessment. |
 | `client.Assessments.RecordOutcome(ctx, assessmentID, idempotencyKey, request)` | Report what you later learned, for example `components.OutcomeConfirmedAbuse`. |
+| `client.Assessments.Delete(ctx, assessmentID)` | Delete one assessment (`history` scope). `res.Result.Account.CurrentAssessmentID` names the assessment the account's risk now comes from, nil when none is left. A repeat answers 404. |
 | `client.Assessments.Query(ctx, query)` | One page of an account's history. `res.Next()` fetches the next page. |
 | `noresponse.AllAssessments(ctx, client, query)` | Range over every page of an account's history. |
 | `client.Accounts.Get(ctx, accountID)` | The account's one current risk: score, a decision for each flow and the assessment it comes from (`history` scope). An account with no decided assessment is a 404. |

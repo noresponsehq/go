@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.30
+
+* `Sdk.Assessments.Delete()`: **Added**
+
 ## 2.0.29
 
 No changes detected.

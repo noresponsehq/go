@@ -82,6 +82,16 @@
       "expect": "valid"
     },
     {
+      "file": "valid/assessment-deletion.json",
+      "schema": "assessment-deletion.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/assessment-deletion-last.json",
+      "schema": "assessment-deletion.schema.json",
+      "expect": "valid"
+    },
+    {
       "file": "valid/webhook-assessment-updated.json",
       "schema": "webhook-event.schema.json",
       "expect": "valid"
@@ -2321,6 +2331,18 @@
         ]
       ],
       "why": "NOR-364 a deletion receipt always says deleted"
+    },
+    {
+      "file": "invalid/assessment-deletion-no-account.json",
+      "schema": "assessment-deletion.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "required",
+          ""
+        ]
+      ],
+      "why": "NOR-366 the answer names the account and its current assessment"
     },
     {
       "file": "invalid/webhook-account-deleted-assessment-id.json",
