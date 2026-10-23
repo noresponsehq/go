@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.0.20
+
+* `Sdk.Assessments.Create()`:  `response.Risk.Reasons[].Code.Enum(testScenario)` **Added**
+* `Sdk.Assessments.Get()`:  `response.Risk.Reasons[].Code.Enum(testScenario)` **Added**
+* `Sdk.Assessments.Query()`:  `response.Items[].Risk.Reasons[].Code.Enum(testScenario)` **Added**
+* `Sdk.Accounts.Get()`:  `response.Risk.Reasons[].Code.Enum(testScenario)` **Added**
+* `Sdk.Accounts.ListAssessments()`:  `response.Items[].Risk.Reasons[].Code.Enum(testScenario)` **Added**
+
 ## 2.0.19
 
 No changes detected.

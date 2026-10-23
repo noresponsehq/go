@@ -3021,7 +3021,8 @@
           "context_timezone_mismatch",
           "context_locale_mismatch",
           "context_line_country_mismatch",
-          "prior_abuse_link"
+          "prior_abuse_link",
+          "test_scenario"
         ],
         "description": "A stable reason code. New codes may appear; ignore any you do not know."
       },

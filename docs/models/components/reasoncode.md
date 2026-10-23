@@ -55,3 +55,4 @@ custom := components.ReasonCode("custom_value")
 | `ReasonCodeContextLocaleMismatch`      | context_locale_mismatch                |
 | `ReasonCodeContextLineCountryMismatch` | context_line_country_mismatch          |
 | `ReasonCodePriorAbuseLink`             | prior_abuse_link                       |
+| `ReasonCodeTestScenario`               | test_scenario                          |
