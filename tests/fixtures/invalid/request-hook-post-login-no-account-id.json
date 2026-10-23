@@ -1,4 +1,5 @@
 {
+  "flow": "login",
   "identifiers": {
     "email": "new.user@example.com"
   },

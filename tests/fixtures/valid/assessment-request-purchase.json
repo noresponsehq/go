@@ -1,0 +1,7 @@
+{
+  "account_id": "acct_7f3a9c",
+  "flow": "purchase",
+  "identifiers": {
+    "email": "new.user@example.com"
+  }
+}

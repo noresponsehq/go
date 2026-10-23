@@ -1,5 +1,6 @@
 {
   "account_id": "acct_8412",
+  "flow": "signup",
   "identifiers": {
     "email": "jane.doe@example.com",
     "ip": "2001:db8::1"

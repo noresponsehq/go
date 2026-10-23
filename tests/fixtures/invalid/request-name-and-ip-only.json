@@ -1,5 +1,6 @@
 {
   "account_id": "acct_8412",
+  "flow": "signup",
   "identifiers": {
     "name": "Jane Doe",
     "ip": "73.162.18.45"

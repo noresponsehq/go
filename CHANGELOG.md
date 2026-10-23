@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.25
+
+* `Sdk.Assessments.Create()`:  `request.Body` **Changed**
+
 ## 2.0.24
 
 No changes detected.

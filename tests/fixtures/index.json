@@ -2601,6 +2601,40 @@
       "file": "valid/webhook-replay-request.json",
       "schema": "webhook-replay-request.schema.json",
       "expect": "valid"
+    },
+    {
+      "file": "invalid/request-unknown-flow.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "enum",
+          "/flow"
+        ]
+      ],
+      "why": "NOR-350 flows are signup, login and purchase"
+    },
+    {
+      "file": "invalid/request-unknown-depth.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "enum",
+          "/depth"
+        ]
+      ],
+      "why": "NOR-350 depths are quick and full"
+    },
+    {
+      "file": "valid/assessment-request-login-full.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/assessment-request-purchase.json",
+      "schema": "assessment-request.schema.json",
+      "expect": "valid"
     }
   ]
 }

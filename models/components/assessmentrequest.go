@@ -8,6 +8,10 @@ import (
 type AssessmentRequest struct {
 	// Your own opaque identifier for the account being checked, scoped to your tenant. Use an id you mint, with no direct identifier (email, phone, name or national id) in it. '|' is accepted so an Auth0 user id such as 'auth0|64abc' passes unchanged; '@', '+', '$' and whitespace are refused by the pattern, as is an exact-shape JWT; a hex digest such as a SHA-256 is allowed, because hashing an internal id is a common pseudonymous scheme. A value such as '07700900123' or 'jane.doe.gmail.com' cannot be told apart from an opaque id. It travels in bodies, and in a URL only as the path segment of GET /v1/accounts/{account_id} and its /assessments. An assessment requested by a provider hook at pre_registration, which has no account yet, carries the server-issued account_id pre: followed by its assessment_id.
 	AccountID string `json:"account_id"`
+	// The customer event an assessment is made for: signup (a new account), login (a returning sign-in) or purchase (a payment or credit grant). The account's risk is reported with the decision for this flow.
+	Flow *AssessmentFlow `json:"flow,omitzero"`
+	// How long the synchronous answer waits for sources. quick waits only for the fast sources, those that answer within 500 ms of ingress (or deadline_ms when lower); full waits for the whole budget, up to 3000 ms. Sources still running at the cut continue asynchronously and update the assessment either way.
+	Depth *Depth `json:"depth,omitzero"`
 	// At least one of email, username or phone. name and ip refine the match and travel beside a lookup identifier; a body with only name or ip is refused with 400.
 	Identifiers   AssessmentRequestIdentifiers    `json:"identifiers"`
 	PolicyContext *AssessmentRequestPolicyContext `json:"policy_context,omitzero"`
@@ -41,6 +45,20 @@ func (a *AssessmentRequest) GetAccountID() string {
 		return ""
 	}
 	return a.AccountID
+}
+
+func (a *AssessmentRequest) GetFlow() *AssessmentFlow {
+	if a == nil {
+		return nil
+	}
+	return a.Flow
+}
+
+func (a *AssessmentRequest) GetDepth() *Depth {
+	if a == nil {
+		return nil
+	}
+	return a.Depth
 }
 
 func (a *AssessmentRequest) GetIdentifiers() AssessmentRequestIdentifiers {

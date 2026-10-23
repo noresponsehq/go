@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: 25ddae46-795d-45f5-b455-3f48c41d440e
 management:
-  docChecksum: 0313440f6ed76a6269bc47bf0d2a799a
+  docChecksum: 7b124caf22372a7e20c96529d8229f8c
   docVersion: "1"
   speakeasyVersion: internal
   generationVersion: internal
-  releaseVersion: 2.0.24
-  configChecksum: 644bcf616a0a707e876f4d5b2f7f88c9
+  releaseVersion: 2.0.25
+  configChecksum: d0925f525fb2ec6e6d87f511ec76d6b6
 features:
   go:
     additionalDependencies: 0.1.0
@@ -66,6 +66,8 @@ trackedFiles:
     last_write_checksum: sha1:208089b11d03bf22ce60c1d53c92523abb0cdd20
   docs/models/components/assessmentauthcontext.md:
     last_write_checksum: sha1:e5a12c7952a25c130401b2a9a006f17e678e6a20
+  docs/models/components/assessmentflow.md:
+    last_write_checksum: sha1:b78ddc23539d5d62ebd2b26fce403777bb64b296
   docs/models/components/assessmentlist.md:
     last_write_checksum: sha1:aa07ed60cd4dd2a141168f0376cb8538c8b5fb2d
   docs/models/components/assessmentoutcome.md:
@@ -75,7 +77,7 @@ trackedFiles:
   docs/models/components/assessmentquery.md:
     last_write_checksum: sha1:ddbb7751173577337c95f934860edc9993639232
   docs/models/components/assessmentrequest.md:
-    last_write_checksum: sha1:6e929491b3ceac37190d54572f224d611b41b4e7
+    last_write_checksum: sha1:f1c3937d16c915f3d8686168e9367381a254b97f
   docs/models/components/assessmentrequestclientcontext.md:
     last_write_checksum: sha1:872a7a4550b3202b8332d7707a17d6929f726a78
   docs/models/components/assessmentrequestidentifiers.md:
@@ -83,7 +85,7 @@ trackedFiles:
   docs/models/components/assessmentrequestissuedcredential.md:
     last_write_checksum: sha1:75a69b15444f6dcaad739c00182d92649c3fd280
   docs/models/components/assessmentrequestpolicycontext.md:
-    last_write_checksum: sha1:ea792f99aec645b1054de0a742b55ded4b46eb2a
+    last_write_checksum: sha1:623bdb3c1a8e65554bf8185e20b975b20d4ce6bd
   docs/models/components/assessmenttiming.md:
     last_write_checksum: sha1:f8e77759c7d1ac4c28d01eb17e43abd5df9434c5
   docs/models/components/assurancelevel.md:
@@ -118,6 +120,8 @@ trackedFiles:
     last_write_checksum: sha1:84aa98905b9e4cf44f469d1a5eef02cd58292250
   docs/models/components/country.md:
     last_write_checksum: sha1:a55ebacf7aa1c87fb01a1ad85f55e4d9a8e9e18d
+  docs/models/components/depth.md:
+    last_write_checksum: sha1:57841702f93f2b3362b3098faf0706f11ce0204a
   docs/models/components/email.md:
     last_write_checksum: sha1:fa23b6c9fc6e2d5db9bf8991a2209112b7ceb840
   docs/models/components/emailunion.md:
@@ -129,7 +133,7 @@ trackedFiles:
   docs/models/components/failurereason.md:
     last_write_checksum: sha1:40e43475d44309c59855e6b2c2edddfdf2e457bb
   docs/models/components/flow.md:
-    last_write_checksum: sha1:286e3241151790cb1e0e848f0e89334ffd7beca0
+    last_write_checksum: sha1:3ce8edadc003d2ccdfca7531d1cc94c6067e52ac
   docs/models/components/freshness.md:
     last_write_checksum: sha1:14379d9345eaa692779d9ac3d6c44ab8a91ae777
   docs/models/components/hookpoint.md:
@@ -341,7 +345,7 @@ trackedFiles:
   docs/sdks/accounts/README.md:
     last_write_checksum: sha1:b371651ccaaed01541a4627bd42c4cb44c02c887
   docs/sdks/assessments/README.md:
-    last_write_checksum: sha1:bed7032a2a52a7b6f0ed89f68b0229d61ad48015
+    last_write_checksum: sha1:1003e426a3773a36a5f92887db084e5e26903a84
   docs/sdks/integrations/README.md:
     last_write_checksum: sha1:b9c271fa180c9f116455599ef7e4d230cb173cab
   docs/sdks/keys/README.md:
@@ -414,6 +418,8 @@ trackedFiles:
     last_write_checksum: sha1:c406c87805923966d803ebcae3ea4de627c191d1
   models/components/assessmentauthcontext.go:
     last_write_checksum: sha1:6c5746cedb568c3e5a99b56ea9b8c16efaa1f57f
+  models/components/assessmentflow.go:
+    last_write_checksum: sha1:c06890c1adee00f12df88b2649ee207dd54bc3a7
   models/components/assessmentlist.go:
     last_write_checksum: sha1:90b4b9fa36843c6622bd7dff1dc89a9f10d644f2
   models/components/assessmentoutcome.go:
@@ -423,7 +429,7 @@ trackedFiles:
   models/components/assessmentquery.go:
     last_write_checksum: sha1:b65ae87af6acb93ff1aca4d3d845bd2e986b7f8d
   models/components/assessmentrequest.go:
-    last_write_checksum: sha1:88e3c36dac26c07a7fa5f96cb3242e3eb69d132c
+    last_write_checksum: sha1:cc24f3b2f771cbb0f5643714675467078ae370f9
   models/components/assessmentrequestclientcontext.go:
     last_write_checksum: sha1:ecb3e604c96afa8782120a3029443100b3cdcb65
   models/components/assessmentrequestidentifiers.go:
@@ -431,7 +437,7 @@ trackedFiles:
   models/components/assessmentrequestissuedcredential.go:
     last_write_checksum: sha1:edaebfb40b021e7d876b26a218f8ce7ae23c379a
   models/components/assessmentrequestpolicycontext.go:
-    last_write_checksum: sha1:f93b71d1f482a71e83adc62f814239c7f7f0f502
+    last_write_checksum: sha1:4b1c6d8f5c93cd120208c1958202f3d53db6f601
   models/components/assessmenttiming.go:
     last_write_checksum: sha1:f080fd5c875896052fc5a74d8358337034d21d25
   models/components/assurancelevel.go:
@@ -466,6 +472,8 @@ trackedFiles:
     last_write_checksum: sha1:6e70e56fa42a3f37a90858ab696e13d077e12ef0
   models/components/country.go:
     last_write_checksum: sha1:4012a950b52a1336eb9133359ca54eeac4c6b419
+  models/components/depth.go:
+    last_write_checksum: sha1:747de042fd6d032e6f399cc6a54ab9f0d2ee393e
   models/components/eventtype.go:
     last_write_checksum: sha1:714ea9fdac56be0fa4a4cf7c74270538cbc4aaf1
   models/components/failure.go:
@@ -473,7 +481,7 @@ trackedFiles:
   models/components/failurereason.go:
     last_write_checksum: sha1:6ed974e9dc5570b6a234cfd7c4a72cd2f146ed48
   models/components/flow.go:
-    last_write_checksum: sha1:bcbe965594fb876e84dfd8695c70580826f95d67
+    last_write_checksum: sha1:5cb687123617b82de27b345b6ab6e6025348e72b
   models/components/freshness.go:
     last_write_checksum: sha1:bd656ecbe7761280272e5ec7d4da877cf4aa8c40
   models/components/hookpoint.go:
@@ -637,7 +645,7 @@ trackedFiles:
   models/operations/sendwebhooktestevent.go:
     last_write_checksum: sha1:02c30a05836ce0685d5eed7d642bce211c830828
   noresponse.go:
-    last_write_checksum: sha1:73bf6413a1537685e5c9b1dff9a5220036f2eefb
+    last_write_checksum: sha1:7059c96b98ee39060eb1609c4aca881ecba063aa
   optionalnullable/optionalnullable.go:
     last_write_checksum: sha1:38cf187cd65a5213be09788f67d82dc49d46b583
   optionalnullable/optionalnullable_test.go:
@@ -661,7 +669,7 @@ examples:
         header:
           Idempotency-Key: "signup-acct_7f3a9c"
       requestBody:
-        application/json: {"account_id": "acct_7f3a9c", "identifiers": {"email": "new.user@example.com"}}
+        application/json: {"account_id": "acct_7f3a9c", "flow": "signup", "identifiers": {"email": "new.user@example.com"}}
       responses:
         "200":
           application/json: {"schema_version": "1", "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM", "account_id": "acct_7f3a9c", "request_id": "req-2026-10-14-0001", "status": "pending", "confidence": "high", "risk": {"score": 496734, "band": "low", "recommendation": "review", "confidence": "medium", "policy_version": "risk-2026-10.3", "policy_basis": "heuristic_unvalidated", "reasons": [{"code": "seen_before", "weight": 652212}], "summary": {"phone": {"country": "AU", "carrier": "Telstra"}, "ip": {"country": "AU"}}, "coverage": {"answered": 308918, "failed": 790980, "pending": 823158}, "details": {"phone_names": [{"value": "Alex Example", "seen_by": 834218}], "breaches": [{"name": "Example Forum", "domain": "forum.example.com", "category": "forum", "kind": "credential_list", "matched_on": "username"}], "breach_names": [{"value": "Alex Example", "seen_in": 630745}]}}, "signals": [{"type": "account_presence", "identifier": "username", "outcome": "unavailable", "source_id": "github", "evidence_ref": "evr_01JA2Z8K6Q4V7W9XBCDEFGHJKN", "observed_at": "2026-10-14T09:00:00.210Z", "last_checked_at": "2026-10-14T09:00:00.210Z", "freshness": "stale", "enrichment": {"fields": {"phone": "+61412345678", "name": "Alex Example", "carrier": "Telstra", "line_type": "mobile", "entity_type": "person", "country_code": "61", "country": "Australia", "state": "New South Wales", "city": "Sydney", "location": "Sydney, New South Wales, Australia", "national_format": "0412 345 678", "job_title": "Engineer", "company_name": "Example Pty Ltd", "email": "new.user@example.com", "website": "https://example.com", "first_call_at": "2026-09-01T00:00:00.000Z", "last_call_at": "2026-10-10T00:00:00.000Z", "matched_name": "Alex Example", "alternate_names": ["Alex E."], "name_candidates": ["Alex Example"], "timezones": ["Australia/Sydney"], "emails": ["new.user@example.com"], "websites": ["https://example.com"], "locations": ["Sydney, New South Wales, Australia"], "social_profiles": ["https://example.com/alexexample"]}}}], "incomplete_sources": [], "policy_version": "heuristic-2026-10.1", "policy_basis": "heuristic_unvalidated", "assessment_version": 549038, "created_at": "2026-10-14T09:00:00.000Z", "updated_at": "2026-10-14T09:00:00.412Z", "expires_at": "2027-10-14T09:00:00.000Z", "assessment_url": "/v1/assessments/asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM", "timing": {"deadline_ms": 658459, "elapsed_ms": 847617}, "auth_context": {"provider": "clerk", "issuer": "https://example-app.clerk.accounts.dev", "subject": "user_2EXAMPLE", "session_id": "sess_2EXAMPLE", "organization_id": "org_2EXAMPLE", "verified": false, "transport": "browser"}}
@@ -682,7 +690,7 @@ examples:
         header:
           Idempotency-Key: "signup-acct_7f3a9c"
       requestBody:
-        application/json: {"account_id": "acct_7f3a9c", "identifiers": {"email": "new.user@example.com", "username": "new_user_42", "phone": "+447700900123"}, "policy_context": {"flow": "signup", "region": "GB"}, "request_id": "req-2026-10-14-0001", "deadline_ms": 300}
+        application/json: {"account_id": "acct_7f3a9c", "flow": "signup", "identifiers": {"email": "new.user@example.com", "username": "new_user_42", "phone": "+447700900123"}, "policy_context": {"region": "GB"}, "request_id": "req-2026-10-14-0001", "deadline_ms": 300}
       responses:
         "200":
           application/json: {"schema_version": "1", "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM", "account_id": "acct_7f3a9c", "request_id": "req-2026-10-14-0001", "status": "pending", "confidence": "high", "risk": {"score": 496734, "band": "low", "recommendation": "review", "confidence": "medium", "policy_version": "risk-2026-10.3", "policy_basis": "heuristic_unvalidated", "reasons": [{"code": "seen_before", "weight": 652212}], "summary": {"phone": {"country": "AU", "carrier": "Telstra"}, "ip": {"country": "AU"}}, "coverage": {"answered": 308918, "failed": 790980, "pending": 823158}, "details": {"phone_names": [{"value": "Alex Example", "seen_by": 834218}], "breaches": [{"name": "Example Forum", "domain": "forum.example.com", "category": "forum", "kind": "credential_list", "matched_on": "username"}], "breach_names": [{"value": "Alex Example", "seen_in": 630745}]}}, "signals": [{"type": "account_presence", "identifier": "username", "outcome": "unavailable", "source_id": "github", "evidence_ref": "evr_01JA2Z8K6Q4V7W9XBCDEFGHJKN", "observed_at": "2026-10-14T09:00:00.210Z", "last_checked_at": "2026-10-14T09:00:00.210Z", "freshness": "stale", "enrichment": {"fields": {"phone": "+61412345678", "name": "Alex Example", "carrier": "Telstra", "line_type": "mobile", "entity_type": "person", "country_code": "61", "country": "Australia", "state": "New South Wales", "city": "Sydney", "location": "Sydney, New South Wales, Australia", "national_format": "0412 345 678", "job_title": "Engineer", "company_name": "Example Pty Ltd", "email": "new.user@example.com", "website": "https://example.com", "first_call_at": "2026-09-01T00:00:00.000Z", "last_call_at": "2026-10-10T00:00:00.000Z", "matched_name": "Alex Example", "alternate_names": ["Alex E."], "name_candidates": ["Alex Example"], "timezones": ["Australia/Sydney"], "emails": ["new.user@example.com"], "websites": ["https://example.com"], "locations": ["Sydney, New South Wales, Australia"], "social_profiles": ["https://example.com/alexexample"]}}}], "incomplete_sources": [], "policy_version": "heuristic-2026-10.1", "policy_basis": "heuristic_unvalidated", "assessment_version": 549038, "created_at": "2026-10-14T09:00:00.000Z", "updated_at": "2026-10-14T09:00:00.412Z", "expires_at": "2027-10-14T09:00:00.000Z", "assessment_url": "/v1/assessments/asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM", "timing": {"deadline_ms": 658459, "elapsed_ms": 847617}, "auth_context": {"provider": "clerk", "issuer": "https://example-app.clerk.accounts.dev", "subject": "user_2EXAMPLE", "session_id": "sess_2EXAMPLE", "organization_id": "org_2EXAMPLE", "verified": false, "transport": "browser"}}
@@ -703,7 +711,7 @@ examples:
         header:
           Idempotency-Key: "signup-acct_7f3a9c"
       requestBody:
-        application/json: {"account_id": "acct_8412", "identifiers": {"email": "jane.doe@example.com", "username": "janedoe", "phone": "+14155550123", "name": "Jane A. Doe", "ip": "73.162.18.45"}, "policy_context": {"flow": "signup", "region": "US"}, "request_id": "req_01", "deadline_ms": 500, "response_mode": "standard"}
+        application/json: {"account_id": "acct_8412", "flow": "signup", "identifiers": {"email": "jane.doe@example.com", "username": "janedoe", "phone": "+14155550123", "name": "Jane A. Doe", "ip": "73.162.18.45"}, "policy_context": {"region": "US"}, "request_id": "req_01", "deadline_ms": 500, "response_mode": "standard"}
       responses:
         "200":
           application/json: {"schema_version": "1", "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM", "account_id": "acct_7f3a9c", "request_id": "req-2026-10-14-0001", "status": "pending", "confidence": "high", "risk": {"score": 496734, "band": "low", "recommendation": "review", "confidence": "medium", "policy_version": "risk-2026-10.3", "policy_basis": "heuristic_unvalidated", "reasons": [{"code": "seen_before", "weight": 652212}], "summary": {"phone": {"country": "AU", "carrier": "Telstra"}, "ip": {"country": "AU"}}, "coverage": {"answered": 308918, "failed": 790980, "pending": 823158}, "details": {"phone_names": [{"value": "Alex Example", "seen_by": 834218}], "breaches": [{"name": "Example Forum", "domain": "forum.example.com", "category": "forum", "kind": "credential_list", "matched_on": "username"}], "breach_names": [{"value": "Alex Example", "seen_in": 630745}]}}, "signals": [{"type": "account_presence", "identifier": "username", "outcome": "unavailable", "source_id": "github", "evidence_ref": "evr_01JA2Z8K6Q4V7W9XBCDEFGHJKN", "observed_at": "2026-10-14T09:00:00.210Z", "last_checked_at": "2026-10-14T09:00:00.210Z", "freshness": "stale", "enrichment": {"fields": {"phone": "+61412345678", "name": "Alex Example", "carrier": "Telstra", "line_type": "mobile", "entity_type": "person", "country_code": "61", "country": "Australia", "state": "New South Wales", "city": "Sydney", "location": "Sydney, New South Wales, Australia", "national_format": "0412 345 678", "job_title": "Engineer", "company_name": "Example Pty Ltd", "email": "new.user@example.com", "website": "https://example.com", "first_call_at": "2026-09-01T00:00:00.000Z", "last_call_at": "2026-10-10T00:00:00.000Z", "matched_name": "Alex Example", "alternate_names": ["Alex E."], "name_candidates": ["Alex Example"], "timezones": ["Australia/Sydney"], "emails": ["new.user@example.com"], "websites": ["https://example.com"], "locations": ["Sydney, New South Wales, Australia"], "social_profiles": ["https://example.com/alexexample"]}}}], "incomplete_sources": [], "policy_version": "heuristic-2026-10.1", "policy_basis": "heuristic_unvalidated", "assessment_version": 549038, "created_at": "2026-10-14T09:00:00.000Z", "updated_at": "2026-10-14T09:00:00.412Z", "expires_at": "2027-10-14T09:00:00.000Z", "assessment_url": "/v1/assessments/asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM", "timing": {"deadline_ms": 658459, "elapsed_ms": 847617}, "auth_context": {"provider": "clerk", "issuer": "https://example-app.clerk.accounts.dev", "subject": "user_2EXAMPLE", "session_id": "sess_2EXAMPLE", "organization_id": "org_2EXAMPLE", "verified": false, "transport": "browser"}}

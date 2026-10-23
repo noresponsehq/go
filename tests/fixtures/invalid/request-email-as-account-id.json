@@ -1,5 +1,6 @@
 {
   "account_id": "new.user@example.com",
+  "flow": "signup",
   "identifiers": {
     "email": "new.user@example.com"
   }

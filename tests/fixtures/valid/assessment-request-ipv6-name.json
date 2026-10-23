@@ -1,5 +1,6 @@
 {
   "account_id": "acct_8412",
+  "flow": "signup",
   "identifiers": {
     "username": "jms",
     "name": "José Müller-Ståhl",

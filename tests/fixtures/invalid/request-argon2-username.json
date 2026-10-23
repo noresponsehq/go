@@ -1,5 +1,6 @@
 {
   "account_id": "acct_7f3a9c",
+  "flow": "signup",
   "identifiers": {
     "username": "$argon2id$v=19$m=65536,t=3,p=4$c29tZXNhbHQ$RdescudvJCsgt3ub"
   }

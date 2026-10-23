@@ -1,5 +1,6 @@
 {
   "account_id": "acct_7f3a9c",
+  "flow": "signup",
   "identifiers": {
     "email": "Jane.Doe+signup@googlemail.com"
   }

@@ -208,13 +208,13 @@ func main() {
 
     res, err := s.Assessments.Create(ctx, "signup-acct_7f3a9c", components.AssessmentRequest{
         AccountID: "acct_7f3a9c",
+        Flow: components.AssessmentFlowSignup.ToPointer(),
         Identifiers: components.AssessmentRequestIdentifiers{
             Email: noresponse.Pointer("new.user@example.com"),
             Username: noresponse.Pointer("new_user_42"),
             Phone: noresponse.Pointer("+447700900123"),
         },
         PolicyContext: &components.AssessmentRequestPolicyContext{
-            Flow: components.FlowSignup.ToPointer(),
             Region: noresponse.Pointer("GB"),
         },
         RequestID: noresponse.Pointer("req-2026-10-14-0001"),
@@ -251,6 +251,7 @@ func main() {
 
     res, err := s.Assessments.Create(ctx, "signup-acct_7f3a9c", components.AssessmentRequest{
         AccountID: "acct_7f3a9c",
+        Flow: components.AssessmentFlowSignup.ToPointer(),
         Identifiers: components.AssessmentRequestIdentifiers{
             Email: noresponse.Pointer("new.user@example.com"),
         },
@@ -286,6 +287,7 @@ func main() {
 
     res, err := s.Assessments.Create(ctx, "signup-acct_7f3a9c", components.AssessmentRequest{
         AccountID: "acct_8412",
+        Flow: components.AssessmentFlowSignup.ToPointer(),
         Identifiers: components.AssessmentRequestIdentifiers{
             Email: noresponse.Pointer("jane.doe@example.com"),
             Username: noresponse.Pointer("janedoe"),
@@ -294,7 +296,6 @@ func main() {
             IP: noresponse.Pointer("73.162.18.45"),
         },
         PolicyContext: &components.AssessmentRequestPolicyContext{
-            Flow: components.FlowSignup.ToPointer(),
             Region: noresponse.Pointer("US"),
         },
         RequestID: noresponse.Pointer("req_01"),
