@@ -3038,6 +3038,76 @@
         ]
       ],
       "why": "an active signup's answer is the only place its live key is shown"
+    },
+    {
+      "file": "valid/key-usage-batch-request.json",
+      "schema": "key-usage-batch-request.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/key-usage-batch.json",
+      "schema": "key-usage-batch.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "invalid/key-usage-no-events.json",
+      "schema": "key-usage-batch-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "minItems",
+          "/events"
+        ]
+      ],
+      "why": "NOR-353 a batch holds 1 to 500 events"
+    },
+    {
+      "file": "invalid/key-usage-raw-key.json",
+      "schema": "key-usage-batch-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "pattern",
+          "/events/0/key_sha256"
+        ]
+      ],
+      "why": "NOR-353 only the SHA-256 of an issued key, never the key"
+    },
+    {
+      "file": "invalid/key-usage-tenant-id.json",
+      "schema": "key-usage-batch-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "additionalProperties",
+          ""
+        ]
+      ],
+      "why": "II-006"
+    },
+    {
+      "file": "invalid/key-usage-zero-sample-rate.json",
+      "schema": "key-usage-batch-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "exclusiveMinimum",
+          "/events/0/sample_rate"
+        ]
+      ],
+      "why": "NOR-353 a sample rate is above 0"
+    },
+    {
+      "file": "invalid/key-usage-no-ip.json",
+      "schema": "key-usage-batch-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "required",
+          "/events/0"
+        ]
+      ],
+      "why": "NOR-353 every event names its IP"
     }
   ]
 }

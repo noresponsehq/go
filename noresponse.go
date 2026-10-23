@@ -45,13 +45,14 @@ func Float64(f float64) *float64 { return &f }
 func Pointer[T any](v T) *T { return &v }
 
 // NoResponse API: Server-side signup and gateway risk assessment: a recommendation, polling and signed webhooks.
-// Assess a signup, login or purchase and get back the account's one current risk, poll a pending assessment, page through an account's history, record what you later learned, rotate your API key, manage your webhook endpoints, and register hosted endpoints that answer your WorkOS or Auth0 sign-up and sign-in hooks. Every response carries X-Request-ID; every error is an RFC 9457 problem document. Keep the API key on your server.
+// Assess a signup, login or purchase and get back the account's one current risk, poll a pending assessment, page through an account's history, record what you later learned, report usage of the API keys you issue to your accounts, rotate your API key, manage your webhook endpoints, and register hosted endpoints that answer your WorkOS or Auth0 sign-up and sign-in hooks. Every response carries X-Request-ID; every error is an RFC 9457 problem document. Keep the API key on your server.
 type NoResponse struct {
 	SDKVersion string
 	// Signup and gateway assessments.
 	Assessments *Assessments
 	// Your accounts, each with one current risk, and their assessment history.
 	Accounts *Accounts
+	KeyUsage *KeyUsage
 	// Your own API keys.
 	Keys *Keys
 	// Hosted endpoints that answer your sign-up and sign-in hooks.
@@ -134,10 +135,10 @@ func WithTimeout(timeout time.Duration) SDKOption {
 // New creates a new instance of the SDK with the provided options
 func New(opts ...SDKOption) *NoResponse {
 	sdk := &NoResponse{
-		SDKVersion: "3.0.2",
+		SDKVersion: "3.0.3",
 		sdkConfiguration: config.SDKConfiguration{
-			UserAgent:         "noresponse-sdk/go 3.0.2",
-			SDKVersion:        "3.0.2",
+			UserAgent:         "noresponse-sdk/go 3.0.3",
+			SDKVersion:        "3.0.3",
 			GenVersion:        "internal",
 			OpenAPIDocVersion: "1",
 			ServerList:        ServerList,
@@ -164,6 +165,7 @@ func New(opts ...SDKOption) *NoResponse {
 
 	sdk.Assessments = newAssessments(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Accounts = newAccounts(sdk, sdk.sdkConfiguration, sdk.hooks)
+	sdk.KeyUsage = newKeyUsage(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Keys = newKeys(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Integrations = newIntegrations(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.WebhookEndpoints = newWebhookEndpoints(sdk, sdk.sdkConfiguration, sdk.hooks)

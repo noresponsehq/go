@@ -1,5 +1,14 @@
 # Changelog
 
+## 3.0.3
+
+* `Sdk.KeyUsage.Record()`: **Added**
+* `Sdk.Assessments.Create()`:  `response.Account.Risk.Reasons[].Code.Enum(sharedApiKey)` **Added**
+* `Sdk.Assessments.Get()`:  `response.Account.Risk.Reasons[].Code.Enum(sharedApiKey)` **Added**
+* `Sdk.Assessments.Query()`:  `response.Items[].Risk.Reasons[].Code.Enum(sharedApiKey)` **Added**
+* `Sdk.Accounts.Get()`:  `response.Risk.Reasons[].Code.Enum(sharedApiKey)` **Added**
+* `Sdk.Accounts.ListAssessments()`:  `response.Items[].Risk.Reasons[].Code.Enum(sharedApiKey)` **Added**
+
 ## 3.0.2
 
 No changes detected.

@@ -4,7 +4,7 @@
     "title": "NoResponse API",
     "version": "1",
     "summary": "Server-side signup and gateway risk assessment: a recommendation, polling and signed webhooks.",
-    "description": "Assess a signup, login or purchase and get back the account's one current risk, poll a pending assessment, page through an account's history, record what you later learned, rotate your API key, manage your webhook endpoints, and register hosted endpoints that answer your WorkOS or Auth0 sign-up and sign-in hooks. Every response carries X-Request-ID; every error is an RFC 9457 problem document. Keep the API key on your server.",
+    "description": "Assess a signup, login or purchase and get back the account's one current risk, poll a pending assessment, page through an account's history, record what you later learned, report usage of the API keys you issue to your accounts, rotate your API key, manage your webhook endpoints, and register hosted endpoints that answer your WorkOS or Auth0 sign-up and sign-in hooks. Every response carries X-Request-ID; every error is an RFC 9457 problem document. Keep the API key on your server.",
     "license": {
       "name": "Apache-2.0",
       "identifier": "Apache-2.0"
@@ -583,6 +583,84 @@
             "nextCursor": "$.next_cursor"
           }
         }
+      }
+    },
+    "/v1/key_usage/batches": {
+      "post": {
+        "operationId": "recordKeyUsage",
+        "x-noresponse-group": "keyUsage",
+        "x-noresponse-name-override": "record",
+        "tags": [
+          "keyUsage"
+        ],
+        "summary": "Report requests made with API keys your signup gate issued.",
+        "description": "Records requests made with API keys your signup gate issued to your accounts, one event per request: the key's SHA-256 (the issued_credential.sha256 the account's assessment carried), the client IP, the time and optionally the user agent, model and token counts. Most callers use the SDK's usage buffer, which batches events and sends them in the background. Sampling is allowed: sample_rate weights an event's request and token counts. Requires the assess scope. Idempotency-Key is required and handled as on POST /v1/assessments: a retry with the same key and body answers the same record with Idempotent-Replayed: true and counts nothing again; a different body answers 409. A batch holds 1 to 500 events and at most 256 KiB. No raw event is kept: usage is aggregated per key, and IPs, user agents and models are kept only as keyed digests, with the IP's country, for 24 hours. When one key is used from 20 or more IP addresses, or 3 or more countries, within 24 hours, every account whose assessment carried that key gets the shared_api_key reason for 30 days.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/KeyUsageBatchRequest"
+              },
+              "examples": {
+                "batch": {
+                  "value": {
+                    "events": [
+                      {
+                        "key_sha256": "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
+                        "ip": "203.0.113.24",
+                        "occurred_at": "2026-10-23T09:14:07Z",
+                        "user_agent": "python-requests/2.32.3",
+                        "model": "gpt-4o-mini",
+                        "input_tokens": 812,
+                        "output_tokens": 164
+                      },
+                      {
+                        "key_sha256": "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
+                        "ip": "2001:db8:4a::17",
+                        "occurred_at": "2026-10-23T09:14:09.250Z",
+                        "sample_rate": 0.25
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "$ref": "#/components/responses/KeyUsageRecorded"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidKeyUsage"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/TenantForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/IdempotencyConflict"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
       }
     },
     "/v1/keys/rotate": {
@@ -1310,7 +1388,7 @@
     },
     "schemas": {
       "Account": {
-        "description": "Body of the 200 answer to GET /v1/accounts/{account_id}: the one current risk of one of the calling tenant's accounts. It is the risk of the account's latest assessment that has a decision (status complete or partial), by created_at and then assessment_id, scored exactly as GET /v1/assessments/{assessment_id} scores that assessment. Its assessments are the account's history (GET /v1/accounts/{account_id}/assessments).",
+        "description": "Body of the 200 answer to GET /v1/accounts/{account_id}: the one current risk of one of the calling tenant's accounts. It is the risk of the account's latest assessment that has a decision (status complete or partial), by created_at and then assessment_id, scored exactly as GET /v1/assessments/{assessment_id} scores that assessment, plus the account's own reason shared_api_key when a key issued to the account was used from many IP addresses or countries (POST /v1/key_usage/batches). Its assessments are the account's history (GET /v1/accounts/{account_id}/assessments).",
         "type": "object",
         "additionalProperties": false,
         "required": [
@@ -2960,6 +3038,124 @@
           }
         }
       },
+      "KeyUsageBatch": {
+        "description": "The 202 answer of POST /v1/key_usage/batches. A replay with the same Idempotency-Key and body answers the same record and counts nothing again.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "received_at",
+          "accepted",
+          "ignored"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^kub_[0-9A-HJKMNP-TV-Z]{26}$",
+            "description": "Opaque, server-assigned id of the batch: 'kub_' and a 26-character Crockford base32 ULID.",
+            "example": "kub_01JA2ZE4M5N6P7Q8R9S0T1V2W3"
+          },
+          "received_at": {
+            "type": "string",
+            "description": "When NoResponse first recorded the batch.",
+            "example": "2026-10-23T09:14:12.000Z"
+          },
+          "accepted": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 500,
+            "description": "Events counted."
+          },
+          "ignored": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 500,
+            "description": "Events that added nothing: a private, reserved or unreadable ip, or an occurred_at more than 24 hours old or more than 5 minutes ahead."
+          }
+        }
+      },
+      "KeyUsageBatchRequest": {
+        "description": "POST /v1/key_usage/batches body: facts about requests made with API keys your signup gate issued to your accounts, one event per request. Each event names the key by the SHA-256 that the assessment's issued_credential.sha256 carried, not the key itself. The SDKs buffer events and send them in the background. A batch holds 1 to 500 events and at most 256 KiB. Idempotency-Key is required and binds the body as on POST /v1/assessments, so a retried batch is counted once.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "events"
+        ],
+        "properties": {
+          "events": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 500,
+            "items": {
+              "$ref": "#/components/schemas/KeyUsageEvent"
+            }
+          }
+        }
+      },
+      "KeyUsageEvent": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "key_sha256",
+          "ip",
+          "occurred_at"
+        ],
+        "description": "One request made with an issued key. An event whose ip is not a public address, or whose occurred_at is more than 24 hours old or more than 5 minutes ahead, is counted in ignored and adds nothing.",
+        "properties": {
+          "key_sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$",
+            "description": "SHA-256 of the issued key's UTF-8 bytes, as 64 lower-case hex characters: the value sent as issued_credential.sha256 when the account was assessed. Each SDK's issued-credential helper computes it.",
+            "example": "2bdbf5c72f2a36df0ef40fb92203612274d4546f56dba946070a6a79c2401a1b"
+          },
+          "ip": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 64,
+            "description": "The client IP address the request came from, IPv4 or IPv6, as your server saw it. Stored only as a keyed digest and its country.",
+            "example": "203.0.113.24"
+          },
+          "occurred_at": {
+            "type": "string",
+            "description": "When the request was made.",
+            "example": "2026-10-23T09:14:07.000Z"
+          },
+          "user_agent": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512,
+            "description": "The request's User-Agent header, at most 512 characters. Stored only as a keyed digest.",
+            "example": "python-requests/2.32.3"
+          },
+          "model": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/@+-]{0,127}$",
+            "description": "The model or product the request used, such as gpt-4o-mini. Stored only as a keyed digest.",
+            "example": "gpt-4o-mini"
+          },
+          "input_tokens": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000000000,
+            "description": "Input tokens the request consumed."
+          },
+          "output_tokens": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000000000,
+            "description": "Output tokens the request produced."
+          },
+          "sample_rate": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "maximum": 1,
+            "default": 1,
+            "description": "The share of requests your sampler records, when it records only some: 0.1 means this event stands for 10 requests. Request and token totals are weighted by its inverse. Distinct IP and country counts see only the events sent."
+          }
+        }
+      },
       "Lane": {
         "enum": [
           "accounts",
@@ -3432,7 +3628,8 @@
           "context_locale_mismatch",
           "context_line_country_mismatch",
           "prior_abuse_link",
-          "test_scenario"
+          "test_scenario",
+          "shared_api_key"
         ],
         "description": "A stable reason code. New codes may appear; ignore any you do not know."
       },
@@ -7138,6 +7335,80 @@
       },
       "InvalidAccountRequest": {
         "description": "account_id does not match its shape, a query parameter is unknown, repeated or out of range, or the cursor is invalid, belongs to another tenant or account, or has expired. invalid_params names the offending parameters, not their values.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/BadRequestError"
+            }
+          }
+        }
+      },
+      "KeyUsageRecorded": {
+        "description": "The batch was recorded: accepted events are counted and ignored ones added nothing. A replay of the same Idempotency-Key and body answers the record the first request created, with Idempotent-Replayed: true, and counts nothing again.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "Idempotent-Replayed": {
+            "description": "Present and true when this answer replays an earlier request with the same Idempotency-Key and body: the body is the record that request created.",
+            "schema": {
+              "type": "string",
+              "const": "true"
+            },
+            "required": false
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/KeyUsageBatch"
+            },
+            "examples": {
+              "recorded": {
+                "value": {
+                  "id": "kub_01JA2ZE4M5N6P7Q8R9S0T1V2W3",
+                  "received_at": "2026-10-23T09:14:12Z",
+                  "accepted": 2,
+                  "ignored": 0
+                }
+              }
+            }
+          }
+        }
+      },
+      "InvalidKeyUsage": {
+        "description": "The body is not JSON or does not match the batch schema (no events or more than 500, an unknown member, a key_sha256 that is not 64 lower-case hex, an over-long user_agent, a sample_rate outside (0, 1]), or Idempotency-Key is missing or malformed. invalid_params names the offending fields, not their values.",
         "headers": {
           "Cache-Control": {
             "schema": {

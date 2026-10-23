@@ -56,3 +56,4 @@ custom := components.ReasonCode("custom_value")
 | `ReasonCodeContextLineCountryMismatch` | context_line_country_mismatch          |
 | `ReasonCodePriorAbuseLink`             | prior_abuse_link                       |
 | `ReasonCodeTestScenario`               | test_scenario                          |
+| `ReasonCodeSharedAPIKey`               | shared_api_key                         |
