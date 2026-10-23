@@ -67,7 +67,7 @@ Every method takes a `context.Context` first. Cancelling it cancels the request 
 | `noresponse.AllAssessments(ctx, client, query)` | Range over every page of an account's history. |
 | `client.Accounts.Get(ctx, accountID)` | The account's one current risk: score, a decision for each flow and the assessment it comes from (`history` scope). An account with no decided assessment is a 404. |
 | `client.Accounts.ListAssessments(ctx, accountID, limit, cursor, responseMode)` | One page of the account's history with the account id in the URL; pass `nil` for the defaults. `res.Next()` fetches the next page. |
-| `noresponse.WaitForAssessment(ctx, client, assessmentID, nil)` | Poll until the assessment is no longer pending, honouring `Retry-After`. |
+| `noresponse.WaitForAssessment(ctx, client, assessmentID, nil)` | Poll until the assessment is `complete`, honouring `Retry-After`, until `ctx`'s deadline (30 s when it has none). Then a `partial` answer is returned as it stands, and a `pending` one returns `*WaitTimeoutError`. |
 | `noresponse.ConstructEvent(payload, headers, secrets)` | Verify a webhook delivery and return the typed event. |
 | `client.Keys.Rotate(ctx, request)` | Rotate the API key that signs the request. |
 | `client.Integrations.Create(ctx, request)` | Register a hosted WorkOS or Auth0 integration (`integrations` scope). For Auth0, `res.Result.Secret` is shown once. Never retried. |
