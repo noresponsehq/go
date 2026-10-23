@@ -2481,7 +2481,7 @@
         "description": "The address's network type."
       },
       "KeyRotation": {
-        "description": "The 201 answer of POST /v1/keys/rotate: the new key, shown once, and when the key that was presented stops working. The new key has the scopes of the presented key.",
+        "description": "The 201 answer of POST /v1/keys/rotate: the new key, shown once, and when the key that was presented stops working. The new key has the scopes and the environment of the presented key.",
         "type": "object",
         "additionalProperties": false,
         "required": [
@@ -2495,9 +2495,9 @@
         "properties": {
           "key": {
             "type": "string",
-            "pattern": "^nrk_[0-7][0-9A-HJKMNP-TV-Z]{25}_[A-Za-z0-9_-]{42}[AEIMQUYcgkosw048]$",
-            "description": "The new credential, nrk_<key id>_<secret>. It is shown only in this answer; store it now.",
-            "example": "nrk_01JA2Z8K6Q4V7W9XBCDEFGHJKM_k3Yx8pQ2mN7vR4tW6zB9cD1eF5gH0jL4sP9uV2wX7yA"
+            "pattern": "^nrk_(live|test)_[0-7][0-9A-HJKMNP-TV-Z]{25}_[A-Za-z0-9_-]{42}[AEIMQUYcgkosw048]$",
+            "description": "The new credential, nrk_<mode>_<key id>_<secret>, in the environment of the presented key: nrk_live_ or nrk_test_. It is shown only in this answer; store it now.",
+            "example": "nrk_live_01JA2Z8K6Q4V7W9XBCDEFGHJKM_k3Yx8pQ2mN7vR4tW6zB9cD1eF5gH0jL4sP9uV2wX7yA"
           },
           "key_id": {
             "type": "string",
@@ -5152,7 +5152,7 @@
             "examples": {
               "rotated": {
                 "value": {
-                  "key": "nrk_01JA2ZC0Q1R2S3T4V5W6X7Y8Z9_0123456789abcdefghijklmnopqrstuvwxyzABCDEFA",
+                  "key": "nrk_live_01JA2ZC0Q1R2S3T4V5W6X7Y8Z9_0123456789abcdefghijklmnopqrstuvwxyzABCDEFA",
                   "key_id": "01JA2ZC0Q1R2S3T4V5W6X7Y8Z9",
                   "scopes": [
                     "assess",

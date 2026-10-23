@@ -25,9 +25,9 @@ func (e *Scope) IsExact() bool {
 	return false
 }
 
-// KeyRotation - The 201 answer of POST /v1/keys/rotate: the new key, shown once, and when the key that was presented stops working. The new key has the scopes of the presented key.
+// KeyRotation - The 201 answer of POST /v1/keys/rotate: the new key, shown once, and when the key that was presented stops working. The new key has the scopes and the environment of the presented key.
 type KeyRotation struct {
-	// The new credential, nrk_<key id>_<secret>. It is shown only in this answer; store it now.
+	// The new credential, nrk_<mode>_<key id>_<secret>, in the environment of the presented key: nrk_live_ or nrk_test_. It is shown only in this answer; store it now.
 	Key string `json:"key"`
 	// The public id of the new key.
 	KeyID string `json:"key_id"`
