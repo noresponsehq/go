@@ -29,7 +29,8 @@
       "purchase": "allow"
     },
     "assessment_id": "asm_01JB3C4D5E6F7G8H9JKMNPQRST",
-    "updated_at": "2026-10-18T11:00:04.000Z"
+    "updated_at": "2026-10-18T11:00:04.000Z",
+    "risk_version": 3
   },
   "detail": {
     "schema_version": "1",

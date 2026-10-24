@@ -1,5 +1,11 @@
 # Changelog
 
+## 5.1.1
+
+* `Sdk.Assessments.Create()`:  `response.Account.RiskVersion` **Added**
+* `Sdk.Assessments.Get()`:  `response.Account.RiskVersion` **Added**
+* `Sdk.Accounts.Get()`:  `response.RiskVersion` **Added**
+
 ## 5.1.0
 
 * `Sdk.Keys.Rotate()`:  `response.Scopes[].Enum(delete)` **Added**

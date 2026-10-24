@@ -1397,7 +1397,8 @@
           "risk",
           "decisions_by_flow",
           "assessment_id",
-          "updated_at"
+          "updated_at",
+          "risk_version"
         ],
         "properties": {
           "schema_version": {
@@ -1429,6 +1430,11 @@
             "type": "string",
             "description": "updated_at of that assessment's latest revision.",
             "example": "2026-10-14T09:00:00.412Z"
+          },
+          "risk_version": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "The version of the account's current risk. It increases every time the account's current risk or decisions_by_flow changes, and does not decrease. Of two copies of an account, the one with the higher risk_version is newer. account.risk_changed carries the risk_version that its change made."
           }
         }
       },
@@ -4599,7 +4605,8 @@
                       "purchase": "allow"
                     },
                     "assessment_id": "asm_01JB3C4D5E6F7G8H9JKMNPQRST",
-                    "updated_at": "2026-10-18T11:00:04.000Z"
+                    "updated_at": "2026-10-18T11:00:04.000Z",
+                    "risk_version": 3
                   },
                   "detail": {
                     "schema_version": "1",
@@ -4736,7 +4743,8 @@
                       "purchase": "allow"
                     },
                     "assessment_id": "asm_01JB3C4D5E6F7G8H9JKMNPQRST",
-                    "updated_at": "2026-10-18T11:00:10.000Z"
+                    "updated_at": "2026-10-18T11:00:10.000Z",
+                    "risk_version": 3
                   },
                   "detail": {
                     "schema_version": "1",
@@ -4851,7 +4859,8 @@
                       "purchase": "allow"
                     },
                     "assessment_id": "asm_01JB3C4D5E6F7G8H9JKMNPQRST",
-                    "updated_at": "2026-10-18T11:00:00.212Z"
+                    "updated_at": "2026-10-18T11:00:00.212Z",
+                    "risk_version": 3
                   },
                   "detail": {
                     "schema_version": "1",
@@ -4957,7 +4966,8 @@
                       "purchase": "allow"
                     },
                     "assessment_id": "asm_01JB3C4D5E6F7G8H9JKMNPQRST",
-                    "updated_at": "2026-10-18T11:00:04.000Z"
+                    "updated_at": "2026-10-18T11:00:04.000Z",
+                    "risk_version": 3
                   },
                   "detail": {
                     "schema_version": "1",
@@ -5249,7 +5259,8 @@
                       "purchase": "allow"
                     },
                     "assessment_id": "asm_01JA1Y7J5P3T6V8WABCDEFGHJK",
-                    "updated_at": "2026-10-12T16:20:03.000Z"
+                    "updated_at": "2026-10-12T16:20:03.000Z",
+                    "risk_version": 3
                   },
                   "detail": {
                     "schema_version": "1",
@@ -5369,7 +5380,8 @@
                       "purchase": "allow"
                     },
                     "assessment_id": "asm_01JB3C4D5E6F7G8H9JKMNPQRST",
-                    "updated_at": "2026-10-18T11:00:04.000Z"
+                    "updated_at": "2026-10-18T11:00:04.000Z",
+                    "risk_version": 3
                   },
                   "detail": {
                     "schema_version": "1",
@@ -5506,7 +5518,8 @@
                       "purchase": "allow"
                     },
                     "assessment_id": "asm_01JB3C4D5E6F7G8H9JKMNPQRST",
-                    "updated_at": "2026-10-18T11:00:10.000Z"
+                    "updated_at": "2026-10-18T11:00:10.000Z",
+                    "risk_version": 3
                   },
                   "detail": {
                     "schema_version": "1",
@@ -5670,7 +5683,8 @@
                       "purchase": "allow"
                     },
                     "assessment_id": "asm_01JA1Y7J5P3T6V8WABCDEFGHJK",
-                    "updated_at": "2026-10-12T16:20:03.000Z"
+                    "updated_at": "2026-10-12T16:20:03.000Z",
+                    "risk_version": 3
                   },
                   "detail": {
                     "schema_version": "1",
@@ -5739,7 +5753,8 @@
                       "purchase": "allow"
                     },
                     "assessment_id": "asm_01JB3C4D5E6F7G8H9JKMNPQRST",
-                    "updated_at": "2026-10-18T11:00:00.212Z"
+                    "updated_at": "2026-10-18T11:00:00.212Z",
+                    "risk_version": 3
                   },
                   "detail": {
                     "schema_version": "1",
@@ -5845,7 +5860,8 @@
                       "purchase": "allow"
                     },
                     "assessment_id": "asm_01JB3C4D5E6F7G8H9JKMNPQRST",
-                    "updated_at": "2026-10-18T11:00:04.000Z"
+                    "updated_at": "2026-10-18T11:00:04.000Z",
+                    "risk_version": 3
                   },
                   "detail": {
                     "schema_version": "1",
@@ -7174,7 +7190,8 @@
                     "purchase": "step_up"
                   },
                   "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
-                  "updated_at": "2026-10-14T09:00:00.412Z"
+                  "updated_at": "2026-10-14T09:00:00.412Z",
+                  "risk_version": 3
                 }
               },
               "blocked": {
@@ -7207,7 +7224,8 @@
                     "purchase": "block"
                   },
                   "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
-                  "updated_at": "2026-10-14T09:00:00.412Z"
+                  "updated_at": "2026-10-14T09:00:00.412Z",
+                  "risk_version": 3
                 }
               }
             }

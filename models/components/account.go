@@ -18,6 +18,8 @@ type Account struct {
 	AssessmentID string `json:"assessment_id"`
 	// updated_at of that assessment's latest revision.
 	UpdatedAt string `json:"updated_at"`
+	// The version of the account's current risk. It increases every time the account's current risk or decisions_by_flow changes, and does not decrease. Of two copies of an account, the one with the higher risk_version is newer. account.risk_changed carries the risk_version that its change made.
+	RiskVersion int64 `json:"risk_version"`
 }
 
 func (a Account) MarshalJSON() ([]byte, error) {
@@ -68,4 +70,11 @@ func (a *Account) GetUpdatedAt() string {
 		return ""
 	}
 	return a.UpdatedAt
+}
+
+func (a *Account) GetRiskVersion() int64 {
+	if a == nil {
+		return 0
+	}
+	return a.RiskVersion
 }

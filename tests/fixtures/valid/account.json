@@ -23,5 +23,6 @@
     "purchase": "step_up"
   },
   "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
-  "updated_at": "2026-10-14T09:00:00.412Z"
+  "updated_at": "2026-10-14T09:00:00.412Z",
+  "risk_version": 3
 }

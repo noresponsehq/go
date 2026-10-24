@@ -28,7 +28,8 @@
         "purchase": "review"
       },
       "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
-      "updated_at": "2026-10-23T09:00:04.812Z"
+      "updated_at": "2026-10-23T09:00:04.812Z",
+      "risk_version": 3
     }
   }
 }
