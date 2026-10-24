@@ -1,0 +1,65 @@
+{
+  "items": [
+    {
+      "schema_version": "1",
+      "id": "acct_7f3a9c",
+      "risk": {
+        "score": 35,
+        "decision": "step_up",
+        "reasons": [
+          {
+            "code": "new_email",
+            "weight": 20,
+            "identifier": "email"
+          },
+          {
+            "code": "proxy_ip",
+            "weight": 15,
+            "identifier": "ip"
+          }
+        ]
+      },
+      "decisions_by_flow": {
+        "account_creation": "step_up",
+        "login": "step_up",
+        "purchase": "step_up"
+      },
+      "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+      "updated_at": "2026-10-14T09:00:00.412Z",
+      "risk_version": 3
+    },
+    {
+      "schema_version": "1",
+      "id": "acct_2b81d0",
+      "risk": {
+        "score": 90,
+        "decision": "block",
+        "reasons": [
+          {
+            "code": "disposable_email",
+            "weight": 40,
+            "identifier": "email"
+          },
+          {
+            "code": "proxy_ip",
+            "weight": 30,
+            "identifier": "ip"
+          },
+          {
+            "code": "many_recent_accounts",
+            "weight": 20
+          }
+        ]
+      },
+      "decisions_by_flow": {
+        "account_creation": "block",
+        "login": "block",
+        "purchase": "block"
+      },
+      "assessment_id": "asm_01JA2ZB4C5D6E7F8G9HJKMNPQR",
+      "updated_at": "2026-10-14T09:02:11.087Z",
+      "risk_version": 1
+    }
+  ],
+  "next_cursor": "eyJ4IjoxMDQyLCJhIjoiOWYyYyJ9"
+}

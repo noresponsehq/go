@@ -88,6 +88,45 @@
       "expect": "valid"
     },
     {
+      "file": "valid/account-list.json",
+      "schema": "account-list.schema.json",
+      "expect": "valid",
+      "why": "NOR-457 changed accounts, oldest change first, each as GET /v1/accounts/{account_id} answers it"
+    },
+    {
+      "file": "valid/account-list-empty.json",
+      "schema": "account-list.schema.json",
+      "expect": "valid",
+      "why": "NOR-457 nothing changed after changed_since: empty items and the cursor that was sent"
+    },
+    {
+      "file": "valid/enforcement-request.json",
+      "schema": "enforcement-request.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/enforcement-request-failed.json",
+      "schema": "enforcement-request.schema.json",
+      "expect": "valid",
+      "why": "NOR-457 error_code travels with status failed"
+    },
+    {
+      "file": "valid/enforcement.json",
+      "schema": "enforcement.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/enforcement-failed.json",
+      "schema": "enforcement.schema.json",
+      "expect": "valid",
+      "why": "NOR-457 a failed record, which a later applied report replaces"
+    },
+    {
+      "file": "valid/problem-risk-version-ahead.json",
+      "schema": "problem-details.schema.json",
+      "expect": "valid"
+    },
+    {
       "file": "valid/assessment-deletion.json",
       "schema": "assessment-deletion.schema.json",
       "expect": "valid"
@@ -2348,6 +2387,54 @@
         ]
       ],
       "why": "NOR-364 a deletion receipt always says deleted"
+    },
+    {
+      "file": "invalid/enforcement-request-applied-error-code.json",
+      "schema": "enforcement-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "not",
+          ""
+        ]
+      ],
+      "why": "NOR-457 error_code only with status failed"
+    },
+    {
+      "file": "invalid/enforcement-request-unknown-action.json",
+      "schema": "enforcement-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "enum",
+          "/action"
+        ]
+      ],
+      "why": "NOR-457 an action is one of the listed actions"
+    },
+    {
+      "file": "invalid/enforcement-request-zero-risk-version.json",
+      "schema": "enforcement-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "minimum",
+          "/risk_version"
+        ]
+      ],
+      "why": "NOR-457 risk_version starts at 1"
+    },
+    {
+      "file": "invalid/account-list-no-cursor.json",
+      "schema": "account-list.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "required",
+          ""
+        ]
+      ],
+      "why": "NOR-457 next_cursor is on every page"
     },
     {
       "file": "invalid/assessment-deletion-no-account.json",

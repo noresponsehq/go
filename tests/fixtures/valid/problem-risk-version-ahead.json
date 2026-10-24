@@ -1,0 +1,8 @@
+{
+  "type": "https://docs.noresponse.org/problems/risk-version-ahead",
+  "title": "Risk version ahead",
+  "status": 409,
+  "detail": "risk_version is newer than the account's current risk_version.",
+  "code": "risk_version_ahead",
+  "request_id": "0123456789abcdef0123456789abcdef"
+}

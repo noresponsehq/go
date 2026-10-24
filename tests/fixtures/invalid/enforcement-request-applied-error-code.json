@@ -1,0 +1,9 @@
+{
+  "risk_version": 3,
+  "flow": "account_creation",
+  "action": "restrict",
+  "state_before": "provisional",
+  "status": "applied",
+  "provider": "clerk",
+  "error_code": "clerk.rate_limited"
+}

@@ -1,0 +1,8 @@
+{
+  "risk_version": 3,
+  "flow": "account_creation",
+  "action": "ban",
+  "state_before": "active",
+  "status": "applied",
+  "provider": "workos"
+}

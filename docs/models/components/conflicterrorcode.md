@@ -25,3 +25,4 @@ custom := components.ConflictErrorCode("custom_value")
 | `ConflictErrorCodeWebhookEndpointLimitReached` | webhook_endpoint_limit_reached                 |
 | `ConflictErrorCodeWebhookEndpointUnverified`   | webhook_endpoint_unverified                    |
 | `ConflictErrorCodeTooManyIntegrations`         | too_many_integrations                          |
+| `ConflictErrorCodeRiskVersionAhead`            | risk_version_ahead                             |

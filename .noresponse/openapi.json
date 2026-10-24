@@ -405,6 +405,82 @@
         }
       }
     },
+    "/v1/accounts": {
+      "get": {
+        "operationId": "listAccounts",
+        "x-noresponse-group": "accounts",
+        "x-noresponse-name-override": "listChanged",
+        "tags": [
+          "accounts"
+        ],
+        "summary": "Poll the accounts whose risk changed.",
+        "description": "Your accounts whose risk changed, oldest change first, each as accounts.get answers it. Every page carries next_cursor: pass it back as changed_since to read the changes made after that page; without changed_since the list starts from the oldest change. When nothing changed, items is empty and next_cursor is the cursor you sent, so poll by calling again with the latest next_cursor. An account appears again each time its risk changes, with a higher risk_version; keep the copy with the highest. unenforced=true lists only accounts with a decision other than allow for some flow and no applied enforcement at their current risk_version; such a page can hold fewer than limit items, or none, while later changes exist, so keep polling with next_cursor. Requires the history scope. Read-only and safe to retry. A tampered or foreign cursor answers 400 invalid_cursor.",
+        "parameters": [
+          {
+            "name": "changed_since",
+            "in": "query",
+            "required": false,
+            "description": "next_cursor from an earlier page, unchanged. Absent, the list starts from the oldest change.",
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "Most accounts per page.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 50
+            }
+          },
+          {
+            "name": "unenforced",
+            "in": "query",
+            "required": false,
+            "description": "true lists only accounts with a decision other than allow for some flow and no applied enforcement at their current risk_version.",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/AccountList"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidAccountRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/WorkspaceForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/IdempotencyConflict"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
     "/v1/accounts/{account_id}": {
       "get": {
         "operationId": "getAccount",
@@ -583,6 +659,87 @@
             "nextCursor": "$.next_cursor"
           }
         }
+      }
+    },
+    "/v1/accounts/{account_id}/enforcements": {
+      "post": {
+        "operationId": "recordEnforcement",
+        "x-noresponse-group": "accounts",
+        "x-noresponse-name-override": "recordEnforcement",
+        "tags": [
+          "accounts"
+        ],
+        "summary": "Record what you did to an account in your identity provider.",
+        "description": "Records what you did to the account in your identity provider for one flow's decision at one risk_version: the action (or none), the account's state before it, the provider and whether it was applied or failed. It is your action, not an outcome, and it leaves the account's risk unchanged. A record is kept once per account, risk_version, flow and action: the first report answers 201, and a repeat answers 200 with the stored record unchanged, so retries are safe without an Idempotency-Key. An applied report after a failed one replaces the failed record, keeping its id and created_at, and answers 201. A risk_version older than the account's current one is accepted and stored, but only an applied record at the current risk_version takes the account out of listChanged with unenforced=true; a newer one answers 409 risk_version_ahead. An account with no current risk answers 404 not_found. error_code is allowed only with status failed. Requires the history scope.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/AccountId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EnforcementRequest"
+              },
+              "examples": {
+                "failed": {
+                  "value": {
+                    "risk_version": 3,
+                    "flow": "account_creation",
+                    "action": "restrict",
+                    "state_before": "provisional",
+                    "status": "failed",
+                    "provider": "clerk",
+                    "error_code": "clerk.rate_limited"
+                  }
+                },
+                "applied": {
+                  "value": {
+                    "risk_version": 3,
+                    "flow": "account_creation",
+                    "action": "restrict",
+                    "state_before": "provisional",
+                    "status": "applied",
+                    "provider": "clerk"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/EnforcementFound"
+          },
+          "201": {
+            "$ref": "#/components/responses/EnforcementRecorded"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidEnforcement"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/WorkspaceForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/AccountNotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/RiskVersionAhead"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
       }
     },
     "/v1/key_usage/batches": {
@@ -1569,6 +1726,32 @@
             "type": "string",
             "description": "When the erasure took effect. An assessment of the account begun before this time is refused or stopped.",
             "example": "2026-10-23T09:00:00.000Z"
+          }
+        }
+      },
+      "AccountList": {
+        "description": "Body of the 200 answer to GET /v1/accounts: the calling workspace's accounts whose risk changed after changed_since, in the environment of the calling key, oldest change first. An account is listed when its risk_version advanced and it has a current risk, and each item is the account exactly as GET /v1/accounts/{account_id} answers it. An account appears once per page, at its latest change; when its risk changes again later, it appears again on a later page with the newer risk_version. next_cursor is always present: pass it back as changed_since to read the changes made after this page.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "items",
+          "next_cursor"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+              "$ref": "#/components/schemas/Account"
+            }
+          },
+          "next_cursor": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256,
+            "pattern": "^[A-Za-z0-9_-]+$",
+            "description": "Opaque cursor after the last change this page read, bound to the workspace and the environment of the calling key. Pass it back unchanged as changed_since. It is present on every page, the last one included: when nothing changed after changed_since it is the cursor that was sent, so a poller keeps calling with the latest next_cursor. A tampered or foreign cursor answers 400 invalid_cursor. Consumers do not parse it.",
+            "example": "eyJ4IjoxMDQyLCJhIjoiOWYyYyJ9"
           }
         }
       },
@@ -2863,7 +3046,8 @@
           "key_rotation_in_progress",
           "webhook_endpoint_limit_reached",
           "webhook_endpoint_unverified",
-          "too_many_integrations"
+          "too_many_integrations",
+          "risk_version_ahead"
         ],
         "description": "Machine codes an HTTP 409 answer can carry."
       },
@@ -2970,6 +3154,153 @@
             "$ref": "#/components/schemas/EndpointVerification"
           }
         }
+      },
+      "Enforcement": {
+        "description": "The answer of POST /v1/accounts/{account_id}/enforcements: one enforcement of one of the calling workspace's accounts, kept once per (account, risk_version, flow, action). The first report answers 201 with the new record. A repeat answers 200 with the record as first stored, whatever the repeat's state_before, status, provider or error_code. The one exception is a stored failed record followed by an applied report: the record becomes applied, keeps its id and created_at, takes the applied report's state_before and provider, drops error_code and answers 201, so a successful retry after a failure is recorded. Only an applied record at the account's current risk_version takes the account out of GET /v1/accounts?unenforced=true.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "account_id",
+          "risk_version",
+          "flow",
+          "action",
+          "state_before",
+          "status",
+          "provider",
+          "created_at"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^enf_[0-9A-HJKMNP-TV-Z]{26}$",
+            "description": "Opaque, server-assigned id of one recorded enforcement: 'enf_' and 26 Crockford base32 characters. Unique within the workspace.",
+            "example": "enf_01JA2ZF5N6P7Q8R9S0T1V2W3X4"
+          },
+          "account_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:|-]{0,127}$",
+            "description": "The account_id of the request path.",
+            "example": "acct_7f3a9c"
+          },
+          "risk_version": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "The account's risk_version the workspace acted on. It can be older than the account's current risk_version: such a record is kept and does not count for unenforced."
+          },
+          "flow": {
+            "$ref": "#/components/schemas/Flow",
+            "description": "The flow whose decision the workspace acted on."
+          },
+          "action": {
+            "$ref": "#/components/schemas/EnforcementAction"
+          },
+          "state_before": {
+            "$ref": "#/components/schemas/EnforcementState"
+          },
+          "status": {
+            "$ref": "#/components/schemas/EnforcementStatus"
+          },
+          "provider": {
+            "$ref": "#/components/schemas/EnforcementProvider"
+          },
+          "error_code": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[a-z0-9_.-]+$",
+            "description": "Why a failed action failed, as a short code of the workspace's choosing (lower-case letters, digits, '_', '.' and '-'), such as the identity provider's error code. Allowed only with status failed: with status applied it answers 400 invalid_request. Keep personal data out of it.",
+            "example": "clerk.rate_limited"
+          },
+          "created_at": {
+            "type": "string",
+            "description": "When NoResponse first recorded this enforcement, in UTC. A failed record that becomes applied keeps it.",
+            "example": "2026-10-14T09:00:02.000Z"
+          }
+        }
+      },
+      "EnforcementAction": {
+        "enum": [
+          "revoke_sessions",
+          "restrict",
+          "unrestrict",
+          "fail_onboarding",
+          "reject_activation",
+          "none"
+        ],
+        "description": "What the workspace did in its identity provider: revoke_sessions (signed the account out everywhere), restrict (limited what the account can do), unrestrict (lifted an earlier restriction), fail_onboarding (stopped an account that was still onboarding), reject_activation (refused to activate a provisional account) or none (decided to take no action)."
+      },
+      "EnforcementProvider": {
+        "enum": [
+          "clerk",
+          "workos",
+          "auth0",
+          "custom"
+        ],
+        "description": "The identity provider the action ran in; custom for the workspace's own user store."
+      },
+      "EnforcementRequest": {
+        "description": "POST /v1/accounts/{account_id}/enforcements body: what the workspace did to the account in its identity provider after reading the account's risk at risk_version. The account is named by the path and the workspace by the API key, so neither is a body member. An enforcement is the workspace's own action, not an outcome: what the workspace later learned about an assessment goes to POST /v1/assessments/{assessment_id}/outcomes. The record's key is (account, risk_version, flow, action), so a retry of the same report is safe and needs no Idempotency-Key.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "risk_version",
+          "flow",
+          "action",
+          "state_before",
+          "status",
+          "provider"
+        ],
+        "properties": {
+          "risk_version": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "The account's risk_version the workspace acted on, as read from GET /v1/accounts/{account_id}, GET /v1/accounts, an assessment answer or account.risk_changed. A version older than the account's current one is accepted and stored; a version newer than the current one answers 409 risk_version_ahead."
+          },
+          "flow": {
+            "$ref": "#/components/schemas/Flow",
+            "description": "The flow whose decision (decisions_by_flow) the workspace acted on."
+          },
+          "action": {
+            "$ref": "#/components/schemas/EnforcementAction"
+          },
+          "state_before": {
+            "$ref": "#/components/schemas/EnforcementState"
+          },
+          "status": {
+            "$ref": "#/components/schemas/EnforcementStatus"
+          },
+          "provider": {
+            "$ref": "#/components/schemas/EnforcementProvider"
+          },
+          "error_code": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[a-z0-9_.-]+$",
+            "description": "Why a failed action failed, as a short code of the workspace's choosing (lower-case letters, digits, '_', '.' and '-'), such as the identity provider's error code. Allowed only with status failed: with status applied it answers 400 invalid_request. Keep personal data out of it.",
+            "example": "clerk.rate_limited"
+          }
+        }
+      },
+      "EnforcementState": {
+        "enum": [
+          "onboarding",
+          "provisional",
+          "active",
+          "restricted",
+          "rejected"
+        ],
+        "description": "The account's state in the workspace's identity provider just before the action: onboarding, provisional (created, not yet activated), active, restricted or rejected."
+      },
+      "EnforcementStatus": {
+        "enum": [
+          "applied",
+          "failed"
+        ],
+        "description": "applied when the identity provider accepted the action, failed when it refused it or could not be reached. Only applied counts as enforced."
       },
       "Environment": {
         "enum": [
@@ -7800,6 +8131,252 @@
           "application/problem+json": {
             "schema": {
               "$ref": "#/components/schemas/NotFoundError"
+            }
+          }
+        }
+      },
+      "AccountList": {
+        "description": "One page of the accounts whose risk changed after changed_since, oldest change first, with the cursor to poll from next.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/AccountList"
+            },
+            "examples": {
+              "page": {
+                "value": {
+                  "items": [
+                    {
+                      "schema_version": "1",
+                      "id": "acct_7f3a9c",
+                      "risk": {
+                        "score": 35,
+                        "decision": "step_up",
+                        "reasons": [
+                          {
+                            "code": "new_email",
+                            "weight": 20,
+                            "identifier": "email"
+                          },
+                          {
+                            "code": "proxy_ip",
+                            "weight": 15,
+                            "identifier": "ip"
+                          }
+                        ]
+                      },
+                      "decisions_by_flow": {
+                        "account_creation": "step_up",
+                        "login": "step_up",
+                        "purchase": "step_up"
+                      },
+                      "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+                      "updated_at": "2026-10-14T09:00:00.412Z",
+                      "risk_version": 3
+                    },
+                    {
+                      "schema_version": "1",
+                      "id": "acct_2b81d0",
+                      "risk": {
+                        "score": 90,
+                        "decision": "block",
+                        "reasons": [
+                          {
+                            "code": "disposable_email",
+                            "weight": 40,
+                            "identifier": "email"
+                          },
+                          {
+                            "code": "proxy_ip",
+                            "weight": 30,
+                            "identifier": "ip"
+                          },
+                          {
+                            "code": "many_recent_accounts",
+                            "weight": 20
+                          }
+                        ]
+                      },
+                      "decisions_by_flow": {
+                        "account_creation": "block",
+                        "login": "block",
+                        "purchase": "block"
+                      },
+                      "assessment_id": "asm_01JA2ZB4C5D6E7F8G9HJKMNPQR",
+                      "updated_at": "2026-10-14T09:02:11.087Z",
+                      "risk_version": 1
+                    }
+                  ],
+                  "next_cursor": "eyJ4IjoxMDQyLCJhIjoiOWYyYyJ9"
+                }
+              },
+              "caughtUp": {
+                "value": {
+                  "items": [],
+                  "next_cursor": "eyJ4IjoxMDQyLCJhIjoiOWYyYyJ9"
+                }
+              }
+            }
+          }
+        }
+      },
+      "EnforcementRecorded": {
+        "description": "The enforcement was recorded: the first report of its account, risk_version, flow and action, or an applied report that replaced a failed record.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Enforcement"
+            },
+            "examples": {
+              "applied": {
+                "value": {
+                  "id": "enf_01JA2ZF5N6P7Q8R9S0T1V2W3X4",
+                  "account_id": "acct_7f3a9c",
+                  "risk_version": 3,
+                  "flow": "account_creation",
+                  "action": "restrict",
+                  "state_before": "provisional",
+                  "status": "applied",
+                  "provider": "clerk",
+                  "created_at": "2026-10-14T09:00:02.000Z"
+                }
+              }
+            }
+          }
+        }
+      },
+      "EnforcementFound": {
+        "description": "The enforcement was already recorded: the record as first stored. The report did not change it.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Enforcement"
+            },
+            "examples": {
+              "failed": {
+                "value": {
+                  "id": "enf_01JA2ZF5N6P7Q8R9S0T1V2W3X4",
+                  "account_id": "acct_7f3a9c",
+                  "risk_version": 3,
+                  "flow": "account_creation",
+                  "action": "restrict",
+                  "state_before": "provisional",
+                  "status": "failed",
+                  "provider": "clerk",
+                  "error_code": "clerk.rate_limited",
+                  "created_at": "2026-10-14T09:00:02.000Z"
+                }
+              }
+            }
+          }
+        }
+      },
+      "InvalidEnforcement": {
+        "description": "account_id does not match its shape, a query parameter was sent, or the body is not JSON or does not match the enforcement request schema (an unknown member, a value outside its set, a risk_version below 1, or error_code with status applied). invalid_params names the offending fields without their values.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/BadRequestError"
+            }
+          }
+        }
+      },
+      "RiskVersionAhead": {
+        "description": "risk_version is newer than the account's current risk_version, so it names a risk NoResponse has not served. Read the account again and report the version you acted on.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/ConflictError"
             }
           }
         }

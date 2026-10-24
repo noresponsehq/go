@@ -1,0 +1,8 @@
+{
+  "risk_version": 0,
+  "flow": "login",
+  "action": "revoke_sessions",
+  "state_before": "active",
+  "status": "applied",
+  "provider": "auth0"
+}

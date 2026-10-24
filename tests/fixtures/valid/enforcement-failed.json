@@ -1,0 +1,12 @@
+{
+  "id": "enf_01JA2ZF5N6P7Q8R9S0T1V2W3X4",
+  "account_id": "acct_7f3a9c",
+  "risk_version": 3,
+  "flow": "account_creation",
+  "action": "restrict",
+  "state_before": "provisional",
+  "status": "failed",
+  "provider": "clerk",
+  "error_code": "clerk.rate_limited",
+  "created_at": "2026-10-14T09:00:02.000Z"
+}
