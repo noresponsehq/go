@@ -1,7 +1,7 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v6/internal/utils"
+	"github.com/noresponsehq/go/v7/internal/utils"
 )
 
 // WorkspaceDeleted - Terminal for the receiving endpoint's environment: its workspace was deleted. Every key of the environment already answers 401, its assessments and accounts are gone, and no further event follows. The workspace id is not reused, so a later event naming it cannot arrive.

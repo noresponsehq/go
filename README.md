@@ -9,7 +9,7 @@ Call it from your server only. The API key must never reach a browser or an app.
 ## Install
 
 ```sh
-go get github.com/noresponsehq/go/v6
+go get github.com/noresponsehq/go/v7
 ```
 
 Go 1.24 or later.
@@ -25,8 +25,8 @@ import (
 	"log"
 	"os"
 
-	noresponse "github.com/noresponsehq/go/v6"
-	"github.com/noresponsehq/go/v6/models/components"
+	noresponse "github.com/noresponsehq/go/v7"
+	"github.com/noresponsehq/go/v7/models/components"
 )
 
 func main() {
@@ -108,7 +108,7 @@ case err != nil:
 }
 ```
 
-The typed errors are `BadRequestError` (400), `AuthenticationError` (401), `PermissionDeniedError` (403), `NotFoundError` (404), `ConflictError` (409) and `RateLimitError` (429), all in `github.com/noresponsehq/go/v6/models/apierrors`. Any other status is an `*apierrors.APIStatusError`.
+The typed errors are `BadRequestError` (400), `AuthenticationError` (401), `PermissionDeniedError` (403), `NotFoundError` (404), `ConflictError` (409) and `RateLimitError` (429), all in `github.com/noresponsehq/go/v7/models/apierrors`. Any other status is an `*apierrors.APIStatusError`.
 
 ## Retries and timeouts
 
@@ -214,16 +214,17 @@ Deliveries arrive at least once and unordered. Deduplicate on `event.ID` and kee
 
 ### Late results
 
-An assessment can rise after the account creation was allowed. `HandleLateResult` verifies the `assessment.updated` delivery with `ConstructEvent`, applies a policy to `Account.Risk.Decision` (default: revoke sessions on `review` and `block`) and acts through your auth provider:
+A later decision reaches you as `account.risk_changed`. The event only wakes your handler: `HandleRiskChange` verifies it with `ConstructEvent`, reads the account's current risk with `Accounts.Get` (the event's own decision is ignored), asks your `GetAccountState` where the account is in your flow, and acts through your identity provider:
 
 ```go
-provider := &noresponse.ClerkActions{SecretKey: os.Getenv("CLERK_SECRET_KEY")} // or WorkOSActions, Auth0Actions
-result, err := noresponse.HandleLateResult(r.Context(), payload, r.Header, secrets, provider, nil)
+provider, err := noresponse.IdentityProvider("clerk", noresponse.IdentityProviderOptions{Token: os.Getenv("CLERK_SECRET_KEY")}) // or "workos", "auth0" with Domain
+result, err := noresponse.HandleRiskChange(r.Context(), client, payload, r.Header, secrets, &noresponse.EnforcementOptions{
+	Provider:        provider,
+	GetAccountState: accountState, // func(ctx, components.Account) (*noresponse.AccountStateAnswer, error)
+})
 ```
 
-`LateResultOptions` sets `Policy` (account decision to `LateResultNone`, `LateResultRevokeSessions` or `LateResultBan`), `ResolveUserID` (account id to provider user id, with the context; an error it returns fails the delivery so it is retried) and `Webhook` options. A test event from `SendTestEvent` acts on nothing. An `account.risk_changed` event acts on its new `login` decision when that decision changed; one that moved only another flow's decision acts on nothing. A refusal from the provider is a `*ProviderActionError`; answer 5xx so the delivery is retried. A provider 404 means the user or session is already gone and counts as done, so a repeated delivery is safe. WorkOS has no block, so its ban deletes the user permanently.
-
-If your app has its own login, `&noresponse.LogOnlyActions{}` logs what it would revoke or ban (an Info record on `slog.Default()`, or set `Logger`) and calls nothing. Use it to try the handler, then write your own `LateResultProvider`: `Name()`, `RevokeSessions(ctx, userID)` and `Ban(ctx, userID)`.
+An `onboarding` account fails onboarding and a `provisional` one is refused activation on an `account_creation` decision of `review` or `block`; an `active` account has its sessions revoked on a `login` decision of `review` and is restricted and signed out on `block`. A `restricted` account is unrestricted when its `login` decision is `allow` again only if you set `Flows: map[components.Flow]noresponse.FlowPolicy{components.FlowLogin: {Reinstate: true}}`. Nothing deletes a user: Clerk bans (undone by unban), Auth0 sets `blocked`, and WorkOS, which has no block, writes `noresponse_state` to the user's metadata for your sign-in to check and revokes every session. Every action, or `none`, is recorded with `Accounts.RecordEnforcement` at the `RiskVersion` read; store `result.RiskVersion` and return it as `EnforcedRiskVersion` so a replayed or older event changes nothing. A refusal is recorded as failed and returned as `*ProviderActionError`; answer 5xx so the delivery is retried. `EnforceAccount` enforces an account from `Accounts.ListChanged` when catching up, and `CustomProvider` runs your own functions for your own user store.
 
 ## Other options
 

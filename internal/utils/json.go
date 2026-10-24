@@ -12,8 +12,8 @@ import (
 	"time"
 	"unsafe"
 
-	"github.com/noresponsehq/go/v6/optionalnullable"
-	"github.com/noresponsehq/go/v6/types"
+	"github.com/noresponsehq/go/v7/optionalnullable"
+	"github.com/noresponsehq/go/v7/types"
 )
 
 func MarshalJSON(v interface{}, tag reflect.StructTag, topLevel bool) ([]byte, error) {

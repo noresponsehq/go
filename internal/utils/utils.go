@@ -15,7 +15,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/noresponsehq/go/v6/optionalnullable"
+	"github.com/noresponsehq/go/v7/optionalnullable"
 )
 
 const (

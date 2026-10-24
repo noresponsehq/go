@@ -8,8 +8,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/noresponsehq/go/v6/optionalnullable"
-	"github.com/noresponsehq/go/v6/types"
+	"github.com/noresponsehq/go/v7/optionalnullable"
+	"github.com/noresponsehq/go/v7/types"
 )
 
 func GenerateURL(_ context.Context, serverURL, path string, pathParams interface{}, globals interface{}) (string, error) {

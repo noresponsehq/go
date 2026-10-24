@@ -1,7 +1,7 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v6/internal/utils"
+	"github.com/noresponsehq/go/v7/internal/utils"
 )
 
 // IncompleteSource - One evidence lane that did not settle, and why. It names a lane, not a source. A lane that missed its deadline is timed_out rather than not_found.

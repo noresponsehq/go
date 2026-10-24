@@ -12,8 +12,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/noresponsehq/go/v6/optionalnullable"
-	"github.com/noresponsehq/go/v6/types"
+	"github.com/noresponsehq/go/v7/optionalnullable"
+	"github.com/noresponsehq/go/v7/types"
 )
 
 func PopulateQueryParams(_ context.Context, req *http.Request, queryParams interface{}, globals interface{}, allowEmptyValue map[string]struct{}) error {

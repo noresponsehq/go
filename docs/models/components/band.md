@@ -6,7 +6,7 @@ low 0-29, medium 30-59, high 60-84, critical 85-100.
 
 ```go
 import (
-	"github.com/noresponsehq/go/v6/models/components"
+	"github.com/noresponsehq/go/v7/models/components"
 )
 
 value := components.BandLow

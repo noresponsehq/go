@@ -6,7 +6,7 @@ The identity provider the action ran in; custom for the workspace's own user sto
 
 ```go
 import (
-	"github.com/noresponsehq/go/v6/models/components"
+	"github.com/noresponsehq/go/v7/models/components"
 )
 
 value := components.EnforcementProviderClerk

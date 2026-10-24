@@ -5,8 +5,8 @@ management:
   docVersion: "1"
   speakeasyVersion: internal
   generationVersion: internal
-  releaseVersion: 6.0.1
-  configChecksum: 79cdd50b0f11330d561950abe54e1642
+  releaseVersion: 7.0.0
+  configChecksum: 9b21ab4fcf0300a02ecdbcf3bb3dfa6b
 features:
   go:
     additionalDependencies: 0.1.0
@@ -35,9 +35,9 @@ trackedFiles:
   .gitattributes:
     last_write_checksum: sha1:84b0115789fc3ea52e31df701d8a27f76077e29f
   accounts.go:
-    last_write_checksum: sha1:f42a1f5a265c3b2a86ff22fc3b1e66107dc1e6d7
+    last_write_checksum: sha1:dbbf42eb9810516a732664e4bf8f5cab12b54e8d
   assessments.go:
-    last_write_checksum: sha1:9d7ff8fde9eb215fe9448419ca2ac7a64fd99aa3
+    last_write_checksum: sha1:d73b7ce355be025774fa763f3c6fa90eee02c4a4
   docs/models/apierrors/authenticationerror.md:
     last_write_checksum: sha1:cc1099148053d8aa7c9a85961a3e111791495fe2
   docs/models/apierrors/badrequesterror.md:
@@ -53,7 +53,7 @@ trackedFiles:
   docs/models/components/account.md:
     last_write_checksum: sha1:26a662ab0a97fe7fd3527c1296705be9c281c2c9
   docs/models/components/accountdecision.md:
-    last_write_checksum: sha1:a0e427318c784324e35eb978808e7d9dbd8dba6a
+    last_write_checksum: sha1:7f62bf794cee5232f609e89022b7b96cba399982
   docs/models/components/accountdecisionsbyflow.md:
     last_write_checksum: sha1:467f424591f23db0c0538c2c4e610053d3ec9b0f
   docs/models/components/accountdeleted.md:
@@ -113,39 +113,39 @@ trackedFiles:
   docs/models/components/assessmentupdatedevent.md:
     last_write_checksum: sha1:40b5677295b6429d858d492d09c58feefed9b922
   docs/models/components/assurancelevel.md:
-    last_write_checksum: sha1:cba4a8b38f2d7e631d3edcddf07d38e83be60618
+    last_write_checksum: sha1:760019f557509e9d45e8a1d1bf3c25e5096f799c
   docs/models/components/authcontext.md:
     last_write_checksum: sha1:0c9b83664e9aaf4fd3d57b8be50b3863aca4afe3
   docs/models/components/authcontextmfa.md:
     last_write_checksum: sha1:0899c8e216ad7d017b50dc1d44d9436f8e388c5a
   docs/models/components/authenticationerrorcode.md:
-    last_write_checksum: sha1:af6675e4258d5133afc16d5db1d76e56362c5682
+    last_write_checksum: sha1:0c3569c6b07e112e5c7e3978a017ed810367aab3
   docs/models/components/badrequesterrorcode.md:
-    last_write_checksum: sha1:7d4305107283b742211c7fb72841455af1bf702a
+    last_write_checksum: sha1:51383bd6927f2c7e96bfe595aa1d3d1de4bdaaa4
   docs/models/components/band.md:
-    last_write_checksum: sha1:306e61e6cc2866f4140181db6487d5fb3f4a97ec
+    last_write_checksum: sha1:cb85dd93d97190d373bb855a00877f38a37c793d
   docs/models/components/breach.md:
     last_write_checksum: sha1:738af5ec9d1364369471b23e093a7bdd59bfbe05
   docs/models/components/breachexposed.md:
-    last_write_checksum: sha1:dfc03103c1655ac6631567b009d92710d97e7377
+    last_write_checksum: sha1:9c100680ae5b62f065e33923739e16b1341bebf2
   docs/models/components/breachkind.md:
-    last_write_checksum: sha1:8e44b0ed23d40a6c4e30d13cff1762a0946c06cc
+    last_write_checksum: sha1:09736030b01413987843fbd988048f0f718cf81a
   docs/models/components/breachselector.md:
-    last_write_checksum: sha1:051723d64ac8edf0f10a0652e11c5454effe93c5
+    last_write_checksum: sha1:e7e0095a85c23db998890c74c597dc5b4531f0d6
   docs/models/components/breachsummary.md:
     last_write_checksum: sha1:eb307d4de39524696a5d51b02c2eab1cb17ad0a8
   docs/models/components/confidence.md:
-    last_write_checksum: sha1:1353e2ff13caba85fc2e6baf58061d98529f5589
+    last_write_checksum: sha1:3e5d889b0d088daebf86fd06ec91521a8e6293c9
   docs/models/components/conflicterrorcode.md:
-    last_write_checksum: sha1:a74eb5bd40f59fbc978a7132a227a79356b4982d
+    last_write_checksum: sha1:b1fee102a4a98fa0092d6756625b53390389707d
   docs/models/components/consistency.md:
     last_write_checksum: sha1:5c7807299ea28f985a8d2e37ab2bb6aa0c892297
   docs/models/components/consistencyvalue.md:
-    last_write_checksum: sha1:f9d289d8cfca8cb3631ad2e5cd8888a42143e199
+    last_write_checksum: sha1:44e788fb87e5dededd860a2924c97e5cab68c97d
   docs/models/components/country.md:
-    last_write_checksum: sha1:08dd82245ddcd89e85f681e9ac66359bc3579424
+    last_write_checksum: sha1:cf9753820aaca78a16138c114db74334d9e2d13e
   docs/models/components/depth.md:
-    last_write_checksum: sha1:7b0a9f4c79797f012ef814e340eb49b6c0b9566c
+    last_write_checksum: sha1:aa39a95afc00f2c4a5e561df67f32d82f0e11a48
   docs/models/components/email.md:
     last_write_checksum: sha1:fa23b6c9fc6e2d5db9bf8991a2209112b7ceb840
   docs/models/components/emailunion.md:
@@ -157,41 +157,41 @@ trackedFiles:
   docs/models/components/enforcement.md:
     last_write_checksum: sha1:3b7f056aed0c7b8e7d2d89d243db18c523502c2e
   docs/models/components/enforcementaction.md:
-    last_write_checksum: sha1:893a2998122b086762cd4b6c1f89f130433e47ef
+    last_write_checksum: sha1:73278a366f6c3079f154ac62db618f54ac769a01
   docs/models/components/enforcementprovider.md:
-    last_write_checksum: sha1:a6993a3c7ebc077d92bc892f7760fa81c83677a3
+    last_write_checksum: sha1:bdecc64e22f535e45aef17447a2cd1bdfeb06f02
   docs/models/components/enforcementrequest.md:
     last_write_checksum: sha1:027435310a56e6100c4790a7f2690585b322cf9f
   docs/models/components/enforcementstate.md:
-    last_write_checksum: sha1:f3543d9abf745383506864807dcd91aa90f30a3b
+    last_write_checksum: sha1:cbe377153997e12e52b069dc15a0cd191f5f4d58
   docs/models/components/enforcementstatus.md:
-    last_write_checksum: sha1:a06f89d4e992ed22afc905c38b13203c379ff7f2
+    last_write_checksum: sha1:dad0b61cca8d638db00d0aa8ce41997019c4ed20
   docs/models/components/environment.md:
-    last_write_checksum: sha1:5e4372c7cf4589324a4f1f81bbf3ad65395ac402
+    last_write_checksum: sha1:2cda065b08e899ebcd81baf340732fce352bd5a4
   docs/models/components/failure.md:
-    last_write_checksum: sha1:ae834c74ee2f11f4516f11950d60cfe161689ce8
+    last_write_checksum: sha1:21a1e880a1575f20710c6702212d5fbc57277661
   docs/models/components/failurereason.md:
-    last_write_checksum: sha1:7390a82aac6beee120abbbafcf0b56bcb2172556
+    last_write_checksum: sha1:e7f21f392d9dc97185837c9ec08336716df8acf0
   docs/models/components/flow.md:
-    last_write_checksum: sha1:7d80d4c9d27abc429a35d376e2a8fa0f32b5e2f8
+    last_write_checksum: sha1:469f338b3a2263c47379cc374e98112d99ec6f11
   docs/models/components/freshness.md:
-    last_write_checksum: sha1:39e2feea796a2e024b6e1e75dd2faa3200946272
+    last_write_checksum: sha1:87f42ad01982160e0d9a2034be953a66ae405288
   docs/models/components/hookpoint.md:
-    last_write_checksum: sha1:b2a51bced353f1b363b9fb2df6847abe126a9e94
+    last_write_checksum: sha1:7b3000c6813bdced99875fb73c294c19fa6869fc
   docs/models/components/identifierkind.md:
-    last_write_checksum: sha1:99552fbfaf6aee5ef5d94b8cfeef4a9de187ad68
+    last_write_checksum: sha1:13a81a1005bca52d12335d972874c6ad54cf18dc
   docs/models/components/incompletereason.md:
-    last_write_checksum: sha1:aa18ec40f21449a9fb8e95986b29ecdaaaa01046
+    last_write_checksum: sha1:fc13bb20d46f63a60a1436b8e9aeebaf88f299da
   docs/models/components/incompletesource.md:
     last_write_checksum: sha1:5c23ef6f8ca80c5ad45dbb52b7fefd5970b09775
   docs/models/components/integration.md:
     last_write_checksum: sha1:4baa57f9f01d535ce97a3e5849c4e1746f017579
   docs/models/components/integrationhookpoint.md:
-    last_write_checksum: sha1:fcfd101bd500d6940b84a762ac3e004dbd718e2b
+    last_write_checksum: sha1:34c47bca09d04dd84e26e5b9cb2408c7dba6990a
   docs/models/components/integrationlist.md:
     last_write_checksum: sha1:f92a17c214e7ec096a99014b0d1daf33b3925f1c
   docs/models/components/integrationplatform.md:
-    last_write_checksum: sha1:1c1f33dbfc6e3333283ed7b0cb86f96fc025d620
+    last_write_checksum: sha1:be1d466965264930ffec2b0d98236941dc1eaef1
   docs/models/components/integrationrequest.md:
     last_write_checksum: sha1:5d44b805b79c542ed6b41c682e970fd60da99c1b
   docs/models/components/integrationrotationrequest.md:
@@ -199,7 +199,7 @@ trackedFiles:
   docs/models/components/ipsummary.md:
     last_write_checksum: sha1:1b6c3541efee523c622f823637a5d08eba5759cd
   docs/models/components/ipsummarytype.md:
-    last_write_checksum: sha1:87b9ca70e0625e13f9063084fd03abebc2395145
+    last_write_checksum: sha1:ac072495d9e112a77050725a4f63242011fff8cd
   docs/models/components/keyrotation.md:
     last_write_checksum: sha1:72798448bc5a4cfa8824ca217b1040e792b8eb46
   docs/models/components/keyrotationrequest.md:
@@ -211,9 +211,9 @@ trackedFiles:
   docs/models/components/keyusageevent.md:
     last_write_checksum: sha1:f9e88912cf2f142935d0145a9116f9bf21471ae2
   docs/models/components/lane.md:
-    last_write_checksum: sha1:999a47495d2ccb21f21701f84e13bcd339673ecd
+    last_write_checksum: sha1:d004e71e0881e3e8016009705fc521e942a6296a
   docs/models/components/linetype.md:
-    last_write_checksum: sha1:bbf9e538fe64e61081ed83318660313cfab96805
+    last_write_checksum: sha1:e0986524b896f71c7be0405af78f38c21de26ab1
   docs/models/components/location.md:
     last_write_checksum: sha1:4a6dfb928ed4e1796ea8cb33c1d7dc970920f004
   docs/models/components/locationunion.md:
@@ -223,33 +223,33 @@ trackedFiles:
   docs/models/components/namecandidateunion.md:
     last_write_checksum: sha1:78fba9171f88186e6405b0bc9ed4dda6ca4f6c1e
   docs/models/components/notfounderrorcode.md:
-    last_write_checksum: sha1:ad67252c7e946cef6f91f20a92aa5d2e55a15182
+    last_write_checksum: sha1:16403b4f11400ea9883117e71bff05de8cc139e3
   docs/models/components/outcome.md:
-    last_write_checksum: sha1:d2082bdba162e510dabf729a3f1ad08c36954e18
+    last_write_checksum: sha1:9f89ace0c9a795ec6e1966518fee48b01b550ed0
   docs/models/components/permissiondeniederrorcode.md:
-    last_write_checksum: sha1:6e4c2afac416a516aa16ec9c09c4973220cb3ae8
+    last_write_checksum: sha1:b8cbdc2bb802dd391fef4794241c4ce5e1d42a59
   docs/models/components/phoneenrichment.md:
     last_write_checksum: sha1:39468b93b79d6b65da40127ab23e800e764f4583
   docs/models/components/phoneenrichmentfields.md:
     last_write_checksum: sha1:028ff3e28a789487bba6c183eae5990545531b17
   docs/models/components/platform.md:
-    last_write_checksum: sha1:fe9359a7b22f62360376516135a6eb152ddfd180
+    last_write_checksum: sha1:e74d75227d3de2b3c23bd8535d5ab31c01bdfd2f
   docs/models/components/probleminvalidparam.md:
     last_write_checksum: sha1:36225d9fb9351f3082c65f75b9a409872572e977
   docs/models/components/ratelimiterrorcode.md:
-    last_write_checksum: sha1:273d14178d29ba399b6605b62e8e10fde60517b5
+    last_write_checksum: sha1:2d463f9d8741e0c6060ede59d06f70a2daa761ac
   docs/models/components/reasoncode.md:
-    last_write_checksum: sha1:97d595898b246d00ae9da70365e76e55f33fdccb
+    last_write_checksum: sha1:80be8195190e7473dc8075981295d2206046ef99
   docs/models/components/reasonidentifier.md:
-    last_write_checksum: sha1:398206586766ec54c569a284a9dbaadedcfd6ffd
+    last_write_checksum: sha1:a8a1c4c6d2207478b6afc347e6ee9adf8007b754
   docs/models/components/recommendation.md:
-    last_write_checksum: sha1:b2ca81bdd8dc30972c946cbcaaff4a2849f830d2
+    last_write_checksum: sha1:32818288814aeeaaa50445a2b99520c4b5805b55
   docs/models/components/responsemode.md:
-    last_write_checksum: sha1:bba1763af90232a7f56f2d26e199f25edb572429
+    last_write_checksum: sha1:f30128e6d206105c2142f8028481343962325f3b
   docs/models/components/risk.md:
     last_write_checksum: sha1:7758aabc3f49f98c72795d4fc9766c4ce82d1f79
   docs/models/components/riskconfidence.md:
-    last_write_checksum: sha1:f1758e5db8eb8fadb80f29aa914504999bb3ca76
+    last_write_checksum: sha1:bc4139fcba801dfa956ec4984a3ddc9215adeb37
   docs/models/components/riskcoverage.md:
     last_write_checksum: sha1:a73fcd18a59b6dc014368949ce3adfea007541cd
   docs/models/components/riskdetails.md:
@@ -269,13 +269,13 @@ trackedFiles:
   docs/models/components/risksummaryusername.md:
     last_write_checksum: sha1:1f4abe0194064151e1ac84fa7631d31c56d95ec0
   docs/models/components/scope.md:
-    last_write_checksum: sha1:77459dcc4b1bde8b12e0dbaa1325f47d9e810122
+    last_write_checksum: sha1:8fe7ca86dbbab74289ab6b9b6a292e7c8cf1b211
   docs/models/components/security.md:
     last_write_checksum: sha1:17e398b2abd89b7459f07c9ff820a7cc7c7b7bb7
   docs/models/components/signal.md:
     last_write_checksum: sha1:8e307fdc9f72264477a0553ad8528c96dc9dbd52
   docs/models/components/signaloutcome.md:
-    last_write_checksum: sha1:8ea8eadb4e972e1606d8080ebde29187ca70933e
+    last_write_checksum: sha1:658fa2a65d80ec00de1a0fcdfd47c4b827002001
   docs/models/components/signingkey.md:
     last_write_checksum: sha1:461affa39fd4916a11da98f958f302a686b3bea5
   docs/models/components/signingsecret.md:
@@ -285,17 +285,17 @@ trackedFiles:
   docs/models/components/socialprofileunion.md:
     last_write_checksum: sha1:6ba3cb18e7b65e4beb8803583a1787e373868aff
   docs/models/components/status.md:
-    last_write_checksum: sha1:77a8c00a2f0d86168bef37b22e60a2c057c632d9
+    last_write_checksum: sha1:7c60a18085687e9fadb4895cf938b13cbb29d44d
   docs/models/components/timezone.md:
     last_write_checksum: sha1:2c0a61da09d505a62515cfbf236b6f98616dc13a
   docs/models/components/timezoneunion.md:
     last_write_checksum: sha1:00a48465d7df2bf8695234bd1ab1e2100a9f492c
   docs/models/components/transport.md:
-    last_write_checksum: sha1:376dcf357bf1ee28ad41e5fe3d5a1851f89a78b0
+    last_write_checksum: sha1:28961dfb6b4e07609bfc4331d18cba22d8951ab0
   docs/models/components/webhookdeliveryattempt.md:
     last_write_checksum: sha1:8d0fc44aa45432df9ad84899bbcc4f550a1ec334
   docs/models/components/webhookdeliveryattemptstatus.md:
-    last_write_checksum: sha1:c3137cd104fa54a49d2fb6b52a27289a5fa02389
+    last_write_checksum: sha1:014f3aded7e6924e2ae130ca67777be6dab6d0d2
   docs/models/components/webhookdeliverylist.md:
     last_write_checksum: sha1:3453c69c747f59fe0be7f8fd39a45cc733c6491f
   docs/models/components/webhookendpoint.md:
@@ -311,7 +311,7 @@ trackedFiles:
   docs/models/components/webhookendpointrequest.md:
     last_write_checksum: sha1:8b523c6dfa427675ae24208adb972d451a7ffad0
   docs/models/components/webhookendpointstate.md:
-    last_write_checksum: sha1:ef070bd65f906e21219baff34ac17a1e57299fbe
+    last_write_checksum: sha1:757079bd4f58a03a2f10ba9967d8a78ebbdd32e5
   docs/models/components/webhookevent.md:
     last_write_checksum: sha1:ac7d6b8e76e6ee5247bcf7237ed41f4a5e3e7669
   docs/models/components/webhookkeyrotation.md:
@@ -327,7 +327,7 @@ trackedFiles:
   docs/models/components/webhooktestrequest.md:
     last_write_checksum: sha1:9d84b08a2a23d34d366c96d833391f7b3563fa35
   docs/models/components/webhooktestrequestevent.md:
-    last_write_checksum: sha1:6b0b8c9d85344a606b8ddc329fdb3d422216189d
+    last_write_checksum: sha1:bfd0156cdc40e970fa2892c516771c85794878ef
   docs/models/components/webhookverificationresponse.md:
     last_write_checksum: sha1:1ea3c6a224e8907bc1dcbfa60a953a81ad8d3b8a
   docs/models/components/website.md:
@@ -421,117 +421,117 @@ trackedFiles:
   docs/models/operations/sendwebhooktesteventresponse.md:
     last_write_checksum: sha1:8ceb9322a16104601a1ec8ae2e3e356177865923
   docs/sdks/accounts/README.md:
-    last_write_checksum: sha1:7bd3bdb6e81372b4307761336352b43cc17edccd
+    last_write_checksum: sha1:ab1718379078c8faa9d8a49f5e00c33d7bd61d64
   docs/sdks/assessments/README.md:
-    last_write_checksum: sha1:45cd91f17bb8bf686aa197c2508293ea1dbfd46b
+    last_write_checksum: sha1:54c0c9a68e647b6d7292090a8bcc324c03d3e06e
   docs/sdks/integrations/README.md:
-    last_write_checksum: sha1:3894feb1c3f296bea5ad1b5ed67557ccb371d359
+    last_write_checksum: sha1:108acc895f12c2d1ec205639089e8e7e8af9d095
   docs/sdks/keys/README.md:
-    last_write_checksum: sha1:a86f429402396800bf90fd37d963d619f248d81e
+    last_write_checksum: sha1:70b2b528fdfdf632b07a67c421cfe73505084989
   docs/sdks/keyusage/README.md:
-    last_write_checksum: sha1:2648c355b85330ed377712e1a624239ea4a57c89
+    last_write_checksum: sha1:6ec9bbeae80f1142d48db5c2a9c49dbb75913afe
   docs/sdks/webhookendpoints/README.md:
-    last_write_checksum: sha1:4232cfaeeea6d06f3bb70d324b59affb29b38762
+    last_write_checksum: sha1:92c018fddca5723fd9643ff16350e07ba10c3afe
   go.mod:
-    last_write_checksum: sha1:11b3be18f236fec82af50c20963793f4523564b5
+    last_write_checksum: sha1:3d6e8a7508ba8e75f15364bbb62af21debc631ef
   integrations.go:
-    last_write_checksum: sha1:d64132862221e720903c7816d125e91a64722d80
+    last_write_checksum: sha1:8238536b8defcb085a23760acc151d287f820939
   internal/config/sdkconfiguration.go:
-    last_write_checksum: sha1:43b34aec78056434c6c93599cce8197f5e9d842e
+    last_write_checksum: sha1:14c51d666fe11d681dbf95cd7d730e930c4c9ff4
   internal/hooks/hooks.go:
-    last_write_checksum: sha1:d795abd197b54b4a4a556d49fa7a2e0e6c8ecb2e
+    last_write_checksum: sha1:fe156f265a51bf4136e6feca5012a451876b67cd
   internal/utils/contenttype.go:
     last_write_checksum: sha1:c15497c4f48cf286c90a76d24da18c9a77c326df
   internal/utils/env.go:
     last_write_checksum: sha1:849e365803fed934e172474c35028d16dc18d7ed
   internal/utils/form.go:
-    last_write_checksum: sha1:cf0e8c0dfa432d6cfe9ac6c67666eefd888fe7d7
+    last_write_checksum: sha1:14a6a47a8874b6dbc52bebb910eea01da7025477
   internal/utils/headers.go:
-    last_write_checksum: sha1:d6b7942b7ca2cbcab8094ee653d17d13210b166a
+    last_write_checksum: sha1:ca772bb9b335d3680618e07ae9ab9ed9265fd106
   internal/utils/json.go:
-    last_write_checksum: sha1:34c8bc3dcad716fda258a569027e1f5c7fec9eb5
+    last_write_checksum: sha1:059d9153196186855b4113912b4dead66a6c0725
   internal/utils/pathparams.go:
-    last_write_checksum: sha1:8a98090848ee3a4d5f8cc30ea99a58bf2f02edc4
+    last_write_checksum: sha1:4a93b415e05ce663156317933f4ff36fb117dc37
   internal/utils/queryparams.go:
-    last_write_checksum: sha1:5912dd83a69c896a3f6f4a557e9c3e4fd222daf7
+    last_write_checksum: sha1:1a5153e87f34c463ce6e068c0f456bd9a8b852c0
   internal/utils/requestbody.go:
-    last_write_checksum: sha1:620a37095a69dd0285403620010bb5db71cf8679
+    last_write_checksum: sha1:e238fa87a77c817bc9ba3b8e725538e36796211c
   internal/utils/retries.go:
-    last_write_checksum: sha1:b15fd87eebdf4920612ab938863bf1f944e8a240
+    last_write_checksum: sha1:6c2d14988f82d79e1723e06a397c322c4b847ace
   internal/utils/security.go:
     last_write_checksum: sha1:6c989851effa40cc2ede3fb47ee83e72e1af5977
   internal/utils/union.go:
-    last_write_checksum: sha1:63b89a6102bced48276417b9ae3d900a5c1453a6
+    last_write_checksum: sha1:86823e77469c15d432b3dd31d5da81672e45c001
   internal/utils/union_test.go:
     last_write_checksum: sha1:3272945ebd55b70edb367310552ed5634339476a
   internal/utils/utils.go:
-    last_write_checksum: sha1:3a81eaa1e547190731851451963afc649eb46327
+    last_write_checksum: sha1:18323eaf6773b8041e96177b935a147726fada3e
   keys.go:
-    last_write_checksum: sha1:9f4332d5e3a7d7c0c7cc05b00bd5ada2f2752b11
+    last_write_checksum: sha1:a011d530ce89ebf11ff472f444f8d0832707011c
   keyusage.go:
-    last_write_checksum: sha1:4e08cb7eddb4c1666b9341a9f8ce041e46fae519
+    last_write_checksum: sha1:6e2fd0c26ecee65f8ddc055f4bab684af76c8422
   models/apierrors/apistatuserror.go:
     last_write_checksum: sha1:7d97b042c757daf1615796af597b4947195072fd
   models/apierrors/authenticationerror.go:
-    last_write_checksum: sha1:29a01295ac324253ff2304ebb2d21c4df150bb9d
+    last_write_checksum: sha1:848f45cd7cb39e10e63ed118d8306ec3751fce5b
   models/apierrors/badrequesterror.go:
-    last_write_checksum: sha1:38c21965005a574a93102fd8549563e76fdaba06
+    last_write_checksum: sha1:e3abc33d9f0bde59713cba32cbf513e57003ef78
   models/apierrors/conflicterror.go:
-    last_write_checksum: sha1:5bef67a7f6ab2b8af88efb25dcc09fd8bccca60f
+    last_write_checksum: sha1:a025de29a6f9b692d9d33f7a1e27983282ff63d8
   models/apierrors/notfounderror.go:
-    last_write_checksum: sha1:9b9c9e45ebf656ba0a352ae80d7049467725cb19
+    last_write_checksum: sha1:34a894c810113133071489f7af80f5dc2aada27c
   models/apierrors/permissiondeniederror.go:
-    last_write_checksum: sha1:2410e58049de2547f2ec8d11c5d6c856e10374d9
+    last_write_checksum: sha1:fd0b5dc22d91de0f6102b14b9b66f10f0eae7a7a
   models/apierrors/ratelimiterror.go:
-    last_write_checksum: sha1:21ec996b6d7fa168635e5d64dce2df0c6d14d8f4
+    last_write_checksum: sha1:f0cb512a9055b1da4fa4f7e7808df8f3e8a811e9
   models/apierrors/responsevalidationerror.go:
     last_write_checksum: sha1:18ce0b205131db4e67be69b2f0725a48d98b3f74
   models/components/account.go:
-    last_write_checksum: sha1:bcb5fe287e5aee5b02bb1d5517ab77c2a7f1dad2
+    last_write_checksum: sha1:629b57960aaefdb5d3224f11d03568efa3158236
   models/components/accountdecision.go:
     last_write_checksum: sha1:2eb2c1cf7a5deac0a15da5711e01d4d8c674a64c
   models/components/accountdecisionsbyflow.go:
-    last_write_checksum: sha1:d2363c4f8e271d2397ea9cabfcfd134a391155f6
+    last_write_checksum: sha1:02018f6fdd294fb0ed38e7cd27ab5f42b3ec1e8f
   models/components/accountdeleted.go:
-    last_write_checksum: sha1:809f41dfa709f931f8317894b6943c779d32a311
+    last_write_checksum: sha1:7a515148433d0e6de30df7afe712e3d322417063
   models/components/accountdeletedevent.go:
-    last_write_checksum: sha1:5bf26feb764d2f01d6122d56e9f5d7290c1d7c47
+    last_write_checksum: sha1:353d7fcfd65b8013878c7b7a19b0c1e6d98ffb9b
   models/components/accountdeletion.go:
-    last_write_checksum: sha1:d403676bb499aaaef03f588cff7f8066c60c8831
+    last_write_checksum: sha1:d8ab69affeff9409ca1e36c743790ee7d5fbd03e
   models/components/accountlist.go:
     last_write_checksum: sha1:2615f4e679760caf417905b867f69c72e282a923
   models/components/accountrisk.go:
-    last_write_checksum: sha1:28b226c3b0c8a961bcbd4756208311cc1ee3278a
+    last_write_checksum: sha1:548865a60d0f9ead4c9abefbaf6fc4853c85a6b1
   models/components/accountriskchanged.go:
-    last_write_checksum: sha1:c9d514950d6e6b3c78b4be09a210828d705608b7
+    last_write_checksum: sha1:c77e2feaddac57053738a5ebc24eb7b2de1adca0
   models/components/accountriskchangedevent.go:
-    last_write_checksum: sha1:8749685130067e9939355858ecd3f715bca30bdd
+    last_write_checksum: sha1:3be5ec9697d52a09187102ac5865ca53a207f25a
   models/components/accountriskreason.go:
-    last_write_checksum: sha1:1084f9cce44aa72a0348cd346b5d892c33e2df39
+    last_write_checksum: sha1:3bce4543f055d128628131f8b33f2a7e75f4494e
   models/components/assessment.go:
-    last_write_checksum: sha1:817e8876f35382544e314dc1efb1819a46c1898a
+    last_write_checksum: sha1:30bf953aa6d00e407bf5084ea889523a6447601e
   models/components/assessmentdeletion.go:
-    last_write_checksum: sha1:ea44e3e168d4d87aed97761d494698fc76c1adac
+    last_write_checksum: sha1:f10ba5edfc99121734202d4555d1e02861fb9e7d
   models/components/assessmentdeletionaccount.go:
     last_write_checksum: sha1:802cec7bbdf2115898fe8dd6b0d7d9a59ebd0a25
   models/components/assessmentdetail.go:
-    last_write_checksum: sha1:53490b1d9df8e5651d3fe93e6c8c29c26a62b645
+    last_write_checksum: sha1:d62221a81eda9f467b9e2fd5e2c2657102f2de3c
   models/components/assessmentdetailauthcontext.go:
-    last_write_checksum: sha1:67550babc94379f577db9bc82df48631588647a3
+    last_write_checksum: sha1:c0fe5cbe24c9765efa6644a52cd03c56ad75f74f
   models/components/assessmentdetailtiming.go:
-    last_write_checksum: sha1:ea9863241b7de6540fb5344544153477751c3353
+    last_write_checksum: sha1:b277cccb0d0d59a0fa3dd483f832ebbcc4e7dbf6
   models/components/assessmentexpired.go:
-    last_write_checksum: sha1:deed55f28a39b7b5d15155e3c64249ef4092bce2
+    last_write_checksum: sha1:554ae6400e05322e5dc3d851fac5dd36539e5ffd
   models/components/assessmentlist.go:
-    last_write_checksum: sha1:3a316624eafbeba1fe1a049c45b2815b92a30e61
+    last_write_checksum: sha1:685cb17e65916fc02c870254739586cb9e3306cf
   models/components/assessmentoutcome.go:
     last_write_checksum: sha1:d00f7718f9212bf5f7649658c5baba99c0506ab5
   models/components/assessmentoutcomerequest.go:
     last_write_checksum: sha1:9ebe6a92ea907cb5791cb48e09ff56b12ef88c32
   models/components/assessmentquery.go:
-    last_write_checksum: sha1:371e96a671ecc3f31eee482672b1a78ecfedf249
+    last_write_checksum: sha1:919508f8b269dd47f9f29e01cd4ca7d7eec09d62
   models/components/assessmentrequest.go:
-    last_write_checksum: sha1:16736a0b7f8653d1a31a29d05ec02cbcdd6dcadc
+    last_write_checksum: sha1:e998b2387b0901b96d407c14f687984a4814ba5d
   models/components/assessmentrequestclientcontext.go:
     last_write_checksum: sha1:8d4e748b68b7d0a49013edb15814328ec6959468
   models/components/assessmentrequestidentifiers.go:
@@ -541,15 +541,15 @@ trackedFiles:
   models/components/assessmentrequestpolicycontext.go:
     last_write_checksum: sha1:ce096826ff0454db03b5759d3c3a17efe38b2e57
   models/components/assessmentupdateddata.go:
-    last_write_checksum: sha1:8952de7c2137cf641c073e3ef2697690076234b7
+    last_write_checksum: sha1:186b3f16dd9cc9c1e7e16bda9bffc937387c328d
   models/components/assessmentupdatedevent.go:
-    last_write_checksum: sha1:56fa4b8a95e7ca6b9fa3684cce552405bac1abc8
+    last_write_checksum: sha1:25151e00c3762356be4c2f74253110cf13533be3
   models/components/assurancelevel.go:
     last_write_checksum: sha1:2fe8cfc9e9d301133cbba7d513079733e8122ced
   models/components/authcontext.go:
-    last_write_checksum: sha1:213d779daba9c7b3f62d731a82ad6c51de1e8cbe
+    last_write_checksum: sha1:469a6a0e3ade2cbdbb1b8c61be8049fe356e57b3
   models/components/authcontextmfa.go:
-    last_write_checksum: sha1:926af42e30d0d39f401afe68d2d4ac3cb2120648
+    last_write_checksum: sha1:60fe965f2d9debf3b23f748b5fa2e238063a7ca8
   models/components/authenticationerrorcode.go:
     last_write_checksum: sha1:9b4cf373017dea3b4614ca20e0a27e583b7b7134
   models/components/badrequesterrorcode.go:
@@ -557,7 +557,7 @@ trackedFiles:
   models/components/band.go:
     last_write_checksum: sha1:a972b7d5878984578c777710a1e5e7a93536d533
   models/components/breach.go:
-    last_write_checksum: sha1:6710541176903e782224edd4ceab37bca494a930
+    last_write_checksum: sha1:d507a90a48518eb2745a0315ea1c1d751deb13df
   models/components/breachexposed.go:
     last_write_checksum: sha1:4003c9fc417870c54a1b68d14a8eee96da669784
   models/components/breachkind.go:
@@ -565,13 +565,13 @@ trackedFiles:
   models/components/breachselector.go:
     last_write_checksum: sha1:3143a9576edede51e100fdd73affbed1099f0a71
   models/components/breachsummary.go:
-    last_write_checksum: sha1:4b9b3cffea777a6b57e0f56ffe259140ca0810e8
+    last_write_checksum: sha1:aeb2f643041b981e19589bf4541d43a79ffc0e96
   models/components/confidence.go:
     last_write_checksum: sha1:d17a4257ee33624e4b897492aecb78e402243619
   models/components/conflicterrorcode.go:
     last_write_checksum: sha1:ab0add1a3cdbb48bb83c306f0d309ffdb52431ee
   models/components/consistency.go:
-    last_write_checksum: sha1:182ce87b67f9d61b11dc88a33cf027851a32a2c4
+    last_write_checksum: sha1:d114ae02229a3933ebafb1c46f398100201d8c6e
   models/components/consistencyvalue.go:
     last_write_checksum: sha1:6e70e56fa42a3f37a90858ab696e13d077e12ef0
   models/components/country.go:
@@ -579,9 +579,9 @@ trackedFiles:
   models/components/depth.go:
     last_write_checksum: sha1:677cf4127df2db7b5a5fd6a52b9515082897f8ea
   models/components/endpointverification.go:
-    last_write_checksum: sha1:111c47917135690af1d879eb2e3961d3a8c694f8
+    last_write_checksum: sha1:faaf31766c275b73cd995b1a19dc0cfa88c89f1d
   models/components/endpointverificationevent.go:
-    last_write_checksum: sha1:803e361f356cfda97ba3d995592be1227649179b
+    last_write_checksum: sha1:4292fd7e545f8779e0f641dac9e645fd92fb5ec0
   models/components/enforcement.go:
     last_write_checksum: sha1:db538d4cd81f1799a8dc75e7177d24861bc46431
   models/components/enforcementaction.go:
@@ -611,7 +611,7 @@ trackedFiles:
   models/components/incompletereason.go:
     last_write_checksum: sha1:d48feaf37c560e936dfbb8c7767981cb620c653c
   models/components/incompletesource.go:
-    last_write_checksum: sha1:3e8041b354807d406efc75a821e6cfa91a0e595a
+    last_write_checksum: sha1:0f57ee72dc25d74512dfa6ebe9924b00bfd3e68a
   models/components/integration.go:
     last_write_checksum: sha1:3ac7dc5794a5bd3ad3a1ba7de735c5764010a5c6
   models/components/integrationhookpoint.go:
@@ -621,11 +621,11 @@ trackedFiles:
   models/components/integrationplatform.go:
     last_write_checksum: sha1:5eddf8eeaba845224ac4a03d6f1462618a891e7d
   models/components/integrationrequest.go:
-    last_write_checksum: sha1:9d960f6f8e88415e30ae1e0ca81d0f899fe7bcab
+    last_write_checksum: sha1:86197b2bd40260d9bbb4d96790f834943185253f
   models/components/integrationrotationrequest.go:
     last_write_checksum: sha1:c0f4d292b3be68d19e220665240a814e4055c23c
   models/components/ipsummary.go:
-    last_write_checksum: sha1:06c3a7fe05a1fa1cf9aa70255c383c9926c6eaf3
+    last_write_checksum: sha1:a5e374fcc8bbcb99121caee2666d03b45f264c32
   models/components/ipsummarytype.go:
     last_write_checksum: sha1:b32d4ec6feb5771fb579a788d16add562bd5b4a3
   models/components/keyrotation.go:
@@ -637,7 +637,7 @@ trackedFiles:
   models/components/keyusagebatchrequest.go:
     last_write_checksum: sha1:2256fd07fc14292eec4a17edf1a7b2913cb944f5
   models/components/keyusageevent.go:
-    last_write_checksum: sha1:503d1c8a74a181a53a6f8fccb2629b9012122527
+    last_write_checksum: sha1:995544b818dd611bd151a6b0c5332a67cbb1d09d
   models/components/lane.go:
     last_write_checksum: sha1:a873d30d16fc019e0dea6aef289870ec27aa6a11
   models/components/linetype.go:
@@ -649,9 +649,9 @@ trackedFiles:
   models/components/permissiondeniederrorcode.go:
     last_write_checksum: sha1:bb44528007cce381cd51cde4c16981f940cfd045
   models/components/phoneenrichment.go:
-    last_write_checksum: sha1:6dd5d5cf696554d8bf32db4c7938e23c9e7e55a4
+    last_write_checksum: sha1:964c9e081ebe099e6758a2b48dd115787d3f0f16
   models/components/phoneenrichmentfields.go:
-    last_write_checksum: sha1:645b1ef720e8ae2cb37775d33c0dad99a6abc080
+    last_write_checksum: sha1:9fcfae23d2581056273baf9da082f6ad59b71364
   models/components/platform.go:
     last_write_checksum: sha1:b5a59aa26100882c9a6512b0b6aab987e41543b0
   models/components/probleminvalidparam.go:
@@ -667,31 +667,31 @@ trackedFiles:
   models/components/responsemode.go:
     last_write_checksum: sha1:957c34b77d405fecc16b573da5a36422cfe479fb
   models/components/risk.go:
-    last_write_checksum: sha1:51e8ee99867ee4c9782c40381f151f700f0a3406
+    last_write_checksum: sha1:ba80f823578f45987fad9bce3fd9233cf2dfcbce
   models/components/riskconfidence.go:
     last_write_checksum: sha1:56fb4b7efde73f4a232343e2a913a3ea0f192c9a
   models/components/riskcoverage.go:
-    last_write_checksum: sha1:e6d2a255500e6f46133f0084ab43e8620d55b634
+    last_write_checksum: sha1:057b76bdf6323847514f9572d9ed1ce8a03191e8
   models/components/riskdetails.go:
-    last_write_checksum: sha1:d9abd3d471eb77f8edee18e542d7d59f96d1c383
+    last_write_checksum: sha1:e34a0dd2ebf2d871f9c23b97fe2bfa006d0686cb
   models/components/riskdetailsbreachname.go:
-    last_write_checksum: sha1:a4fb6af65993c6794e883a01a367332acb71e2a9
+    last_write_checksum: sha1:698054932d66288be3a7277de5cc182435374e8c
   models/components/riskdetailsphonename.go:
-    last_write_checksum: sha1:945d198c8420b9c6ef2d8ad3e0e02330b6e6f8cb
+    last_write_checksum: sha1:38174da2ab35f8a85808aea7cef8a0f9cfb46d69
   models/components/riskreason.go:
-    last_write_checksum: sha1:343474a27702f8386c3bf668f9f81245347606ea
+    last_write_checksum: sha1:1be31d21b685e7321a5157cb157458969764a520
   models/components/risksummary.go:
-    last_write_checksum: sha1:6054fcfe1a297c6ebe084f3c660e07b3da4f4e94
+    last_write_checksum: sha1:00d3fcf99c660e4e931ba0727b25bac28f9466ad
   models/components/risksummaryemail.go:
-    last_write_checksum: sha1:8626c504ea739c196a9eaa6e7d745a2332f62bdf
+    last_write_checksum: sha1:5bf8aa7ed65347a6697cbc73dfea21ebe25aedce
   models/components/risksummaryphone.go:
-    last_write_checksum: sha1:c41604ec204e85fea9f501ff394db4f3bf815d5e
+    last_write_checksum: sha1:f1da6b7111e4c70cce3b6a03db00c022a6a27167
   models/components/risksummaryusername.go:
-    last_write_checksum: sha1:90acd8b228c017784c188e1c24f6e8e0ee21ac9a
+    last_write_checksum: sha1:da950e85546c6071e357b0b8f27a824652c80d34
   models/components/security.go:
     last_write_checksum: sha1:8e1c3363726b63d12898cc4357547d5e969b5b7b
   models/components/signal.go:
-    last_write_checksum: sha1:0a43bdac523a87656dfaaae8afa4302825357dde
+    last_write_checksum: sha1:81e054960703219572410f8ca7970ad9cfe43cd9
   models/components/signaloutcome.go:
     last_write_checksum: sha1:9bf13fa2c9495ea44e671cd26b8b9429ab2bea6e
   models/components/signingkey.go:
@@ -713,9 +713,9 @@ trackedFiles:
   models/components/webhookendpointcreated.go:
     last_write_checksum: sha1:6aa88fcc0261ecd6cd3c3e787e60ddd69d10520b
   models/components/webhookendpointdisabled.go:
-    last_write_checksum: sha1:2b52b4b28c116612c4ee4561393c7c1b41b50e0a
+    last_write_checksum: sha1:87af32e2e4e341fc2b37692b8c1fba374a9e4fac
   models/components/webhookendpointdisabledevent.go:
-    last_write_checksum: sha1:c2809093cc0c712759c89ea025fefb10aeae892b
+    last_write_checksum: sha1:ab8ad5538227f35833a81e321a7388b0fe76bf98
   models/components/webhookendpointlist.go:
     last_write_checksum: sha1:49e370fe28fe8560be409e0b72ae2bd74242dc12
   models/components/webhookendpointrequest.go:
@@ -723,7 +723,7 @@ trackedFiles:
   models/components/webhookendpointstate.go:
     last_write_checksum: sha1:0dc8f23c8de8698aa8515418c04ceb26331917ef
   models/components/webhookevent.go:
-    last_write_checksum: sha1:5e8ddcddf01c3e6c2aeb62a0a569b983306a62b3
+    last_write_checksum: sha1:024f797071f9955bfbc6a52b13c1c10e8f1f6a24
   models/components/webhookkeyrotation.go:
     last_write_checksum: sha1:7fd1350abc7bfe7c7738d2aeed1d7cddc01ddd8e
   models/components/webhookkeyrotationrequest.go:
@@ -741,59 +741,59 @@ trackedFiles:
   models/components/webhookverificationresponse.go:
     last_write_checksum: sha1:aec7c2bf32e03270374ac3f7de4c9778771368cf
   models/components/workspacedeleted.go:
-    last_write_checksum: sha1:4b0e0e7e635ff70b8b681fd93b4969767c5e5d1a
+    last_write_checksum: sha1:7e2d9956da70cac084ff4022a3395e69340d4088
   models/components/workspacedeletedevent.go:
-    last_write_checksum: sha1:02436a5a70bbd05f2ba7e0a55d242ab6a52beadb
+    last_write_checksum: sha1:490674523fa71acd93d0e638a44b9151fda88813
   models/operations/createassessment.go:
-    last_write_checksum: sha1:ca47c54c82606cab41615c225e8b3cf0aded749b
+    last_write_checksum: sha1:8df11a6afb786c1e30c1e2d3a6d40a5fb6832fc8
   models/operations/createintegration.go:
-    last_write_checksum: sha1:134caf3572ab6540a41820851480091b608af93e
+    last_write_checksum: sha1:53fc2165d98448bc85ea985345d108234d457fba
   models/operations/createwebhookendpoint.go:
-    last_write_checksum: sha1:762f1b42b7fbdd861abcef19beb038199359d034
+    last_write_checksum: sha1:635efea083eb3526a5893a754c30933e27bd8d21
   models/operations/deleteaccount.go:
-    last_write_checksum: sha1:8b799a3067c141472d18a85fdc85896dece68991
+    last_write_checksum: sha1:f1acfa90a3a67dcb826feadbfb985b9ffb9d9ad8
   models/operations/deleteassessment.go:
-    last_write_checksum: sha1:a6a4a097dbeff0975239974b7868f0d61295ae2c
+    last_write_checksum: sha1:ae9de86bf85a7efaeef175e2c31444d4d3d564e4
   models/operations/deleteintegration.go:
     last_write_checksum: sha1:34fe1ce65cefdf9ddb9f78350324f6756ac0f4aa
   models/operations/deletewebhookendpoint.go:
     last_write_checksum: sha1:35ba3d77bbcf79b9fd335a2add5a203dd4bc437b
   models/operations/getaccount.go:
-    last_write_checksum: sha1:47830550beaea0cd906609176c429996e8b82e75
+    last_write_checksum: sha1:ba84b1528089eb637df75d788d8d681807fce8a0
   models/operations/getassessment.go:
-    last_write_checksum: sha1:a310ebeed5cec4e3e9a5d3b5627852a84e2942f8
+    last_write_checksum: sha1:86dfb3b8492315effc2493472aabe8b51ca41a07
   models/operations/listaccountassessments.go:
-    last_write_checksum: sha1:9320e76b7edbb764e4c25458fff6d68a6543db74
+    last_write_checksum: sha1:5d01a4133a13c611388a973784b5dd5c1e87d349
   models/operations/listaccounts.go:
-    last_write_checksum: sha1:b883683a24073122d170b9950a5a1a2c9273a0fe
+    last_write_checksum: sha1:2f57806648e190161f6af84b385897d45a54eca0
   models/operations/listintegrations.go:
-    last_write_checksum: sha1:d9c4632fedd1ecfea222dbeaacc94179ea49023d
+    last_write_checksum: sha1:9f07eac9894eebeb7e44e2e49f04ac339f0082c1
   models/operations/listwebhookdeliveries.go:
-    last_write_checksum: sha1:18aa18c0051f00d7aa774c2c261e2bd058018aff
+    last_write_checksum: sha1:4e59c301af65e509d3d51bca19a4db58d7539d97
   models/operations/listwebhookendpoints.go:
-    last_write_checksum: sha1:c2f38d43aa763e6e414998cbfdbc30ee4dfc2d1f
+    last_write_checksum: sha1:20641568c131d6719d4c482365d44d0d551823d7
   models/operations/options.go:
-    last_write_checksum: sha1:cd02c50a50e0665119377879d021a36b90237f7f
+    last_write_checksum: sha1:2b334db357638144161643d1d55a019989b90783
   models/operations/queryaccountassessments.go:
-    last_write_checksum: sha1:46fe4b1e6b63c3200fdbaca9778e063ba9eb73fb
+    last_write_checksum: sha1:dbd8051e40b82f890c4e1e62fd79dd006f780360
   models/operations/recordassessmentoutcome.go:
-    last_write_checksum: sha1:c4cb7985c6abe1ea213cb5e28b38d402e7aede36
+    last_write_checksum: sha1:41053e3e77e06cc17e97f0dc7527e9114d186bff
   models/operations/recordenforcement.go:
-    last_write_checksum: sha1:fba281679479e0c60989aa08c2aac0afb3e8c671
+    last_write_checksum: sha1:115eff5b85b6324877bfd7354539bad4cd1d19e6
   models/operations/recordkeyusage.go:
-    last_write_checksum: sha1:1913e4bebcf34dfafb702708e861c0c4ee85684c
+    last_write_checksum: sha1:cb4a627ac5414cbe3352f8d2ace2ed0422925553
   models/operations/replaywebhookdelivery.go:
-    last_write_checksum: sha1:a072ca4b36d306a1087cec35f211de5c423c3b03
+    last_write_checksum: sha1:270c59b880ce528abb37d31ef165a988d578845a
   models/operations/rotateapikey.go:
-    last_write_checksum: sha1:0c484001bd6b5ce2da9cdb7de49f840b91e992c9
+    last_write_checksum: sha1:89f26e286ed860ba3d256f28e69ef6bc9a6cba4d
   models/operations/rotateintegrationsecret.go:
-    last_write_checksum: sha1:72d415e62aaacf9a6d3bec0e6b7db41156352417
+    last_write_checksum: sha1:3c9ae52edc977251285b9de37f60216cb74ee2ef
   models/operations/rotatewebhooksigningkey.go:
-    last_write_checksum: sha1:5b9137a5881e1803b006367ec9cde0d6fd286400
+    last_write_checksum: sha1:b4a68ebada996928e6ea2df9aa7237109d727574
   models/operations/sendwebhooktestevent.go:
-    last_write_checksum: sha1:5e9e9d13d884f464b3f7c9976819412362510334
+    last_write_checksum: sha1:e4838f7ae5f11e13e0cb345253f2ea5173cd574d
   noresponse.go:
-    last_write_checksum: sha1:da83502a13dd1f9ae21de35e126b9b239bcbe60e
+    last_write_checksum: sha1:632ba659c1e74d08cb5bf3450d8e4b68ede488bc
   optionalnullable/optionalnullable.go:
     last_write_checksum: sha1:38cf187cd65a5213be09788f67d82dc49d46b583
   optionalnullable/optionalnullable_test.go:
@@ -809,9 +809,9 @@ trackedFiles:
   types/pointers.go:
     last_write_checksum: sha1:5408c55cb9032712d01649a61148b3aa2634483d
   webhook_verification.go:
-    last_write_checksum: sha1:19f5c559e027db41358ce0e02226462771416ff2
+    last_write_checksum: sha1:6ef264b9d4d77c76e84e3e84c5654b626f62ed65
   webhookendpoints.go:
-    last_write_checksum: sha1:e5a4a59770f6b995a557b051f08590e8e95ec565
+    last_write_checksum: sha1:e3c86ab03e59814f0ff3dbf9918615e85beb4446
 examples:
   createAssessment:
     minimal:

@@ -6,7 +6,7 @@ Provider or OIDC assurance level, when the customer has mapped one.
 
 ```go
 import (
-	"github.com/noresponsehq/go/v6/models/components"
+	"github.com/noresponsehq/go/v7/models/components"
 )
 
 value := components.AssuranceLevelUnknown

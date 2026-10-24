@@ -6,7 +6,7 @@ applied when the identity provider accepted the action, failed when it refused i
 
 ```go
 import (
-	"github.com/noresponsehq/go/v6/models/components"
+	"github.com/noresponsehq/go/v7/models/components"
 )
 
 value := components.EnforcementStatusApplied

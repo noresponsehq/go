@@ -1,0 +1,4173 @@
+{
+ "description": "Shared late enforcement vectors. Every SDK runs each case through its handler: sign event with the vector secret at now, serve exchanges in order (the NoResponse API at api_base_url and the provider's admin API) and fail on any other request, have getAccountState return state (null: unknown), and compare the result's skipped and enforcements, and the error when one is raised. A request matches when its method, its URL with the query compared as an unordered set of decoded pairs, and its JSON body (when given) are equal. Response bodies are JSON.",
+ "api_base_url": "https://api.noresponse.test",
+ "api_key": "nr_test_vector_not_a_real_key",
+ "secret_utf8": "nr-late-results-vector-secret",
+ "key_id": "whk_latevector01",
+ "now": 1792746005,
+ "provider_token": "provider-token-not-a-real-key",
+ "cases": [
+  {
+   "name": "clerk_active_block_restricts_and_revokes",
+   "description": "An active account whose login decision is block is banned (restrict) and every active session is revoked, across two pages of sessions; each action is recorded at the risk_version read.",
+   "provider": "clerk",
+   "event": {
+    "id": "evt_01JA2ZE5N6P7Q8R9S0T1VWXYZ6",
+    "type": "account.risk_changed",
+    "created_at": "2026-10-23T09:00:05.000Z",
+    "data": {
+     "account": {
+      "schema_version": "1",
+      "id": "acct_7f3a9c",
+      "risk": {
+       "score": 90,
+       "decision": "block",
+       "reasons": [
+        {
+         "code": "recent_password_exposure",
+         "weight": 55,
+         "identifier": "email"
+        }
+       ]
+      },
+      "decisions_by_flow": {
+       "account_creation": "block",
+       "login": "block",
+       "purchase": "block"
+      },
+      "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+      "updated_at": "2026-10-23T09:00:04.812Z",
+      "risk_version": 4
+     },
+     "previous_decisions_by_flow": {
+      "account_creation": "allow",
+      "login": "allow",
+      "purchase": "allow"
+     }
+    }
+   },
+   "state": {
+    "state": "active",
+    "user_id": "user_2NNEqL2nrIRdJ194ndJqAHwEfxC"
+   },
+   "exchanges": [
+    {
+     "request": {
+      "method": "GET",
+      "url": "https://api.noresponse.test/v1/accounts/acct_7f3a9c"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "schema_version": "1",
+       "id": "acct_7f3a9c",
+       "risk": {
+        "score": 90,
+        "decision": "block",
+        "reasons": [
+         {
+          "code": "recent_password_exposure",
+          "weight": 55,
+          "identifier": "email"
+         }
+        ]
+       },
+       "decisions_by_flow": {
+        "account_creation": "block",
+        "login": "block",
+        "purchase": "block"
+       },
+       "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+       "updated_at": "2026-10-23T09:00:04.812Z",
+       "risk_version": 4
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.clerk.com/v1/users/user_2NNEqL2nrIRdJ194ndJqAHwEfxC/ban"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "id": "user_2NNEqL2nrIRdJ194ndJqAHwEfxC",
+       "banned": true
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.noresponse.test/v1/accounts/acct_7f3a9c/enforcements",
+      "body": {
+       "risk_version": 4,
+       "flow": "login",
+       "action": "restrict",
+       "state_before": "active",
+       "status": "applied",
+       "provider": "clerk"
+      }
+     },
+     "response": {
+      "status": 201,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "id": "enf_01JA2ZF5N6P7Q8R9S0T1V2W3A0",
+       "account_id": "acct_7f3a9c",
+       "risk_version": 4,
+       "flow": "login",
+       "action": "restrict",
+       "state_before": "active",
+       "status": "applied",
+       "provider": "clerk",
+       "created_at": "2026-10-23T09:00:06.000Z"
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "GET",
+      "url": "https://api.clerk.com/v1/sessions?user_id=user_2NNEqL2nrIRdJ194ndJqAHwEfxC&status=active&limit=100&offset=0"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": [
+       {
+        "id": "sess_000",
+        "status": "active"
+       },
+       {
+        "id": "sess_001",
+        "status": "revoked"
+       },
+       {
+        "id": "sess_002",
+        "status": "active"
+       },
+       {
+        "id": "sess_003",
+        "status": "revoked"
+       },
+       {
+        "id": "sess_004",
+        "status": "active"
+       },
+       {
+        "id": "sess_005",
+        "status": "revoked"
+       },
+       {
+        "id": "sess_006",
+        "status": "active"
+       },
+       {
+        "id": "sess_007",
+        "status": "revoked"
+       },
+       {
+        "id": "sess_008",
+        "status": "active"
+       },
+       {
+        "id": "sess_009",
+        "status": "revoked"
+       },
+       {
+        "id": "sess_010",
+        "status": "active"
+       },
+       {
+        "id": "sess_011",
+        "status": "revoked"
+       },
+       {
+        "id": "sess_012",
+        "status": "active"
+       },
+       {
+        "id": "sess_013",
+        "status": "revoked"
+       },
+       {
+        "id": "sess_014",
+        "status": "active"
+       },
+       {
+        "id": "sess_015",
+        "status": "revoked"
+       },
+       {
+        "id": "sess_016",
+        "status": "active"
+       },
+       {
+        "id": "sess_017",
+        "status": "revoked"
+       },
+       {
+        "id": "sess_018",
+        "status": "active"
+       },
+       {
+        "id": "sess_019",
+        "status": "revoked"
+       },
+       {
+        "id": "sess_020",
+        "status": "active"
+       },
+       {
+        "id": "sess_021",
+        "status": "revoked"
+       },
+       {
+        "id": "sess_022",
+        "status": "active"
+       },
+       {
+        "id": "sess_023",
+        "status": "revoked"
+       },
+       {
+        "id": "sess_024",
+        "status": "active"
+       },
+       {
+        "id": "sess_025",
+        "status": "revoked"
+       },
+       {
+        "id": "sess_026",
+        "status": "active"
+       },
+       {
+        "id": "sess_027",
+        "status": "revoked"
+       },
+       {
+        "id": "sess_028",
+        "status": "active"
+       },
+       {
+        "id": "sess_029",
+        "status": "revoked"
+       },
+       {
+        "id": "sess_030",
+        "status": "active"
+       },
+       {
+        "id": "sess_031",
+        "status": "revoked"
+       },
+       {
+        "id": "sess_032",
+        "status": "active"
+       },
+       {
+        "id": "sess_033",
+        "status": "revoked"
+       },
+       {
+        "id": "sess_034",
+        "status": "active"
+       },
+       {
+        "id": "sess_035",
+        "status": "revoked"
+       },
+       {
+        "id": "sess_036",
+        "status": "active"
+       },
+       {
+        "id": "sess_037",
+        "status": "revoked"
+       },
+       {
+        "id": "sess_038",
+        "status": "active"
+       },
+       {
+        "id": "sess_039",
+        "status": "revoked"
+       },
+       {
+        "id": "sess_040",
+        "status": "active"
+       },
+       {
+        "id": "sess_041",
+        "status": "revoked"
+       },
+       {
+        "id": "sess_042",
+        "status": "active"
+       },
+       {
+        "id": "sess_043",
+        "status": "revoked"
+       },
+       {
+        "id": "sess_044",
+        "status": "active"
+       },
+       {
+        "id": "sess_045",
+        "status": "revoked"
+       },
+       {
+        "id": "sess_046",
+        "status": "active"
+       },
+       {
+        "id": "sess_047",
+        "status": "revoked"
+       },
+       {
+        "id": "sess_048",
+        "status": "active"
+       },
+       {
+        "id": "sess_049",
+        "status": "revoked"
+       },
+       {
+        "id": "sess_050",
+        "status": "active"
+       },
+       {
+        "id": "sess_051",
+        "status": "revoked"
+       },
+       {
+        "id": "sess_052",
+        "status": "active"
+       },
+       {
+        "id": "sess_053",
+        "status": "revoked"
+       },
+       {
+        "id": "sess_054",
+        "status": "active"
+       },
+       {
+        "id": "sess_055",
+        "status": "revoked"
+       },
+       {
+        "id": "sess_056",
+        "status": "active"
+       },
+       {
+        "id": "sess_057",
+        "status": "revoked"
+       },
+       {
+        "id": "sess_058",
+        "status": "active"
+       },
+       {
+        "id": "sess_059",
+        "status": "revoked"
+       },
+       {
+        "id": "sess_060",
+        "status": "active"
+       },
+       {
+        "id": "sess_061",
+        "status": "revoked"
+       },
+       {
+        "id": "sess_062",
+        "status": "active"
+       },
+       {
+        "id": "sess_063",
+        "status": "revoked"
+       },
+       {
+        "id": "sess_064",
+        "status": "active"
+       },
+       {
+        "id": "sess_065",
+        "status": "revoked"
+       },
+       {
+        "id": "sess_066",
+        "status": "active"
+       },
+       {
+        "id": "sess_067",
+        "status": "revoked"
+       },
+       {
+        "id": "sess_068",
+        "status": "active"
+       },
+       {
+        "id": "sess_069",
+        "status": "revoked"
+       },
+       {
+        "id": "sess_070",
+        "status": "active"
+       },
+       {
+        "id": "sess_071",
+        "status": "revoked"
+       },
+       {
+        "id": "sess_072",
+        "status": "active"
+       },
+       {
+        "id": "sess_073",
+        "status": "revoked"
+       },
+       {
+        "id": "sess_074",
+        "status": "active"
+       },
+       {
+        "id": "sess_075",
+        "status": "revoked"
+       },
+       {
+        "id": "sess_076",
+        "status": "active"
+       },
+       {
+        "id": "sess_077",
+        "status": "revoked"
+       },
+       {
+        "id": "sess_078",
+        "status": "active"
+       },
+       {
+        "id": "sess_079",
+        "status": "revoked"
+       },
+       {
+        "id": "sess_080",
+        "status": "active"
+       },
+       {
+        "id": "sess_081",
+        "status": "revoked"
+       },
+       {
+        "id": "sess_082",
+        "status": "active"
+       },
+       {
+        "id": "sess_083",
+        "status": "revoked"
+       },
+       {
+        "id": "sess_084",
+        "status": "active"
+       },
+       {
+        "id": "sess_085",
+        "status": "revoked"
+       },
+       {
+        "id": "sess_086",
+        "status": "active"
+       },
+       {
+        "id": "sess_087",
+        "status": "revoked"
+       },
+       {
+        "id": "sess_088",
+        "status": "active"
+       },
+       {
+        "id": "sess_089",
+        "status": "revoked"
+       },
+       {
+        "id": "sess_090",
+        "status": "active"
+       },
+       {
+        "id": "sess_091",
+        "status": "revoked"
+       },
+       {
+        "id": "sess_092",
+        "status": "active"
+       },
+       {
+        "id": "sess_093",
+        "status": "revoked"
+       },
+       {
+        "id": "sess_094",
+        "status": "active"
+       },
+       {
+        "id": "sess_095",
+        "status": "revoked"
+       },
+       {
+        "id": "sess_096",
+        "status": "active"
+       },
+       {
+        "id": "sess_097",
+        "status": "revoked"
+       },
+       {
+        "id": "sess_098",
+        "status": "active"
+       },
+       {
+        "id": "sess_099",
+        "status": "revoked"
+       }
+      ]
+     }
+    },
+    {
+     "request": {
+      "method": "GET",
+      "url": "https://api.clerk.com/v1/sessions?user_id=user_2NNEqL2nrIRdJ194ndJqAHwEfxC&status=active&limit=100&offset=100"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": [
+       {
+        "id": "sess_100",
+        "status": "active"
+       }
+      ]
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.clerk.com/v1/sessions/sess_000/revoke"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "id": "sess_000",
+       "status": "revoked"
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.clerk.com/v1/sessions/sess_002/revoke"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "id": "sess_002",
+       "status": "revoked"
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.clerk.com/v1/sessions/sess_004/revoke"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "id": "sess_004",
+       "status": "revoked"
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.clerk.com/v1/sessions/sess_006/revoke"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "id": "sess_006",
+       "status": "revoked"
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.clerk.com/v1/sessions/sess_008/revoke"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "id": "sess_008",
+       "status": "revoked"
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.clerk.com/v1/sessions/sess_010/revoke"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "id": "sess_010",
+       "status": "revoked"
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.clerk.com/v1/sessions/sess_012/revoke"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "id": "sess_012",
+       "status": "revoked"
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.clerk.com/v1/sessions/sess_014/revoke"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "id": "sess_014",
+       "status": "revoked"
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.clerk.com/v1/sessions/sess_016/revoke"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "id": "sess_016",
+       "status": "revoked"
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.clerk.com/v1/sessions/sess_018/revoke"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "id": "sess_018",
+       "status": "revoked"
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.clerk.com/v1/sessions/sess_020/revoke"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "id": "sess_020",
+       "status": "revoked"
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.clerk.com/v1/sessions/sess_022/revoke"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "id": "sess_022",
+       "status": "revoked"
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.clerk.com/v1/sessions/sess_024/revoke"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "id": "sess_024",
+       "status": "revoked"
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.clerk.com/v1/sessions/sess_026/revoke"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "id": "sess_026",
+       "status": "revoked"
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.clerk.com/v1/sessions/sess_028/revoke"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "id": "sess_028",
+       "status": "revoked"
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.clerk.com/v1/sessions/sess_030/revoke"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "id": "sess_030",
+       "status": "revoked"
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.clerk.com/v1/sessions/sess_032/revoke"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "id": "sess_032",
+       "status": "revoked"
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.clerk.com/v1/sessions/sess_034/revoke"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "id": "sess_034",
+       "status": "revoked"
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.clerk.com/v1/sessions/sess_036/revoke"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "id": "sess_036",
+       "status": "revoked"
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.clerk.com/v1/sessions/sess_038/revoke"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "id": "sess_038",
+       "status": "revoked"
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.clerk.com/v1/sessions/sess_040/revoke"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "id": "sess_040",
+       "status": "revoked"
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.clerk.com/v1/sessions/sess_042/revoke"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "id": "sess_042",
+       "status": "revoked"
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.clerk.com/v1/sessions/sess_044/revoke"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "id": "sess_044",
+       "status": "revoked"
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.clerk.com/v1/sessions/sess_046/revoke"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "id": "sess_046",
+       "status": "revoked"
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.clerk.com/v1/sessions/sess_048/revoke"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "id": "sess_048",
+       "status": "revoked"
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.clerk.com/v1/sessions/sess_050/revoke"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "id": "sess_050",
+       "status": "revoked"
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.clerk.com/v1/sessions/sess_052/revoke"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "id": "sess_052",
+       "status": "revoked"
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.clerk.com/v1/sessions/sess_054/revoke"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "id": "sess_054",
+       "status": "revoked"
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.clerk.com/v1/sessions/sess_056/revoke"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "id": "sess_056",
+       "status": "revoked"
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.clerk.com/v1/sessions/sess_058/revoke"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "id": "sess_058",
+       "status": "revoked"
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.clerk.com/v1/sessions/sess_060/revoke"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "id": "sess_060",
+       "status": "revoked"
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.clerk.com/v1/sessions/sess_062/revoke"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "id": "sess_062",
+       "status": "revoked"
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.clerk.com/v1/sessions/sess_064/revoke"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "id": "sess_064",
+       "status": "revoked"
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.clerk.com/v1/sessions/sess_066/revoke"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "id": "sess_066",
+       "status": "revoked"
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.clerk.com/v1/sessions/sess_068/revoke"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "id": "sess_068",
+       "status": "revoked"
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.clerk.com/v1/sessions/sess_070/revoke"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "id": "sess_070",
+       "status": "revoked"
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.clerk.com/v1/sessions/sess_072/revoke"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "id": "sess_072",
+       "status": "revoked"
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.clerk.com/v1/sessions/sess_074/revoke"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "id": "sess_074",
+       "status": "revoked"
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.clerk.com/v1/sessions/sess_076/revoke"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "id": "sess_076",
+       "status": "revoked"
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.clerk.com/v1/sessions/sess_078/revoke"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "id": "sess_078",
+       "status": "revoked"
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.clerk.com/v1/sessions/sess_080/revoke"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "id": "sess_080",
+       "status": "revoked"
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.clerk.com/v1/sessions/sess_082/revoke"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "id": "sess_082",
+       "status": "revoked"
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.clerk.com/v1/sessions/sess_084/revoke"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "id": "sess_084",
+       "status": "revoked"
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.clerk.com/v1/sessions/sess_086/revoke"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "id": "sess_086",
+       "status": "revoked"
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.clerk.com/v1/sessions/sess_088/revoke"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "id": "sess_088",
+       "status": "revoked"
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.clerk.com/v1/sessions/sess_090/revoke"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "id": "sess_090",
+       "status": "revoked"
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.clerk.com/v1/sessions/sess_092/revoke"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "id": "sess_092",
+       "status": "revoked"
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.clerk.com/v1/sessions/sess_094/revoke"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "id": "sess_094",
+       "status": "revoked"
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.clerk.com/v1/sessions/sess_096/revoke"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "id": "sess_096",
+       "status": "revoked"
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.clerk.com/v1/sessions/sess_098/revoke"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "id": "sess_098",
+       "status": "revoked"
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.clerk.com/v1/sessions/sess_100/revoke"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "id": "sess_100",
+       "status": "revoked"
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.noresponse.test/v1/accounts/acct_7f3a9c/enforcements",
+      "body": {
+       "risk_version": 4,
+       "flow": "login",
+       "action": "revoke_sessions",
+       "state_before": "active",
+       "status": "applied",
+       "provider": "clerk"
+      }
+     },
+     "response": {
+      "status": 201,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "id": "enf_01JA2ZF5N6P7Q8R9S0T1V2W3A1",
+       "account_id": "acct_7f3a9c",
+       "risk_version": 4,
+       "flow": "login",
+       "action": "revoke_sessions",
+       "state_before": "active",
+       "status": "applied",
+       "provider": "clerk",
+       "created_at": "2026-10-23T09:00:06.000Z"
+      }
+     }
+    }
+   ],
+   "result": {
+    "skipped": null,
+    "enforcements": [
+     {
+      "flow": "login",
+      "action": "restrict",
+      "status": "applied"
+     },
+     {
+      "flow": "login",
+      "action": "revoke_sessions",
+      "status": "applied"
+     }
+    ]
+   },
+   "error": null
+  },
+  {
+   "name": "clerk_onboarding_review_fails_onboarding",
+   "description": "An onboarding account is judged on its account_creation decision as read from GET, not the stale decision in the event: review fails onboarding and revokes sessions.",
+   "provider": "clerk",
+   "event": {
+    "id": "evt_01JA2ZE5N6P7Q8R9S0T1VWXYZ6",
+    "type": "account.risk_changed",
+    "created_at": "2026-10-23T09:00:05.000Z",
+    "data": {
+     "account": {
+      "schema_version": "1",
+      "id": "acct_7f3a9c",
+      "risk": {
+       "score": 10,
+       "decision": "allow",
+       "reasons": []
+      },
+      "decisions_by_flow": {
+       "account_creation": "allow",
+       "login": "allow",
+       "purchase": "allow"
+      },
+      "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+      "updated_at": "2026-10-23T09:00:04.812Z",
+      "risk_version": 2
+     },
+     "previous_decisions_by_flow": {
+      "account_creation": "allow",
+      "login": "allow",
+      "purchase": "allow"
+     }
+    }
+   },
+   "state": {
+    "state": "onboarding",
+    "user_id": "user_2NNEqL2nrIRdJ194ndJqAHwEfxC"
+   },
+   "exchanges": [
+    {
+     "request": {
+      "method": "GET",
+      "url": "https://api.noresponse.test/v1/accounts/acct_7f3a9c"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "schema_version": "1",
+       "id": "acct_7f3a9c",
+       "risk": {
+        "score": 70,
+        "decision": "review",
+        "reasons": [
+         {
+          "code": "recent_password_exposure",
+          "weight": 55,
+          "identifier": "email"
+         }
+        ]
+       },
+       "decisions_by_flow": {
+        "account_creation": "review",
+        "login": "allow",
+        "purchase": "allow"
+       },
+       "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+       "updated_at": "2026-10-23T09:00:04.812Z",
+       "risk_version": 3
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.clerk.com/v1/users/user_2NNEqL2nrIRdJ194ndJqAHwEfxC/ban"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "id": "user_2NNEqL2nrIRdJ194ndJqAHwEfxC",
+       "banned": true
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.noresponse.test/v1/accounts/acct_7f3a9c/enforcements",
+      "body": {
+       "risk_version": 3,
+       "flow": "account_creation",
+       "action": "fail_onboarding",
+       "state_before": "onboarding",
+       "status": "applied",
+       "provider": "clerk"
+      }
+     },
+     "response": {
+      "status": 201,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "id": "enf_01JA2ZF5N6P7Q8R9S0T1V2W3A2",
+       "account_id": "acct_7f3a9c",
+       "risk_version": 3,
+       "flow": "account_creation",
+       "action": "fail_onboarding",
+       "state_before": "onboarding",
+       "status": "applied",
+       "provider": "clerk",
+       "created_at": "2026-10-23T09:00:06.000Z"
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "GET",
+      "url": "https://api.clerk.com/v1/sessions?user_id=user_2NNEqL2nrIRdJ194ndJqAHwEfxC&status=active&limit=100&offset=0"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "data": [],
+       "total_count": 0
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.noresponse.test/v1/accounts/acct_7f3a9c/enforcements",
+      "body": {
+       "risk_version": 3,
+       "flow": "account_creation",
+       "action": "revoke_sessions",
+       "state_before": "onboarding",
+       "status": "applied",
+       "provider": "clerk"
+      }
+     },
+     "response": {
+      "status": 201,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "id": "enf_01JA2ZF5N6P7Q8R9S0T1V2W3A3",
+       "account_id": "acct_7f3a9c",
+       "risk_version": 3,
+       "flow": "account_creation",
+       "action": "revoke_sessions",
+       "state_before": "onboarding",
+       "status": "applied",
+       "provider": "clerk",
+       "created_at": "2026-10-23T09:00:06.000Z"
+      }
+     }
+    }
+   ],
+   "result": {
+    "skipped": null,
+    "enforcements": [
+     {
+      "flow": "account_creation",
+      "action": "fail_onboarding",
+      "status": "applied"
+     },
+     {
+      "flow": "account_creation",
+      "action": "revoke_sessions",
+      "status": "applied"
+     }
+    ]
+   },
+   "error": null
+  },
+  {
+   "name": "workos_provisional_block_rejects_activation",
+   "description": "WorkOS has no ban, so rejecting activation writes noresponse_state to the user's metadata (never a delete) and revokes each active session, following the list cursor.",
+   "provider": "workos",
+   "event": {
+    "id": "evt_01JA2ZE5N6P7Q8R9S0T1VWXYZ6",
+    "type": "account.risk_changed",
+    "created_at": "2026-10-23T09:00:05.000Z",
+    "data": {
+     "account": {
+      "schema_version": "1",
+      "id": "acct_7f3a9c",
+      "risk": {
+       "score": 90,
+       "decision": "block",
+       "reasons": [
+        {
+         "code": "recent_password_exposure",
+         "weight": 55,
+         "identifier": "email"
+        }
+       ]
+      },
+      "decisions_by_flow": {
+       "account_creation": "block",
+       "login": "block",
+       "purchase": "block"
+      },
+      "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+      "updated_at": "2026-10-23T09:00:04.812Z",
+      "risk_version": 5
+     },
+     "previous_decisions_by_flow": {
+      "account_creation": "allow",
+      "login": "allow",
+      "purchase": "allow"
+     }
+    }
+   },
+   "state": {
+    "state": "provisional",
+    "user_id": "user_01HXYZ9K6Q4V7W9XBCDEFGHJKM"
+   },
+   "exchanges": [
+    {
+     "request": {
+      "method": "GET",
+      "url": "https://api.noresponse.test/v1/accounts/acct_7f3a9c"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "schema_version": "1",
+       "id": "acct_7f3a9c",
+       "risk": {
+        "score": 90,
+        "decision": "block",
+        "reasons": [
+         {
+          "code": "recent_password_exposure",
+          "weight": 55,
+          "identifier": "email"
+         }
+        ]
+       },
+       "decisions_by_flow": {
+        "account_creation": "block",
+        "login": "block",
+        "purchase": "block"
+       },
+       "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+       "updated_at": "2026-10-23T09:00:04.812Z",
+       "risk_version": 5
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "PUT",
+      "url": "https://api.workos.com/user_management/users/user_01HXYZ9K6Q4V7W9XBCDEFGHJKM",
+      "body": {
+       "metadata": {
+        "noresponse_state": "activation_rejected"
+       }
+      }
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "id": "user_01HXYZ9K6Q4V7W9XBCDEFGHJKM",
+       "metadata": {
+        "noresponse_state": "activation_rejected"
+       }
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.noresponse.test/v1/accounts/acct_7f3a9c/enforcements",
+      "body": {
+       "risk_version": 5,
+       "flow": "account_creation",
+       "action": "reject_activation",
+       "state_before": "provisional",
+       "status": "applied",
+       "provider": "workos"
+      }
+     },
+     "response": {
+      "status": 201,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "id": "enf_01JA2ZF5N6P7Q8R9S0T1V2W3A4",
+       "account_id": "acct_7f3a9c",
+       "risk_version": 5,
+       "flow": "account_creation",
+       "action": "reject_activation",
+       "state_before": "provisional",
+       "status": "applied",
+       "provider": "workos",
+       "created_at": "2026-10-23T09:00:06.000Z"
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "GET",
+      "url": "https://api.workos.com/user_management/users/user_01HXYZ9K6Q4V7W9XBCDEFGHJKM/sessions?limit=100"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "data": [
+        {
+         "id": "session_01A",
+         "status": "active"
+        },
+        {
+         "id": "session_01B",
+         "status": "expired"
+        }
+       ],
+       "list_metadata": {
+        "after": "session_01B"
+       }
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "GET",
+      "url": "https://api.workos.com/user_management/users/user_01HXYZ9K6Q4V7W9XBCDEFGHJKM/sessions?limit=100&after=session_01B"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "data": [
+        {
+         "id": "session_01C",
+         "status": "active"
+        }
+       ],
+       "list_metadata": {
+        "after": null
+       }
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.workos.com/user_management/sessions/revoke",
+      "body": {
+       "session_id": "session_01A"
+      }
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {}
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.workos.com/user_management/sessions/revoke",
+      "body": {
+       "session_id": "session_01C"
+      }
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {}
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.noresponse.test/v1/accounts/acct_7f3a9c/enforcements",
+      "body": {
+       "risk_version": 5,
+       "flow": "account_creation",
+       "action": "revoke_sessions",
+       "state_before": "provisional",
+       "status": "applied",
+       "provider": "workos"
+      }
+     },
+     "response": {
+      "status": 201,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "id": "enf_01JA2ZF5N6P7Q8R9S0T1V2W3A5",
+       "account_id": "acct_7f3a9c",
+       "risk_version": 5,
+       "flow": "account_creation",
+       "action": "revoke_sessions",
+       "state_before": "provisional",
+       "status": "applied",
+       "provider": "workos",
+       "created_at": "2026-10-23T09:00:06.000Z"
+      }
+     }
+    }
+   ],
+   "result": {
+    "skipped": null,
+    "enforcements": [
+     {
+      "flow": "account_creation",
+      "action": "reject_activation",
+      "status": "applied"
+     },
+     {
+      "flow": "account_creation",
+      "action": "revoke_sessions",
+      "status": "applied"
+     }
+    ]
+   },
+   "error": null
+  },
+  {
+   "name": "workos_restricted_allow_reinstates_when_opted_in",
+   "description": "With reinstate on for login, a restricted account whose login decision fell to allow is unrestricted: the metadata key is removed.",
+   "provider": "workos",
+   "flows": {
+    "login": {
+     "reinstate": true
+    }
+   },
+   "event": {
+    "id": "evt_01JA2ZE5N6P7Q8R9S0T1VWXYZ6",
+    "type": "account.risk_changed",
+    "created_at": "2026-10-23T09:00:05.000Z",
+    "data": {
+     "account": {
+      "schema_version": "1",
+      "id": "acct_7f3a9c",
+      "risk": {
+       "score": 10,
+       "decision": "allow",
+       "reasons": []
+      },
+      "decisions_by_flow": {
+       "account_creation": "allow",
+       "login": "allow",
+       "purchase": "allow"
+      },
+      "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+      "updated_at": "2026-10-23T09:00:04.812Z",
+      "risk_version": 6
+     },
+     "previous_decisions_by_flow": {
+      "account_creation": "allow",
+      "login": "allow",
+      "purchase": "allow"
+     }
+    }
+   },
+   "state": {
+    "state": "restricted",
+    "user_id": "user_01HXYZ9K6Q4V7W9XBCDEFGHJKM"
+   },
+   "exchanges": [
+    {
+     "request": {
+      "method": "GET",
+      "url": "https://api.noresponse.test/v1/accounts/acct_7f3a9c"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "schema_version": "1",
+       "id": "acct_7f3a9c",
+       "risk": {
+        "score": 10,
+        "decision": "allow",
+        "reasons": []
+       },
+       "decisions_by_flow": {
+        "account_creation": "allow",
+        "login": "allow",
+        "purchase": "allow"
+       },
+       "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+       "updated_at": "2026-10-23T09:00:04.812Z",
+       "risk_version": 6
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "PUT",
+      "url": "https://api.workos.com/user_management/users/user_01HXYZ9K6Q4V7W9XBCDEFGHJKM",
+      "body": {
+       "metadata": {
+        "noresponse_state": null
+       }
+      }
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "id": "user_01HXYZ9K6Q4V7W9XBCDEFGHJKM",
+       "metadata": {}
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.noresponse.test/v1/accounts/acct_7f3a9c/enforcements",
+      "body": {
+       "risk_version": 6,
+       "flow": "login",
+       "action": "unrestrict",
+       "state_before": "restricted",
+       "status": "applied",
+       "provider": "workos"
+      }
+     },
+     "response": {
+      "status": 201,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "id": "enf_01JA2ZF5N6P7Q8R9S0T1V2W3A6",
+       "account_id": "acct_7f3a9c",
+       "risk_version": 6,
+       "flow": "login",
+       "action": "unrestrict",
+       "state_before": "restricted",
+       "status": "applied",
+       "provider": "workos",
+       "created_at": "2026-10-23T09:00:06.000Z"
+      }
+     }
+    }
+   ],
+   "result": {
+    "skipped": null,
+    "enforcements": [
+     {
+      "flow": "login",
+      "action": "unrestrict",
+      "status": "applied"
+     }
+    ]
+   },
+   "error": null
+  },
+  {
+   "name": "clerk_restricted_allow_stays_restricted_by_default",
+   "description": "Reinstatement is opt-in: without it a restricted account stays restricted when its risk falls, and nothing is called or recorded.",
+   "provider": "clerk",
+   "event": {
+    "id": "evt_01JA2ZE5N6P7Q8R9S0T1VWXYZ6",
+    "type": "account.risk_changed",
+    "created_at": "2026-10-23T09:00:05.000Z",
+    "data": {
+     "account": {
+      "schema_version": "1",
+      "id": "acct_7f3a9c",
+      "risk": {
+       "score": 10,
+       "decision": "allow",
+       "reasons": []
+      },
+      "decisions_by_flow": {
+       "account_creation": "allow",
+       "login": "allow",
+       "purchase": "allow"
+      },
+      "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+      "updated_at": "2026-10-23T09:00:04.812Z",
+      "risk_version": 6
+     },
+     "previous_decisions_by_flow": {
+      "account_creation": "allow",
+      "login": "allow",
+      "purchase": "allow"
+     }
+    }
+   },
+   "state": {
+    "state": "restricted",
+    "user_id": "user_2NNEqL2nrIRdJ194ndJqAHwEfxC"
+   },
+   "exchanges": [
+    {
+     "request": {
+      "method": "GET",
+      "url": "https://api.noresponse.test/v1/accounts/acct_7f3a9c"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "schema_version": "1",
+       "id": "acct_7f3a9c",
+       "risk": {
+        "score": 10,
+        "decision": "allow",
+        "reasons": []
+       },
+       "decisions_by_flow": {
+        "account_creation": "allow",
+        "login": "allow",
+        "purchase": "allow"
+       },
+       "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+       "updated_at": "2026-10-23T09:00:04.812Z",
+       "risk_version": 6
+      }
+     }
+    }
+   ],
+   "result": {
+    "skipped": null,
+    "enforcements": []
+   },
+   "error": null
+  },
+  {
+   "name": "auth0_active_block_restricts_and_revokes",
+   "description": "On a plan with the sessions API, restrict sets blocked: true and revoke deletes every session and refresh token. The user id is percent-encoded in the path.",
+   "provider": "auth0",
+   "domain": "example.eu.auth0.com",
+   "event": {
+    "id": "evt_01JA2ZE5N6P7Q8R9S0T1VWXYZ6",
+    "type": "account.risk_changed",
+    "created_at": "2026-10-23T09:00:05.000Z",
+    "data": {
+     "account": {
+      "schema_version": "1",
+      "id": "acct_7f3a9c",
+      "risk": {
+       "score": 90,
+       "decision": "block",
+       "reasons": [
+        {
+         "code": "recent_password_exposure",
+         "weight": 55,
+         "identifier": "email"
+        }
+       ]
+      },
+      "decisions_by_flow": {
+       "account_creation": "block",
+       "login": "block",
+       "purchase": "block"
+      },
+      "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+      "updated_at": "2026-10-23T09:00:04.812Z",
+      "risk_version": 7
+     },
+     "previous_decisions_by_flow": {
+      "account_creation": "allow",
+      "login": "allow",
+      "purchase": "allow"
+     }
+    }
+   },
+   "state": {
+    "state": "active",
+    "user_id": "auth0|65f0c1d2e3a4b5c6d7e8f901"
+   },
+   "exchanges": [
+    {
+     "request": {
+      "method": "GET",
+      "url": "https://api.noresponse.test/v1/accounts/acct_7f3a9c"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "schema_version": "1",
+       "id": "acct_7f3a9c",
+       "risk": {
+        "score": 90,
+        "decision": "block",
+        "reasons": [
+         {
+          "code": "recent_password_exposure",
+          "weight": 55,
+          "identifier": "email"
+         }
+        ]
+       },
+       "decisions_by_flow": {
+        "account_creation": "block",
+        "login": "block",
+        "purchase": "block"
+       },
+       "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+       "updated_at": "2026-10-23T09:00:04.812Z",
+       "risk_version": 7
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "PATCH",
+      "url": "https://example.eu.auth0.com/api/v2/users/auth0%7C65f0c1d2e3a4b5c6d7e8f901",
+      "body": {
+       "blocked": true
+      }
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "user_id": "auth0|65f0c1d2e3a4b5c6d7e8f901",
+       "blocked": true
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.noresponse.test/v1/accounts/acct_7f3a9c/enforcements",
+      "body": {
+       "risk_version": 7,
+       "flow": "login",
+       "action": "restrict",
+       "state_before": "active",
+       "status": "applied",
+       "provider": "auth0"
+      }
+     },
+     "response": {
+      "status": 201,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "id": "enf_01JA2ZF5N6P7Q8R9S0T1V2W3A7",
+       "account_id": "acct_7f3a9c",
+       "risk_version": 7,
+       "flow": "login",
+       "action": "restrict",
+       "state_before": "active",
+       "status": "applied",
+       "provider": "auth0",
+       "created_at": "2026-10-23T09:00:06.000Z"
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "DELETE",
+      "url": "https://example.eu.auth0.com/api/v2/users/auth0%7C65f0c1d2e3a4b5c6d7e8f901/sessions"
+     },
+     "response": {
+      "status": 202
+     }
+    },
+    {
+     "request": {
+      "method": "DELETE",
+      "url": "https://example.eu.auth0.com/api/v2/users/auth0%7C65f0c1d2e3a4b5c6d7e8f901/refresh-tokens"
+     },
+     "response": {
+      "status": 202
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.noresponse.test/v1/accounts/acct_7f3a9c/enforcements",
+      "body": {
+       "risk_version": 7,
+       "flow": "login",
+       "action": "revoke_sessions",
+       "state_before": "active",
+       "status": "applied",
+       "provider": "auth0"
+      }
+     },
+     "response": {
+      "status": 201,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "id": "enf_01JA2ZF5N6P7Q8R9S0T1V2W3A8",
+       "account_id": "acct_7f3a9c",
+       "risk_version": 7,
+       "flow": "login",
+       "action": "revoke_sessions",
+       "state_before": "active",
+       "status": "applied",
+       "provider": "auth0",
+       "created_at": "2026-10-23T09:00:06.000Z"
+      }
+     }
+    }
+   ],
+   "result": {
+    "skipped": null,
+    "enforcements": [
+     {
+      "flow": "login",
+      "action": "restrict",
+      "status": "applied"
+     },
+     {
+      "flow": "login",
+      "action": "revoke_sessions",
+      "status": "applied"
+     }
+    ]
+   },
+   "error": null
+  },
+  {
+   "name": "auth0_revoke_falls_back_without_the_sessions_api",
+   "description": "Review on an active account only revokes sessions. Without Auth0's Enterprise sessions API both session endpoints answer 403 feature_not_enabled: the table's fallback blocks the user to end the login session and deletes each refresh token through /device-credentials, and the block is reported as restrict beside revoke_sessions so the customer knows the account is now restricted.",
+   "provider": "auth0",
+   "domain": "example.eu.auth0.com",
+   "event": {
+    "id": "evt_01JA2ZE5N6P7Q8R9S0T1VWXYZ6",
+    "type": "account.risk_changed",
+    "created_at": "2026-10-23T09:00:05.000Z",
+    "data": {
+     "account": {
+      "schema_version": "1",
+      "id": "acct_7f3a9c",
+      "risk": {
+       "score": 70,
+       "decision": "review",
+       "reasons": [
+        {
+         "code": "recent_password_exposure",
+         "weight": 55,
+         "identifier": "email"
+        }
+       ]
+      },
+      "decisions_by_flow": {
+       "account_creation": "review",
+       "login": "review",
+       "purchase": "review"
+      },
+      "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+      "updated_at": "2026-10-23T09:00:04.812Z",
+      "risk_version": 8
+     },
+     "previous_decisions_by_flow": {
+      "account_creation": "allow",
+      "login": "allow",
+      "purchase": "allow"
+     }
+    }
+   },
+   "state": {
+    "state": "active",
+    "user_id": "auth0|65f0c1d2e3a4b5c6d7e8f901"
+   },
+   "exchanges": [
+    {
+     "request": {
+      "method": "GET",
+      "url": "https://api.noresponse.test/v1/accounts/acct_7f3a9c"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "schema_version": "1",
+       "id": "acct_7f3a9c",
+       "risk": {
+        "score": 70,
+        "decision": "review",
+        "reasons": [
+         {
+          "code": "recent_password_exposure",
+          "weight": 55,
+          "identifier": "email"
+         }
+        ]
+       },
+       "decisions_by_flow": {
+        "account_creation": "review",
+        "login": "review",
+        "purchase": "review"
+       },
+       "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+       "updated_at": "2026-10-23T09:00:04.812Z",
+       "risk_version": 8
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "DELETE",
+      "url": "https://example.eu.auth0.com/api/v2/users/auth0%7C65f0c1d2e3a4b5c6d7e8f901/sessions"
+     },
+     "response": {
+      "status": 403,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "statusCode": 403,
+       "error": "Forbidden",
+       "message": "This feature is not enabled for this tenant.",
+       "errorCode": "feature_not_enabled"
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "PATCH",
+      "url": "https://example.eu.auth0.com/api/v2/users/auth0%7C65f0c1d2e3a4b5c6d7e8f901",
+      "body": {
+       "blocked": true
+      }
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "user_id": "auth0|65f0c1d2e3a4b5c6d7e8f901",
+       "blocked": true
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "DELETE",
+      "url": "https://example.eu.auth0.com/api/v2/users/auth0%7C65f0c1d2e3a4b5c6d7e8f901/refresh-tokens"
+     },
+     "response": {
+      "status": 403,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "statusCode": 403,
+       "error": "Forbidden",
+       "message": "This feature is not enabled for this tenant.",
+       "errorCode": "feature_not_enabled"
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "GET",
+      "url": "https://example.eu.auth0.com/api/v2/device-credentials?user_id=auth0%7C65f0c1d2e3a4b5c6d7e8f901&type=refresh_token&per_page=100&page=0"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": [
+       {
+        "id": "dcr_0001",
+        "type": "refresh_token"
+       },
+       {
+        "id": "dcr_0002",
+        "type": "refresh_token"
+       }
+      ]
+     }
+    },
+    {
+     "request": {
+      "method": "DELETE",
+      "url": "https://example.eu.auth0.com/api/v2/device-credentials/dcr_0001"
+     },
+     "response": {
+      "status": 204
+     }
+    },
+    {
+     "request": {
+      "method": "DELETE",
+      "url": "https://example.eu.auth0.com/api/v2/device-credentials/dcr_0002"
+     },
+     "response": {
+      "status": 204
+     }
+    },
+    {
+     "request": {
+      "method": "GET",
+      "url": "https://example.eu.auth0.com/api/v2/device-credentials?user_id=auth0%7C65f0c1d2e3a4b5c6d7e8f901&type=rotating_refresh_token&per_page=100&page=0"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": []
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.noresponse.test/v1/accounts/acct_7f3a9c/enforcements",
+      "body": {
+       "risk_version": 8,
+       "flow": "login",
+       "action": "restrict",
+       "state_before": "active",
+       "status": "applied",
+       "provider": "auth0"
+      }
+     },
+     "response": {
+      "status": 201,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "id": "enf_01JA2ZF5N6P7Q8R9S0T1V2W3A9",
+       "account_id": "acct_7f3a9c",
+       "risk_version": 8,
+       "flow": "login",
+       "action": "restrict",
+       "state_before": "active",
+       "status": "applied",
+       "provider": "auth0",
+       "created_at": "2026-10-23T09:00:06.000Z"
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.noresponse.test/v1/accounts/acct_7f3a9c/enforcements",
+      "body": {
+       "risk_version": 8,
+       "flow": "login",
+       "action": "revoke_sessions",
+       "state_before": "active",
+       "status": "applied",
+       "provider": "auth0"
+      }
+     },
+     "response": {
+      "status": 201,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "id": "enf_01JA2ZF5N6P7Q8R9S0T1V2W3B0",
+       "account_id": "acct_7f3a9c",
+       "risk_version": 8,
+       "flow": "login",
+       "action": "revoke_sessions",
+       "state_before": "active",
+       "status": "applied",
+       "provider": "auth0",
+       "created_at": "2026-10-23T09:00:06.000Z"
+      }
+     }
+    }
+   ],
+   "result": {
+    "skipped": null,
+    "enforcements": [
+     {
+      "flow": "login",
+      "action": "restrict",
+      "status": "applied"
+     },
+     {
+      "flow": "login",
+      "action": "revoke_sessions",
+      "status": "applied"
+     }
+    ]
+   },
+   "error": null
+  },
+  {
+   "name": "auth0_refusal_is_recorded_as_failed",
+   "description": "A refusal that is not a plan limit fails the action: it is recorded as failed with the provider's code, later actions are not attempted, and the handler raises so the delivery is retried.",
+   "provider": "auth0",
+   "domain": "example.eu.auth0.com",
+   "event": {
+    "id": "evt_01JA2ZE5N6P7Q8R9S0T1VWXYZ6",
+    "type": "account.risk_changed",
+    "created_at": "2026-10-23T09:00:05.000Z",
+    "data": {
+     "account": {
+      "schema_version": "1",
+      "id": "acct_7f3a9c",
+      "risk": {
+       "score": 90,
+       "decision": "block",
+       "reasons": [
+        {
+         "code": "recent_password_exposure",
+         "weight": 55,
+         "identifier": "email"
+        }
+       ]
+      },
+      "decisions_by_flow": {
+       "account_creation": "block",
+       "login": "block",
+       "purchase": "block"
+      },
+      "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+      "updated_at": "2026-10-23T09:00:04.812Z",
+      "risk_version": 9
+     },
+     "previous_decisions_by_flow": {
+      "account_creation": "allow",
+      "login": "allow",
+      "purchase": "allow"
+     }
+    }
+   },
+   "state": {
+    "state": "active",
+    "user_id": "auth0|65f0c1d2e3a4b5c6d7e8f901"
+   },
+   "exchanges": [
+    {
+     "request": {
+      "method": "GET",
+      "url": "https://api.noresponse.test/v1/accounts/acct_7f3a9c"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "schema_version": "1",
+       "id": "acct_7f3a9c",
+       "risk": {
+        "score": 90,
+        "decision": "block",
+        "reasons": [
+         {
+          "code": "recent_password_exposure",
+          "weight": 55,
+          "identifier": "email"
+         }
+        ]
+       },
+       "decisions_by_flow": {
+        "account_creation": "block",
+        "login": "block",
+        "purchase": "block"
+       },
+       "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+       "updated_at": "2026-10-23T09:00:04.812Z",
+       "risk_version": 9
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "PATCH",
+      "url": "https://example.eu.auth0.com/api/v2/users/auth0%7C65f0c1d2e3a4b5c6d7e8f901",
+      "body": {
+       "blocked": true
+      }
+     },
+     "response": {
+      "status": 403,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "statusCode": 403,
+       "error": "Forbidden",
+       "message": "Insufficient scope, expected any of: update:users",
+       "errorCode": "insufficient_scope"
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.noresponse.test/v1/accounts/acct_7f3a9c/enforcements",
+      "body": {
+       "risk_version": 9,
+       "flow": "login",
+       "action": "restrict",
+       "state_before": "active",
+       "status": "failed",
+       "provider": "auth0",
+       "error_code": "auth0.insufficient_scope"
+      }
+     },
+     "response": {
+      "status": 201,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "id": "enf_01JA2ZF5N6P7Q8R9S0T1V2W3B1",
+       "account_id": "acct_7f3a9c",
+       "risk_version": 9,
+       "flow": "login",
+       "action": "restrict",
+       "state_before": "active",
+       "status": "failed",
+       "provider": "auth0",
+       "error_code": "auth0.insufficient_scope",
+       "created_at": "2026-10-23T09:00:06.000Z"
+      }
+     }
+    }
+   ],
+   "result": {
+    "skipped": null,
+    "enforcements": [
+     {
+      "flow": "login",
+      "action": "restrict",
+      "status": "failed",
+      "error_code": "auth0.insufficient_scope"
+     }
+    ]
+   },
+   "error": {
+    "provider": "auth0",
+    "status": 403,
+    "code": "insufficient_scope"
+   }
+  },
+  {
+   "name": "auth0_rate_limit_is_waited_out_and_404_counts_as_done",
+   "description": "A 429 is retried after Retry-After, and a 404 means the session is already gone, so the action counts as done.",
+   "provider": "auth0",
+   "domain": "example.eu.auth0.com",
+   "event": {
+    "id": "evt_01JA2ZE5N6P7Q8R9S0T1VWXYZ6",
+    "type": "account.risk_changed",
+    "created_at": "2026-10-23T09:00:05.000Z",
+    "data": {
+     "account": {
+      "schema_version": "1",
+      "id": "acct_7f3a9c",
+      "risk": {
+       "score": 90,
+       "decision": "block",
+       "reasons": [
+        {
+         "code": "recent_password_exposure",
+         "weight": 55,
+         "identifier": "email"
+        }
+       ]
+      },
+      "decisions_by_flow": {
+       "account_creation": "block",
+       "login": "block",
+       "purchase": "block"
+      },
+      "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+      "updated_at": "2026-10-23T09:00:04.812Z",
+      "risk_version": 10
+     },
+     "previous_decisions_by_flow": {
+      "account_creation": "allow",
+      "login": "allow",
+      "purchase": "allow"
+     }
+    }
+   },
+   "state": {
+    "state": "active",
+    "user_id": "auth0|65f0c1d2e3a4b5c6d7e8f901"
+   },
+   "exchanges": [
+    {
+     "request": {
+      "method": "GET",
+      "url": "https://api.noresponse.test/v1/accounts/acct_7f3a9c"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "schema_version": "1",
+       "id": "acct_7f3a9c",
+       "risk": {
+        "score": 90,
+        "decision": "block",
+        "reasons": [
+         {
+          "code": "recent_password_exposure",
+          "weight": 55,
+          "identifier": "email"
+         }
+        ]
+       },
+       "decisions_by_flow": {
+        "account_creation": "block",
+        "login": "block",
+        "purchase": "block"
+       },
+       "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+       "updated_at": "2026-10-23T09:00:04.812Z",
+       "risk_version": 10
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "PATCH",
+      "url": "https://example.eu.auth0.com/api/v2/users/auth0%7C65f0c1d2e3a4b5c6d7e8f901",
+      "body": {
+       "blocked": true
+      }
+     },
+     "response": {
+      "status": 429,
+      "headers": {
+       "content-type": "application/json",
+       "retry-after": "0"
+      },
+      "body": {
+       "statusCode": 429,
+       "error": "Too Many Requests",
+       "message": "Global limit has been reached",
+       "errorCode": "too_many_requests"
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "PATCH",
+      "url": "https://example.eu.auth0.com/api/v2/users/auth0%7C65f0c1d2e3a4b5c6d7e8f901",
+      "body": {
+       "blocked": true
+      }
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "user_id": "auth0|65f0c1d2e3a4b5c6d7e8f901",
+       "blocked": true
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.noresponse.test/v1/accounts/acct_7f3a9c/enforcements",
+      "body": {
+       "risk_version": 10,
+       "flow": "login",
+       "action": "restrict",
+       "state_before": "active",
+       "status": "applied",
+       "provider": "auth0"
+      }
+     },
+     "response": {
+      "status": 201,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "id": "enf_01JA2ZF5N6P7Q8R9S0T1V2W3B2",
+       "account_id": "acct_7f3a9c",
+       "risk_version": 10,
+       "flow": "login",
+       "action": "restrict",
+       "state_before": "active",
+       "status": "applied",
+       "provider": "auth0",
+       "created_at": "2026-10-23T09:00:06.000Z"
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "DELETE",
+      "url": "https://example.eu.auth0.com/api/v2/users/auth0%7C65f0c1d2e3a4b5c6d7e8f901/sessions"
+     },
+     "response": {
+      "status": 404,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "statusCode": 404,
+       "error": "Not Found",
+       "message": "The user does not exist.",
+       "errorCode": "inexistent_user"
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "DELETE",
+      "url": "https://example.eu.auth0.com/api/v2/users/auth0%7C65f0c1d2e3a4b5c6d7e8f901/refresh-tokens"
+     },
+     "response": {
+      "status": 202
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.noresponse.test/v1/accounts/acct_7f3a9c/enforcements",
+      "body": {
+       "risk_version": 10,
+       "flow": "login",
+       "action": "revoke_sessions",
+       "state_before": "active",
+       "status": "applied",
+       "provider": "auth0"
+      }
+     },
+     "response": {
+      "status": 201,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "id": "enf_01JA2ZF5N6P7Q8R9S0T1V2W3B3",
+       "account_id": "acct_7f3a9c",
+       "risk_version": 10,
+       "flow": "login",
+       "action": "revoke_sessions",
+       "state_before": "active",
+       "status": "applied",
+       "provider": "auth0",
+       "created_at": "2026-10-23T09:00:06.000Z"
+      }
+     }
+    }
+   ],
+   "result": {
+    "skipped": null,
+    "enforcements": [
+     {
+      "flow": "login",
+      "action": "restrict",
+      "status": "applied"
+     },
+     {
+      "flow": "login",
+      "action": "revoke_sessions",
+      "status": "applied"
+     }
+    ]
+   },
+   "error": null
+  },
+  {
+   "name": "replayed_event_changes_nothing",
+   "description": "A replayed or older event: the customer already enforced the account's current risk_version, so nothing is called or recorded.",
+   "provider": "clerk",
+   "event": {
+    "id": "evt_01JA2ZE5N6P7Q8R9S0T1VWXYZ6",
+    "type": "account.risk_changed",
+    "created_at": "2026-10-23T09:00:05.000Z",
+    "data": {
+     "account": {
+      "schema_version": "1",
+      "id": "acct_7f3a9c",
+      "risk": {
+       "score": 70,
+       "decision": "review",
+       "reasons": [
+        {
+         "code": "recent_password_exposure",
+         "weight": 55,
+         "identifier": "email"
+        }
+       ]
+      },
+      "decisions_by_flow": {
+       "account_creation": "review",
+       "login": "review",
+       "purchase": "review"
+      },
+      "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+      "updated_at": "2026-10-23T09:00:04.812Z",
+      "risk_version": 3
+     },
+     "previous_decisions_by_flow": {
+      "account_creation": "allow",
+      "login": "allow",
+      "purchase": "allow"
+     }
+    }
+   },
+   "state": {
+    "state": "restricted",
+    "user_id": "user_2NNEqL2nrIRdJ194ndJqAHwEfxC",
+    "enforced_risk_version": 4
+   },
+   "exchanges": [
+    {
+     "request": {
+      "method": "GET",
+      "url": "https://api.noresponse.test/v1/accounts/acct_7f3a9c"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "schema_version": "1",
+       "id": "acct_7f3a9c",
+       "risk": {
+        "score": 90,
+        "decision": "block",
+        "reasons": [
+         {
+          "code": "recent_password_exposure",
+          "weight": 55,
+          "identifier": "email"
+         }
+        ]
+       },
+       "decisions_by_flow": {
+        "account_creation": "block",
+        "login": "block",
+        "purchase": "block"
+       },
+       "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+       "updated_at": "2026-10-23T09:00:04.812Z",
+       "risk_version": 4
+      }
+     }
+    }
+   ],
+   "result": {
+    "skipped": "already_enforced",
+    "enforcements": []
+   },
+   "error": null
+  },
+  {
+   "name": "event_decision_is_ignored",
+   "description": "The event is only a trigger: it says block, but the account read now says allow, so an active account is left alone.",
+   "provider": "clerk",
+   "event": {
+    "id": "evt_01JA2ZE5N6P7Q8R9S0T1VWXYZ6",
+    "type": "account.risk_changed",
+    "created_at": "2026-10-23T09:00:05.000Z",
+    "data": {
+     "account": {
+      "schema_version": "1",
+      "id": "acct_7f3a9c",
+      "risk": {
+       "score": 90,
+       "decision": "block",
+       "reasons": [
+        {
+         "code": "recent_password_exposure",
+         "weight": 55,
+         "identifier": "email"
+        }
+       ]
+      },
+      "decisions_by_flow": {
+       "account_creation": "block",
+       "login": "block",
+       "purchase": "block"
+      },
+      "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+      "updated_at": "2026-10-23T09:00:04.812Z",
+      "risk_version": 4
+     },
+     "previous_decisions_by_flow": {
+      "account_creation": "allow",
+      "login": "allow",
+      "purchase": "allow"
+     }
+    }
+   },
+   "state": {
+    "state": "active",
+    "user_id": "user_2NNEqL2nrIRdJ194ndJqAHwEfxC"
+   },
+   "exchanges": [
+    {
+     "request": {
+      "method": "GET",
+      "url": "https://api.noresponse.test/v1/accounts/acct_7f3a9c"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "schema_version": "1",
+       "id": "acct_7f3a9c",
+       "risk": {
+        "score": 10,
+        "decision": "allow",
+        "reasons": []
+       },
+       "decisions_by_flow": {
+        "account_creation": "allow",
+        "login": "allow",
+        "purchase": "allow"
+       },
+       "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+       "updated_at": "2026-10-23T09:00:04.812Z",
+       "risk_version": 5
+      }
+     }
+    }
+   ],
+   "result": {
+    "skipped": null,
+    "enforcements": []
+   },
+   "error": null
+  },
+  {
+   "name": "erased_account_is_left_alone",
+   "description": "An account GET answers 404 for was erased: the handler takes no action and does not ask for its state.",
+   "provider": "clerk",
+   "event": {
+    "id": "evt_01JA2ZE5N6P7Q8R9S0T1VWXYZ6",
+    "type": "account.risk_changed",
+    "created_at": "2026-10-23T09:00:05.000Z",
+    "data": {
+     "account": {
+      "schema_version": "1",
+      "id": "acct_7f3a9c",
+      "risk": {
+       "score": 90,
+       "decision": "block",
+       "reasons": [
+        {
+         "code": "recent_password_exposure",
+         "weight": 55,
+         "identifier": "email"
+        }
+       ]
+      },
+      "decisions_by_flow": {
+       "account_creation": "block",
+       "login": "block",
+       "purchase": "block"
+      },
+      "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+      "updated_at": "2026-10-23T09:00:04.812Z",
+      "risk_version": 4
+     },
+     "previous_decisions_by_flow": {
+      "account_creation": "allow",
+      "login": "allow",
+      "purchase": "allow"
+     }
+    }
+   },
+   "state": null,
+   "exchanges": [
+    {
+     "request": {
+      "method": "GET",
+      "url": "https://api.noresponse.test/v1/accounts/acct_7f3a9c"
+     },
+     "response": {
+      "status": 404,
+      "headers": {
+       "content-type": "application/problem+json"
+      },
+      "body": {
+       "type": "https://docs.noresponse.org/problems/not-found",
+       "title": "Not found",
+       "status": 404,
+       "detail": "No such account.",
+       "code": "not_found",
+       "request_id": "0123456789abcdef0123456789abcdef"
+      }
+     }
+    }
+   ],
+   "result": {
+    "skipped": "account_gone",
+    "enforcements": []
+   },
+   "error": null
+  },
+  {
+   "name": "unknown_user_is_left_alone",
+   "description": "getAccountState returns nothing for an account the customer does not hold: no action.",
+   "provider": "clerk",
+   "event": {
+    "id": "evt_01JA2ZE5N6P7Q8R9S0T1VWXYZ6",
+    "type": "account.risk_changed",
+    "created_at": "2026-10-23T09:00:05.000Z",
+    "data": {
+     "account": {
+      "schema_version": "1",
+      "id": "acct_7f3a9c",
+      "risk": {
+       "score": 90,
+       "decision": "block",
+       "reasons": [
+        {
+         "code": "recent_password_exposure",
+         "weight": 55,
+         "identifier": "email"
+        }
+       ]
+      },
+      "decisions_by_flow": {
+       "account_creation": "block",
+       "login": "block",
+       "purchase": "block"
+      },
+      "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+      "updated_at": "2026-10-23T09:00:04.812Z",
+      "risk_version": 4
+     },
+     "previous_decisions_by_flow": {
+      "account_creation": "allow",
+      "login": "allow",
+      "purchase": "allow"
+     }
+    }
+   },
+   "state": null,
+   "exchanges": [
+    {
+     "request": {
+      "method": "GET",
+      "url": "https://api.noresponse.test/v1/accounts/acct_7f3a9c"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "schema_version": "1",
+       "id": "acct_7f3a9c",
+       "risk": {
+        "score": 90,
+        "decision": "block",
+        "reasons": [
+         {
+          "code": "recent_password_exposure",
+          "weight": 55,
+          "identifier": "email"
+         }
+        ]
+       },
+       "decisions_by_flow": {
+        "account_creation": "block",
+        "login": "block",
+        "purchase": "block"
+       },
+       "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+       "updated_at": "2026-10-23T09:00:04.812Z",
+       "risk_version": 4
+      }
+     }
+    }
+   ],
+   "result": {
+    "skipped": "unknown_user",
+    "enforcements": []
+   },
+   "error": null
+  },
+  {
+   "name": "restricted_account_records_none",
+   "description": "An account already restricted needs nothing more when its decision stays adverse; the decision is recorded as none so it leaves the unenforced list.",
+   "provider": "workos",
+   "event": {
+    "id": "evt_01JA2ZE5N6P7Q8R9S0T1VWXYZ6",
+    "type": "account.risk_changed",
+    "created_at": "2026-10-23T09:00:05.000Z",
+    "data": {
+     "account": {
+      "schema_version": "1",
+      "id": "acct_7f3a9c",
+      "risk": {
+       "score": 90,
+       "decision": "block",
+       "reasons": [
+        {
+         "code": "recent_password_exposure",
+         "weight": 55,
+         "identifier": "email"
+        }
+       ]
+      },
+      "decisions_by_flow": {
+       "account_creation": "block",
+       "login": "block",
+       "purchase": "block"
+      },
+      "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+      "updated_at": "2026-10-23T09:00:04.812Z",
+      "risk_version": 11
+     },
+     "previous_decisions_by_flow": {
+      "account_creation": "allow",
+      "login": "allow",
+      "purchase": "allow"
+     }
+    }
+   },
+   "state": {
+    "state": "restricted",
+    "user_id": "user_01HXYZ9K6Q4V7W9XBCDEFGHJKM"
+   },
+   "exchanges": [
+    {
+     "request": {
+      "method": "GET",
+      "url": "https://api.noresponse.test/v1/accounts/acct_7f3a9c"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "schema_version": "1",
+       "id": "acct_7f3a9c",
+       "risk": {
+        "score": 90,
+        "decision": "block",
+        "reasons": [
+         {
+          "code": "recent_password_exposure",
+          "weight": 55,
+          "identifier": "email"
+         }
+        ]
+       },
+       "decisions_by_flow": {
+        "account_creation": "block",
+        "login": "block",
+        "purchase": "block"
+       },
+       "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+       "updated_at": "2026-10-23T09:00:04.812Z",
+       "risk_version": 11
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.noresponse.test/v1/accounts/acct_7f3a9c/enforcements",
+      "body": {
+       "risk_version": 11,
+       "flow": "login",
+       "action": "none",
+       "state_before": "restricted",
+       "status": "applied",
+       "provider": "workos"
+      }
+     },
+     "response": {
+      "status": 201,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "id": "enf_01JA2ZF5N6P7Q8R9S0T1V2W3B4",
+       "account_id": "acct_7f3a9c",
+       "risk_version": 11,
+       "flow": "login",
+       "action": "none",
+       "state_before": "restricted",
+       "status": "applied",
+       "provider": "workos",
+       "created_at": "2026-10-23T09:00:06.000Z"
+      }
+     }
+    }
+   ],
+   "result": {
+    "skipped": null,
+    "enforcements": [
+     {
+      "flow": "login",
+      "action": "none",
+      "status": "applied"
+     }
+    ]
+   },
+   "error": null
+  },
+  {
+   "name": "step_up_records_none",
+   "description": "step_up on an active account calls for no provider action; it is recorded as none.",
+   "provider": "auth0",
+   "domain": "example.eu.auth0.com",
+   "event": {
+    "id": "evt_01JA2ZE5N6P7Q8R9S0T1VWXYZ6",
+    "type": "account.risk_changed",
+    "created_at": "2026-10-23T09:00:05.000Z",
+    "data": {
+     "account": {
+      "schema_version": "1",
+      "id": "acct_7f3a9c",
+      "risk": {
+       "score": 50,
+       "decision": "step_up",
+       "reasons": [
+        {
+         "code": "recent_password_exposure",
+         "weight": 55,
+         "identifier": "email"
+        }
+       ]
+      },
+      "decisions_by_flow": {
+       "account_creation": "step_up",
+       "login": "step_up",
+       "purchase": "step_up"
+      },
+      "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+      "updated_at": "2026-10-23T09:00:04.812Z",
+      "risk_version": 12
+     },
+     "previous_decisions_by_flow": {
+      "account_creation": "allow",
+      "login": "allow",
+      "purchase": "allow"
+     }
+    }
+   },
+   "state": {
+    "state": "active"
+   },
+   "exchanges": [
+    {
+     "request": {
+      "method": "GET",
+      "url": "https://api.noresponse.test/v1/accounts/acct_7f3a9c"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "schema_version": "1",
+       "id": "acct_7f3a9c",
+       "risk": {
+        "score": 50,
+        "decision": "step_up",
+        "reasons": [
+         {
+          "code": "recent_password_exposure",
+          "weight": 55,
+          "identifier": "email"
+         }
+        ]
+       },
+       "decisions_by_flow": {
+        "account_creation": "step_up",
+        "login": "step_up",
+        "purchase": "step_up"
+       },
+       "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+       "updated_at": "2026-10-23T09:00:04.812Z",
+       "risk_version": 12
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.noresponse.test/v1/accounts/acct_7f3a9c/enforcements",
+      "body": {
+       "risk_version": 12,
+       "flow": "login",
+       "action": "none",
+       "state_before": "active",
+       "status": "applied",
+       "provider": "auth0"
+      }
+     },
+     "response": {
+      "status": 201,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "id": "enf_01JA2ZF5N6P7Q8R9S0T1V2W3B5",
+       "account_id": "acct_7f3a9c",
+       "risk_version": 12,
+       "flow": "login",
+       "action": "none",
+       "state_before": "active",
+       "status": "applied",
+       "provider": "auth0",
+       "created_at": "2026-10-23T09:00:06.000Z"
+      }
+     }
+    }
+   ],
+   "result": {
+    "skipped": null,
+    "enforcements": [
+     {
+      "flow": "login",
+      "action": "none",
+      "status": "applied"
+     }
+    ]
+   },
+   "error": null
+  },
+  {
+   "name": "rejected_account_records_none",
+   "description": "A rejected account is final: no provider call, recorded as none.",
+   "provider": "clerk",
+   "event": {
+    "id": "evt_01JA2ZE5N6P7Q8R9S0T1VWXYZ6",
+    "type": "account.risk_changed",
+    "created_at": "2026-10-23T09:00:05.000Z",
+    "data": {
+     "account": {
+      "schema_version": "1",
+      "id": "acct_7f3a9c",
+      "risk": {
+       "score": 90,
+       "decision": "block",
+       "reasons": [
+        {
+         "code": "recent_password_exposure",
+         "weight": 55,
+         "identifier": "email"
+        }
+       ]
+      },
+      "decisions_by_flow": {
+       "account_creation": "block",
+       "login": "block",
+       "purchase": "block"
+      },
+      "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+      "updated_at": "2026-10-23T09:00:04.812Z",
+      "risk_version": 13
+     },
+     "previous_decisions_by_flow": {
+      "account_creation": "allow",
+      "login": "allow",
+      "purchase": "allow"
+     }
+    }
+   },
+   "state": {
+    "state": "rejected"
+   },
+   "exchanges": [
+    {
+     "request": {
+      "method": "GET",
+      "url": "https://api.noresponse.test/v1/accounts/acct_7f3a9c"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "schema_version": "1",
+       "id": "acct_7f3a9c",
+       "risk": {
+        "score": 90,
+        "decision": "block",
+        "reasons": [
+         {
+          "code": "recent_password_exposure",
+          "weight": 55,
+          "identifier": "email"
+         }
+        ]
+       },
+       "decisions_by_flow": {
+        "account_creation": "block",
+        "login": "block",
+        "purchase": "block"
+       },
+       "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+       "updated_at": "2026-10-23T09:00:04.812Z",
+       "risk_version": 13
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.noresponse.test/v1/accounts/acct_7f3a9c/enforcements",
+      "body": {
+       "risk_version": 13,
+       "flow": "account_creation",
+       "action": "none",
+       "state_before": "rejected",
+       "status": "applied",
+       "provider": "clerk"
+      }
+     },
+     "response": {
+      "status": 201,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "id": "enf_01JA2ZF5N6P7Q8R9S0T1V2W3B6",
+       "account_id": "acct_7f3a9c",
+       "risk_version": 13,
+       "flow": "account_creation",
+       "action": "none",
+       "state_before": "rejected",
+       "status": "applied",
+       "provider": "clerk",
+       "created_at": "2026-10-23T09:00:06.000Z"
+      }
+     }
+    }
+   ],
+   "result": {
+    "skipped": null,
+    "enforcements": [
+     {
+      "flow": "account_creation",
+      "action": "none",
+      "status": "applied"
+     }
+    ]
+   },
+   "error": null
+  },
+  {
+   "name": "test_event_is_not_actionable",
+   "description": "Only account.risk_changed is actionable. A test event (or any other type) reads nothing and acts on nothing.",
+   "provider": "clerk",
+   "event": {
+    "id": "evt_01JA2ZD3K4M5N6P7Q8R9S0T1V2",
+    "type": "assessment.updated",
+    "created_at": "2026-10-14T09:00:02.000Z",
+    "test": true,
+    "data": {
+     "schema_version": "1",
+     "id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+     "status": "complete",
+     "flow": "account_creation",
+     "depth": "full",
+     "account": {
+      "schema_version": "1",
+      "id": "acct_7f3a9c",
+      "risk": {
+       "score": 50,
+       "decision": "step_up",
+       "reasons": [
+        {
+         "code": "no_digital_footprint",
+         "weight": 35
+        },
+        {
+         "code": "new_email",
+         "weight": 15,
+         "identifier": "email"
+        }
+       ]
+      },
+      "decisions_by_flow": {
+       "account_creation": "step_up",
+       "login": "step_up",
+       "purchase": "step_up"
+      },
+      "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+      "updated_at": "2026-10-14T09:00:02.000Z",
+      "risk_version": 3
+     },
+     "detail": {
+      "schema_version": "1",
+      "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+      "account_id": "acct_7f3a9c",
+      "request_id": "req-2026-10-14-0001",
+      "policy_version": "heuristic-2026-10.1",
+      "policy_basis": "heuristic_unvalidated",
+      "assessment_version": 2,
+      "created_at": "2026-10-14T09:00:00.000Z",
+      "updated_at": "2026-10-14T09:00:02.000Z",
+      "expires_at": "2027-10-14T09:00:00.000Z",
+      "timing": {
+       "deadline_ms": 300,
+       "elapsed_ms": 2000
+      },
+      "status": "complete",
+      "recommendation": "step_up",
+      "confidence": "medium",
+      "risk": {
+       "score": 50,
+       "band": "medium",
+       "recommendation": "step_up",
+       "block": false,
+       "confidence": "medium",
+       "policy_version": "risk-2026-10.1",
+       "policy_basis": "heuristic_unvalidated",
+       "reasons": [
+        {
+         "code": "no_digital_footprint",
+         "weight": 35
+        },
+        {
+         "code": "new_email",
+         "weight": 15,
+         "identifier": "email"
+        }
+       ],
+       "summary": {
+        "email": {
+         "disposable": false,
+         "accounts_found": 0,
+         "breach": {
+          "found": false
+         }
+        },
+        "phone": {
+         "line_type": "mobile",
+         "country": "US"
+        }
+       },
+       "coverage": {
+        "answered": 4,
+        "failed": 0,
+        "pending": 0
+       }
+      },
+      "incomplete_sources": []
+     }
+    }
+   },
+   "state": null,
+   "exchanges": [],
+   "result": {
+    "skipped": "not_actionable",
+    "enforcements": []
+   },
+   "error": null
+  },
+  {
+   "name": "clerk_server_error_fails_and_user_id_defaults_to_account",
+   "description": "Without a user id the account id is the provider user id. A 5xx fails the action with Clerk's error code.",
+   "provider": "clerk",
+   "event": {
+    "id": "evt_01JA2ZE5N6P7Q8R9S0T1VWXYZ6",
+    "type": "account.risk_changed",
+    "created_at": "2026-10-23T09:00:05.000Z",
+    "data": {
+     "account": {
+      "schema_version": "1",
+      "id": "acct_7f3a9c",
+      "risk": {
+       "score": 70,
+       "decision": "review",
+       "reasons": [
+        {
+         "code": "recent_password_exposure",
+         "weight": 55,
+         "identifier": "email"
+        }
+       ]
+      },
+      "decisions_by_flow": {
+       "account_creation": "review",
+       "login": "review",
+       "purchase": "review"
+      },
+      "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+      "updated_at": "2026-10-23T09:00:04.812Z",
+      "risk_version": 14
+     },
+     "previous_decisions_by_flow": {
+      "account_creation": "allow",
+      "login": "allow",
+      "purchase": "allow"
+     }
+    }
+   },
+   "state": {
+    "state": "active"
+   },
+   "exchanges": [
+    {
+     "request": {
+      "method": "GET",
+      "url": "https://api.noresponse.test/v1/accounts/acct_7f3a9c"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "schema_version": "1",
+       "id": "acct_7f3a9c",
+       "risk": {
+        "score": 70,
+        "decision": "review",
+        "reasons": [
+         {
+          "code": "recent_password_exposure",
+          "weight": 55,
+          "identifier": "email"
+         }
+        ]
+       },
+       "decisions_by_flow": {
+        "account_creation": "review",
+        "login": "review",
+        "purchase": "review"
+       },
+       "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+       "updated_at": "2026-10-23T09:00:04.812Z",
+       "risk_version": 14
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "GET",
+      "url": "https://api.clerk.com/v1/sessions?user_id=acct_7f3a9c&status=active&limit=100&offset=0"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": [
+       {
+        "id": "sess_x",
+        "status": "active"
+       }
+      ]
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.clerk.com/v1/sessions/sess_x/revoke"
+     },
+     "response": {
+      "status": 500,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "errors": [
+        {
+         "code": "internal_clerk_error",
+         "message": "boom"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.noresponse.test/v1/accounts/acct_7f3a9c/enforcements",
+      "body": {
+       "risk_version": 14,
+       "flow": "login",
+       "action": "revoke_sessions",
+       "state_before": "active",
+       "status": "failed",
+       "provider": "clerk",
+       "error_code": "clerk.internal_clerk_error"
+      }
+     },
+     "response": {
+      "status": 201,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "id": "enf_01JA2ZF5N6P7Q8R9S0T1V2W3B7",
+       "account_id": "acct_7f3a9c",
+       "risk_version": 14,
+       "flow": "login",
+       "action": "revoke_sessions",
+       "state_before": "active",
+       "status": "failed",
+       "provider": "clerk",
+       "error_code": "clerk.internal_clerk_error",
+       "created_at": "2026-10-23T09:00:06.000Z"
+      }
+     }
+    }
+   ],
+   "result": {
+    "skipped": null,
+    "enforcements": [
+     {
+      "flow": "login",
+      "action": "revoke_sessions",
+      "status": "failed",
+      "error_code": "clerk.internal_clerk_error"
+     }
+    ]
+   },
+   "error": {
+    "provider": "clerk",
+    "status": 500,
+    "code": "internal_clerk_error"
+   }
+  },
+  {
+   "name": "auth0_restricted_allow_unblocks_when_opted_in",
+   "description": "With reinstate on for login, a restricted Auth0 user whose login decision fell to allow is unblocked.",
+   "provider": "auth0",
+   "domain": "example.eu.auth0.com",
+   "flows": {
+    "login": {
+     "reinstate": true
+    }
+   },
+   "event": {
+    "id": "evt_01JA2ZE5N6P7Q8R9S0T1VWXYZ6",
+    "type": "account.risk_changed",
+    "created_at": "2026-10-23T09:00:05.000Z",
+    "data": {
+     "account": {
+      "schema_version": "1",
+      "id": "acct_7f3a9c",
+      "risk": {
+       "score": 10,
+       "decision": "allow",
+       "reasons": []
+      },
+      "decisions_by_flow": {
+       "account_creation": "allow",
+       "login": "allow",
+       "purchase": "allow"
+      },
+      "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+      "updated_at": "2026-10-23T09:00:04.812Z",
+      "risk_version": 15
+     },
+     "previous_decisions_by_flow": {
+      "account_creation": "allow",
+      "login": "allow",
+      "purchase": "allow"
+     }
+    }
+   },
+   "state": {
+    "state": "restricted",
+    "user_id": "auth0|65f0c1d2e3a4b5c6d7e8f901"
+   },
+   "exchanges": [
+    {
+     "request": {
+      "method": "GET",
+      "url": "https://api.noresponse.test/v1/accounts/acct_7f3a9c"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "schema_version": "1",
+       "id": "acct_7f3a9c",
+       "risk": {
+        "score": 10,
+        "decision": "allow",
+        "reasons": []
+       },
+       "decisions_by_flow": {
+        "account_creation": "allow",
+        "login": "allow",
+        "purchase": "allow"
+       },
+       "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+       "updated_at": "2026-10-23T09:00:04.812Z",
+       "risk_version": 15
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "PATCH",
+      "url": "https://example.eu.auth0.com/api/v2/users/auth0%7C65f0c1d2e3a4b5c6d7e8f901",
+      "body": {
+       "blocked": false
+      }
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "user_id": "auth0|65f0c1d2e3a4b5c6d7e8f901",
+       "blocked": false
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.noresponse.test/v1/accounts/acct_7f3a9c/enforcements",
+      "body": {
+       "risk_version": 15,
+       "flow": "login",
+       "action": "unrestrict",
+       "state_before": "restricted",
+       "status": "applied",
+       "provider": "auth0"
+      }
+     },
+     "response": {
+      "status": 201,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "id": "enf_01JA2ZF5N6P7Q8R9S0T1V2W3B8",
+       "account_id": "acct_7f3a9c",
+       "risk_version": 15,
+       "flow": "login",
+       "action": "unrestrict",
+       "state_before": "restricted",
+       "status": "applied",
+       "provider": "auth0",
+       "created_at": "2026-10-23T09:00:06.000Z"
+      }
+     }
+    }
+   ],
+   "result": {
+    "skipped": null,
+    "enforcements": [
+     {
+      "flow": "login",
+      "action": "unrestrict",
+      "status": "applied"
+     }
+    ]
+   },
+   "error": null
+  },
+  {
+   "name": "clerk_restricted_allow_unbans_when_opted_in",
+   "description": "With reinstate on for login, a restricted Clerk user whose login decision fell to allow is unbanned. Reinstating account_creation alone does not.",
+   "provider": "clerk",
+   "flows": {
+    "account_creation": {
+     "reinstate": false
+    },
+    "login": {
+     "reinstate": true
+    }
+   },
+   "event": {
+    "id": "evt_01JA2ZE5N6P7Q8R9S0T1VWXYZ6",
+    "type": "account.risk_changed",
+    "created_at": "2026-10-23T09:00:05.000Z",
+    "data": {
+     "account": {
+      "schema_version": "1",
+      "id": "acct_7f3a9c",
+      "risk": {
+       "score": 10,
+       "decision": "allow",
+       "reasons": []
+      },
+      "decisions_by_flow": {
+       "account_creation": "allow",
+       "login": "allow",
+       "purchase": "allow"
+      },
+      "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+      "updated_at": "2026-10-23T09:00:04.812Z",
+      "risk_version": 16
+     },
+     "previous_decisions_by_flow": {
+      "account_creation": "allow",
+      "login": "allow",
+      "purchase": "allow"
+     }
+    }
+   },
+   "state": {
+    "state": "restricted",
+    "user_id": "user_2NNEqL2nrIRdJ194ndJqAHwEfxC"
+   },
+   "exchanges": [
+    {
+     "request": {
+      "method": "GET",
+      "url": "https://api.noresponse.test/v1/accounts/acct_7f3a9c"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "schema_version": "1",
+       "id": "acct_7f3a9c",
+       "risk": {
+        "score": 10,
+        "decision": "allow",
+        "reasons": []
+       },
+       "decisions_by_flow": {
+        "account_creation": "allow",
+        "login": "allow",
+        "purchase": "allow"
+       },
+       "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+       "updated_at": "2026-10-23T09:00:04.812Z",
+       "risk_version": 16
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.clerk.com/v1/users/user_2NNEqL2nrIRdJ194ndJqAHwEfxC/unban"
+     },
+     "response": {
+      "status": 200,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "id": "user_2NNEqL2nrIRdJ194ndJqAHwEfxC",
+       "banned": false
+      }
+     }
+    },
+    {
+     "request": {
+      "method": "POST",
+      "url": "https://api.noresponse.test/v1/accounts/acct_7f3a9c/enforcements",
+      "body": {
+       "risk_version": 16,
+       "flow": "login",
+       "action": "unrestrict",
+       "state_before": "restricted",
+       "status": "applied",
+       "provider": "clerk"
+      }
+     },
+     "response": {
+      "status": 201,
+      "headers": {
+       "content-type": "application/json"
+      },
+      "body": {
+       "id": "enf_01JA2ZF5N6P7Q8R9S0T1V2W3B9",
+       "account_id": "acct_7f3a9c",
+       "risk_version": 16,
+       "flow": "login",
+       "action": "unrestrict",
+       "state_before": "restricted",
+       "status": "applied",
+       "provider": "clerk",
+       "created_at": "2026-10-23T09:00:06.000Z"
+      }
+     }
+    }
+   ],
+   "result": {
+    "skipped": null,
+    "enforcements": [
+     {
+      "flow": "login",
+      "action": "unrestrict",
+      "status": "applied"
+     }
+    ]
+   },
+   "error": null
+  }
+ ]
+}

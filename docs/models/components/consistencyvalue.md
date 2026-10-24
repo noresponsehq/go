@@ -6,7 +6,7 @@ How a submitted identifier agrees with what the evidence holds for the other ide
 
 ```go
 import (
-	"github.com/noresponsehq/go/v6/models/components"
+	"github.com/noresponsehq/go/v7/models/components"
 )
 
 value := components.ConsistencyValueMatch

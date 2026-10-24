@@ -2,7 +2,7 @@ package apierrors
 
 import (
 	"encoding/json"
-	"github.com/noresponsehq/go/v6/models/components"
+	"github.com/noresponsehq/go/v7/models/components"
 )
 
 // PermissionDeniedError - HTTP 403 problem document.

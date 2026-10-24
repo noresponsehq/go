@@ -1,5 +1,5 @@
 {
-  "description": "How verified provider claims become auth_context. Every SDK adapter is emitted from this table (sdks/tools/generate_auth_adapters.py) and must produce the exact JSON in auth-context-vectors.json. A claim that is missing, of the wrong type, out of range or fails its kind maps to absent, never to a stronger assurance; only issuer and subject are required, and an adapter refuses to build a context without them.",
+  "description": "How verified provider claims become auth_context. Every SDK adapter is emitted from this table (sdks/tools/generate_overlays.py) and must produce the exact JSON in auth-context-vectors.json. A claim that is missing, of the wrong type, out of range or fails its kind maps to absent, never to a stronger assurance; only issuer and subject are required, and an adapter refuses to build a context without them.",
   "version": 1,
   "rules": {
     "claims": "A claim path is a list of keys. A key that is not an object at that depth makes the claim absent. No listed claim name contains a dot.",
