@@ -1,8 +1,8 @@
 package operations
 
 import (
-	"github.com/noresponsehq/go/v5/internal/utils"
-	"github.com/noresponsehq/go/v5/models/components"
+	"github.com/noresponsehq/go/v6/internal/utils"
+	"github.com/noresponsehq/go/v6/models/components"
 )
 
 type ListWebhookDeliveriesRequest struct {

@@ -1468,6 +1468,71 @@
           }
         }
       },
+      "AccountDeleted": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "account_id",
+          "assessments_deleted",
+          "deleted_at"
+        ],
+        "description": "Terminal for the account's assessments created at or before deleted_at in the receiving endpoint's environment: delete what you hold from them and ignore later-arriving updates of them. deleted_at is no earlier than the creation of any assessment it erased. An assessment created after it belongs to the account assessed again: keep it, even when this event arrives after it.",
+        "properties": {
+          "account_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:|-]{0,127}$",
+            "description": "Your own opaque identifier for the account being checked, scoped to your workspace. Use an id you mint, with no direct identifier (email, phone, name or national id) in it. '|' is accepted so an Auth0 user id such as 'auth0|64abc' passes unchanged; '@', '+', '$' and whitespace are refused by the pattern, as is an exact-shape JWT; a hex digest such as a SHA-256 is allowed, because hashing an internal id is a common pseudonymous scheme. A value such as '07700900123' or 'jane.doe.gmail.com' cannot be told apart from an opaque id. It travels in bodies, and in a URL only as the path segment of GET /v1/accounts/{account_id} and its /assessments. An assessment requested by a provider hook at pre_registration, which has no account yet, carries the server-issued account_id pre: followed by its assessment_id.",
+            "example": "acct_7f3a9c"
+          },
+          "assessments_deleted": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "How many assessments the erasure deleted."
+          },
+          "deleted_at": {
+            "type": "string",
+            "description": "When the erasure took effect, equal to deleted_at in the DELETE answer.",
+            "example": "2026-10-23T09:00:00.000Z"
+          }
+        }
+      },
+      "AccountDeletedEvent": {
+        "type": "object",
+        "description": "The account.deleted event.",
+        "required": [
+          "id",
+          "type",
+          "created_at",
+          "data"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^evt_[0-9A-HJKMNP-TV-Z]{26}$",
+            "description": "The event id, equal to the NR-Webhook-Id header and across redeliveries and every endpoint the event fans out to.",
+            "example": "evt_01JA2ZB4N5P6Q7R8S9T0VWXYZ1"
+          },
+          "created_at": {
+            "type": "string",
+            "description": "When the event was created. Equal across redeliveries; the signing timestamp header is per delivery.",
+            "example": "2026-10-14T09:00:02.000Z"
+          },
+          "type": {
+            "type": "string",
+            "const": "account.deleted",
+            "description": "Always account.deleted."
+          },
+          "test": {
+            "type": "boolean",
+            "description": "Present, and true, only on an event sent by POST /v1/webhooks/{endpoint_id}/test: its data is a fixed example assessment, not one of the workspace's, so a receiver acknowledges it and applies nothing. Real events have no test member."
+          },
+          "data": {
+            "$ref": "#/components/schemas/AccountDeleted"
+          }
+        }
+      },
       "AccountDeletion": {
         "description": "Body of the 200 answer to DELETE /v1/accounts/{account_id}: the calling workspace's account was erased in the environment of the calling key. Every assessment of the account went, with its revisions, evidence, outcomes and the identity-graph marks its outcomes set, and an assessment that was still running when the call arrived is stopped. Afterwards GET /v1/accounts/{account_id} and GET /v1/assessments/{assessment_id} of each erased assessment answer 404, and the history page is empty. The call is idempotent: a repeat, or an account with nothing to erase, answers 200 with assessments_deleted 0. The account_id can be assessed again later, as a new account.",
         "type": "object",
@@ -1533,6 +1598,59 @@
             "items": {
               "$ref": "#/components/schemas/AccountRiskReason"
             }
+          }
+        }
+      },
+      "AccountRiskChanged": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "account",
+          "previous_decisions_by_flow"
+        ],
+        "description": "The account's decision for at least one flow changed. account is the account as GET /v1/accounts/{account_id} answers it for the revision that made the change: its new score, decision, reasons and decisions_by_flow, and the assessment the risk comes from. previous_decisions_by_flow are the decisions it replaced, so account.decisions_by_flow differs from them for at least one flow. On the account's first decision, previous_decisions_by_flow is allow for every flow. Events of one account are not ordered: account.risk_version orders them, so keep the account with the highest risk_version and ignore an event whose account is older than the one held.",
+        "properties": {
+          "account": {
+            "$ref": "#/components/schemas/Account"
+          },
+          "previous_decisions_by_flow": {
+            "$ref": "#/components/schemas/AccountDecisionsByFlow",
+            "description": "The decision for each flow before the change, as last announced."
+          }
+        }
+      },
+      "AccountRiskChangedEvent": {
+        "type": "object",
+        "description": "The account.risk_changed event.",
+        "required": [
+          "id",
+          "type",
+          "created_at",
+          "data"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^evt_[0-9A-HJKMNP-TV-Z]{26}$",
+            "description": "The event id, equal to the NR-Webhook-Id header and across redeliveries and every endpoint the event fans out to.",
+            "example": "evt_01JA2ZB4N5P6Q7R8S9T0VWXYZ1"
+          },
+          "created_at": {
+            "type": "string",
+            "description": "When the event was created. Equal across redeliveries; the signing timestamp header is per delivery.",
+            "example": "2026-10-14T09:00:02.000Z"
+          },
+          "type": {
+            "type": "string",
+            "const": "account.risk_changed",
+            "description": "Always account.risk_changed."
+          },
+          "test": {
+            "type": "boolean",
+            "description": "Present, and true, only on an event sent by POST /v1/webhooks/{endpoint_id}/test: its data is a fixed example assessment, not one of the workspace's, so a receiver acknowledges it and applies nothing. Real events have no test member."
+          },
+          "data": {
+            "$ref": "#/components/schemas/AccountRiskChanged"
           }
         }
       },
@@ -1860,6 +1978,46 @@
             "minimum": 0,
             "maximum": 600000,
             "description": "Server time from HTTP ingress to this revision of the assessment."
+          }
+        }
+      },
+      "AssessmentExpired": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "assessment_id",
+          "account_id",
+          "assessment_version",
+          "status",
+          "change_reason"
+        ],
+        "description": "Terminal. Nothing to fetch; the consumer deletes its state for assessment_id.",
+        "properties": {
+          "assessment_id": {
+            "type": "string",
+            "pattern": "^asm_[0-9A-HJKMNP-TV-Z]{26}$",
+            "description": "Opaque, server-assigned assessment id: 'asm_' and a 26-character Crockford base32 ULID. Unique within the workspace; another workspace's assessment id answers 404.",
+            "example": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          },
+          "account_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:|-]{0,127}$",
+            "description": "Your own opaque identifier for the account being checked, scoped to your workspace. Use an id you mint, with no direct identifier (email, phone, name or national id) in it. '|' is accepted so an Auth0 user id such as 'auth0|64abc' passes unchanged; '@', '+', '$' and whitespace are refused by the pattern, as is an exact-shape JWT; a hex digest such as a SHA-256 is allowed, because hashing an internal id is a common pseudonymous scheme. A value such as '07700900123' or 'jane.doe.gmail.com' cannot be told apart from an opaque id. It travels in bodies, and in a URL only as the path segment of GET /v1/accounts/{account_id} and its /assessments. An assessment requested by a provider hook at pre_registration, which has no account yet, carries the server-issued account_id pre: followed by its assessment_id.",
+            "example": "acct_7f3a9c"
+          },
+          "assessment_version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000,
+            "description": "The last served version: expiry is not a revision."
+          },
+          "status": {
+            "const": "expired"
+          },
+          "change_reason": {
+            "const": "expired"
           }
         }
       },
@@ -2218,6 +2376,52 @@
           }
         },
         "description": "Optional policy inputs: region."
+      },
+      "AssessmentUpdatedData": {
+        "description": "The assessment, or the minimal notice that it expired.",
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/Assessment"
+          },
+          {
+            "$ref": "#/components/schemas/AssessmentExpired"
+          }
+        ]
+      },
+      "AssessmentUpdatedEvent": {
+        "type": "object",
+        "description": "The assessment.updated event.",
+        "required": [
+          "id",
+          "type",
+          "created_at",
+          "data"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^evt_[0-9A-HJKMNP-TV-Z]{26}$",
+            "description": "The event id, equal to the NR-Webhook-Id header and across redeliveries and every endpoint the event fans out to.",
+            "example": "evt_01JA2ZB4N5P6Q7R8S9T0VWXYZ1"
+          },
+          "created_at": {
+            "type": "string",
+            "description": "When the event was created. Equal across redeliveries; the signing timestamp header is per delivery.",
+            "example": "2026-10-14T09:00:02.000Z"
+          },
+          "type": {
+            "type": "string",
+            "const": "assessment.updated",
+            "description": "Always assessment.updated."
+          },
+          "test": {
+            "type": "boolean",
+            "description": "Present, and true, only on an event sent by POST /v1/webhooks/{endpoint_id}/test: its data is a fixed example assessment, not one of the workspace's, so a receiver acknowledges it and applies nothing. Real events have no test member."
+          },
+          "data": {
+            "$ref": "#/components/schemas/AssessmentUpdatedData"
+          }
+        }
       },
       "AssuranceLevel": {
         "type": "string",
@@ -2709,6 +2913,70 @@
           "full"
         ],
         "description": "How long the synchronous answer waits for sources. quick waits only for the fast sources, those that answer within 500 ms of ingress (or deadline_ms when lower); full waits for the whole budget, up to 3000 ms. Sources still running at the cut continue asynchronously and update the assessment either way."
+      },
+      "EndpointVerification": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "endpoint_id",
+          "challenge"
+        ],
+        "properties": {
+          "endpoint_id": {
+            "type": "string",
+            "pattern": "^whe_[0-9A-HJKMNP-TV-Z]{26}$",
+            "description": "Opaque id of the endpoint registration being verified.",
+            "example": "whe_01JA2Z0A1B2C3D4E5F6G7H8J9K"
+          },
+          "challenge": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]{43}$",
+            "description": "Endpoint verification nonce: 32 random bytes, unpadded base64url (43 characters). Fresh per verification.",
+            "example": "q3Jt8mV0x2Yb7Lk9Pz4Rw6Hn1Sd5Fg8Ja0Tc3Ue7Wi4"
+          }
+        }
+      },
+      "EndpointVerificationEvent": {
+        "type": "object",
+        "description": "The endpoint.verification event.",
+        "required": [
+          "id",
+          "type",
+          "created_at",
+          "data"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^evt_[0-9A-HJKMNP-TV-Z]{26}$",
+            "description": "The event id, equal to the NR-Webhook-Id header and across redeliveries and every endpoint the event fans out to.",
+            "example": "evt_01JA2ZB4N5P6Q7R8S9T0VWXYZ1"
+          },
+          "created_at": {
+            "type": "string",
+            "description": "When the event was created. Equal across redeliveries; the signing timestamp header is per delivery.",
+            "example": "2026-10-14T09:00:02.000Z"
+          },
+          "type": {
+            "type": "string",
+            "const": "endpoint.verification",
+            "description": "Always endpoint.verification."
+          },
+          "test": {
+            "type": "boolean",
+            "description": "Present, and true, only on an event sent by POST /v1/webhooks/{endpoint_id}/test: its data is a fixed example assessment, not one of the workspace's, so a receiver acknowledges it and applies nothing. Real events have no test member."
+          },
+          "data": {
+            "$ref": "#/components/schemas/EndpointVerification"
+          }
+        }
+      },
+      "Environment": {
+        "enum": [
+          "live",
+          "test"
+        ],
+        "description": "The environment whose endpoints receive this event: live, or test for the workspace's test environment."
       },
       "Failure": {
         "enum": [
@@ -4256,6 +4524,69 @@
           }
         }
       },
+      "WebhookEndpointDisabled": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "endpoint_id",
+          "failing_since",
+          "disabled_at"
+        ],
+        "description": "One of the environment's endpoints stopped receiving events: every delivery attempt to it failed from failing_since until disabled_at, 72 hours or more. Its queued deliveries are dropped. Fix the receiver and verify it again with POST /v1/webhooks/{endpoint_id}/test (type endpoint.verification) to resume delivery.",
+        "properties": {
+          "endpoint_id": {
+            "type": "string",
+            "pattern": "^whe_[0-9A-HJKMNP-TV-Z]{26}$",
+            "description": "The endpoint that was disabled.",
+            "example": "whe_01JA2Z0A1B2C3D4E5F6G7H8J9K"
+          },
+          "failing_since": {
+            "type": "string",
+            "description": "The first failed attempt of the unbroken failure streak.",
+            "example": "2026-10-20T09:58:31.000Z"
+          },
+          "disabled_at": {
+            "type": "string",
+            "description": "When the endpoint was disabled; equal to the event's created_at.",
+            "example": "2026-10-23T10:00:00.000Z"
+          }
+        }
+      },
+      "WebhookEndpointDisabledEvent": {
+        "type": "object",
+        "description": "The webhook_endpoint.disabled event.",
+        "required": [
+          "id",
+          "type",
+          "created_at",
+          "data"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^evt_[0-9A-HJKMNP-TV-Z]{26}$",
+            "description": "The event id, equal to the NR-Webhook-Id header and across redeliveries and every endpoint the event fans out to.",
+            "example": "evt_01JA2ZB4N5P6Q7R8S9T0VWXYZ1"
+          },
+          "created_at": {
+            "type": "string",
+            "description": "When the event was created. Equal across redeliveries; the signing timestamp header is per delivery.",
+            "example": "2026-10-14T09:00:02.000Z"
+          },
+          "type": {
+            "type": "string",
+            "const": "webhook_endpoint.disabled",
+            "description": "Always webhook_endpoint.disabled."
+          },
+          "test": {
+            "type": "boolean",
+            "description": "Present, and true, only on an event sent by POST /v1/webhooks/{endpoint_id}/test: its data is a fixed example assessment, not one of the workspace's, so a receiver acknowledges it and applies nothing. Real events have no test member."
+          },
+          "data": {
+            "$ref": "#/components/schemas/WebhookEndpointDisabled"
+          }
+        }
+      },
       "WebhookEndpointList": {
         "description": "GET /v1/webhooks answer: every endpoint of the calling workspace, in every state, ordered by endpoint_id. A workspace holds at most 5, so there is no page.",
         "type": "object",
@@ -4303,6 +4634,40 @@
           "disabled"
         ],
         "description": "unverified until the endpoint echoes an endpoint.verification challenge (send one with POST /v1/webhooks/{endpoint_id}/test); verified receives assessment.updated events; disabled after 72 hours of continuous delivery failure, and verified again by the same challenge."
+      },
+      "WebhookEvent": {
+        "description": "The body of every webhook delivery: {id, type, created_at, data}, where type chooses the shape of data. Deliveries are at least once and unordered: deduplicate on id, and keep an assessment only when its detail.assessment_version is newer than the one you hold. GET /v1/assessments/{assessment_id} stays authoritative.",
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/AssessmentUpdatedEvent"
+          },
+          {
+            "$ref": "#/components/schemas/EndpointVerificationEvent"
+          },
+          {
+            "$ref": "#/components/schemas/AccountDeletedEvent"
+          },
+          {
+            "$ref": "#/components/schemas/WorkspaceDeletedEvent"
+          },
+          {
+            "$ref": "#/components/schemas/WebhookEndpointDisabledEvent"
+          },
+          {
+            "$ref": "#/components/schemas/AccountRiskChangedEvent"
+          }
+        ],
+        "discriminator": {
+          "propertyName": "type",
+          "mapping": {
+            "assessment.updated": "#/components/schemas/AssessmentUpdatedEvent",
+            "endpoint.verification": "#/components/schemas/EndpointVerificationEvent",
+            "account.deleted": "#/components/schemas/AccountDeletedEvent",
+            "workspace.deleted": "#/components/schemas/WorkspaceDeletedEvent",
+            "webhook_endpoint.disabled": "#/components/schemas/WebhookEndpointDisabledEvent",
+            "account.risk_changed": "#/components/schemas/AccountRiskChangedEvent"
+          }
+        }
       },
       "WebhookKeyRotation": {
         "description": "The 201 answer of POST /v1/webhooks/{endpoint_id}/rotate: the new signing secret, shown once, which signs every delivery from now on, and when the key it replaced stops verifying. Until then a receiver accepts both.",
@@ -4434,6 +4799,84 @@
           "assessment.updated"
         ],
         "description": "endpoint.verification sends a fresh challenge now, in this call, and the endpoint is verified if it echoes it. assessment.updated queues an event whose data is a fixed example assessment, with test true, delivered and retried like any other; the endpoint must be verified."
+      },
+      "WebhookVerificationResponse": {
+        "description": "The body an endpoint returns, with status 200 and Content-Type application/json within 5 seconds, to an endpoint.verification event. A 2xx without the echoed challenge does not verify the endpoint.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "challenge"
+        ],
+        "properties": {
+          "challenge": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]{43}$",
+            "description": "Endpoint verification nonce: 32 random bytes, unpadded base64url (43 characters). Fresh per verification.",
+            "example": "q3Jt8mV0x2Yb7Lk9Pz4Rw6Hn1Sd5Fg8Ja0Tc3Ue7Wi4"
+          }
+        }
+      },
+      "WorkspaceDeleted": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "workspace_id",
+          "environment",
+          "deleted_at"
+        ],
+        "description": "Terminal for the receiving endpoint's environment: its workspace was deleted. Every key of the environment already answers 401, its assessments and accounts are gone, and no further event follows. The workspace id is not reused, so a later event naming it cannot arrive.",
+        "properties": {
+          "workspace_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,122}$",
+            "description": "The workspace id, which is also its live environment's workspace id; the test environment's is the same id with :test appended. A workspace created through the API is tnt_ and a 26-character ULID.",
+            "example": "tnt_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          },
+          "environment": {
+            "$ref": "#/components/schemas/Environment",
+            "description": "The environment whose endpoints receive this event: live, or test for the workspace's test environment."
+          },
+          "deleted_at": {
+            "type": "string",
+            "description": "When the deletion took effect, equal to deleted_at in the DELETE answer.",
+            "example": "2026-10-23T09:00:00.000Z"
+          }
+        }
+      },
+      "WorkspaceDeletedEvent": {
+        "type": "object",
+        "description": "The workspace.deleted event.",
+        "required": [
+          "id",
+          "type",
+          "created_at",
+          "data"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^evt_[0-9A-HJKMNP-TV-Z]{26}$",
+            "description": "The event id, equal to the NR-Webhook-Id header and across redeliveries and every endpoint the event fans out to.",
+            "example": "evt_01JA2ZB4N5P6Q7R8S9T0VWXYZ1"
+          },
+          "created_at": {
+            "type": "string",
+            "description": "When the event was created. Equal across redeliveries; the signing timestamp header is per delivery.",
+            "example": "2026-10-14T09:00:02.000Z"
+          },
+          "type": {
+            "type": "string",
+            "const": "workspace.deleted",
+            "description": "Always workspace.deleted."
+          },
+          "test": {
+            "type": "boolean",
+            "description": "Present, and true, only on an event sent by POST /v1/webhooks/{endpoint_id}/test: its data is a fixed example assessment, not one of the workspace's, so a receiver acknowledges it and applies nothing. Real events have no test member."
+          },
+          "data": {
+            "$ref": "#/components/schemas/WorkspaceDeleted"
+          }
+        }
       }
     },
     "parameters": {
@@ -7650,6 +8093,526 @@
             "schema": {
               "$ref": "#/components/schemas/PermissionDeniedError"
             }
+          }
+        }
+      }
+    }
+  },
+  "x-noresponse-webhooks": {
+    "security": {
+      "type": "timestamped",
+      "algorithm": "hmac-sha256",
+      "signatureTextEncoding": "hex",
+      "signaturePrefix": "v1=",
+      "signingInput": "{timestamp}.{body}",
+      "toleranceSeconds": 300,
+      "headers": {
+        "id": "NR-Webhook-Id",
+        "timestamp": "NR-Webhook-Timestamp",
+        "keyId": "NR-Webhook-Key-Id",
+        "signature": "NR-Webhook-Signature"
+      },
+      "idProperty": "id"
+    }
+  },
+  "webhooks": {
+    "assessment.updated": {
+      "post": {
+        "operationId": "assessmentUpdated",
+        "summary": "An assessment's score, band, recommendation, coverage or status changed.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebhookEvent"
+              },
+              "examples": {
+                "standard": {
+                  "value": {
+                    "id": "evt_01JA2ZB4N5P6Q7R8S9T0VWXYZ1",
+                    "type": "assessment.updated",
+                    "created_at": "2026-10-14T09:00:02.000Z",
+                    "data": {
+                      "schema_version": "1",
+                      "id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+                      "status": "complete",
+                      "flow": "account_creation",
+                      "depth": "full",
+                      "account": {
+                        "schema_version": "1",
+                        "id": "acct_7f3a9c",
+                        "risk": {
+                          "score": 50,
+                          "decision": "step_up",
+                          "reasons": [
+                            {
+                              "code": "no_digital_footprint",
+                              "weight": 35
+                            },
+                            {
+                              "code": "new_email",
+                              "weight": 15,
+                              "identifier": "email"
+                            }
+                          ]
+                        },
+                        "decisions_by_flow": {
+                          "account_creation": "step_up",
+                          "login": "step_up",
+                          "purchase": "step_up"
+                        },
+                        "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+                        "updated_at": "2026-10-14T09:00:02.000Z",
+                        "risk_version": 3
+                      },
+                      "detail": {
+                        "schema_version": "1",
+                        "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+                        "account_id": "acct_7f3a9c",
+                        "request_id": "req-2026-10-14-0001",
+                        "policy_version": "heuristic-2026-10.1",
+                        "policy_basis": "heuristic_unvalidated",
+                        "assessment_version": 2,
+                        "created_at": "2026-10-14T09:00:00.000Z",
+                        "updated_at": "2026-10-14T09:00:02.000Z",
+                        "expires_at": "2027-10-14T09:00:00.000Z",
+                        "timing": {
+                          "deadline_ms": 300,
+                          "elapsed_ms": 2000
+                        },
+                        "status": "complete",
+                        "recommendation": "step_up",
+                        "confidence": "medium",
+                        "risk": {
+                          "score": 50,
+                          "band": "medium",
+                          "recommendation": "step_up",
+                          "block": false,
+                          "confidence": "medium",
+                          "policy_version": "risk-2026-10.1",
+                          "policy_basis": "heuristic_unvalidated",
+                          "reasons": [
+                            {
+                              "code": "no_digital_footprint",
+                              "weight": 35
+                            },
+                            {
+                              "code": "new_email",
+                              "weight": 15,
+                              "identifier": "email"
+                            }
+                          ],
+                          "summary": {
+                            "email": {
+                              "disposable": false,
+                              "accounts_found": 0,
+                              "breach": {
+                                "found": false
+                              }
+                            },
+                            "phone": {
+                              "line_type": "mobile",
+                              "country": "US"
+                            }
+                          },
+                          "coverage": {
+                            "answered": 4,
+                            "failed": 0,
+                            "pending": 0
+                          }
+                        },
+                        "incomplete_sources": []
+                      }
+                    }
+                  }
+                },
+                "detailed": {
+                  "value": {
+                    "id": "evt_01JA2ZB4N5P6Q7R8S9T0VWXYZ1",
+                    "type": "assessment.updated",
+                    "created_at": "2026-10-14T09:00:02.000Z",
+                    "data": {
+                      "schema_version": "1",
+                      "id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+                      "status": "complete",
+                      "flow": "account_creation",
+                      "depth": "full",
+                      "account": {
+                        "schema_version": "1",
+                        "id": "acct_7f3a9c",
+                        "risk": {
+                          "score": 50,
+                          "decision": "step_up",
+                          "reasons": [
+                            {
+                              "code": "no_digital_footprint",
+                              "weight": 35
+                            },
+                            {
+                              "code": "new_email",
+                              "weight": 15,
+                              "identifier": "email"
+                            }
+                          ]
+                        },
+                        "decisions_by_flow": {
+                          "account_creation": "step_up",
+                          "login": "step_up",
+                          "purchase": "step_up"
+                        },
+                        "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+                        "updated_at": "2026-10-14T09:00:02.000Z",
+                        "risk_version": 3
+                      },
+                      "detail": {
+                        "schema_version": "1",
+                        "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+                        "account_id": "acct_7f3a9c",
+                        "request_id": "req-2026-10-14-0001",
+                        "policy_version": "heuristic-2026-10.1",
+                        "policy_basis": "heuristic_unvalidated",
+                        "assessment_version": 2,
+                        "created_at": "2026-10-14T09:00:00.000Z",
+                        "updated_at": "2026-10-14T09:00:02.000Z",
+                        "expires_at": "2027-10-14T09:00:00.000Z",
+                        "timing": {
+                          "deadline_ms": 300,
+                          "elapsed_ms": 2000
+                        },
+                        "status": "complete",
+                        "recommendation": "step_up",
+                        "confidence": "medium",
+                        "risk": {
+                          "score": 50,
+                          "band": "medium",
+                          "recommendation": "step_up",
+                          "block": false,
+                          "confidence": "medium",
+                          "policy_version": "risk-2026-10.1",
+                          "policy_basis": "heuristic_unvalidated",
+                          "reasons": [
+                            {
+                              "code": "no_digital_footprint",
+                              "weight": 35
+                            },
+                            {
+                              "code": "new_email",
+                              "weight": 15,
+                              "identifier": "email"
+                            }
+                          ],
+                          "summary": {
+                            "email": {
+                              "disposable": false,
+                              "accounts_found": 0,
+                              "breach": {
+                                "found": false
+                              }
+                            },
+                            "phone": {
+                              "line_type": "mobile",
+                              "country": "US"
+                            }
+                          },
+                          "coverage": {
+                            "answered": 4,
+                            "failed": 0,
+                            "pending": 0
+                          },
+                          "details": {
+                            "phone_names": [
+                              {
+                                "value": "Jane Doe",
+                                "seen_by": 2
+                              }
+                            ]
+                          }
+                        },
+                        "signals": [
+                          {
+                            "type": "account_presence",
+                            "identifier": "email",
+                            "outcome": "found",
+                            "source_id": "src_5f0c2a9e41b7d3086c1e2f4a",
+                            "evidence_ref": "evr_01JA2Z8K6Q4V7W9XBCDEFGHJKN",
+                            "observed_at": "2026-10-14T09:00:00.210Z",
+                            "last_checked_at": "2026-10-14T09:00:00.210Z",
+                            "freshness": "fresh"
+                          },
+                          {
+                            "type": "account_presence",
+                            "identifier": "username",
+                            "outcome": "not_found",
+                            "source_id": "src_a17d93c0e2b54f6810d9c3e7",
+                            "last_checked_at": "2026-10-14T09:00:00.190Z",
+                            "freshness": "fresh"
+                          },
+                          {
+                            "type": "breach_exposure",
+                            "identifier": "email",
+                            "outcome": "found",
+                            "source_id": "src_3be80f1d7c26a945e0b1d872",
+                            "evidence_ref": "evr_01JA2Z8K6Q4V7W9XBCDEFGHJKP",
+                            "observed_at": "2025-03-02T00:00:00Z",
+                            "last_checked_at": "2026-10-14T09:00:00.150Z",
+                            "freshness": "stale"
+                          },
+                          {
+                            "type": "account_presence",
+                            "identifier": "phone",
+                            "outcome": "found",
+                            "source_id": "src_c94e1b7a0f3d2e58b6a1c049",
+                            "evidence_ref": "evr_01JA2Z8K6Q4V7W9XBCDEFGHJKQ",
+                            "observed_at": "2026-10-14T09:00:01.800Z",
+                            "last_checked_at": "2026-10-14T09:00:01.800Z",
+                            "freshness": "fresh"
+                          }
+                        ],
+                        "incomplete_sources": []
+                      }
+                    }
+                  }
+                },
+                "expired": {
+                  "value": {
+                    "id": "evt_01JA2ZC4N5P6Q7R8S9T0VWXYZ3",
+                    "type": "assessment.updated",
+                    "created_at": "2026-11-13T09:00:01.000Z",
+                    "data": {
+                      "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+                      "account_id": "acct_7f3a9c",
+                      "assessment_version": 2,
+                      "status": "expired",
+                      "change_reason": "expired"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Accepted. Any 2xx within 5 seconds acknowledges the delivery; the body is ignored. A receiver that has already processed this id still answers 2xx."
+          }
+        }
+      }
+    },
+    "endpoint.verification": {
+      "post": {
+        "operationId": "endpointVerification",
+        "summary": "Prove a registered endpoint is the intended receiver.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebhookEvent"
+              },
+              "examples": {
+                "ping": {
+                  "value": {
+                    "id": "evt_01JA2ZD4N5P6Q7R8S9T0VWXYZ4",
+                    "type": "endpoint.verification",
+                    "created_at": "2026-10-14T08:00:00.000Z",
+                    "data": {
+                      "endpoint_id": "whe_01JA2Z0A1B2C3D4E5F6G7H8J9K",
+                      "challenge": "q3Jt8mV0x2Yb7Lk9Pz4Rw6Hn1Sd5Fg8Ja0Tc3Ue7Wi4"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The challenge, echoed. Required for verification.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebhookVerificationResponse"
+                },
+                "examples": {
+                  "echo": {
+                    "value": {
+                      "challenge": "q3Jt8mV0x2Yb7Lk9Pz4Rw6Hn1Sd5Fg8Ja0Tc3Ue7Wi4"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "account.deleted": {
+      "post": {
+        "operationId": "accountDeleted",
+        "summary": "An account was erased.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebhookEvent"
+              },
+              "examples": {
+                "erased": {
+                  "value": {
+                    "id": "evt_01JA2ZE5N6P7Q8R9S0T1VWXYZ4",
+                    "type": "account.deleted",
+                    "created_at": "2026-10-23T09:00:00.000Z",
+                    "data": {
+                      "account_id": "acct_7f3a9c",
+                      "assessments_deleted": 3,
+                      "deleted_at": "2026-10-23T09:00:00.000Z"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Accepted. Any 2xx within 5 seconds acknowledges the delivery; the body is ignored. A receiver that has already processed this id still answers 2xx."
+          }
+        }
+      }
+    },
+    "workspace.deleted": {
+      "post": {
+        "operationId": "tenantDeleted",
+        "summary": "A workspace was deleted.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebhookEvent"
+              },
+              "examples": {
+                "deleted": {
+                  "value": {
+                    "id": "evt_01JA2ZE5N6P7Q8R9S0T1VWXYZ6",
+                    "type": "workspace.deleted",
+                    "created_at": "2026-10-23T10:00:00.000Z",
+                    "data": {
+                      "workspace_id": "tnt_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+                      "environment": "live",
+                      "deleted_at": "2026-10-23T10:00:00.000Z"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Accepted. Any 2xx within 5 seconds acknowledges the delivery; the body is ignored. A receiver that has already processed this id still answers 2xx."
+          }
+        }
+      }
+    },
+    "webhook_endpoint.disabled": {
+      "post": {
+        "operationId": "webhookEndpointDisabled",
+        "summary": "A webhook endpoint was disabled.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebhookEvent"
+              },
+              "examples": {
+                "disabled": {
+                  "value": {
+                    "id": "evt_01JA2ZE5N6P7Q8R9S0T1VWXYZ7",
+                    "type": "webhook_endpoint.disabled",
+                    "created_at": "2026-10-23T10:00:00.000Z",
+                    "data": {
+                      "endpoint_id": "whe_01JA2ZD0E1F2G3H4J5K6M7N8P9",
+                      "failing_since": "2026-10-20T09:58:31.000Z",
+                      "disabled_at": "2026-10-23T10:00:00.000Z"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Accepted. Any 2xx within 5 seconds acknowledges the delivery; the body is ignored. A receiver that has already processed this id still answers 2xx."
+          }
+        }
+      }
+    },
+    "account.risk_changed": {
+      "post": {
+        "operationId": "accountRiskChanged",
+        "summary": "An account's decision for a flow changed.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebhookEvent"
+              },
+              "examples": {
+                "changed": {
+                  "value": {
+                    "id": "evt_01JA2ZE5N6P7Q8R9S0T1VWXYZ6",
+                    "type": "account.risk_changed",
+                    "created_at": "2026-10-23T09:00:05.000Z",
+                    "data": {
+                      "account": {
+                        "schema_version": "1",
+                        "id": "acct_7f3a9c",
+                        "risk": {
+                          "score": 70,
+                          "decision": "review",
+                          "reasons": [
+                            {
+                              "code": "recent_password_exposure",
+                              "weight": 55,
+                              "identifier": "email"
+                            },
+                            {
+                              "code": "proxy_ip",
+                              "weight": 15,
+                              "identifier": "ip"
+                            }
+                          ]
+                        },
+                        "decisions_by_flow": {
+                          "account_creation": "review",
+                          "login": "review",
+                          "purchase": "review"
+                        },
+                        "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+                        "updated_at": "2026-10-23T09:00:04.812Z",
+                        "risk_version": 3
+                      },
+                      "previous_decisions_by_flow": {
+                        "account_creation": "allow",
+                        "login": "allow",
+                        "purchase": "allow"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Accepted. Any 2xx within 5 seconds acknowledges the delivery; the body is ignored. A receiver that has already processed this id still answers 2xx."
           }
         }
       }

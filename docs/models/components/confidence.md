@@ -6,7 +6,7 @@ Ordinal confidence in the recommendation under the current policy: low, medium, 
 
 ```go
 import (
-	"github.com/noresponsehq/go/v5/models/components"
+	"github.com/noresponsehq/go/v6/models/components"
 )
 
 value := components.ConfidenceLow

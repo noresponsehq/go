@@ -1,5 +1,9 @@
 package components
 
+import (
+	"github.com/noresponsehq/go/v6/internal/utils"
+)
+
 // AssessmentDetailAuthContext - The identity fields of the auth context the assessment was made with, echoed for the workspace's own correlation: the request's auth_context, or the one a hosted provider hook (POST /hooks/{integration_id}) built, with transport provider_hook and its hook_point. Present exactly when the request carried an auth_context, and the same on every revision of the assessment. Values are as the request or the hook sent them; tokens, timestamps, roles and scopes are not echoed, and the echo does not change the score.
 type AssessmentDetailAuthContext struct {
 	// The provider slug the context named.
@@ -18,6 +22,17 @@ type AssessmentDetailAuthContext struct {
 	Transport Transport `json:"transport"`
 	// The provider event a provider_hook context was sent for; absent for any other transport.
 	HookPoint *HookPoint `json:"hook_point,omitzero"`
+}
+
+func (a AssessmentDetailAuthContext) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(a, "", false)
+}
+
+func (a *AssessmentDetailAuthContext) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &a, "", false, nil); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (a *AssessmentDetailAuthContext) GetProvider() string {

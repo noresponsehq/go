@@ -28,7 +28,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/noresponsehq/go/v5/models/components"
+	"github.com/noresponsehq/go/v6/models/components"
 )
 
 // LateResultAction is what to do to the user. LateResultBan also ends every session.
@@ -96,21 +96,21 @@ type LateResultOptions struct {
 	// so answer the webhook with a 5xx and NoResponse retries it. When nil,
 	// UserID is used; when both are nil, the account id itself, as when you
 	// assess with the provider's user id.
-	ResolveUserID func(ctx context.Context, accountID string, event *Event) (string, error)
+	ResolveUserID func(ctx context.Context, accountID string, event *components.WebhookEvent) (string, error)
 	// UserID is the older form of ResolveUserID, with no context and no way
 	// to report a failed lookup. Ignored when ResolveUserID is set.
 	//
 	// Deprecated: use ResolveUserID.
-	UserID func(accountID string, event *Event) string
-	// Webhook options for ConstructEvent, such as WithTolerance and WithClock.
+	UserID func(accountID string, event *components.WebhookEvent) string
+	// Webhook options for ConstructEvent, such as WithWebhookTolerance and WithWebhookClock.
 	Webhook []WebhookOption
 }
 
 // LateResult is the outcome of HandleLateResult.
 type LateResult struct {
 	// Event is the verified event. Answer an endpoint.verification with
-	// VerificationResponse(event).
-	Event *Event
+	// a components.WebhookVerificationResponse echoing its challenge.
+	Event *components.WebhookEvent
 	// Action is the action that ran. LateResultNone when the policy, the
 	// event or the user id called for nothing. It can be stronger than the
 	// policy's action when the provider had to fall back: Auth0Actions reports
@@ -139,25 +139,25 @@ func (e *ProviderActionError) Error() string { return "noresponse: " + e.Message
 // Only a decided assessment (complete or partial) that carries the account's
 // decision can act; a test event from WebhookEndpoints.SendTestEvent never does. A nil policy
 // means DefaultLateResultPolicy.
-func LateResultActionFor(event *Event, policy LateResultPolicy) (LateResultAction, error) {
-	if event == nil || event.Test {
+func LateResultActionFor(event *components.WebhookEvent, policy LateResultPolicy) (LateResultAction, error) {
+	if event == nil || isTestEvent(event) {
 		return LateResultNone, nil
 	}
 	var decision components.AccountDecision
 	switch event.Type {
-	case EventAccountRiskChanged:
+	case components.WebhookEventTypeAccountRiskChanged:
 		// The event is sent when any flow's decision changes; sessions are
 		// about the login decision, so an unchanged login decision acts on
 		// nothing, and a user who signed in again after a review is not
 		// signed out again by a purchase change.
-		changed, ok := event.Data.(*AccountRiskChanged)
-		if !ok || changed == nil || changed.PreviousDecisionsByFlow.Login == changed.Account.DecisionsByFlow.Login {
+		changed := &event.AccountRiskChangedEvent.Data
+		if changed.PreviousDecisionsByFlow.Login == changed.Account.DecisionsByFlow.Login {
 			return LateResultNone, nil
 		}
 		decision = changed.Account.DecisionsByFlow.Login
-	case EventAssessmentUpdated:
-		assessment, ok := event.Data.(*components.Assessment)
-		if !ok || assessment == nil || assessment.Status == components.StatusPending || assessment.Account == nil {
+	case components.WebhookEventTypeAssessmentUpdated:
+		assessment := event.AssessmentUpdatedEvent.Data.Assessment
+		if assessment == nil || assessment.Status == components.StatusPending || assessment.Account == nil {
 			return LateResultNone, nil
 		}
 		decision = assessment.Account.Risk.Decision
@@ -187,8 +187,8 @@ func LateResultActionFor(event *Event, policy LateResultPolicy) (LateResultActio
 //
 // payload, headers, secrets and options.Webhook are exactly what
 // ConstructEvent takes; a delivery that fails verification returns the
-// *WebhookError before any provider call. A test event acts on nothing.
-// Revoke and ban are safe to repeat, but deduplicate on result.Event.ID and
+// *WebhookVerificationError before any provider call. A test event acts on nothing.
+// Revoke and ban are safe to repeat, but deduplicate on the event id and
 // ignore versions older than one you have acted on. options may be nil.
 func HandleLateResult(ctx context.Context, payload []byte, headers http.Header, secrets map[string]string, provider LateResultProvider, options *LateResultOptions) (*LateResult, error) {
 	if options == nil {
@@ -206,11 +206,11 @@ func HandleLateResult(ctx context.Context, payload []byte, headers http.Header, 
 		return &LateResult{Event: event, Action: LateResultNone}, nil
 	}
 	var accountID string
-	switch data := event.Data.(type) {
-	case *components.Assessment:
-		accountID = data.Detail.AccountID
-	case *AccountRiskChanged:
-		accountID = data.Account.ID
+	switch {
+	case event.AssessmentUpdatedEvent != nil && event.AssessmentUpdatedEvent.Data.Assessment != nil:
+		accountID = event.AssessmentUpdatedEvent.Data.Assessment.Detail.AccountID
+	case event.AccountRiskChangedEvent != nil:
+		accountID = event.AccountRiskChangedEvent.Data.Account.ID
 	default:
 		return &LateResult{Event: event, Action: LateResultNone}, nil
 	}
@@ -241,6 +241,11 @@ func HandleLateResult(ctx context.Context, payload []byte, headers http.Header, 
 		return nil, err
 	}
 	return &LateResult{Event: event, Action: ran, UserID: userID}, nil
+}
+
+// isTestEvent reports an assessment.updated sent by WebhookEndpoints.SendTestEvent, the only event that carries test.
+func isTestEvent(event *components.WebhookEvent) bool {
+	return event.AssessmentUpdatedEvent != nil && event.AssessmentUpdatedEvent.Test != nil && *event.AssessmentUpdatedEvent.Test
 }
 
 type adminCall struct {

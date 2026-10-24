@@ -1,6 +1,4 @@
 # Hand-written files beside the generated client.
-/webhooks.go
-/webhooks_test.go
 /wait.go
 /wait_test.go
 /client.go
@@ -15,6 +13,7 @@
 /mockserver_test.go
 /late_results.go
 /late_results_test.go
+/webhook_vector_test.go
 /docs_compile_test.go
 # Hand-written so the quick start calls NewIdempotencyKey, not a fixed key.
 /USAGE.md

@@ -1,7 +1,7 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v5/internal/utils"
+	"github.com/noresponsehq/go/v6/internal/utils"
 )
 
 // Breach - One breach table that matched, detailed view only. name is the catalogue's display name for the table's site, not the upstream provider. No member carries a record, value, password or hash.

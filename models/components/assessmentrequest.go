@@ -1,7 +1,7 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v5/internal/utils"
+	"github.com/noresponsehq/go/v6/internal/utils"
 )
 
 // AssessmentRequest - POST /v1/assessments body. At least one of email, username or phone is required; name and ip only refine an assessment. No field carries a password, hash, token or breach value, and unknown members are refused. The email local part is kept as received and only the domain is lower-cased; the username is compared case-insensitively; the phone is strict E.164 and is assessed asynchronously. The whole body is capped at 32768 bytes. client_context holds bounded hints from the client of the user; auth_context holds normalised claims from a session your backend has verified. Raw tokens are refused.

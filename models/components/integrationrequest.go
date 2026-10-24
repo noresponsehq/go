@@ -1,7 +1,7 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v5/internal/utils"
+	"github.com/noresponsehq/go/v6/internal/utils"
 )
 
 // IntegrationRequest - POST /v1/integrations body. Registers a hosted endpoint for one authentication provider. The workspace is the API key that signs the request, so the body has no workspace field and refuses one like any other unknown member. A WorkOS integration needs signing_secret, the Actions secret shown in the WorkOS dashboard, which NoResponse uses to verify each Action request and to sign its answer. An Auth0 integration sends no signing_secret: NoResponse generates the shared secret and returns it once.

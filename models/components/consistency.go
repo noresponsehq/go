@@ -1,5 +1,9 @@
 package components
 
+import (
+	"github.com/noresponsehq/go/v6/internal/utils"
+)
+
 // Consistency - Cross-identifier agreement, computed from facts only. Every member is optional; absent makes no claim.
 type Consistency struct {
 	// How a submitted identifier agrees with what the evidence holds for the other identifiers. unknown is a definite 'cannot tell' (for example a truncated or too-common breach result); absent means the comparison was not made.
@@ -10,6 +14,17 @@ type Consistency struct {
 	IP *ConsistencyValue `json:"ip,omitzero"`
 	// IP country, phone country, breach countries and policy_context.region together.
 	Country *Country `json:"country,omitzero"`
+}
+
+func (c Consistency) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(c, "", false)
+}
+
+func (c *Consistency) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &c, "", false, nil); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (c *Consistency) GetName() *ConsistencyValue {

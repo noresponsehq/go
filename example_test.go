@@ -10,9 +10,9 @@ import (
 	"net/http"
 	"os"
 
-	noresponse "github.com/noresponsehq/go/v5"
-	"github.com/noresponsehq/go/v5/models/apierrors"
-	"github.com/noresponsehq/go/v5/models/components"
+	noresponse "github.com/noresponsehq/go/v6"
+	"github.com/noresponsehq/go/v6/models/apierrors"
+	"github.com/noresponsehq/go/v6/models/components"
 )
 
 // These examples are compiled by go test and shown on pkg.go.dev. They have
@@ -134,17 +134,14 @@ func ExampleConstructEvent() {
 			http.Error(w, "invalid signature", http.StatusBadRequest)
 			return
 		}
-		switch data := event.Data.(type) {
-		case *components.Assessment:
-			fmt.Println(data.ID, data.Detail.AssessmentVersion)
-		case *noresponse.EndpointVerification:
-			body, err := noresponse.VerificationResponse(event)
-			if err != nil {
-				http.Error(w, "invalid verification", http.StatusBadRequest)
-				return
+		switch event.Type {
+		case components.WebhookEventTypeAssessmentUpdated:
+			if assessment := event.AssessmentUpdatedEvent.Data.Assessment; assessment != nil {
+				fmt.Println(assessment.ID, assessment.Detail.AssessmentVersion)
 			}
+		case components.WebhookEventTypeEndpointVerification:
 			w.Header().Set("Content-Type", "application/json")
-			_ = json.NewEncoder(w).Encode(body)
+			_ = json.NewEncoder(w).Encode(components.WebhookVerificationResponse{Challenge: event.EndpointVerificationEvent.Data.Challenge})
 			return
 		}
 		w.WriteHeader(http.StatusNoContent)

@@ -6,7 +6,7 @@ standard returns the consolidated risk response; detailed adds merged provider-n
 
 ```go
 import (
-	"github.com/noresponsehq/go/v5/models/components"
+	"github.com/noresponsehq/go/v6/models/components"
 )
 
 value := components.ResponseModeStandard

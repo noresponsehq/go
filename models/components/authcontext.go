@@ -1,7 +1,7 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v5/internal/utils"
+	"github.com/noresponsehq/go/v6/internal/utils"
 )
 
 // AuthContext - Normalised claims from a session your backend has already verified with WorkOS, Clerk, Auth0 or any OIDC provider. Pass the output of the SDK's auth adapters, not a raw token.

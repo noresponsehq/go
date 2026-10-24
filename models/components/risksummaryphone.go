@@ -1,5 +1,9 @@
 package components
 
+import (
+	"github.com/noresponsehq/go/v6/internal/utils"
+)
+
 type RiskSummaryPhone struct {
 	LineType *LineType `json:"line_type,omitzero"`
 	Country  *string   `json:"country,omitzero"`
@@ -7,6 +11,17 @@ type RiskSummaryPhone struct {
 	ReportCount *int64 `json:"report_count,omitzero"`
 	// Carrier-network metadata from privately weighted sources; not upstream provider attribution.
 	Carrier *string `json:"carrier,omitzero"`
+}
+
+func (r RiskSummaryPhone) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(r, "", false)
+}
+
+func (r *RiskSummaryPhone) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &r, "", false, nil); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (r *RiskSummaryPhone) GetLineType() *LineType {

@@ -22,7 +22,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/noresponsehq/go/v5/models/components"
+	"github.com/noresponsehq/go/v6/models/components"
 )
 
 const (
@@ -219,16 +219,26 @@ func assertEveryCall(t *testing.T, m *mockProvider, auth string) {
 	}
 }
 
-func lateEvent(status string, decision string) *Event {
+func lateEvent(status string, decision string) *components.WebhookEvent {
 	data := &components.Assessment{Status: components.Status(status)}
 	if decision != "" {
 		data.Account = &components.Account{Risk: components.AccountRisk{Decision: components.AccountDecision(decision)}}
 	}
-	return &Event{ID: "evt_x", Type: EventAssessmentUpdated, CreatedAt: "2026-10-18T11:00:04Z", Data: data}
+	return assessmentEvent(components.AssessmentUpdatedData{Assessment: data})
+}
+
+func assessmentEvent(data components.AssessmentUpdatedData) *components.WebhookEvent {
+	event := components.CreateWebhookEventAssessmentUpdated(components.AssessmentUpdatedEvent{ID: "evt_x", CreatedAt: "2026-10-18T11:00:04Z", Data: data})
+	return &event
+}
+
+func riskChangedEvent(data components.AccountRiskChanged) *components.WebhookEvent {
+	event := components.CreateWebhookEventAccountRiskChanged(components.AccountRiskChangedEvent{ID: "evt_x", Data: data})
+	return &event
 }
 
 func TestDefaultPolicyRevokesOnReviewAndBlock(t *testing.T) {
-	expect := func(event *Event, policy LateResultPolicy, want LateResultAction) {
+	expect := func(event *components.WebhookEvent, policy LateResultPolicy, want LateResultAction) {
 		t.Helper()
 		got, err := LateResultActionFor(event, policy)
 		if err != nil || got != want {
@@ -241,23 +251,28 @@ func TestDefaultPolicyRevokesOnReviewAndBlock(t *testing.T) {
 	expect(lateEvent("pending", "review"), nil, LateResultNone)
 	expect(lateEvent("partial", "allow"), nil, LateResultNone)
 	expect(lateEvent("pending", ""), nil, LateResultNone)
-	expect(&Event{ID: "evt_x", Type: EventAssessmentUpdated, Data: &AssessmentExpired{Status: "expired", ChangeReason: "expired"}}, nil, LateResultNone)
-	expect(&Event{ID: "evt_x", Type: EventEndpointVerification, Data: &EndpointVerification{}}, nil, LateResultNone)
-	expect(&Event{ID: "evt_x", Type: EventAccountDeleted, Data: &AccountDeleted{AccountID: "acct_1", AssessmentsDeleted: 1}}, nil, LateResultNone)
-	expect(&Event{ID: "evt_x", Type: EventWorkspaceDeleted, Data: &WorkspaceDeleted{WorkspaceID: "tnt_1", Environment: "live"}}, nil, LateResultNone)
-	expect(&Event{ID: "evt_x", Type: EventEndpointDisabled, Data: &EndpointDisabled{EndpointID: "whe_1"}}, nil, LateResultNone)
+	expect(assessmentEvent(components.AssessmentUpdatedData{AssessmentExpired: &components.AssessmentExpired{}}), nil, LateResultNone)
+	others := []components.WebhookEvent{
+		components.CreateWebhookEventEndpointVerification(components.EndpointVerificationEvent{ID: "evt_x"}),
+		components.CreateWebhookEventAccountDeleted(components.AccountDeletedEvent{ID: "evt_x", Data: components.AccountDeleted{AccountID: "acct_1", AssessmentsDeleted: 1}}),
+		components.CreateWebhookEventWorkspaceDeleted(components.WorkspaceDeletedEvent{ID: "evt_x", Data: components.WorkspaceDeleted{WorkspaceID: "tnt_1", Environment: "live"}}),
+		components.CreateWebhookEventWebhookEndpointDisabled(components.WebhookEndpointDisabledEvent{ID: "evt_x", Data: components.WebhookEndpointDisabled{EndpointID: "whe_1"}}),
+	}
+	for i := range others {
+		expect(&others[i], nil, LateResultNone)
+	}
 	blocked := components.Account{ID: "acct_1", Risk: components.AccountRisk{Score: 90, Decision: components.AccountDecisionBlock}}
 	blocked.DecisionsByFlow.Login = components.AccountDecisionBlock
-	expect(&Event{ID: "evt_x", Type: EventAccountRiskChanged, Data: &AccountRiskChanged{Account: blocked}}, nil, LateResultRevokeSessions)
+	expect(riskChangedEvent(components.AccountRiskChanged{Account: blocked}), nil, LateResultRevokeSessions)
 	// A change to another flow with the login decision as it was acts on nothing.
 	unchanged := components.AccountDecisionsByFlow{AccountCreation: components.AccountDecisionAllow, Login: components.AccountDecisionBlock, Purchase: components.AccountDecisionAllow}
-	expect(&Event{ID: "evt_x", Type: EventAccountRiskChanged, Data: &AccountRiskChanged{Account: blocked, PreviousDecisionsByFlow: unchanged}}, nil, LateResultNone)
+	expect(riskChangedEvent(components.AccountRiskChanged{Account: blocked, PreviousDecisionsByFlow: unchanged}), nil, LateResultNone)
 	expect(lateEvent("complete", "step_up"), LateResultPolicy{components.AccountDecisionStepUp: LateResultBan}, LateResultBan)
 	expect(lateEvent("complete", "review"), LateResultPolicy{components.AccountDecisionStepUp: LateResultBan}, LateResultNone)
 	expect(lateEvent("complete", "block"), LateResultPolicy{components.AccountDecisionBlock: LateResultBan}, LateResultBan)
 
 	// Only the account's decision counts: the detail's recommendation alone acts on nothing.
-	detailOnly := &Event{Type: EventAssessmentUpdated, Data: &components.Assessment{Status: "complete", Detail: components.AssessmentDetail{Recommendation: components.RecommendationReview.ToPointer()}}}
+	detailOnly := assessmentEvent(components.AssessmentUpdatedData{Assessment: &components.Assessment{Status: "complete", Detail: components.AssessmentDetail{Recommendation: components.RecommendationReview.ToPointer()}}})
 	expect(detailOnly, nil, LateResultNone)
 
 	if _, err := LateResultActionFor(lateEvent("complete", "review"), LateResultPolicy{components.AccountDecisionReview: "delete"}); !errors.Is(err, ErrUnknownLateResultAction) {
@@ -296,8 +311,8 @@ func TestClerkReviewRevokesActiveSessionsAndBanPolicyBans(t *testing.T) {
 	if result.Action != LateResultRevokeSessions || result.UserID != "user_2EXAMPLE" {
 		t.Fatalf("result = %+v", result)
 	}
-	if assessment, ok := result.Event.Data.(*components.Assessment); !ok || assessment.ID != review["id"] {
-		t.Fatalf("event data = %+v", result.Event.Data)
+	if event := result.Event.AssessmentUpdatedEvent; event == nil || event.Data.Assessment == nil || event.Data.Assessment.ID != review["id"] {
+		t.Fatalf("event = %+v", result.Event)
 	}
 	assertCalls(t, mock, []string{"GET /v1/sessions", "POST /v1/sessions/sess_1/revoke", "POST /v1/sessions/sess_2/revoke"})
 	if got, want := mock.snapshot()[0].Query, map[string]string{"user_id": "user_2EXAMPLE", "status": "active", "limit": "100", "offset": "0"}; !reflect.DeepEqual(got, want) {
@@ -372,7 +387,7 @@ func TestWorkOSRevokePagesThroughSessionsAndBanRevokesThenDeletes(t *testing.T) 
 	raw, headers := lateDelivery(t, step, "acct_7f3a9c")
 	result, err := HandleLateResult(context.Background(), raw, headers, lateSecrets, workos, lateOptions(&LateResultOptions{
 		Policy: LateResultPolicy{components.AccountDecisionStepUp: LateResultBan},
-		UserID: func(accountID string, _ *Event) string {
+		UserID: func(accountID string, _ *components.WebhookEvent) string {
 			if accountID == "acct_7f3a9c" {
 				return "user_01WORKOS"
 			}
@@ -789,11 +804,11 @@ func TestUnverifiedQuietOrUnmappedEventMakesNoProviderCallAndRefusalReturnsError
 	ctx := context.Background()
 
 	_, err := HandleLateResult(ctx, raw, headers, map[string]string{lateKey: "wrong"}, auth0, lateOptions(nil))
-	wantCode(t, err, "invalid_signature")
+	wantCode(t, err, WebhookInvalidSignature)
 	_, err = HandleLateResult(ctx, append(append([]byte{}, raw...), ' '), headers, lateSecrets, auth0, lateOptions(nil))
-	wantCode(t, err, "invalid_signature")
+	wantCode(t, err, WebhookInvalidSignature)
 	_, err = HandleLateResult(ctx, raw, headers, lateSecrets, auth0, &LateResultOptions{Webhook: []WebhookOption{at(lateNow + 301)}})
-	wantCode(t, err, "invalid_timestamp")
+	wantCode(t, err, WebhookInvalidTimestamp)
 
 	expired := lateFixture(t, "webhook-assessment-expired.json")["data"].(map[string]any)
 	for name, data := range map[string]map[string]any{
@@ -811,17 +826,17 @@ func TestUnverifiedQuietOrUnmappedEventMakesNoProviderCallAndRefusalReturnsError
 	changed := lateFixture(t, "webhook-account-risk-changed.json")
 	changedRaw, changedHeaders := lateDeliveryWith(t, changed["data"].(map[string]any), "", map[string]any{"type": changed["type"]})
 	ignored, err := HandleLateResult(ctx, changedRaw, changedHeaders, lateSecrets, auth0,
-		lateOptions(&LateResultOptions{UserID: func(string, *Event) string { return "" }}))
-	if err != nil || ignored.Action != LateResultNone || ignored.Event.Type != EventAccountRiskChanged {
+		lateOptions(&LateResultOptions{UserID: func(string, *components.WebhookEvent) string { return "" }}))
+	if err != nil || ignored.Action != LateResultNone || ignored.Event.Type != components.WebhookEventTypeAccountRiskChanged {
 		t.Fatalf("account.risk_changed: %+v, %v", ignored, err)
 	}
 	if action, err := LateResultActionFor(ignored.Event, nil); err != nil || action != LateResultRevokeSessions {
 		t.Fatalf("account.risk_changed action: %v %v", action, err)
 	}
-	if data, ok := ignored.Event.Data.(*AccountRiskChanged); !ok || data.Account.DecisionsByFlow.Login != components.AccountDecisionReview {
-		t.Fatalf("account.risk_changed data %+v", ignored.Event.Data)
+	if event := ignored.Event.AccountRiskChangedEvent; event == nil || event.Data.Account.DecisionsByFlow.Login != components.AccountDecisionReview {
+		t.Fatalf("account.risk_changed event %+v", ignored.Event)
 	}
-	result, err := HandleLateResult(ctx, raw, headers, lateSecrets, auth0, lateOptions(&LateResultOptions{UserID: func(string, *Event) string { return "" }}))
+	result, err := HandleLateResult(ctx, raw, headers, lateSecrets, auth0, lateOptions(&LateResultOptions{UserID: func(string, *components.WebhookEvent) string { return "" }}))
 	if err != nil || result.Action != LateResultNone {
 		t.Fatalf("empty resolver: %+v, %v", result, err)
 	}
@@ -874,12 +889,15 @@ func TestWebhookTestEventActsOnNothing(t *testing.T) {
 	resolved := 0
 	ban := LateResultPolicy{components.AccountDecisionAllow: LateResultBan, components.AccountDecisionStepUp: LateResultBan, components.AccountDecisionReview: LateResultBan}
 	for name, extra := range map[string]*LateResultOptions{
-		"UserID":        {Policy: ban, UserID: func(string, *Event) string { resolved++; return "user_01WORKOS" }},
-		"ResolveUserID": {Policy: ban, ResolveUserID: func(context.Context, string, *Event) (string, error) { resolved++; return "user_01WORKOS", nil }},
-		"default":       {Policy: ban},
+		"UserID": {Policy: ban, UserID: func(string, *components.WebhookEvent) string { resolved++; return "user_01WORKOS" }},
+		"ResolveUserID": {Policy: ban, ResolveUserID: func(context.Context, string, *components.WebhookEvent) (string, error) {
+			resolved++
+			return "user_01WORKOS", nil
+		}},
+		"default": {Policy: ban},
 	} {
 		result, err := HandleLateResult(context.Background(), raw, headers, lateSecrets, workos, lateOptions(extra))
-		if err != nil || !result.Event.Test || result.Action != LateResultNone || result.UserID != "" {
+		if err != nil || !isTestEvent(result.Event) || result.Action != LateResultNone || result.UserID != "" {
 			t.Fatalf("%s: %+v, %v", name, result, err)
 		}
 		if action, err := LateResultActionFor(result.Event, ban); err != nil || action != LateResultNone {
@@ -947,13 +965,16 @@ func TestResolveUserIDGetsTheContextAndItsErrorFailsTheDelivery(t *testing.T) {
 	storeDown := errors.New("store unavailable")
 
 	_, err := HandleLateResult(ctx, raw, headers, lateSecrets, auth0, lateOptions(&LateResultOptions{
-		ResolveUserID: func(ctx context.Context, accountID string, event *Event) (string, error) {
+		ResolveUserID: func(ctx context.Context, accountID string, event *components.WebhookEvent) (string, error) {
 			if ctx.Value(key{}) != "request" || accountID != "acct_7f3a9c" || event == nil {
 				t.Fatalf("resolver got ctx %v, account %q, event %v", ctx.Value(key{}), accountID, event)
 			}
 			return "", storeDown
 		},
-		UserID: func(string, *Event) string { t.Fatal("UserID must not run when ResolveUserID is set"); return "" },
+		UserID: func(string, *components.WebhookEvent) string {
+			t.Fatal("UserID must not run when ResolveUserID is set")
+			return ""
+		},
 	}))
 	if !errors.Is(err, storeDown) {
 		t.Fatalf("err = %v, want the resolver's error", err)
@@ -963,13 +984,13 @@ func TestResolveUserIDGetsTheContextAndItsErrorFailsTheDelivery(t *testing.T) {
 	}
 
 	result, err := HandleLateResult(ctx, raw, headers, lateSecrets, auth0, lateOptions(&LateResultOptions{
-		ResolveUserID: func(context.Context, string, *Event) (string, error) { return "auth0|abc", nil },
+		ResolveUserID: func(context.Context, string, *components.WebhookEvent) (string, error) { return "auth0|abc", nil },
 	}))
 	if err != nil || result.Action != LateResultRevokeSessions || result.UserID != "auth0|abc" {
 		t.Fatalf("%+v, %v", result, err)
 	}
 	result, err = HandleLateResult(ctx, raw, headers, lateSecrets, auth0, lateOptions(&LateResultOptions{
-		ResolveUserID: func(context.Context, string, *Event) (string, error) { return "", nil },
+		ResolveUserID: func(context.Context, string, *components.WebhookEvent) (string, error) { return "", nil },
 	}))
 	if err != nil || result.Action != LateResultNone {
 		t.Fatalf("empty resolve: %+v, %v", result, err)

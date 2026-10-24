@@ -1,7 +1,7 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v5/internal/utils"
+	"github.com/noresponsehq/go/v6/internal/utils"
 )
 
 type RiskSummaryUsername struct {

@@ -9,7 +9,7 @@ Call it from your server only. The API key must never reach a browser or an app.
 ## Install
 
 ```sh
-go get github.com/noresponsehq/go/v5
+go get github.com/noresponsehq/go/v6
 ```
 
 Go 1.24 or later.
@@ -25,8 +25,8 @@ import (
 	"log"
 	"os"
 
-	noresponse "github.com/noresponsehq/go/v5"
-	"github.com/noresponsehq/go/v5/models/components"
+	noresponse "github.com/noresponsehq/go/v6"
+	"github.com/noresponsehq/go/v6/models/components"
 )
 
 func main() {
@@ -108,7 +108,7 @@ case err != nil:
 }
 ```
 
-The typed errors are `BadRequestError` (400), `AuthenticationError` (401), `PermissionDeniedError` (403), `NotFoundError` (404), `ConflictError` (409) and `RateLimitError` (429), all in `github.com/noresponsehq/go/v5/models/apierrors`. Any other status is an `*apierrors.APIStatusError`.
+The typed errors are `BadRequestError` (400), `AuthenticationError` (401), `PermissionDeniedError` (403), `NotFoundError` (404), `ConflictError` (409) and `RateLimitError` (429), all in `github.com/noresponsehq/go/v6/models/apierrors`. Any other status is an `*apierrors.APIStatusError`.
 
 ## Retries and timeouts
 

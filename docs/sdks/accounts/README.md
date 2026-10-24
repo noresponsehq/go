@@ -23,7 +23,7 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v5"
+	noresponse "github.com/noresponsehq/go/v6"
 	"log"
 )
 
@@ -52,7 +52,7 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v5"
+	noresponse "github.com/noresponsehq/go/v6"
 	"log"
 )
 
@@ -110,7 +110,7 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v5"
+	noresponse "github.com/noresponsehq/go/v6"
 	"log"
 )
 
@@ -139,7 +139,7 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v5"
+	noresponse "github.com/noresponsehq/go/v6"
 	"log"
 )
 
@@ -197,7 +197,7 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v5"
+	noresponse "github.com/noresponsehq/go/v6"
 	"log"
 )
 

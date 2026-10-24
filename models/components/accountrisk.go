@@ -1,5 +1,9 @@
 package components
 
+import (
+	"github.com/noresponsehq/go/v6/internal/utils"
+)
+
 type AccountRisk struct {
 	// 0 (safe) to 100 (risky), as risk.score of the assessment.
 	Score int64 `json:"score"`
@@ -7,6 +11,17 @@ type AccountRisk struct {
 	Decision AccountDecision `json:"decision"`
 	// Every reason that fired, highest weight first. The weights sum to score before clamping.
 	Reasons []AccountRiskReason `json:"reasons"`
+}
+
+func (a AccountRisk) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(a, "", false)
+}
+
+func (a *AccountRisk) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &a, "", false, nil); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (a *AccountRisk) GetScore() int64 {

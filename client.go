@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"iter"
 
-	"github.com/noresponsehq/go/v5/models/components"
+	"github.com/noresponsehq/go/v6/models/components"
 )
 
 // NewClient returns a client that authenticates with apiKey. It is New with
