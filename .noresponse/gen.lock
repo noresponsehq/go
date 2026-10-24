@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: 25ddae46-795d-45f5-b455-3f48c41d440e
 management:
-  docChecksum: e7818eca7ac814dc8f9b32c978d8f363
+  docChecksum: e4d69448d4839c3abf8b322ee25be141
   docVersion: "1"
   speakeasyVersion: internal
   generationVersion: internal
-  releaseVersion: 5.0.0
-  configChecksum: 74100798f5aa02bad005bd2bcf913a50
+  releaseVersion: 5.0.1
+  configChecksum: 828479014289b86bda4f1ad91a722a56
 features:
   go:
     additionalDependencies: 0.1.0
@@ -257,7 +257,7 @@ trackedFiles:
   docs/models/components/transport.md:
     last_write_checksum: sha1:c22f9337d6517fc17d17a787f9c51d02cfce71c1
   docs/models/components/webhookdeliveryattempt.md:
-    last_write_checksum: sha1:d18a2b76439f65e0fc2c0692c64bc18b743bc3a1
+    last_write_checksum: sha1:8d0fc44aa45432df9ad84899bbcc4f550a1ec334
   docs/models/components/webhookdeliveryattemptstatus.md:
     last_write_checksum: sha1:067d91dac605e496b819186259a0c8a9c09ec03a
   docs/models/components/webhookdeliverylist.md:
@@ -277,7 +277,7 @@ trackedFiles:
   docs/models/components/webhookkeyrotationrequest.md:
     last_write_checksum: sha1:9daf33b4d44abed8a71b970893c464fd6238b56f
   docs/models/components/webhookreplay.md:
-    last_write_checksum: sha1:b544e228a1abecd0aea45f3a862d2adef2a6b0a8
+    last_write_checksum: sha1:5f563755b70ef7c95444154c5c705847f944b78d
   docs/models/components/webhookreplayrequest.md:
     last_write_checksum: sha1:97bbe30c0e5e3a903301bba0428af795c5a81d6d
   docs/models/components/webhooktest.md:
@@ -613,7 +613,7 @@ trackedFiles:
   models/components/transport.go:
     last_write_checksum: sha1:d4fe134a1281508302ae45565f6be929e23e4e4c
   models/components/webhookdeliveryattempt.go:
-    last_write_checksum: sha1:caf1ed13ea6c9e1bd099ffaffc669ff9b56404ba
+    last_write_checksum: sha1:1693f5a53d36be1fe6d96a86372b8477647b34c1
   models/components/webhookdeliveryattemptstatus.go:
     last_write_checksum: sha1:d0bd8ca8e0701e73c42ab0a36b3f5d12acbded75
   models/components/webhookdeliverylist.go:
@@ -633,7 +633,7 @@ trackedFiles:
   models/components/webhookkeyrotationrequest.go:
     last_write_checksum: sha1:69a44e3bc34981b1607ea4d0ce1d3d6b3579cbae
   models/components/webhookreplay.go:
-    last_write_checksum: sha1:c1e4e3bc705b434d096d64efaacd8979faea5448
+    last_write_checksum: sha1:5be600a7a4853624a39e17e59f5c3a0bed4170e5
   models/components/webhookreplayrequest.go:
     last_write_checksum: sha1:f731a5ecab9b48d174264ec74de0a80b384db264
   models/components/webhooktest.go:
@@ -687,7 +687,7 @@ trackedFiles:
   models/operations/sendwebhooktestevent.go:
     last_write_checksum: sha1:4e5f9897b1b829333fbfb8b63348844a554ccd6c
   noresponse.go:
-    last_write_checksum: sha1:281a1047fb24ebd1c999eb7035f2cca562541f40
+    last_write_checksum: sha1:7c1ea1da3b4395ffb5c18d0976217eea3763df5c
   optionalnullable/optionalnullable.go:
     last_write_checksum: sha1:38cf187cd65a5213be09788f67d82dc49d46b583
   optionalnullable/optionalnullable_test.go:

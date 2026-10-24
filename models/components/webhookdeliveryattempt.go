@@ -3,7 +3,7 @@ package components
 type WebhookDeliveryAttempt struct {
 	// The event id the receiver saw as NR-Webhook-Id and as the body's id. Replay it with POST /v1/webhooks/{endpoint_id}/deliveries/{event_id}/replay.
 	EventID string `json:"event_id"`
-	// The event's type, as its body's type: assessment.updated, account.deleted or account.risk_changed.
+	// The event's type, as its body's type: assessment.updated, endpoint.verification, account.deleted, workspace.deleted, webhook_endpoint.disabled, account.risk_changed, or a type added later.
 	EventType string `json:"event_type"`
 	// Which attempt of this delivery this was: 1 for the first send, up to 9 with retries. A replay counts its own attempts from 1.
 	Attempt int64 `json:"attempt"`
