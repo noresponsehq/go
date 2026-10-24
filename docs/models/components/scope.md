@@ -20,6 +20,7 @@ custom := components.Scope("custom_value")
 | ------------------- | ------------------- |
 | `ScopeAssess`       | assess              |
 | `ScopeHistory`      | history             |
+| `ScopeDelete`       | delete              |
 | `ScopeWebhooks`     | webhooks            |
 | `ScopeDetailed`     | detailed            |
 | `ScopeIntegrations` | integrations        |

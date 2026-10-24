@@ -140,21 +140,33 @@ func (e *ProviderActionError) Error() string { return "noresponse: " + e.Message
 // decision can act; a test event from WebhookEndpoints.SendTestEvent never does. A nil policy
 // means DefaultLateResultPolicy.
 func LateResultActionFor(event *Event, policy LateResultPolicy) (LateResultAction, error) {
-	if event == nil || event.Type != EventAssessmentUpdated || event.Test {
+	if event == nil || event.Test {
 		return LateResultNone, nil
 	}
-	assessment, ok := event.Data.(*components.Assessment)
-	if !ok || assessment == nil {
+	var decision components.AccountDecision
+	switch event.Type {
+	case EventAccountRiskChanged:
+		// The event is sent when any flow's decision changes; sessions are
+		// about the login decision, so an unchanged login decision acts on
+		// nothing, and a user who signed in again after a review is not
+		// signed out again by a purchase change.
+		changed, ok := event.Data.(*AccountRiskChanged)
+		if !ok || changed == nil || changed.PreviousDecisionsByFlow.Login == changed.Account.DecisionsByFlow.Login {
+			return LateResultNone, nil
+		}
+		decision = changed.Account.DecisionsByFlow.Login
+	case EventAssessmentUpdated:
+		assessment, ok := event.Data.(*components.Assessment)
+		if !ok || assessment == nil || assessment.Status == components.StatusPending || assessment.Account == nil {
+			return LateResultNone, nil
+		}
+		decision = assessment.Account.Risk.Decision
+	default:
 		return LateResultNone, nil
 	}
 	if policy == nil {
 		policy = DefaultLateResultPolicy()
 	}
-	// A pending assessment carries the decision of an earlier one, or none.
-	if assessment.Status == components.StatusPending || assessment.Account == nil {
-		return LateResultNone, nil
-	}
-	decision := assessment.Account.Risk.Decision
 	switch decision {
 	case components.AccountDecisionAllow, components.AccountDecisionStepUp, components.AccountDecisionReview, components.AccountDecisionBlock:
 	default:
@@ -190,18 +202,26 @@ func HandleLateResult(ctx context.Context, payload []byte, headers http.Header, 
 	if err != nil {
 		return nil, err
 	}
-	assessment, ok := event.Data.(*components.Assessment)
-	if action == LateResultNone || !ok {
+	if action == LateResultNone {
 		return &LateResult{Event: event, Action: LateResultNone}, nil
 	}
-	userID := assessment.Detail.AccountID
+	var accountID string
+	switch data := event.Data.(type) {
+	case *components.Assessment:
+		accountID = data.Detail.AccountID
+	case *AccountRiskChanged:
+		accountID = data.Account.ID
+	default:
+		return &LateResult{Event: event, Action: LateResultNone}, nil
+	}
+	userID := accountID
 	switch {
 	case options.ResolveUserID != nil:
-		if userID, err = options.ResolveUserID(ctx, assessment.Detail.AccountID, event); err != nil {
+		if userID, err = options.ResolveUserID(ctx, accountID, event); err != nil {
 			return nil, err
 		}
 	case options.UserID != nil:
-		userID = options.UserID(assessment.Detail.AccountID, event)
+		userID = options.UserID(accountID, event)
 	}
 	if userID == "" {
 		return &LateResult{Event: event, Action: LateResultNone}, nil

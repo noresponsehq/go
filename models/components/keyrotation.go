@@ -5,6 +5,7 @@ type Scope string
 const (
 	ScopeAssess       Scope = "assess"
 	ScopeHistory      Scope = "history"
+	ScopeDelete       Scope = "delete"
 	ScopeWebhooks     Scope = "webhooks"
 	ScopeDetailed     Scope = "detailed"
 	ScopeIntegrations Scope = "integrations"
@@ -18,7 +19,7 @@ func (e Scope) ToPointer() *Scope {
 func (e *Scope) IsExact() bool {
 	if e != nil {
 		switch *e {
-		case "assess", "history", "webhooks", "detailed", "integrations":
+		case "assess", "history", "delete", "webhooks", "detailed", "integrations":
 			return true
 		}
 	}

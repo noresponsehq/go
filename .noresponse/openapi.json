@@ -2996,6 +2996,7 @@
               "enum": [
                 "assess",
                 "history",
+                "delete",
                 "webhooks",
                 "detailed",
                 "integrations"

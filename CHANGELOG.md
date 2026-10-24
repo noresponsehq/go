@@ -1,5 +1,9 @@
 # Changelog
 
+## 5.1.0
+
+* `Sdk.Keys.Rotate()`:  `response.Scopes[].Enum(delete)` **Added**
+
 ## 5.0.1
 
 No changes detected.

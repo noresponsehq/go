@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: 25ddae46-795d-45f5-b455-3f48c41d440e
 management:
-  docChecksum: e4d69448d4839c3abf8b322ee25be141
+  docChecksum: 772dfc7ca18c75df8d328df1a97623df
   docVersion: "1"
   speakeasyVersion: internal
   generationVersion: internal
-  releaseVersion: 5.0.1
-  configChecksum: 828479014289b86bda4f1ad91a722a56
+  releaseVersion: 5.1.0
+  configChecksum: a5ac9f60c2f0085a4c1f5e875936a3db
 features:
   go:
     additionalDependencies: 0.1.0
@@ -233,7 +233,7 @@ trackedFiles:
   docs/models/components/risksummaryusername.md:
     last_write_checksum: sha1:1f4abe0194064151e1ac84fa7631d31c56d95ec0
   docs/models/components/scope.md:
-    last_write_checksum: sha1:46b8a3d2f23b4916d3582bed8d2d6b98073909f4
+    last_write_checksum: sha1:618a7dbaa7d1036cca047f0894112637482a8eaf
   docs/models/components/security.md:
     last_write_checksum: sha1:17e398b2abd89b7459f07c9ff820a7cc7c7b7bb7
   docs/models/components/signal.md:
@@ -539,7 +539,7 @@ trackedFiles:
   models/components/ipsummarytype.go:
     last_write_checksum: sha1:b32d4ec6feb5771fb579a788d16add562bd5b4a3
   models/components/keyrotation.go:
-    last_write_checksum: sha1:0dd336201e1492345e759d55d72f8db4b9932cd8
+    last_write_checksum: sha1:abcbb1c8a82598a247108adcafa4f40561c7651c
   models/components/keyrotationrequest.go:
     last_write_checksum: sha1:8838334697ab2222918f75b2592b5edb34da4161
   models/components/keyusagebatch.go:
@@ -687,7 +687,7 @@ trackedFiles:
   models/operations/sendwebhooktestevent.go:
     last_write_checksum: sha1:4e5f9897b1b829333fbfb8b63348844a554ccd6c
   noresponse.go:
-    last_write_checksum: sha1:7c1ea1da3b4395ffb5c18d0976217eea3763df5c
+    last_write_checksum: sha1:d0f938a0036973893a9f0974277c334132a158e6
   optionalnullable/optionalnullable.go:
     last_write_checksum: sha1:38cf187cd65a5213be09788f67d82dc49d46b583
   optionalnullable/optionalnullable_test.go:
