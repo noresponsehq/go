@@ -1,0 +1,1 @@
+{"flows": {"login": {"on_expiry": "step_up"}}}

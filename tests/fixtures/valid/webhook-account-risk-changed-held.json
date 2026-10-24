@@ -1,0 +1,40 @@
+{
+  "id": "evt_01JA2ZE5N6P7Q8R9S0T1VWXYZ7",
+  "type": "account.risk_changed",
+  "created_at": "2026-10-23T09:00:05.000Z",
+  "data": {
+    "account": {
+      "schema_version": "1",
+      "id": "acct_7f3a9c",
+      "risk": {
+        "score": 70,
+        "decision": "review",
+        "reasons": [
+          {
+            "code": "recent_password_exposure",
+            "weight": 55,
+            "identifier": "email"
+          },
+          {
+            "code": "proxy_ip",
+            "weight": 15,
+            "identifier": "ip"
+          }
+        ]
+      },
+      "decisions_by_flow": {
+        "account_creation": "review",
+        "login": "review",
+        "purchase": "review"
+      },
+      "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+      "updated_at": "2026-10-23T09:00:04.812Z",
+      "risk_version": 3
+    },
+    "previous_decisions_by_flow": {
+      "account_creation": "held",
+      "login": "allow",
+      "purchase": "allow"
+    }
+  }
+}

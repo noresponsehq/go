@@ -1,5 +1,12 @@
 # Changelog
 
+## 7.0.1
+
+* `Sdk.Assessments.Create()`:  `response.Account.Risk.Decision.Enum(held)` **Added**
+* `Sdk.Assessments.Get()`:  `response.Account.Risk.Decision.Enum(held)` **Added**
+* `Sdk.Accounts.ListChanged()`:  `response.Items[].Risk.Decision.Enum(held)` **Added**
+* `Sdk.Accounts.Get()`:  `response.Risk.Decision.Enum(held)` **Added**
+
 ## 7.0.0
 
 No changes detected.

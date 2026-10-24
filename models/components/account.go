@@ -12,7 +12,7 @@ type Account struct {
 	// The account_id the workspace sends with its assessments.
 	ID   string      `json:"id"`
 	Risk AccountRisk `json:"risk"`
-	// The decision for each flow: the account's score under that flow's thresholds. A flow the workspace has not set uses its account_creation thresholds, so the flows differ only where it set them.
+	// The decision for each flow: the account's score under that flow's thresholds. A flow the workspace has not set uses its account_creation thresholds, so the flows differ only where it set them. The flow of the current assessment is held while that flow's admission is held and the assessment's investigation has not completed.
 	DecisionsByFlow AccountDecisionsByFlow `json:"decisions_by_flow"`
 	// The assessment the current risk comes from.
 	AssessmentID string `json:"assessment_id"`

@@ -1,1 +1,1 @@
-{"retention_days": 90, "flows": {"login": {"step_up": 30, "review": 60, "block": null, "default_depth": "full"}, "purchase": {"inherits_account_creation": true}}}
+{"retention_days": 90, "flows": {"login": {"step_up": 30, "review": 60, "block": null, "default_depth": "full"}, "purchase": {"inherits_account_creation": true}, "account_creation": {"admission": "held", "hold_seconds": 600, "on_expiry": "review"}}}

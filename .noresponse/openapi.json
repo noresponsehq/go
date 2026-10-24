@@ -1575,7 +1575,7 @@
           },
           "decisions_by_flow": {
             "$ref": "#/components/schemas/AccountDecisionsByFlow",
-            "description": "The decision for each flow: the account's score under that flow's thresholds. A flow the workspace has not set uses its account_creation thresholds, so the flows differ only where it set them."
+            "description": "The decision for each flow: the account's score under that flow's thresholds. A flow the workspace has not set uses its account_creation thresholds, so the flows differ only where it set them. The flow of the current assessment is held while that flow's admission is held and the assessment's investigation has not completed."
           },
           "assessment_id": {
             "type": "string",
@@ -1600,9 +1600,10 @@
           "allow",
           "step_up",
           "review",
-          "block"
+          "block",
+          "held"
         ],
-        "description": "block when the score reached your block threshold (risk.block of the assessment), otherwise the assessment's recommendation. Your application applies it."
+        "description": "block when the score reached your block threshold (risk.block of the assessment), otherwise the assessment's recommendation. held only for a flow whose admission is held (settings flows.<flow>.admission), when the account's current assessment was made for that flow and its investigation has not completed (status partial): the final decision arrives as account.risk_changed when the investigation completes, decided by its score, or when the hold's deadline (hold_seconds after the assessment was created) passes first, as the flow's on_expiry action or the decision the evidence so far gives, whichever is stricter. Your application applies it."
       },
       "AccountDecisionsByFlow": {
         "type": "object",
@@ -1612,7 +1613,7 @@
           "login",
           "purchase"
         ],
-        "description": "The decision for each flow: the account's score under that flow's thresholds. A flow the workspace has not set uses its account_creation thresholds, so the flows differ only where it set them.",
+        "description": "The decision for each flow: the account's score under that flow's thresholds. A flow the workspace has not set uses its account_creation thresholds, so the flows differ only where it set them. The flow of the current assessment is held while that flow's admission is held and the assessment's investigation has not completed.",
         "properties": {
           "account_creation": {
             "$ref": "#/components/schemas/AccountDecision"
@@ -1895,7 +1896,7 @@
           },
           "account": {
             "$ref": "#/components/schemas/Account",
-            "description": "The account's one current risk when this assessment was served, decided for this assessment's flow: the body GET /v1/accounts/{account_id} would answer, with risk.decision equal to decisions_by_flow for flow. Absent only while the account has no assessment with a decision (its first assessment is still pending); a webhook or GET of the decided assessment then carries it."
+            "description": "The account's one current risk when this assessment was served, decided for this assessment's flow: the body GET /v1/accounts/{account_id} would answer, with risk.decision equal to decisions_by_flow for flow, which is held while this assessment's flow is held and its investigation has not completed. Absent only while the account has no assessment with a decision (its first assessment is still pending); a webhook or GET of the decided assessment then carries it."
           },
           "detail": {
             "$ref": "#/components/schemas/AssessmentDetail",
