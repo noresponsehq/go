@@ -4232,7 +4232,10 @@
           "context_line_country_mismatch",
           "prior_abuse_link",
           "test_scenario",
-          "shared_api_key"
+          "shared_api_key",
+          "young_email_domain",
+          "email_domain_no_mx",
+          "email_domain_nonexistent"
         ],
         "description": "A stable reason code. New codes may appear; ignore any you do not know."
       },

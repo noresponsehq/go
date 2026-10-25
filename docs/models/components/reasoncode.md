@@ -57,3 +57,6 @@ custom := components.ReasonCode("custom_value")
 | `ReasonCodePriorAbuseLink`             | prior_abuse_link                       |
 | `ReasonCodeTestScenario`               | test_scenario                          |
 | `ReasonCodeSharedAPIKey`               | shared_api_key                         |
+| `ReasonCodeYoungEmailDomain`           | young_email_domain                     |
+| `ReasonCodeEmailDomainNoMx`            | email_domain_no_mx                     |
+| `ReasonCodeEmailDomainNonexistent`     | email_domain_nonexistent               |

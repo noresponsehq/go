@@ -1,5 +1,14 @@
 # Changelog
 
+## 7.0.4
+
+* `Sdk.Assessments.Create()`:  `response.Account.Risk.Reasons[].Code` **Changed**
+* `Sdk.Assessments.Get()`:  `response.Account.Risk.Reasons[].Code` **Changed**
+* `Sdk.Assessments.Query()`:  `response.Items[].Risk.Reasons[].Code` **Changed**
+* `Sdk.Accounts.ListChanged()`:  `response.Items[].Risk.Reasons[].Code` **Changed**
+* `Sdk.Accounts.Get()`:  `response.Risk.Reasons[].Code` **Changed**
+* `Sdk.Accounts.ListAssessments()`:  `response.Items[].Risk.Reasons[].Code` **Changed**
+
 ## 7.0.3
 
 * `Sdk.Assessments.Create()`:  `response.Detail.IncompleteSources[].Lane.Enum(domain)` **Added**
