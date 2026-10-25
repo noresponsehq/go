@@ -2288,6 +2288,11 @@
       "expect": "valid"
     },
     {
+      "file": "valid/integration-request-supabase.json",
+      "schema": "integration-request.schema.json",
+      "expect": "valid"
+    },
+    {
       "file": "valid/integration-auth0.json",
       "schema": "integration.schema.json",
       "expect": "valid"
@@ -2627,6 +2632,42 @@
       "why": "NoResponse generates the Auth0 secret"
     },
     {
+      "file": "invalid/integration-request-supabase-no-secret.json",
+      "schema": "integration-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "required",
+          ""
+        ]
+      ],
+      "why": "Supabase needs its hook secret"
+    },
+    {
+      "file": "invalid/integration-request-supabase-secret-form.json",
+      "schema": "integration-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "pattern",
+          "/signing_secret"
+        ]
+      ],
+      "why": "a Supabase hook secret is v1,whsec_ and base64"
+    },
+    {
+      "file": "invalid/integration-request-supabase-post-login.json",
+      "schema": "integration-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "const",
+          "/hook_points/1"
+        ]
+      ],
+      "why": "Supabase has only the Before User Created hook"
+    },
+    {
       "file": "invalid/integration-request-unknown-platform.json",
       "schema": "integration-request.schema.json",
       "expect": "invalid",
@@ -2636,7 +2677,7 @@
           "/platform"
         ]
       ],
-      "why": "only WorkOS and Auth0 have hosted endpoints"
+      "why": "only WorkOS, Auth0 and Supabase have hosted endpoints"
     },
     {
       "file": "invalid/integration-request-tenant-id.json",

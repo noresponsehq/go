@@ -1,5 +1,13 @@
 # Changelog
 
+## 7.1.6
+
+* `Sdk.Integrations.Create()`: 
+  *  `request.Request.Platform.Enum(supabase)` **Added**
+  *  `response.Platform.Enum(supabase)` **Added**
+* `Sdk.Integrations.List()`:  `response.Items[].Platform.Enum(supabase)` **Added**
+* `Sdk.Integrations.Rotate()`:  `response.Platform.Enum(supabase)` **Added**
+
 ## 7.1.5
 
 * `Sdk.Assessments.Create()`:  `response.Account.Risk.Reasons[].Code` **Changed**

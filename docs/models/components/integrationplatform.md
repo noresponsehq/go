@@ -18,7 +18,8 @@ custom := components.IntegrationPlatform("custom_value")
 
 ## Values
 
-| Name                        | Value                       |
-| --------------------------- | --------------------------- |
-| `IntegrationPlatformWorkos` | workos                      |
-| `IntegrationPlatformAuth0`  | auth0                       |
+| Name                          | Value                         |
+| ----------------------------- | ----------------------------- |
+| `IntegrationPlatformWorkos`   | workos                        |
+| `IntegrationPlatformAuth0`    | auth0                         |
+| `IntegrationPlatformSupabase` | supabase                      |

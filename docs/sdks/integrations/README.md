@@ -13,7 +13,7 @@ Hosted endpoints that answer your sign-up and sign-in hooks.
 
 ## Create
 
-Registers a WorkOS or Auth0 integration and returns its hosted endpoint, url, so a sign-up or sign-in is scored with no server of your own. For WorkOS, send the Actions signing secret from the WorkOS dashboard and point the user registration and authentication Actions at url. For Auth0, the answer's secret is the shared secret of the NoResponse Auth0 Action, shown once: store it as an Action secret. hook_points defaults to both pre_registration and post_login; an event that is not listed is allowed without an assessment. The endpoint waits for the full assessment for at most 2.5 seconds (WorkOS) or 4.5 seconds (Auth0), denies only when risk.block is true and allows on any failure. Requires the integrations scope; at most 10 per account. Not idempotent: a retry after a lost answer registers another integration.
+Registers a WorkOS, Auth0 or Supabase integration and returns its hosted endpoint, url, so a sign-up or sign-in is scored with no server of your own. For WorkOS, send the Actions signing secret from the WorkOS dashboard and point the user registration and authentication Actions at url. For Supabase, send the hook secret Supabase generates (v1,whsec_...) and set url as the Before User Created hook's HTTPS endpoint. For Auth0, the answer's secret is the shared secret of the NoResponse Auth0 Action, shown once: store it as an Action secret. hook_points defaults to every hook point the platform has (Supabase has only pre_registration); an event that is not listed is allowed without an assessment. The endpoint waits for the full assessment for at most 2.5 seconds (WorkOS, Supabase) or 4.5 seconds (Auth0), denies only when risk.block is true and allows on any failure. Requires the integrations scope; at most 10 per account. Not idempotent: a retry after a lost answer registers another integration.
 
 ### Example Usage: auth0
 
@@ -38,6 +38,39 @@ func main() {
 
     res, err := s.Integrations.Create(ctx, components.IntegrationRequest{
         Platform: components.IntegrationPlatformAuth0,
+    })
+    if err != nil {
+        log.Fatal(err)
+    }
+    if res != nil {
+        // handle response
+    }
+}
+```
+### Example Usage: supabase
+
+<!-- UsageSnippet language="go" operationID="createIntegration" method="post" path="/v1/integrations" example="supabase" -->
+```go
+package main
+
+import(
+	"context"
+	"os"
+	noresponse "github.com/noresponsehq/go/v7"
+	"github.com/noresponsehq/go/v7/models/components"
+	"log"
+)
+
+func main() {
+    ctx := context.Background()
+
+    s := noresponse.New(
+        noresponse.WithSecurity(os.Getenv("NORESPONSE_API_KEY")),
+    )
+
+    res, err := s.Integrations.Create(ctx, components.IntegrationRequest{
+        Platform: components.IntegrationPlatformSupabase,
+        SigningSecret: noresponse.Pointer("v1,whsec_dGVzdC1zdXBhYmFzZS1ob29rLXNlY3JldC1ub3QtcmVhbA=="),
     })
     if err != nil {
         log.Fatal(err)
@@ -225,7 +258,7 @@ func main() {
 
 ## Rotate
 
-For Auth0, send {} and the answer's secret is the new shared secret, shown once. For WorkOS, regenerate the Actions secret in the WorkOS dashboard and send it as signing_secret. The replaced secret is still accepted for 24 hours (previous_secret_expires_at). Requires the integrations scope. Not idempotent: a retry after a lost answer rotates again.
+For Auth0, send {} and the answer's secret is the new shared secret, shown once. For WorkOS, regenerate the Actions secret in the WorkOS dashboard and send it as signing_secret; for Supabase, generate a new hook secret in the Supabase dashboard and send it as signing_secret. The replaced secret is still accepted for 24 hours (previous_secret_expires_at). Requires the integrations scope. Not idempotent: a retry after a lost answer rotates again.
 
 ### Example Usage: auth0
 

@@ -4,7 +4,7 @@
     "title": "NoResponse API",
     "version": "1",
     "summary": "Server-side risk assessment of account creation, login and purchase: a recommendation, polling and signed webhooks.",
-    "description": "Assess an account creation, login or purchase and get back the account's one current risk, poll a pending assessment, page through an account's history, record what you later learned, report usage of the API keys you issue to your accounts, rotate your API key, manage your webhook endpoints, and register hosted endpoints that answer your WorkOS or Auth0 sign-up and sign-in hooks. Every response carries X-Request-ID; every error is an RFC 9457 problem document. Keep the API key on your server.",
+    "description": "Assess an account creation, login or purchase and get back the account's one current risk, poll a pending assessment, page through an account's history, record what you later learned, report usage of the API keys you issue to your accounts, rotate your API key, manage your webhook endpoints, and register hosted endpoints that answer your WorkOS, Auth0 or Supabase sign-up and sign-in hooks. Every response carries X-Request-ID; every error is an RFC 9457 problem document. Keep the API key on your server.",
     "license": {
       "name": "Apache-2.0",
       "identifier": "Apache-2.0"
@@ -892,7 +892,7 @@
           "integrations"
         ],
         "summary": "Register a hosted provider integration.",
-        "description": "Registers a WorkOS or Auth0 integration and returns its hosted endpoint, url, so a sign-up or sign-in is scored with no server of your own. For WorkOS, send the Actions signing secret from the WorkOS dashboard and point the user registration and authentication Actions at url. For Auth0, the answer's secret is the shared secret of the NoResponse Auth0 Action, shown once: store it as an Action secret. hook_points defaults to both pre_registration and post_login; an event that is not listed is allowed without an assessment. The endpoint waits for the full assessment for at most 2.5 seconds (WorkOS) or 4.5 seconds (Auth0), denies only when risk.block is true and allows on any failure. Requires the integrations scope; at most 10 per account. Not idempotent: a retry after a lost answer registers another integration.",
+        "description": "Registers a WorkOS, Auth0 or Supabase integration and returns its hosted endpoint, url, so a sign-up or sign-in is scored with no server of your own. For WorkOS, send the Actions signing secret from the WorkOS dashboard and point the user registration and authentication Actions at url. For Supabase, send the hook secret Supabase generates (v1,whsec_...) and set url as the Before User Created hook's HTTPS endpoint. For Auth0, the answer's secret is the shared secret of the NoResponse Auth0 Action, shown once: store it as an Action secret. hook_points defaults to every hook point the platform has (Supabase has only pre_registration); an event that is not listed is allowed without an assessment. The endpoint waits for the full assessment for at most 2.5 seconds (WorkOS, Supabase) or 4.5 seconds (Auth0), denies only when risk.block is true and allows on any failure. Requires the integrations scope; at most 10 per account. Not idempotent: a retry after a lost answer registers another integration.",
         "requestBody": {
           "required": true,
           "content": {
@@ -914,6 +914,12 @@
                       "post_login"
                     ],
                     "signing_secret": "wos_action_secret_k3Yx8pQ2mN7vR4tW"
+                  }
+                },
+                "supabase": {
+                  "value": {
+                    "platform": "supabase",
+                    "signing_secret": "v1,whsec_dGVzdC1zdXBhYmFzZS1ob29rLXNlY3JldC1ub3QtcmVhbA=="
                   }
                 }
               }
@@ -1045,7 +1051,7 @@
           "integrations"
         ],
         "summary": "Replace an integration's secret.",
-        "description": "For Auth0, send {} and the answer's secret is the new shared secret, shown once. For WorkOS, regenerate the Actions secret in the WorkOS dashboard and send it as signing_secret. The replaced secret is still accepted for 24 hours (previous_secret_expires_at). Requires the integrations scope. Not idempotent: a retry after a lost answer rotates again.",
+        "description": "For Auth0, send {} and the answer's secret is the new shared secret, shown once. For WorkOS, regenerate the Actions secret in the WorkOS dashboard and send it as signing_secret; for Supabase, generate a new hook secret in the Supabase dashboard and send it as signing_secret. The replaced secret is still accepted for 24 hours (previous_secret_expires_at). Requires the integrations scope. Not idempotent: a retry after a lost answer rotates again.",
         "parameters": [
           {
             "$ref": "#/components/parameters/IntegrationId"
@@ -3912,12 +3918,13 @@
       "IntegrationPlatform": {
         "enum": [
           "workos",
-          "auth0"
+          "auth0",
+          "supabase"
         ],
         "description": "The authentication provider that calls the endpoint."
       },
       "IntegrationRequest": {
-        "description": "POST /v1/integrations body. Registers a hosted endpoint for one authentication provider. The workspace is the API key that signs the request, so the body has no workspace field and refuses one like any other unknown member. A WorkOS integration needs signing_secret, the Actions secret shown in the WorkOS dashboard, which NoResponse uses to verify each Action request and to sign its answer. An Auth0 integration sends no signing_secret: NoResponse generates the shared secret and returns it once.",
+        "description": "POST /v1/integrations body. Registers a hosted endpoint for one authentication provider. The workspace is the API key that signs the request, so the body has no workspace field and refuses one like any other unknown member. A WorkOS integration needs signing_secret, the Actions secret shown in the WorkOS dashboard, which NoResponse uses to verify each Action request and to sign its answer. A Supabase integration needs signing_secret, the hook secret Supabase generates for a Before User Created HTTPS hook (v1,whsec_ and base64), which NoResponse uses to verify each call. An Auth0 integration sends no signing_secret: NoResponse generates the shared secret and returns it once.",
         "type": "object",
         "additionalProperties": false,
         "required": [
@@ -3935,20 +3942,20 @@
             "items": {
               "$ref": "#/components/schemas/IntegrationHookPoint"
             },
-            "description": "The provider events the endpoint scores. Default both: pre_registration (WorkOS user registration Action, Auth0 pre-user-registration trigger) and post_login (WorkOS authentication Action, Auth0 post-login trigger). An event that is not listed is answered allow without an assessment."
+            "description": "The provider events the endpoint scores. Default every hook point the platform has: pre_registration (WorkOS user registration Action, Auth0 pre-user-registration trigger, Supabase Before User Created hook) and post_login (WorkOS authentication Action, Auth0 post-login trigger). Supabase has only pre_registration, so a Supabase integration that lists post_login is refused. An event that is not listed is answered allow without an assessment."
           },
           "signing_secret": {
             "type": "string",
             "minLength": 16,
             "maxLength": 256,
             "pattern": "^[!-~]{16,256}$",
-            "description": "The WorkOS Actions signing secret, as the WorkOS dashboard shows it: 16 to 256 printable ASCII characters with no spaces. It is stored sealed and is not returned.",
+            "description": "The WorkOS Actions signing secret or the Supabase hook secret, as the provider's dashboard shows it: 16 to 256 printable ASCII characters with no spaces. It is stored sealed and is not returned.",
             "example": "wos_action_secret_k3Yx8pQ2mN7vR4tW"
           }
         }
       },
       "IntegrationRotationRequest": {
-        "description": "POST /v1/integrations/{integration_id}/rotate body. For an Auth0 integration send {}: NoResponse generates a new shared secret and returns it once. For a WorkOS integration send the new signing_secret after regenerating it in the WorkOS dashboard. Either way the previous secret is still accepted for 24 hours, so the provider can be switched over without a refused call.",
+        "description": "POST /v1/integrations/{integration_id}/rotate body. For an Auth0 integration send {}: NoResponse generates a new shared secret and returns it once. For a WorkOS or Supabase integration send the new signing_secret after regenerating it in the provider's dashboard. Either way the previous secret is still accepted for 24 hours, so the provider can be switched over without a refused call.",
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -3957,7 +3964,7 @@
             "minLength": 16,
             "maxLength": 256,
             "pattern": "^[!-~]{16,256}$",
-            "description": "The WorkOS Actions signing secret, as the WorkOS dashboard shows it: 16 to 256 printable ASCII characters with no spaces. It is stored sealed and is not returned.",
+            "description": "The WorkOS Actions signing secret or the Supabase hook secret, as the provider's dashboard shows it: 16 to 256 printable ASCII characters with no spaces. It is stored sealed and is not returned.",
             "example": "wos_action_secret_Z9cD1eF5gH0jL4sP"
           }
         }
@@ -8601,7 +8608,7 @@
         }
       },
       "InvalidIntegration": {
-        "description": "The body is not JSON or does not match its schema (an unknown member such as tenant_id, an unknown platform or hook point, a hook point listed twice, a WorkOS integration without signing_secret or an Auth0 integration with one, or a rotation whose signing_secret does not fit the integration's platform). invalid_params names the offending fields without their values.",
+        "description": "The body is not JSON or does not match its schema (an unknown member such as tenant_id, an unknown platform or hook point, a hook point listed twice, a WorkOS or Supabase integration without signing_secret, a Supabase secret that is not v1,whsec_ and base64, a Supabase integration that lists post_login, an Auth0 integration with signing_secret, or a rotation whose signing_secret does not fit the integration's platform). invalid_params names the offending fields without their values.",
         "headers": {
           "Cache-Control": {
             "schema": {

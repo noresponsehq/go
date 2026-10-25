@@ -4,8 +4,9 @@ package components
 type IntegrationPlatform string
 
 const (
-	IntegrationPlatformWorkos IntegrationPlatform = "workos"
-	IntegrationPlatformAuth0  IntegrationPlatform = "auth0"
+	IntegrationPlatformWorkos   IntegrationPlatform = "workos"
+	IntegrationPlatformAuth0    IntegrationPlatform = "auth0"
+	IntegrationPlatformSupabase IntegrationPlatform = "supabase"
 )
 
 func (e IntegrationPlatform) ToPointer() *IntegrationPlatform {
@@ -16,7 +17,7 @@ func (e IntegrationPlatform) ToPointer() *IntegrationPlatform {
 func (e *IntegrationPlatform) IsExact() bool {
 	if e != nil {
 		switch *e {
-		case "workos", "auth0":
+		case "workos", "auth0", "supabase":
 			return true
 		}
 	}
