@@ -1386,6 +1386,314 @@
         }
       }
     },
+    "/v1/workspaces/{workspace_id}/keys": {
+      "post": {
+        "operationId": "createKey",
+        "x-noresponse-group": "keys",
+        "x-noresponse-name-override": "create",
+        "tags": [
+          "keys"
+        ],
+        "summary": "Create an API key.",
+        "description": "Creates an API key in the environment of the key that signs the request, with scopes that key holds itself, and returns its secret once in key. Requires the management scope; the new key may hold it too. A scope the signing key lacks answers 403 workspace_forbidden, and the other environment 404 not_found. An environment holds at most 100 keys that authenticate (409 key_limit_reached). created_by is the signing key's prefix. Not idempotent: a retry after a lost answer creates a second key, which you can list and revoke.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/WorkspaceId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/KeyRequest"
+              },
+              "examples": {
+                "live": {
+                  "value": {
+                    "environment": "live",
+                    "scopes": [
+                      "assess"
+                    ]
+                  }
+                },
+                "test": {
+                  "value": {
+                    "environment": "test",
+                    "scopes": [
+                      "assess",
+                      "history",
+                      "webhooks"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/KeyCreated"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidControlRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ControlForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/WorkspaceNotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/KeyConflict"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ],
+        "x-noresponse-retries": {
+          "strategy": "none"
+        }
+      },
+      "get": {
+        "operationId": "listKeys",
+        "x-noresponse-group": "keys",
+        "x-noresponse-name-override": "list",
+        "tags": [
+          "keys"
+        ],
+        "summary": "List API keys.",
+        "description": "Lists the keys of the signing key's environment, newest first, at most 200, revoked and expired keys included, without secrets: each key's id, prefix, scopes, status, and who created and revoked it. Requires the management scope. Read-only and safe to retry.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/WorkspaceId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/KeyListed"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidControlRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ControlForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/WorkspaceNotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/IdempotencyConflict"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/v1/workspaces/{workspace_id}/keys/{key_id}": {
+      "delete": {
+        "operationId": "revokeKey",
+        "x-noresponse-group": "keys",
+        "x-noresponse-name-override": "revoke",
+        "tags": [
+          "keys"
+        ],
+        "summary": "Revoke an API key.",
+        "description": "Revokes a key of the signing key's environment at once: its next request answers 401. Requires the management scope. A key of the other environment or of another workspace answers 404 not_found. A key cannot revoke itself (409 self_revocation): rotate it with keys.rotate, or revoke it with another management key. Revoking a revoked key changes nothing and answers the key as it was revoked, so a retry is safe.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/WorkspaceId"
+          },
+          {
+            "$ref": "#/components/parameters/KeyId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/KeyRevoked"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidControlRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ControlForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/WorkspaceNotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/SelfRevocation"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/v1/workspaces/{workspace_id}/settings/{environment}": {
+      "get": {
+        "operationId": "getSettings",
+        "x-noresponse-group": "settings",
+        "x-noresponse-name-override": "get",
+        "tags": [
+          "settings"
+        ],
+        "summary": "Read an environment's settings.",
+        "description": "Reads the settings of the signing key's environment: retention in days; per flow (account_creation, login, purchase) the step_up, review and block thresholds, the default depth and the admission; and the sources the environment refuses. A flow without thresholds of its own shows account_creation's with inherits_account_creation true. Requires the management scope; the other environment answers 404 not_found. Read-only and safe to retry.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/WorkspaceId"
+          },
+          {
+            "$ref": "#/components/parameters/Environment"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/SettingsFound"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidControlRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ControlForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/WorkspaceNotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/IdempotencyConflict"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      },
+      "patch": {
+        "operationId": "updateSettings",
+        "x-noresponse-group": "settings",
+        "x-noresponse-name-override": "update",
+        "tags": [
+          "settings"
+        ],
+        "summary": "Change an environment's settings.",
+        "description": "Changes only what the body names, in one transaction: retention_days, refused_sources, and per flow step_up, review, block (null turns blocking off), default_depth, admission, hold_seconds, on_expiry, or inherits_account_creation to return login or purchase to account_creation's thresholds. After the change each flow keeps 0 < step_up < review <= 100 and block off or review <= block <= 100; a change that breaks it answers 400 naming the flow. A policy change is one new policy_version with the signing key's prefix as updated_by, and every change is recorded in the workspace's audit log with the key as its actor. Requires the management scope; the other environment answers 404 not_found. A change reaches assessments within a minute.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/WorkspaceId"
+          },
+          {
+            "$ref": "#/components/parameters/Environment"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SettingsRequest"
+              },
+              "examples": {
+                "flows": {
+                  "value": {
+                    "retention_days": 90,
+                    "flows": {
+                      "login": {
+                        "step_up": 30,
+                        "review": 60,
+                        "block": null,
+                        "default_depth": "full"
+                      },
+                      "purchase": {
+                        "inherits_account_creation": true
+                      },
+                      "account_creation": {
+                        "admission": "held",
+                        "hold_seconds": 600,
+                        "on_expiry": "review"
+                      }
+                    },
+                    "refused_sources": [
+                      "phone"
+                    ]
+                  }
+                },
+                "signup": {
+                  "value": {
+                    "flows": {
+                      "account_creation": {
+                        "block": 95
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/SettingsUpdated"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidControlRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ControlForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/WorkspaceNotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/IdempotencyConflict"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
     "/v1/webhooks/{endpoint_id}/deliveries": {
       "get": {
         "operationId": "listWebhookDeliveries",
@@ -1858,6 +2166,13 @@
             "$ref": "#/components/schemas/ReasonIdentifier"
           }
         }
+      },
+      "Admission": {
+        "enum": [
+          "immediate",
+          "held"
+        ],
+        "description": "immediate (the default): an assessment of this flow is decided from the evidence its answer has, and later evidence may change the decision. held: while the account's current assessment of this flow has not completed, the account's decision for the flow is held, and the final decision arrives as account.risk_changed when the investigation completes or hold_seconds pass, whichever is first. Each flow has its own admission."
       },
       "Assessment": {
         "description": "One assessment, as POST /v1/assessments, GET /v1/assessments/{assessment_id} and the assessment.updated webhook return it. account is the account's one current risk: its score, the decision for this assessment's flow, the reasons and the decision for each flow. detail holds this assessment's own facts. status says whether the assessment is final (complete), usable with a source still running (partial) or not yet usable (pending). While the account's first assessment is pending, account is absent; wait for the webhook or poll the assessment. Keep the highest detail.assessment_version.",
@@ -3048,7 +3363,9 @@
           "webhook_endpoint_limit_reached",
           "webhook_endpoint_unverified",
           "too_many_integrations",
-          "risk_version_ahead"
+          "risk_version_ahead",
+          "key_limit_reached",
+          "self_revocation"
         ],
         "description": "Machine codes an HTTP 409 answer can carry."
       },
@@ -3091,6 +3408,13 @@
           "unknown"
         ],
         "description": "IP country, phone country, breach countries and policy_context.region together."
+      },
+      "DefaultDepth": {
+        "enum": [
+          "quick",
+          "full"
+        ],
+        "description": "The depth a request for this flow that names none is served at. Defaults: full for account_creation and purchase, quick for login."
       },
       "Depth": {
         "enum": [
@@ -3342,6 +3666,108 @@
         ],
         "description": "The event an assessment is made for: account_creation (a user creates an account), login (a user returns to an existing account) or purchase (a payment or a credit grant). The account's risk is reported with the decision for this flow."
       },
+      "FlowChange": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "A change to one flow. A field left out keeps the value in force. Thresholds set on login or purchase start from the values in force, account_creation's while it inherits them. After the change, 0 < step_up < review <= 100 and block is off or review <= block <= 100.",
+        "properties": {
+          "step_up": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          },
+          "review": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          },
+          "block": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 1,
+            "maximum": 100,
+            "description": "The score from which the decision is block; null turns blocking off."
+          },
+          "default_depth": {
+            "$ref": "#/components/schemas/DefaultDepth"
+          },
+          "inherits_account_creation": {
+            "description": "Login or purchase only: drop the flow's own thresholds so it uses account_creation's again. Not combined with step_up, review or block. Send true; false is refused.",
+            "type": "boolean"
+          },
+          "inherits_signup": {
+            "deprecated": true,
+            "description": "Alias of inherits_account_creation, still accepted. Send true; false is refused.",
+            "type": "boolean"
+          },
+          "admission": {
+            "$ref": "#/components/schemas/Admission"
+          },
+          "hold_seconds": {
+            "type": "integer",
+            "minimum": 30,
+            "maximum": 86400,
+            "description": "How long a held flow's assessment is held after it was created, 30 to 86400 seconds (default 300). Kept while the flow is immediate."
+          },
+          "on_expiry": {
+            "$ref": "#/components/schemas/OnExpiry"
+          }
+        }
+      },
+      "FlowSettings": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "step_up",
+          "review",
+          "default_depth",
+          "inherits_account_creation",
+          "admission",
+          "hold_seconds",
+          "on_expiry"
+        ],
+        "description": "One flow's policy in force. A score below step_up is allow, below review step_up, and from review review; from block, when present, the decision is block. admission says when the flow's decision is final.",
+        "properties": {
+          "step_up": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 99
+          },
+          "review": {
+            "type": "integer",
+            "minimum": 2,
+            "maximum": 100
+          },
+          "block": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100,
+            "description": "The score from which the decision is block. Absent while blocking is off, the default."
+          },
+          "default_depth": {
+            "$ref": "#/components/schemas/DefaultDepth",
+            "description": "The depth a request for this flow that names none is served at. Defaults: full for account_creation and purchase, quick for login."
+          },
+          "inherits_account_creation": {
+            "type": "boolean",
+            "description": "true while this flow has no thresholds of its own and uses account_creation's, the default for login and purchase. Always false for signup."
+          },
+          "admission": {
+            "$ref": "#/components/schemas/Admission"
+          },
+          "hold_seconds": {
+            "type": "integer",
+            "minimum": 30,
+            "maximum": 86400,
+            "description": "How long a held flow's assessment is held after it was created, 30 to 86400 seconds (default 300). Kept while the flow is immediate."
+          },
+          "on_expiry": {
+            "$ref": "#/components/schemas/OnExpiry"
+          }
+        }
+      },
       "Freshness": {
         "enum": [
           "fresh",
@@ -3569,6 +3995,156 @@
         ],
         "description": "The address's network type."
       },
+      "Key": {
+        "description": "One API key of your workspace. A key belongs to exactly one environment. key, the secret credential, is present only in the answer that created the key: NoResponse keeps a peppered digest of it, so store it now. Every other field is safe to show.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "workspace_id",
+          "environment",
+          "prefix",
+          "scopes",
+          "status",
+          "created_at"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[0-7][0-9A-HJKMNP-TV-Z]{25}$",
+            "description": "The key's public id, a 26-character ULID.",
+            "example": "01JA2ZE4K5M6N7P8Q9R0S1T2V3"
+          },
+          "workspace_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,122}$",
+            "description": "The workspace id, which is also its live environment's workspace id; the test environment's is the same id with :test appended. A workspace created through the API is tnt_ and a 26-character ULID.",
+            "example": "tnt_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          },
+          "environment": {
+            "$ref": "#/components/schemas/KeyEnvironment"
+          },
+          "prefix": {
+            "type": "string",
+            "pattern": "^nrk_(live|test)_[0-7][0-9A-HJKMNP-TV-Z]{25}$",
+            "description": "The public start of the credential, nrk_<environment>_<key id>, which identifies the key in logs and secret stores without its secret.",
+            "example": "nrk_live_01JA2ZE4K5M6N7P8Q9R0S1T2V3"
+          },
+          "scopes": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 7,
+            "uniqueItems": true,
+            "items": {
+              "enum": [
+                "assess",
+                "history",
+                "delete",
+                "webhooks",
+                "detailed",
+                "integrations",
+                "management"
+              ]
+            },
+            "description": "The key's scopes, each at most once."
+          },
+          "status": {
+            "$ref": "#/components/schemas/KeyStatus",
+            "description": "active: the key authenticates. expired: a rotation's overlap window has ended (expires_at). revoked: the key was revoked (revoked_at) and answers 401."
+          },
+          "created_at": {
+            "type": "string",
+            "example": "2026-10-23T09:14:12.000Z"
+          },
+          "created_by": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256,
+            "pattern": "^[!-~]{1,256}$",
+            "description": "The external user id of the member who created the key through the console, or the prefix (nrk_<environment>_<key id>) of the management key that created it. Absent for a key NoResponse issued or a rotation made.",
+            "example": "nrk_live_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          },
+          "expires_at": {
+            "type": "string",
+            "description": "When a rotated key stops authenticating (POST /v1/keys/rotate). Absent for a key with no end.",
+            "example": "2026-10-24T09:14:12.000Z"
+          },
+          "revoked_at": {
+            "type": "string",
+            "example": "2026-10-25T09:14:12.000Z"
+          },
+          "revoked_by": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256,
+            "pattern": "^[!-~]{1,256}$",
+            "description": "The external user id of the member who revoked the key through the console, or the prefix of the management key that revoked it. Absent when the key is not revoked or NoResponse revoked it.",
+            "example": "nrk_live_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          },
+          "key": {
+            "type": "string",
+            "pattern": "^nrk_(live|test)_[0-7][0-9A-HJKMNP-TV-Z]{25}_[A-Za-z0-9_-]{42}[AEIMQUYcgkosw048]$",
+            "description": "The credential, nrk_<environment>_<key id>_<secret>. Present only in the 201 answer that created the key.",
+            "example": "nrk_live_01JA2ZE4K5M6N7P8Q9R0S1T2V3_N0tARealSecretJustTheShapeOfOneAAAAAAAAAAAA"
+          }
+        }
+      },
+      "KeyEnvironment": {
+        "enum": [
+          "live",
+          "test"
+        ],
+        "description": "The environment the key belongs to. A live key assesses with live sources; a test key answers from the deterministic simulator."
+      },
+      "KeyList": {
+        "description": "GET /v1/workspaces/{workspace_id}/keys: the keys of both of the workspace's environments, newest first, at most 200 of each, revoked and expired keys included. No item carries a secret.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "items"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "maxItems": 400,
+            "items": {
+              "$ref": "#/components/schemas/Key"
+            }
+          }
+        }
+      },
+      "KeyRequest": {
+        "description": "POST /v1/workspaces/{workspace_id}/keys body. Creates an API key in one environment of the workspace with the scopes named, and returns its secret once. A live key needs the admin or owner role; a test key needs developer or above. An API key with the management scope creates keys in its own environment with scopes it holds itself. Each scope may appear once.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "environment",
+          "scopes"
+        ],
+        "properties": {
+          "environment": {
+            "$ref": "#/components/schemas/KeyEnvironment"
+          },
+          "scopes": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 7,
+            "uniqueItems": true,
+            "items": {
+              "enum": [
+                "assess",
+                "history",
+                "delete",
+                "webhooks",
+                "detailed",
+                "integrations",
+                "management"
+              ]
+            },
+            "description": "The key's scopes, each at most once."
+          }
+        }
+      },
       "KeyRotation": {
         "description": "The 201 answer of POST /v1/keys/rotate: the new key, shown once, and when the key that was presented stops working. The new key has the scopes and the environment of the presented key.",
         "type": "object",
@@ -3605,7 +4181,8 @@
                 "delete",
                 "webhooks",
                 "detailed",
-                "integrations"
+                "integrations",
+                "management"
               ]
             },
             "description": "The scopes of the new key: those of the presented key."
@@ -3639,6 +4216,14 @@
             "description": "How long the presented key keeps working beside the new one, from 60 seconds to 7 days. Default 86400 (24 hours). At the end of the overlap the presented key stops authenticating."
           }
         }
+      },
+      "KeyStatus": {
+        "enum": [
+          "active",
+          "expired",
+          "revoked"
+        ],
+        "description": "active: the key authenticates. expired: a rotation's overlap window has ended (expires_at). revoked: the key was revoked (revoked_at) and answers 401."
       },
       "KeyUsageBatch": {
         "description": "The 202 answer of POST /v1/key_usage/batches. A replay with the same Idempotency-Key and body answers the same record and counts nothing again.",
@@ -3803,6 +4388,14 @@
         ],
         "description": "Machine codes an HTTP 404 answer can carry."
       },
+      "OnExpiry": {
+        "enum": [
+          "allow",
+          "review",
+          "block"
+        ],
+        "description": "The decision a held assessment takes when hold_seconds pass before its investigation completes, unless the evidence so far gives a stricter one (default review). It is announced as account.risk_changed like any other change, so an expired hold is always announced. A hosted provider hook, which cannot wait, answers a held account by it at once: deny for block, allow otherwise. Kept while the flow is immediate."
+      },
       "Outcome": {
         "enum": [
           "confirmed_abuse",
@@ -3836,7 +4429,8 @@
       "PermissionDeniedErrorCode": {
         "type": "string",
         "enum": [
-          "workspace_forbidden"
+          "workspace_forbidden",
+          "role_forbidden"
         ],
         "description": "Machine codes an HTTP 403 answer can carry."
       },
@@ -4548,6 +5142,132 @@
           }
         }
       },
+      "Settings": {
+        "description": "One environment's settings: how long its assessments are kept, and for each flow the risk thresholds that decide it and the depth a request that names none is served at, and the sources it refuses. Live and test each have their own. A flow without thresholds of its own uses account_creation's (inherits_account_creation). Every change is recorded in the audit log as settings.updated, with who made it.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "workspace_id",
+          "environment",
+          "retention_days",
+          "policy_version",
+          "flows",
+          "refused_sources"
+        ],
+        "properties": {
+          "workspace_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,122}$",
+            "description": "The workspace id, which is also its live environment's workspace id; the test environment's is the same id with :test appended. A workspace created through the API is tnt_ and a 26-character ULID.",
+            "example": "tnt_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          },
+          "environment": {
+            "$ref": "#/components/schemas/KeyEnvironment"
+          },
+          "retention_days": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 365,
+            "description": "Days an assessment is kept after it is created, 1 to 365 (default 365). Shortening hides older assessments at once."
+          },
+          "policy_version": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "How many times this environment's policy has changed; 0 while the defaults apply. A served risk.policy_version ends in +t<policy_version> once it is above 0."
+          },
+          "updated_by": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256,
+            "pattern": "^[^\\x00-\\x1f\\x7f]+$",
+            "description": "Who last changed the policy: the member's external user id for a change made through the console, the prefix (nrk_<environment>_<key id>) of the management key that made it, or NoResponse. Absent while the defaults apply.",
+            "example": "nrk_live_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          },
+          "updated_at": {
+            "type": "string",
+            "description": "When the policy last changed. Absent while the defaults apply.",
+            "example": "2026-10-23T09:14:12.000Z"
+          },
+          "flows": {
+            "$ref": "#/components/schemas/SettingsFlows"
+          },
+          "refused_sources": {
+            "type": "array",
+            "uniqueItems": true,
+            "maxItems": 6,
+            "items": {
+              "$ref": "#/components/schemas/SourceId"
+            },
+            "description": "The sources this environment refuses, sorted; empty, the default, refuses none. An assessment leaves a refused source out: its coverage is missing (an identifier with no other source lists coverage-unavailable as unavailable) rather than not_found, and a stored result of a refused source is not reused."
+          }
+        }
+      },
+      "SettingsFlows": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "account_creation",
+          "login",
+          "purchase"
+        ],
+        "properties": {
+          "account_creation": {
+            "$ref": "#/components/schemas/FlowSettings"
+          },
+          "login": {
+            "$ref": "#/components/schemas/FlowSettings"
+          },
+          "purchase": {
+            "$ref": "#/components/schemas/FlowSettings"
+          }
+        }
+      },
+      "SettingsRequest": {
+        "description": "PATCH /v1/workspaces/{workspace_id}/settings/{environment} body. Changes only what it names, in one transaction; a policy change is one new policy_version. Needs the admin or owner role, or an API key with the management scope for its own environment.",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "retention_days": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 365
+          },
+          "refused_sources": {
+            "type": "array",
+            "uniqueItems": true,
+            "maxItems": 6,
+            "items": {
+              "$ref": "#/components/schemas/SourceId"
+            },
+            "description": "Replaces the refused sources; [] refuses none. A change applies to new assessments within a minute."
+          },
+          "flows": {
+            "$ref": "#/components/schemas/SettingsRequestFlows",
+            "description": "Use account_creation or its deprecated alias signup, not both."
+          }
+        }
+      },
+      "SettingsRequestFlows": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "account_creation": {
+            "$ref": "#/components/schemas/FlowChange"
+          },
+          "login": {
+            "$ref": "#/components/schemas/FlowChange"
+          },
+          "purchase": {
+            "$ref": "#/components/schemas/FlowChange"
+          },
+          "signup": {
+            "$ref": "#/components/schemas/FlowChange",
+            "deprecated": true,
+            "description": "Alias of account_creation, still accepted."
+          }
+        },
+        "description": "Use account_creation or its deprecated alias signup, not both."
+      },
       "Signal": {
         "type": "object",
         "additionalProperties": false,
@@ -4672,6 +5392,17 @@
             "example": "2026-10-22T09:00:00.000Z"
           }
         }
+      },
+      "SourceId": {
+        "enum": [
+          "github",
+          "phone",
+          "breach",
+          "rdap",
+          "mx",
+          "ipintel"
+        ],
+        "description": "A NoResponse source: github (GitHub accounts), phone (the phone lookup), breach (breach exposure), rdap (the email domain's registration), mx (the email domain's mail servers) or ipintel (IP intelligence)."
       },
       "Status": {
         "enum": [
@@ -5279,6 +6010,18 @@
         },
         "description": "The account_id the workspace sends with its assessments, as one path segment (percent-encode '|' and ':' if the client requires it). A value that does not match the account_id shape answers 400 invalid_request."
       },
+      "WorkspaceId": {
+        "name": "workspace_id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,122}$",
+          "description": "The workspace id, which is also its live environment's workspace id; the test environment's is the same id with :test appended. A workspace created through the API is tnt_ and a 26-character ULID.",
+          "example": "tnt_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+        },
+        "description": "Your workspace id, as each key lists it in workspace_id. Another workspace, a malformed id and a test environment's id answer 404."
+      },
       "EventId": {
         "name": "event_id",
         "in": "path",
@@ -5290,6 +6033,27 @@
           "example": "evt_01JA2ZD3K4M5N6P7Q8R9S0T1V2"
         },
         "description": "The evt_ id of a delivery the endpoint's log holds, as GET /v1/webhooks/{endpoint_id}/deliveries lists it. An id that is malformed, not sent to this endpoint, past the log's retention or another workspace's answers 404."
+      },
+      "KeyId": {
+        "name": "key_id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^[0-7][0-9A-HJKMNP-TV-Z]{25}$",
+          "description": "The key's public id, a 26-character ULID.",
+          "example": "01JA2ZE4K5M6N7P8Q9R0S1T2V3"
+        },
+        "description": "The key's id. A key of another workspace answers 404, as does a key of the other environment to an API key."
+      },
+      "Environment": {
+        "name": "environment",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "$ref": "#/components/schemas/KeyEnvironment"
+        },
+        "description": "The environment: live or test. Each has its own settings. Any other value answers 400. An API key reads and changes only its own environment's; the other answers 404."
       }
     },
     "responses": {
@@ -8488,6 +9252,90 @@
           }
         }
       },
+      "InvalidControlRequest": {
+        "description": "The body breaks its schema.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/BadRequestError"
+            }
+          }
+        }
+      },
+      "ControlForbidden": {
+        "description": "workspace_forbidden: the signing key lacks the management scope, or a scope it would grant.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/PermissionDeniedError"
+            }
+          }
+        }
+      },
+      "WorkspaceNotFound": {
+        "description": "No such key or environment for the signing key: another workspace and the other environment answer this too, so no answer shows which workspaces exist.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/NotFoundError"
+            }
+          }
+        }
+      },
       "WebhookDeliveryList": {
         "description": "One page of the endpoint's delivery attempts, newest first.",
         "headers": {
@@ -8646,6 +9494,372 @@
           "application/problem+json": {
             "schema": {
               "$ref": "#/components/schemas/NotFoundError"
+            }
+          }
+        }
+      },
+      "KeyCreated": {
+        "description": "The key and its secret, shown here once only. Store the key in a secret manager: NoResponse keeps only a peppered digest of it.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Key"
+            },
+            "examples": {
+              "key": {
+                "value": {
+                  "id": "01JA2ZE4K5M6N7P8Q9R0S1T2V3",
+                  "workspace_id": "tnt_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+                  "environment": "live",
+                  "prefix": "nrk_live_01JA2ZE4K5M6N7P8Q9R0S1T2V3",
+                  "scopes": [
+                    "assess"
+                  ],
+                  "status": "active",
+                  "created_at": "2026-10-23T09:00:00.000Z",
+                  "created_by": "user_2abc",
+                  "key": "nrk_live_01JA2ZE4K5M6N7P8Q9R0S1T2V3_N0tARealSecretJustTheShapeOfOneAAAAAAAAAAAA"
+                }
+              }
+            }
+          }
+        }
+      },
+      "KeyListed": {
+        "description": "The keys of both environments, newest first, without secrets.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/KeyList"
+            },
+            "examples": {
+              "list": {
+                "value": {
+                  "items": [
+                    {
+                      "id": "01JA2ZF0A1B2C3D4E5F6G7H8J9",
+                      "workspace_id": "tnt_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+                      "environment": "test",
+                      "prefix": "nrk_test_01JA2ZF0A1B2C3D4E5F6G7H8J9",
+                      "scopes": [
+                        "assess",
+                        "history",
+                        "webhooks"
+                      ],
+                      "status": "active",
+                      "created_at": "2026-10-23T11:00:00.000Z",
+                      "created_by": "user_dev"
+                    },
+                    {
+                      "id": "01JA2ZE4K5M6N7P8Q9R0S1T2V3",
+                      "workspace_id": "tnt_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+                      "environment": "live",
+                      "prefix": "nrk_live_01JA2ZE4K5M6N7P8Q9R0S1T2V3",
+                      "scopes": [
+                        "assess"
+                      ],
+                      "status": "revoked",
+                      "created_at": "2026-10-23T09:00:00.000Z",
+                      "created_by": "user_2abc",
+                      "revoked_at": "2026-10-23T10:00:00.000Z",
+                      "revoked_by": "user_2abc"
+                    },
+                    {
+                      "id": "01JA2Z9A1B2C3D4E5F6G7H8J9K",
+                      "workspace_id": "tnt_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+                      "environment": "live",
+                      "prefix": "nrk_live_01JA2Z9A1B2C3D4E5F6G7H8J9K",
+                      "scopes": [
+                        "assess",
+                        "history"
+                      ],
+                      "status": "expired",
+                      "created_at": "2026-10-20T09:00:00.000Z",
+                      "expires_at": "2026-10-21T09:00:00.000Z"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "KeyRevoked": {
+        "description": "The key, revoked. Its next request answers 401. Revoking a revoked key answers it as it was first revoked.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Key"
+            },
+            "examples": {
+              "key": {
+                "value": {
+                  "id": "01JA2ZE4K5M6N7P8Q9R0S1T2V3",
+                  "workspace_id": "tnt_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+                  "environment": "live",
+                  "prefix": "nrk_live_01JA2ZE4K5M6N7P8Q9R0S1T2V3",
+                  "scopes": [
+                    "assess"
+                  ],
+                  "status": "revoked",
+                  "created_at": "2026-10-23T09:00:00.000Z",
+                  "created_by": "user_2abc",
+                  "revoked_at": "2026-10-23T10:00:00.000Z",
+                  "revoked_by": "user_2abc"
+                }
+              }
+            }
+          }
+        }
+      },
+      "KeyConflict": {
+        "description": "key_limit_reached: the environment already has 100 keys that authenticate; revoke one first.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/ConflictError"
+            }
+          }
+        }
+      },
+      "SelfRevocation": {
+        "description": "self_revocation: an API key cannot revoke itself. Rotate it with POST /v1/keys/rotate, or revoke it with another management key or through the console.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/ConflictError"
+            }
+          }
+        }
+      },
+      "SettingsFound": {
+        "description": "The environment's settings in force.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Settings"
+            },
+            "examples": {
+              "default": {
+                "value": {
+                  "workspace_id": "tnt_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+                  "environment": "test",
+                  "retention_days": 365,
+                  "policy_version": 0,
+                  "flows": {
+                    "account_creation": {
+                      "step_up": 40,
+                      "review": 75,
+                      "default_depth": "full",
+                      "inherits_account_creation": false,
+                      "admission": "immediate",
+                      "hold_seconds": 300,
+                      "on_expiry": "review"
+                    },
+                    "login": {
+                      "step_up": 40,
+                      "review": 75,
+                      "default_depth": "quick",
+                      "inherits_account_creation": true,
+                      "admission": "immediate",
+                      "hold_seconds": 300,
+                      "on_expiry": "review"
+                    },
+                    "purchase": {
+                      "step_up": 40,
+                      "review": 75,
+                      "default_depth": "full",
+                      "inherits_account_creation": true,
+                      "admission": "immediate",
+                      "hold_seconds": 300,
+                      "on_expiry": "review"
+                    }
+                  },
+                  "refused_sources": []
+                }
+              }
+            }
+          }
+        }
+      },
+      "SettingsUpdated": {
+        "description": "The environment's settings after the change.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Settings"
+            },
+            "examples": {
+              "changed": {
+                "value": {
+                  "workspace_id": "tnt_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+                  "environment": "live",
+                  "retention_days": 90,
+                  "policy_version": 3,
+                  "updated_by": "user_2abcDEF",
+                  "updated_at": "2026-10-23T09:30:00Z",
+                  "flows": {
+                    "account_creation": {
+                      "step_up": 40,
+                      "review": 75,
+                      "block": 95,
+                      "default_depth": "full",
+                      "inherits_account_creation": false,
+                      "admission": "held",
+                      "hold_seconds": 600,
+                      "on_expiry": "review"
+                    },
+                    "login": {
+                      "step_up": 30,
+                      "review": 60,
+                      "default_depth": "full",
+                      "inherits_account_creation": false,
+                      "admission": "immediate",
+                      "hold_seconds": 300,
+                      "on_expiry": "review"
+                    },
+                    "purchase": {
+                      "step_up": 40,
+                      "review": 75,
+                      "block": 95,
+                      "default_depth": "full",
+                      "inherits_account_creation": true,
+                      "admission": "immediate",
+                      "hold_seconds": 300,
+                      "on_expiry": "review"
+                    }
+                  },
+                  "refused_sources": [
+                    "phone"
+                  ]
+                }
+              }
             }
           }
         }

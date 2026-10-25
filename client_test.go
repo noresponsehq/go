@@ -102,3 +102,53 @@ func TestAllAssessmentsFollowsCursorsAndStopsEarly(t *testing.T) {
 		t.Fatalf("early stop fetched %d pages for %d items", len(cursors), count)
 	}
 }
+
+// A management key creates keys and changes settings; a settings change
+// sends only what it names.
+func TestKeysAndSettingsSendOnlyWhatTheyName(t *testing.T) {
+	type seen struct {
+		method, path string
+		body         map[string]any
+	}
+	var requests []seen
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var body map[string]any
+		_ = json.NewDecoder(r.Body).Decode(&body)
+		requests = append(requests, seen{r.Method, r.URL.Path, body})
+		name := "key-created-by-management-key.json"
+		if r.Method == http.MethodPatch {
+			name = "settings.json"
+		}
+		fixture, err := os.ReadFile(filepath.Join("tests", "fixtures", "valid", name))
+		if err != nil {
+			t.Fatal(err)
+		}
+		w.Header().Set("Content-Type", "application/json")
+		if r.Method == http.MethodPost {
+			w.WriteHeader(http.StatusCreated)
+		}
+		_, _ = w.Write(fixture)
+	}))
+	defer server.Close()
+
+	ctx := context.Background()
+	client := NewClient("nrk_live_kkkkkkkkkkkkkkkkkkkk", WithServerURL(server.URL))
+	created, err := client.Keys.Create(ctx, "tnt_a", components.KeyRequest{Environment: components.KeyEnvironmentLive,
+		Scopes: []components.KeyRequestScope{components.KeyRequestScopeAssess, components.KeyRequestScopeManagement}})
+	if err != nil || created.Result.Key == nil || *created.Result.CreatedBy != "nrk_live_01JA2ZE4K5M6N7P8Q9R0S1T2V3" {
+		t.Fatalf("create: %+v %v", created, err)
+	}
+	stepUp := int64(25)
+	if _, err := client.Settings.Update(ctx, "tnt_a", components.KeyEnvironmentLive, components.SettingsRequest{
+		Flows: &components.SettingsRequestFlows{Login: &components.FlowChange{StepUp: &stepUp}}}); err != nil {
+		t.Fatal(err)
+	}
+	if len(requests) != 2 || requests[0].path != "/v1/workspaces/tnt_a/keys" || requests[1].method != http.MethodPatch ||
+		requests[1].path != "/v1/workspaces/tnt_a/settings/live" {
+		t.Fatalf("requests %+v", requests)
+	}
+	login := requests[1].body["flows"].(map[string]any)["login"].(map[string]any)
+	if len(login) != 1 || login["step_up"] != float64(25) {
+		t.Fatalf("settings change sent %v", requests[1].body)
+	}
+}

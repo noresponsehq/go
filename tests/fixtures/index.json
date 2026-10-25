@@ -2049,6 +2049,11 @@
       "expect": "valid"
     },
     {
+      "file": "valid/problem-self-revocation.json",
+      "schema": "problem-details.schema.json",
+      "expect": "valid"
+    },
+    {
       "file": "invalid/key-rotation-overlap-too-short.json",
       "schema": "key-rotation-request.schema.json",
       "expect": "invalid",
@@ -2983,12 +2988,22 @@
       "expect": "valid"
     },
     {
+      "file": "valid/key-request-management.json",
+      "schema": "key-request.schema.json",
+      "expect": "valid"
+    },
+    {
       "file": "valid/key-request-test.json",
       "schema": "key-request.schema.json",
       "expect": "valid"
     },
     {
       "file": "valid/key-created.json",
+      "schema": "key.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/key-created-by-management-key.json",
       "schema": "key.schema.json",
       "expect": "valid"
     },

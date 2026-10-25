@@ -26,3 +26,5 @@ custom := components.ConflictErrorCode("custom_value")
 | `ConflictErrorCodeWebhookEndpointUnverified`   | webhook_endpoint_unverified                    |
 | `ConflictErrorCodeTooManyIntegrations`         | too_many_integrations                          |
 | `ConflictErrorCodeRiskVersionAhead`            | risk_version_ahead                             |
+| `ConflictErrorCodeKeyLimitReached`             | key_limit_reached                              |
+| `ConflictErrorCodeSelfRevocation`              | self_revocation                                |

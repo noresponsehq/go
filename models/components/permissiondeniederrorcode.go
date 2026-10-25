@@ -5,6 +5,7 @@ type PermissionDeniedErrorCode string
 
 const (
 	PermissionDeniedErrorCodeWorkspaceForbidden PermissionDeniedErrorCode = "workspace_forbidden"
+	PermissionDeniedErrorCodeRoleForbidden      PermissionDeniedErrorCode = "role_forbidden"
 )
 
 func (e PermissionDeniedErrorCode) ToPointer() *PermissionDeniedErrorCode {
@@ -15,7 +16,7 @@ func (e PermissionDeniedErrorCode) ToPointer() *PermissionDeniedErrorCode {
 func (e *PermissionDeniedErrorCode) IsExact() bool {
 	if e != nil {
 		switch *e {
-		case "workspace_forbidden":
+		case "workspace_forbidden", "role_forbidden":
 			return true
 		}
 	}

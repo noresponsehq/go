@@ -80,15 +80,7 @@ func main() {
     )
 
     res, err := s.KeyUsage.Record(ctx, "account-acct_7f3a9c", components.KeyUsageBatchRequest{
-        Events: []components.KeyUsageEvent{
-            components.KeyUsageEvent{
-                KeySha256: "2bdbf5c72f2a36df0ef40fb92203612274d4546f56dba946070a6a79c2401a1b",
-                IP: "203.0.113.24",
-                OccurredAt: "2026-10-23T09:14:07.000Z",
-                UserAgent: noresponse.Pointer("python-requests/2.32.3"),
-                Model: noresponse.Pointer("gpt-4o-mini"),
-            },
-        },
+        Events: []components.KeyUsageEvent{},
     })
     if err != nil {
         log.Fatal(err)

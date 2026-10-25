@@ -1,0 +1,8 @@
+{
+  "type": "https://docs.noresponse.org/problems/self-revocation",
+  "title": "Self revocation",
+  "status": 409,
+  "detail": "An API key cannot revoke itself; rotate it, or revoke it with another management key.",
+  "code": "self_revocation",
+  "request_id": "0123456789abcdef0123456789abcdef"
+}

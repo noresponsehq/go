@@ -21,3 +21,4 @@ custom := components.PermissionDeniedErrorCode("custom_value")
 | Name                                          | Value                                         |
 | --------------------------------------------- | --------------------------------------------- |
 | `PermissionDeniedErrorCodeWorkspaceForbidden` | workspace_forbidden                           |
+| `PermissionDeniedErrorCodeRoleForbidden`      | role_forbidden                                |

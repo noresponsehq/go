@@ -1,25 +1,26 @@
 package components
 
-type Scope string
+type KeyRotationScope string
 
 const (
-	ScopeAssess       Scope = "assess"
-	ScopeHistory      Scope = "history"
-	ScopeDelete       Scope = "delete"
-	ScopeWebhooks     Scope = "webhooks"
-	ScopeDetailed     Scope = "detailed"
-	ScopeIntegrations Scope = "integrations"
+	KeyRotationScopeAssess       KeyRotationScope = "assess"
+	KeyRotationScopeHistory      KeyRotationScope = "history"
+	KeyRotationScopeDelete       KeyRotationScope = "delete"
+	KeyRotationScopeWebhooks     KeyRotationScope = "webhooks"
+	KeyRotationScopeDetailed     KeyRotationScope = "detailed"
+	KeyRotationScopeIntegrations KeyRotationScope = "integrations"
+	KeyRotationScopeManagement   KeyRotationScope = "management"
 )
 
-func (e Scope) ToPointer() *Scope {
+func (e KeyRotationScope) ToPointer() *KeyRotationScope {
 	return &e
 }
 
 // IsExact returns true if the value matches a known enum value, false otherwise.
-func (e *Scope) IsExact() bool {
+func (e *KeyRotationScope) IsExact() bool {
 	if e != nil {
 		switch *e {
-		case "assess", "history", "delete", "webhooks", "detailed", "integrations":
+		case "assess", "history", "delete", "webhooks", "detailed", "integrations", "management":
 			return true
 		}
 	}
@@ -33,8 +34,8 @@ type KeyRotation struct {
 	// The public id of the new key.
 	KeyID string `json:"key_id"`
 	// The scopes of the new key: those of the presented key.
-	Scopes    []Scope `json:"scopes"`
-	CreatedAt string  `json:"created_at"`
+	Scopes    []KeyRotationScope `json:"scopes"`
+	CreatedAt string             `json:"created_at"`
 	// The id of the key that signed this request.
 	PreviousKeyID string `json:"previous_key_id"`
 	// When the previous key stops authenticating. Until then both keys work.
@@ -55,9 +56,9 @@ func (k *KeyRotation) GetKeyID() string {
 	return k.KeyID
 }
 
-func (k *KeyRotation) GetScopes() []Scope {
+func (k *KeyRotation) GetScopes() []KeyRotationScope {
 	if k == nil {
-		return []Scope{}
+		return []KeyRotationScope{}
 	}
 	return k.Scopes
 }

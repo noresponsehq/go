@@ -39,7 +39,7 @@ func main() {
 
     res, err := s.Assessments.Create(ctx, "account-acct_7f3a9c", components.AssessmentRequest{
         AccountID: "acct_7f3a9c",
-        Flow: components.FlowPurchase,
+        Flow: components.FlowAccountCreation,
         Identifiers: components.AssessmentRequestIdentifiers{
             Email: noresponse.Pointer("new.user@example.com"),
             Username: noresponse.Pointer("new.user"),
@@ -125,7 +125,7 @@ func main() {
 
     res, err := s.Assessments.Create(ctx, "account-acct_7f3a9c", components.AssessmentRequest{
         AccountID: "acct_7f3a9c",
-        Flow: components.FlowPurchase,
+        Flow: components.FlowAccountCreation,
         Identifiers: components.AssessmentRequestIdentifiers{
             Email: noresponse.Pointer("new.user@example.com"),
             Username: noresponse.Pointer("new.user"),
@@ -254,7 +254,7 @@ func main() {
 
     res, err := s.Assessments.Create(ctx, "account-acct_7f3a9c", components.AssessmentRequest{
         AccountID: "acct_7f3a9c",
-        Flow: components.FlowPurchase,
+        Flow: components.FlowAccountCreation,
         Identifiers: components.AssessmentRequestIdentifiers{
             Email: noresponse.Pointer("new.user@example.com"),
             Username: noresponse.Pointer("new.user"),
@@ -422,7 +422,7 @@ func main() {
 
     res, err := s.Assessments.Create(ctx, "account-acct_7f3a9c", components.AssessmentRequest{
         AccountID: "acct_7f3a9c",
-        Flow: components.FlowPurchase,
+        Flow: components.FlowAccountCreation,
         Identifiers: components.AssessmentRequestIdentifiers{
             Email: noresponse.Pointer("new.user@example.com"),
             Username: noresponse.Pointer("new.user"),
@@ -863,7 +863,7 @@ func main() {
     )
 
     res, err := s.Assessments.RecordOutcome(ctx, "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM", "account-acct_7f3a9c", components.AssessmentOutcomeRequest{
-        Outcome: components.OutcomeLegitimate,
+        Outcome: components.OutcomeAccountTakeover,
         ObservedAt: noresponse.Pointer("2026-10-14T09:04:30.000Z"),
         ExternalRef: noresponse.Pointer("case-48213"),
         Notes: noresponse.Pointer("Chargeback filed two days after account creation."),

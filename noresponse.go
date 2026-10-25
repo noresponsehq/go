@@ -59,6 +59,7 @@ type NoResponse struct {
 	Integrations *Integrations
 	// Your webhook endpoints: register, list, rotate signing keys, send test events and delete.
 	WebhookEndpoints *WebhookEndpoints
+	Settings         *Settings
 
 	sdkConfiguration config.SDKConfiguration
 	hooks            *hooks.Hooks
@@ -135,10 +136,10 @@ func WithTimeout(timeout time.Duration) SDKOption {
 // New creates a new instance of the SDK with the provided options
 func New(opts ...SDKOption) *NoResponse {
 	sdk := &NoResponse{
-		SDKVersion: "7.0.5",
+		SDKVersion: "7.1.0",
 		sdkConfiguration: config.SDKConfiguration{
-			UserAgent:         "noresponse-sdk/go 7.0.5",
-			SDKVersion:        "7.0.5",
+			UserAgent:         "noresponse-sdk/go 7.1.0",
+			SDKVersion:        "7.1.0",
 			GenVersion:        "internal",
 			OpenAPIDocVersion: "1",
 			ServerList:        ServerList,
@@ -169,6 +170,7 @@ func New(opts ...SDKOption) *NoResponse {
 	sdk.Keys = newKeys(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Integrations = newIntegrations(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.WebhookEndpoints = newWebhookEndpoints(sdk, sdk.sdkConfiguration, sdk.hooks)
+	sdk.Settings = newSettings(sdk, sdk.sdkConfiguration, sdk.hooks)
 
 	return sdk
 }
