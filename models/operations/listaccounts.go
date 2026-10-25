@@ -10,7 +10,7 @@ type ListAccountsRequest struct {
 	ChangedSince *string `queryParam:"style=form,explode=true,name=changed_since"`
 	// Most accounts per page.
 	Limit *int64 `default:"50" queryParam:"style=form,explode=true,name=limit"`
-	// true lists only accounts with a decision other than allow for some flow and no applied enforcement at their current risk_version.
+	// true lists only accounts with no applied enforcement at their current risk_version that have a decision other than allow for some flow or a hold no later applied enforcement resolved.
 	Unenforced *bool `default:"false" queryParam:"style=form,explode=true,name=unenforced"`
 }
 

@@ -444,7 +444,7 @@
             "name": "unenforced",
             "in": "query",
             "required": false,
-            "description": "true lists only accounts with a decision other than allow for some flow and no applied enforcement at their current risk_version.",
+            "description": "true lists only accounts with no applied enforcement at their current risk_version that have a decision other than allow for some flow or a hold no later applied enforcement resolved.",
             "schema": {
               "type": "boolean",
               "default": false
@@ -3553,9 +3553,10 @@
           "unrestrict",
           "fail_onboarding",
           "reject_activation",
+          "activate",
           "none"
         ],
-        "description": "What the workspace did in its identity provider: revoke_sessions (signed the account out everywhere), restrict (limited what the account can do), unrestrict (lifted an earlier restriction), fail_onboarding (stopped an account that was still onboarding), reject_activation (refused to activate a provisional account) or none (decided to take no action)."
+        "description": "What the workspace did in its identity provider: revoke_sessions (signed the account out everywhere), restrict (limited what the account can do), unrestrict (lifted an earlier restriction), fail_onboarding (stopped an account that was still onboarding), reject_activation (refused to activate a provisional account), activate (let a held onboarding or provisional account in) or none (decided to take no action)."
       },
       "EnforcementProvider": {
         "enum": [
