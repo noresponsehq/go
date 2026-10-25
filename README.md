@@ -179,38 +179,31 @@ http.HandleFunc("/webhooks/noresponse", func(w http.ResponseWriter, r *http.Requ
 		http.Error(w, "invalid signature", http.StatusBadRequest)
 		return
 	}
-	switch data := event.Data.(type) {
-	case *components.Assessment:
-		if event.Test {
-			break // SendTestEvent's fixed example assessment: apply nothing
-		}
-		// The full assessment, as Get returns it: act on data.Account.Risk.Decision.
-	case *noresponse.AssessmentExpired:
-		// Delete what you hold for data.AssessmentID.
-	case *noresponse.AccountDeleted:
-		// You erased data.AccountID with Accounts.Delete: delete what you hold for it.
-	case *noresponse.WorkspaceDeleted:
-		// The workspace is deleted: the last event this endpoint receives. Delete what you hold for data.Environment.
-	case *noresponse.EndpointDisabled:
-		// data.EndpointID failed for 72 hours and is disabled: fix it and verify it again.
-	case *noresponse.AccountRiskChanged:
-		// A flow's decision changed. data.Account is the account as Accounts.Get returns it,
-		// and data.PreviousDecisionsByFlow holds the decisions it replaced.
-	case *noresponse.EndpointVerification:
-		body, err := noresponse.VerificationResponse(event)
-		if err != nil {
-			http.Error(w, "invalid verification", http.StatusBadRequest)
-			return
-		}
+	switch event.Type {
+	case components.WebhookEventTypeEndpointVerification:
 		w.Header().Set("Content-Type", "application/json")
-		_ = json.NewEncoder(w).Encode(body)
+		_ = json.NewEncoder(w).Encode(components.WebhookVerificationResponse{Challenge: event.EndpointVerificationEvent.Data.Challenge})
 		return
+	case components.WebhookEventTypeAccountRiskChanged:
+		// The one event to act on: a flow's decision changed, at Data.Account.RiskVersion.
+		// This verifier alone does not enforce it: use HandleRiskChange (below) as this endpoint's receiver.
+	case components.WebhookEventTypeAccountDeleted:
+		// You erased Data.AccountID with Accounts.Delete: delete what you hold for it.
+	case components.WebhookEventTypeWorkspaceDeleted:
+		// The workspace is deleted: the last event this endpoint receives. Delete what you hold for Data.Environment.
+	case components.WebhookEventTypeWebhookEndpointDisabled:
+		// Data.EndpointID failed for 72 hours and is disabled: fix it and verify it again.
+	case components.WebhookEventTypeAssessmentUpdated:
+		if expired := event.AssessmentUpdatedEvent.Data.AssessmentExpired; expired != nil {
+			// Delete what you hold for expired.AssessmentID.
+		}
+		// Any other assessment.updated reports progress only: apply nothing.
 	}
 	w.WriteHeader(http.StatusNoContent)
 })
 ```
 
-Deliveries arrive at least once and unordered. Deduplicate on `event.ID` and keep the highest `Detail.AssessmentVersion` per assessment.
+Deliveries arrive at least once and unordered. Deduplicate on the `NR-Webhook-Id` header, which `ConstructEvent` checked against the body's id, and act on `account.risk_changed` through the account's current risk.
 
 ### Late results
 
@@ -225,6 +218,8 @@ result, err := noresponse.HandleRiskChange(r.Context(), client, payload, r.Heade
 ```
 
 An `onboarding` account fails onboarding and a `provisional` one is refused activation on an `account_creation` decision of `review` or `block`; an `active` account has its sessions revoked on a `login` decision of `review` and is restricted and signed out on `block`. A `restricted` account is unrestricted when its `login` decision is `allow` again only if you set `Flows: map[components.Flow]noresponse.FlowPolicy{components.FlowLogin: {Reinstate: true}}`. Nothing deletes a user: Clerk bans (undone by unban), Auth0 sets `blocked`, and WorkOS, which has no block, writes `noresponse_state` to the user's metadata for your sign-in to check and revokes every session. Every action, or `none`, is recorded with `Accounts.RecordEnforcement` at the `RiskVersion` read; store `result.RiskVersion` and return it as `EnforcedRiskVersion` so a replayed or older event changes nothing. A refusal is recorded as failed and returned as `*ProviderActionError`; answer 5xx so the delivery is retried. `EnforceAccount` enforces an account from `Accounts.ListChanged` when catching up, and `CustomProvider` runs your own functions for your own user store.
+
+A held flow (workspace settings `admission: held`) answers `held` until its investigation completes or `hold_seconds` pass, and the handler records `none` for it. When the final decision arrives as `account.risk_changed`, an `onboarding` or `provisional` account fails onboarding or is refused activation on `review` or `block`. On `allow` the handler does nothing, so admit the account yourself from the result's account. See https://docs.noresponse.org/guides/late-results.
 
 ## Other options
 
