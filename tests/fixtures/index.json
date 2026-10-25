@@ -3516,6 +3516,57 @@
         ]
       ],
       "why": "NOR-362 a metric with nothing counted has no item"
+    },
+    {
+      "file": "valid/source-control.json",
+      "schema": "source-control.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/source-control-list.json",
+      "schema": "source-control-list.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/source-control-request.json",
+      "schema": "source-control-request.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "invalid/source-control-request-rate-alone.json",
+      "schema": "source-control-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "required",
+          ""
+        ]
+      ],
+      "why": "NOR-468 rate and burst are set together"
+    },
+    {
+      "file": "invalid/settings-request-unknown-source.json",
+      "schema": "settings-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "enum",
+          "/refused_sources/0"
+        ]
+      ],
+      "why": "NOR-468 a workspace refuses only NoResponse's own sources"
+    },
+    {
+      "file": "invalid/source-control-request-mixed-reset.json",
+      "schema": "source-control-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "anyOf",
+          ""
+        ]
+      ],
+      "why": "NOR-468 null resets rate and burst together"
     }
   ]
 }
