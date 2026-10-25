@@ -1,0 +1,10 @@
+{
+  "decision": "step_up",
+  "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+  "account_id": "auth0|64abc",
+  "risk": {
+    "score": 58,
+    "recommendation": "step_up",
+    "block": false
+  }
+}

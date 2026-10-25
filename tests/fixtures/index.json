@@ -2353,6 +2353,11 @@
       "expect": "valid"
     },
     {
+      "file": "valid/hook-response-step-up.json",
+      "schema": "hook-response.schema.json",
+      "expect": "valid"
+    },
+    {
       "file": "valid/hook-response-fail-open.json",
       "schema": "hook-response.schema.json",
       "expect": "valid"
