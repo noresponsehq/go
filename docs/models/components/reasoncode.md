@@ -60,3 +60,5 @@ custom := components.ReasonCode("custom_value")
 | `ReasonCodeYoungEmailDomain`           | young_email_domain                     |
 | `ReasonCodeEmailDomainNoMx`            | email_domain_no_mx                     |
 | `ReasonCodeEmailDomainNonexistent`     | email_domain_nonexistent               |
+| `ReasonCodeForumSanctioned`            | forum_sanctioned                       |
+| `ReasonCodePriorPaymentAbuse`          | prior_payment_abuse                    |

@@ -4830,7 +4830,9 @@
           "shared_api_key",
           "young_email_domain",
           "email_domain_no_mx",
-          "email_domain_nonexistent"
+          "email_domain_nonexistent",
+          "forum_sanctioned",
+          "prior_payment_abuse"
         ],
         "description": "A stable reason code. New codes may appear; ignore any you do not know."
       },
