@@ -1,5 +1,9 @@
 # Changelog
 
+## 7.1.2
+
+No changes detected.
+
 ## 7.1.1
 
 * `Sdk.Accounts.RecordEnforcement()`: 

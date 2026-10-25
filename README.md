@@ -1,10 +1,12 @@
-<img src="https://raw.githubusercontent.com/noresponsehq/.github/main/profile/sdk-header.png" alt="NoResponse" width="100%">
+<a href="https://noresponse.org"><img src="https://raw.githubusercontent.com/noresponsehq/.github/main/profile/sdk-header.png" alt="NoResponse · Identity Intelligence" width="100%"></a>
 
-# NoResponse Go SDK
+# NoResponse for Go
 
-The Go client for the [NoResponse API](https://docs.noresponse.org): assess an account creation, login or purchase, wait for a pending result, page through an account's history, record what you later learned and verify webhooks.
+Assess sign-ups, logins and purchases with the NoResponse Identity Intelligence API.
 
-Call it from your server only. The API key must never reach a browser or an app.
+Go 1.24+.
+
+[Documentation](https://docs.noresponse.org/sdks/go) · [API reference](https://docs.noresponse.org/api-reference) · [Releases](https://github.com/noresponsehq/go/releases)
 
 ## Install
 
@@ -12,7 +14,6 @@ Call it from your server only. The API key must never reach a browser or an app.
 go get github.com/noresponsehq/go/v7
 ```
 
-Go 1.24 or later.
 
 ## Quick start
 
@@ -58,6 +59,19 @@ func main() {
 Every request names its `Flow`: `components.FlowAccountCreation`, `FlowLogin` or `FlowPurchase`. Act on `assessment.Account.Risk.Decision`: `allow`, `step_up`, `review` or `block`, where `block` means your block threshold was reached. The assessment's own facts (score, recommendation, signals, `AssessmentVersion`) are under `assessment.Detail`. `Account` is nil while the account's first assessment is pending, and a 429, a 503 or a timeout also needs your own fallback.
 
 Every method takes a `context.Context` first. Cancelling it cancels the request and any retry wait.
+
+## Go further
+
+| Task | Guide |
+| --- | --- |
+| Configure this client and explore its methods | [Go SDK guide](https://docs.noresponse.org/sdks/go) |
+| Act when an account's decision changes | [Late results](https://docs.noresponse.org/guides/late-results) |
+| Explore request and response fields | [API reference](https://docs.noresponse.org/api-reference) |
+
+<details>
+<summary><strong>SDK reference</strong> · configuration, methods, errors and webhooks</summary>
+
+[Methods](#methods) · [Idempotency keys](#idempotency-keys) · [Errors](#errors) · [Retries and timeouts](#retries-and-timeouts) · [Paging](#paging) · [Issued keys](#issued-keys) · [Webhooks](#webhooks) · [Other options](#other-options) · [Changes since 2.0.0](#changes-since-200)
 
 ## Methods
 
@@ -229,3 +243,12 @@ A held flow (workspace settings `admission: held`) answers `held` until its inve
 ## Changes since 2.0.0
 
 No name was renamed. New in the root package: `NewClient`, `WithAPIKey` (the same as `WithSecurity`), `NewIdempotencyKey` and `AllAssessments`. The module now needs Go 1.24, where 2.0.0 declared Go 1.26.8.
+
+</details>
+
+## Support
+
+[Open an issue](https://github.com/noresponsehq/go/issues) and include the request ID from the response or error.
+Keep API keys and personal data out of issues.
+
+[Apache-2.0](LICENSE).
