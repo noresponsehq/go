@@ -3763,9 +3763,10 @@
           "accounts",
           "phone",
           "breach",
+          "domain",
           "ip"
         ],
-        "description": "An evidence lane: accounts (account presence for email and username), phone, breach and ip."
+        "description": "An evidence lane: accounts (account presence for email and username), phone, breach, domain (the email domain's registration) and ip."
       },
       "LineType": {
         "enum": [

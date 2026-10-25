@@ -1,12 +1,13 @@
 package components
 
-// Lane - An evidence lane: accounts (account presence for email and username), phone, breach and ip.
+// Lane - An evidence lane: accounts (account presence for email and username), phone, breach, domain (the email domain's registration) and ip.
 type Lane string
 
 const (
 	LaneAccounts Lane = "accounts"
 	LanePhone    Lane = "phone"
 	LaneBreach   Lane = "breach"
+	LaneDomain   Lane = "domain"
 	LaneIP       Lane = "ip"
 )
 
@@ -18,7 +19,7 @@ func (e Lane) ToPointer() *Lane {
 func (e *Lane) IsExact() bool {
 	if e != nil {
 		switch *e {
-		case "accounts", "phone", "breach", "ip":
+		case "accounts", "phone", "breach", "domain", "ip":
 			return true
 		}
 	}

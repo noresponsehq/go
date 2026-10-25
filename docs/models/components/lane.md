@@ -1,6 +1,6 @@
 # Lane
 
-An evidence lane: accounts (account presence for email and username), phone, breach and ip.
+An evidence lane: accounts (account presence for email and username), phone, breach, domain (the email domain's registration) and ip.
 
 ## Example Usage
 
@@ -23,4 +23,5 @@ custom := components.Lane("custom_value")
 | `LaneAccounts` | accounts       |
 | `LanePhone`    | phone          |
 | `LaneBreach`   | breach         |
+| `LaneDomain`   | domain         |
 | `LaneIP`       | ip             |
