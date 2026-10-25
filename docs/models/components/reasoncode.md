@@ -62,3 +62,9 @@ custom := components.ReasonCode("custom_value")
 | `ReasonCodeEmailDomainNonexistent`     | email_domain_nonexistent               |
 | `ReasonCodeForumSanctioned`            | forum_sanctioned                       |
 | `ReasonCodePriorPaymentAbuse`          | prior_payment_abuse                    |
+| `ReasonCodeIPHistoryMatch`             | ip_history_match                       |
+| `ReasonCodeIdentityAttributeConflict`  | identity_attribute_conflict            |
+| `ReasonCodeImpossibleIdentityAge`      | impossible_identity_age                |
+| `ReasonCodeBreachSharedIP`             | breach_shared_ip                       |
+| `ReasonCodeNationalityMismatch`        | nationality_mismatch                   |
+| `ReasonCodeMinorIdentity`              | minor_identity                         |

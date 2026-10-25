@@ -2839,7 +2839,7 @@
             "minLength": 1,
             "maxLength": 128,
             "pattern": "^[^\\x00-\\x1f\\x7f-\\x9f­؜᠎​-‏‪-‮⁠-⁤⁦-⁯﻿￹-￻]{1,128}$",
-            "description": "The full name as the user typed it, 1 to 128 characters with no control or invisible characters. It is used only to match names in the evidence.",
+            "description": "The full name as the user typed it, 1 to 128 characters with no control or invisible characters. It is searched in breach data and matched against names in the evidence. A row holding the signup's own email or username confirms the name; rows sharing another identifier add to the identity's history.",
             "example": "Alex Example"
           },
           "ip": {
@@ -3282,7 +3282,7 @@
           "username",
           "ip"
         ],
-        "description": "The submitted identifier a breach table matched on: email or username. Phone and name are not breach selectors."
+        "description": "The submitted email or username whose own search matched the table. A submitted full name is searched as well, and what it finds feeds the identity's reasons rather than this list."
       },
       "BreachSummary": {
         "type": "object",
@@ -4839,7 +4839,13 @@
           "email_domain_no_mx",
           "email_domain_nonexistent",
           "forum_sanctioned",
-          "prior_payment_abuse"
+          "prior_payment_abuse",
+          "ip_history_match",
+          "identity_attribute_conflict",
+          "impossible_identity_age",
+          "breach_shared_ip",
+          "nationality_mismatch",
+          "minor_identity"
         ],
         "description": "A stable reason code. New codes may appear; ignore any you do not know."
       },
