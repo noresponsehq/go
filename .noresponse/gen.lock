@@ -5,8 +5,8 @@ management:
   docVersion: "1"
   speakeasyVersion: internal
   generationVersion: internal
-  releaseVersion: 7.2.1
-  configChecksum: 323c37027c6b6bbf7ab6df2317e2bdb1
+  releaseVersion: 7.2.2
+  configChecksum: 3dbe934db765a9466f0082db9fb14e77
 features:
   go:
     additionalDependencies: 0.1.0
@@ -935,7 +935,7 @@ trackedFiles:
   models/operations/updatesettings.go:
     last_write_checksum: sha1:26a7c79502e50c4a12ec254d665e486375c7c892
   noresponse.go:
-    last_write_checksum: sha1:b686f1110b2f79657afcafa36c736a3cdfd84423
+    last_write_checksum: sha1:ee6c21ca21ab3e682d66cc7eeb388e4d5792c6ed
   optionalnullable/optionalnullable.go:
     last_write_checksum: sha1:38cf187cd65a5213be09788f67d82dc49d46b583
   optionalnullable/optionalnullable_test.go:
