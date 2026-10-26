@@ -1,5 +1,9 @@
 # Changelog
 
+## 7.2.0
+
+No changes detected.
+
 ## 7.1.8
 
 * `Sdk.Assessments.Create()`:  `response` **Changed**
