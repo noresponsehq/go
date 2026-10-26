@@ -25,7 +25,9 @@
        "reasons": [
         {
          "code": "recent_password_exposure",
-         "weight": 55,
+         "weight": 0,
+         "direction": "raises",
+         "impact": "medium",
          "identifier": "email"
         }
        ]
@@ -70,7 +72,9 @@
         "reasons": [
          {
           "code": "recent_password_exposure",
-          "weight": 55,
+          "weight": 0,
+          "direction": "raises",
+          "impact": "medium",
           "identifier": "email"
          }
         ]
@@ -1487,7 +1491,9 @@
         "reasons": [
          {
           "code": "recent_password_exposure",
-          "weight": 55,
+          "weight": 0,
+          "direction": "raises",
+          "impact": "medium",
           "identifier": "email"
          }
         ]
@@ -1633,7 +1639,9 @@
        "reasons": [
         {
          "code": "recent_password_exposure",
-         "weight": 55,
+         "weight": 0,
+         "direction": "raises",
+         "impact": "medium",
          "identifier": "email"
         }
        ]
@@ -1678,7 +1686,9 @@
         "reasons": [
          {
           "code": "recent_password_exposure",
-          "weight": 55,
+          "weight": 0,
+          "direction": "raises",
+          "impact": "medium",
           "identifier": "email"
          }
         ]
@@ -2146,7 +2156,9 @@
        "reasons": [
         {
          "code": "recent_password_exposure",
-         "weight": 55,
+         "weight": 0,
+         "direction": "raises",
+         "impact": "medium",
          "identifier": "email"
         }
        ]
@@ -2191,7 +2203,9 @@
         "reasons": [
          {
           "code": "recent_password_exposure",
-          "weight": 55,
+          "weight": 0,
+          "direction": "raises",
+          "impact": "medium",
           "identifier": "email"
          }
         ]
@@ -2343,7 +2357,9 @@
        "reasons": [
         {
          "code": "recent_password_exposure",
-         "weight": 55,
+         "weight": 0,
+         "direction": "raises",
+         "impact": "medium",
          "identifier": "email"
         }
        ]
@@ -2388,7 +2404,9 @@
         "reasons": [
          {
           "code": "recent_password_exposure",
-          "weight": 55,
+          "weight": 0,
+          "direction": "raises",
+          "impact": "medium",
           "identifier": "email"
          }
         ]
@@ -2611,7 +2629,9 @@
        "reasons": [
         {
          "code": "recent_password_exposure",
-         "weight": 55,
+         "weight": 0,
+         "direction": "raises",
+         "impact": "medium",
          "identifier": "email"
         }
        ]
@@ -2656,7 +2676,9 @@
         "reasons": [
          {
           "code": "recent_password_exposure",
-          "weight": 55,
+          "weight": 0,
+          "direction": "raises",
+          "impact": "medium",
           "identifier": "email"
          }
         ]
@@ -2763,7 +2785,9 @@
        "reasons": [
         {
          "code": "recent_password_exposure",
-         "weight": 55,
+         "weight": 0,
+         "direction": "raises",
+         "impact": "medium",
          "identifier": "email"
         }
        ]
@@ -2808,7 +2832,9 @@
         "reasons": [
          {
           "code": "recent_password_exposure",
-          "weight": 55,
+          "weight": 0,
+          "direction": "raises",
+          "impact": "medium",
           "identifier": "email"
          }
         ]
@@ -2990,7 +3016,9 @@
        "reasons": [
         {
          "code": "recent_password_exposure",
-         "weight": 55,
+         "weight": 0,
+         "direction": "raises",
+         "impact": "medium",
          "identifier": "email"
         }
        ]
@@ -3036,7 +3064,9 @@
         "reasons": [
          {
           "code": "recent_password_exposure",
-          "weight": 55,
+          "weight": 0,
+          "direction": "raises",
+          "impact": "medium",
           "identifier": "email"
          }
         ]
@@ -3077,7 +3107,9 @@
        "reasons": [
         {
          "code": "recent_password_exposure",
-         "weight": 55,
+         "weight": 0,
+         "direction": "raises",
+         "impact": "medium",
          "identifier": "email"
         }
        ]
@@ -3194,7 +3226,9 @@
        "reasons": [
         {
          "code": "recent_password_exposure",
-         "weight": 55,
+         "weight": 0,
+         "direction": "raises",
+         "impact": "medium",
          "identifier": "email"
         }
        ]
@@ -3262,7 +3296,9 @@
        "reasons": [
         {
          "code": "recent_password_exposure",
-         "weight": 55,
+         "weight": 0,
+         "direction": "raises",
+         "impact": "medium",
          "identifier": "email"
         }
        ]
@@ -3304,7 +3340,9 @@
         "reasons": [
          {
           "code": "recent_password_exposure",
-          "weight": 55,
+          "weight": 0,
+          "direction": "raises",
+          "impact": "medium",
           "identifier": "email"
          }
         ]
@@ -3345,7 +3383,9 @@
        "reasons": [
         {
          "code": "recent_password_exposure",
-         "weight": 55,
+         "weight": 0,
+         "direction": "raises",
+         "impact": "medium",
          "identifier": "email"
         }
        ]
@@ -3390,7 +3430,9 @@
         "reasons": [
          {
           "code": "recent_password_exposure",
-          "weight": 55,
+          "weight": 0,
+          "direction": "raises",
+          "impact": "medium",
           "identifier": "email"
          }
         ]
@@ -3469,7 +3511,9 @@
        "reasons": [
         {
          "code": "recent_password_exposure",
-         "weight": 55,
+         "weight": 0,
+         "direction": "raises",
+         "impact": "medium",
          "identifier": "email"
         }
        ]
@@ -3513,7 +3557,9 @@
         "reasons": [
          {
           "code": "recent_password_exposure",
-          "weight": 55,
+          "weight": 0,
+          "direction": "raises",
+          "impact": "medium",
           "identifier": "email"
          }
         ]
@@ -3591,7 +3637,9 @@
        "reasons": [
         {
          "code": "recent_password_exposure",
-         "weight": 55,
+         "weight": 0,
+         "direction": "raises",
+         "impact": "medium",
          "identifier": "email"
         }
        ]
@@ -3635,7 +3683,9 @@
         "reasons": [
          {
           "code": "recent_password_exposure",
-          "weight": 55,
+          "weight": 0,
+          "direction": "raises",
+          "impact": "medium",
           "identifier": "email"
          }
         ]
@@ -3719,11 +3769,15 @@
        "reasons": [
         {
          "code": "no_digital_footprint",
-         "weight": 35
+         "weight": 0,
+         "direction": "raises",
+         "impact": "medium"
         },
         {
          "code": "new_email",
-         "weight": 15,
+         "weight": 0,
+         "direction": "raises",
+         "impact": "low",
          "identifier": "email"
         }
        ]
@@ -3766,11 +3820,15 @@
        "reasons": [
         {
          "code": "no_digital_footprint",
-         "weight": 35
+         "weight": 0,
+         "direction": "raises",
+         "impact": "medium"
         },
         {
          "code": "new_email",
-         "weight": 15,
+         "weight": 0,
+         "direction": "raises",
+         "impact": "low",
          "identifier": "email"
         }
        ],
@@ -3823,7 +3881,9 @@
        "reasons": [
         {
          "code": "recent_password_exposure",
-         "weight": 55,
+         "weight": 0,
+         "direction": "raises",
+         "impact": "medium",
          "identifier": "email"
         }
        ]
@@ -3867,7 +3927,9 @@
         "reasons": [
          {
           "code": "recent_password_exposure",
-          "weight": 55,
+          "weight": 0,
+          "direction": "raises",
+          "impact": "medium",
           "identifier": "email"
          }
         ]

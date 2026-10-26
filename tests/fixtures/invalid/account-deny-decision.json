@@ -6,14 +6,18 @@
     "decision": "deny",
     "reasons": [
       {
-        "code": "new_email",
-        "weight": 20,
-        "identifier": "email"
+        "code": "proxy_ip",
+        "weight": 0,
+        "direction": "raises",
+        "impact": "high",
+        "identifier": "ip"
       },
       {
-        "code": "proxy_ip",
-        "weight": 15,
-        "identifier": "ip"
+        "code": "new_email",
+        "weight": 0,
+        "direction": "raises",
+        "impact": "low",
+        "identifier": "email"
       }
     ]
   },

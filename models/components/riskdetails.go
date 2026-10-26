@@ -11,6 +11,8 @@ type RiskDetails struct {
 	Breaches []Breach `json:"breaches,omitzero"`
 	// Names found next to the identifiers in breach records, merged, with the number of distinct tables each was seen in.
 	BreachNames []RiskDetailsBreachName `json:"breach_names,omitzero"`
+	// The identity's dated footprint events, newest first, at most 100: the year and month, what happened (created, last_active, breached), the site, its category, the kind of evidence and the identifier it belongs to. No breach value: dates are coarsened to the month.
+	Events []RiskDetailsEvent `json:"events,omitzero"`
 }
 
 func (r RiskDetails) MarshalJSON() ([]byte, error) {
@@ -43,4 +45,11 @@ func (r *RiskDetails) GetBreachNames() []RiskDetailsBreachName {
 		return nil
 	}
 	return r.BreachNames
+}
+
+func (r *RiskDetails) GetEvents() []RiskDetailsEvent {
+	if r == nil {
+		return nil
+	}
+	return r.Events
 }

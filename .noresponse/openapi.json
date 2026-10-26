@@ -2092,7 +2092,7 @@
           "reasons": {
             "type": "array",
             "maxItems": 32,
-            "description": "Every reason that fired, highest weight first. The weights sum to score before clamping.",
+            "description": "Every reason that fired: risk-raising reasons first, then neutral, then risk-lowering, each strongest impact band first and then by code. The policy's numeric weights are kept private, so a reason carries only its direction and impact band.",
             "items": {
               "$ref": "#/components/schemas/AccountRiskReason"
             }
@@ -2152,33 +2152,19 @@
           }
         }
       },
-      "AccountRiskReason": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": [
-          "code",
-          "weight"
-        ],
-        "properties": {
-          "code": {
-            "$ref": "#/components/schemas/ReasonCode"
-          },
-          "weight": {
-            "type": "integer",
-            "minimum": -100,
-            "maximum": 100
-          },
-          "identifier": {
-            "$ref": "#/components/schemas/ReasonIdentifier"
-          }
-        }
-      },
       "Admission": {
         "enum": [
           "immediate",
           "held"
         ],
         "description": "immediate (the default): an assessment of this flow is decided from the evidence its answer has, and later evidence may change the decision. held: while the account's current assessment of this flow has not completed, the account's decision for the flow is held, and the final decision arrives as account.risk_changed when the investigation completes or hold_seconds pass, whichever is first. Each flow has its own admission."
+      },
+      "Agreement": {
+        "enum": [
+          "match",
+          "partial",
+          "mismatch"
+        ]
       },
       "Assessment": {
         "description": "One assessment, as POST /v1/assessments, GET /v1/assessments/{assessment_id} and the assessment.updated webhook return it. account is the account's one current risk: its score, the decision for this assessment's flow, the reasons and the decision for each flow. detail holds this assessment's own facts. status says whether the assessment is final (complete), usable with a source still running (partial) or not yet usable (pending). While the account's first assessment is pending, account is absent; wait for the webhook or poll the assessment. Keep the highest detail.assessment_version.",
@@ -2362,7 +2348,7 @@
             "minLength": 1,
             "maxLength": 64,
             "pattern": "^[a-z0-9][a-z0-9._-]{0,63}(\\+t[1-9][0-9]{0,8})?$",
-            "description": "Version of the hand-authored heuristic weights that produced the recommendation, for example 'risk-2026-10.7'. A workspace threshold override adds a +t<N> suffix, e.g. 'risk-2026-10.7+t3'.",
+            "description": "Version of the hand-authored heuristic policy that produced the recommendation, for example 'risk-2026-10.7'. A workspace threshold override adds a +t<N> suffix, e.g. 'risk-2026-10.7+t3'.",
             "example": "heuristic-2026-10.1"
           },
           "policy_basis": {
@@ -2938,6 +2924,29 @@
         ],
         "description": "Provider or OIDC assurance level, when the customer has mapped one."
       },
+      "AttributeAgreement": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "How far independent sources agree on one attribute: values is the number of distinct values reported, support the tables and profiles reporting any, and agreement match (one value), partial (the most reported value holds more than half the support) or mismatch. The values themselves are not served.",
+        "required": [
+          "agreement",
+          "values",
+          "support"
+        ],
+        "properties": {
+          "agreement": {
+            "$ref": "#/components/schemas/Agreement"
+          },
+          "values": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "support": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      },
       "AuthContext": {
         "description": "Normalised claims from a session your backend has already verified with WorkOS, Clerk, Auth0 or any OIDC provider. Pass the output of the SDK's auth adapters, not a raw token.",
         "type": "object",
@@ -3429,6 +3438,13 @@
         ],
         "description": "How long the synchronous answer waits for sources. quick waits only for the fast sources, those that answer within 500 ms of ingress (or deadline_ms when lower); full waits for the whole budget, up to 3000 ms. Sources still running at the cut continue asynchronously and update the assessment either way."
       },
+      "Direction": {
+        "enum": [
+          "raises",
+          "lowers",
+          "neutral"
+        ]
+      },
       "EndpointVerification": {
         "type": "object",
         "additionalProperties": false,
@@ -3775,6 +3791,122 @@
           }
         }
       },
+      "Footprint": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "How long and how widely the signup's email and username have existed, and how far independent sources agree on the person behind them, in years and counts only. families are the kinds of evidence that found either identifier. Omitted when nothing found them: a footprint lookup that failed makes no claim, and absence is no_digital_footprint's to state.",
+        "required": [
+          "families"
+        ],
+        "properties": {
+          "email": {
+            "$ref": "#/components/schemas/FootprintTimeline"
+          },
+          "username": {
+            "$ref": "#/components/schemas/FootprintTimeline"
+          },
+          "families": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "$ref": "#/components/schemas/FootprintFamily"
+            }
+          },
+          "coherence": {
+            "$ref": "#/components/schemas/FootprintCoherence"
+          }
+        }
+      },
+      "FootprintCoherence": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "birth_date": {
+            "$ref": "#/components/schemas/AttributeAgreement"
+          },
+          "gender": {
+            "$ref": "#/components/schemas/AttributeAgreement"
+          },
+          "nationality": {
+            "$ref": "#/components/schemas/AttributeAgreement"
+          },
+          "country": {
+            "$ref": "#/components/schemas/AttributeAgreement"
+          },
+          "city": {
+            "$ref": "#/components/schemas/AttributeAgreement"
+          },
+          "zip": {
+            "$ref": "#/components/schemas/AttributeAgreement"
+          },
+          "name": {
+            "$ref": "#/components/schemas/AttributeAgreement"
+          },
+          "company": {
+            "$ref": "#/components/schemas/AttributeAgreement"
+          },
+          "website": {
+            "$ref": "#/components/schemas/AttributeAgreement"
+          },
+          "social": {
+            "$ref": "#/components/schemas/AttributeAgreement"
+          }
+        }
+      },
+      "FootprintFamily": {
+        "enum": [
+          "account_presence",
+          "auth_provider",
+          "breach",
+          "breach_abuse",
+          "code_hosting"
+        ],
+        "description": "The source-neutral kind of evidence: account_presence (an account found on a site), auth_provider (the account at your auth provider), breach (breach and credential tables), breach_abuse (abuse and fraud communities' tables) and code_hosting (a code hosting profile)."
+      },
+      "FootprintTimeline": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "One identifier's dated footprint across every source: the first and last year any event was seen, the years between them, the latest year a source dated activity (omitted when none did), how many distinct sites and which kinds of evidence saw it.",
+        "required": [
+          "first_seen_year",
+          "last_seen_year",
+          "span_years",
+          "sites",
+          "families"
+        ],
+        "properties": {
+          "first_seen_year": {
+            "type": "integer",
+            "minimum": 1970,
+            "maximum": 2100
+          },
+          "last_seen_year": {
+            "type": "integer",
+            "minimum": 1970,
+            "maximum": 2100
+          },
+          "span_years": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "last_active_year": {
+            "type": "integer",
+            "minimum": 1970,
+            "maximum": 2100
+          },
+          "sites": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "families": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "$ref": "#/components/schemas/FootprintFamily"
+            }
+          }
+        }
+      },
       "Freshness": {
         "enum": [
           "fresh",
@@ -3794,6 +3926,12 @@
         ],
         "description": "The provider event a provider_hook context was sent for; absent for any other transport."
       },
+      "Identifier": {
+        "enum": [
+          "email",
+          "username"
+        ]
+      },
       "IdentifierKind": {
         "enum": [
           "email",
@@ -3802,6 +3940,14 @@
           "ip"
         ],
         "description": "Which submitted identifier a signal concerns. ip is a selector of breach_exposure only."
+      },
+      "Impact": {
+        "enum": [
+          "none",
+          "low",
+          "medium",
+          "high"
+        ]
       },
       "IncompleteReason": {
         "enum": [
@@ -4888,7 +5034,7 @@
           "reasons",
           "coverage"
         ],
-        "description": "The one risk decision for this event. score is 0 (safe) to 100 (risky): the sum of the weights of the reasons that fired, clamped to 0 to 100, from hand-set versioned weights. Every answer with a recommendation carries it, and the top-level recommendation equals risk.recommendation. It names no source or provider.",
+        "description": "The one risk decision for this event. score is 0 (safe) to 100 (risky), set by the reasons that fired under a hand-set, versioned heuristic policy. Each reason carries its direction and impact band; the policy's weights are not published. Every answer with a recommendation carries it, and the top-level recommendation equals risk.recommendation. It names no source or provider.",
         "properties": {
           "score": {
             "type": "integer",
@@ -4921,7 +5067,7 @@
             "minLength": 1,
             "maxLength": 64,
             "pattern": "^[a-z0-9][a-z0-9._-]{0,63}(\\+t[1-9][0-9]{0,8})?$",
-            "description": "Version of the hand-authored heuristic weights that produced the recommendation, for example 'risk-2026-10.7'. A workspace threshold override adds a +t<N> suffix, e.g. 'risk-2026-10.7+t3'.",
+            "description": "Version of the hand-authored heuristic policy that produced the recommendation, for example 'risk-2026-10.7'. A workspace threshold override adds a +t<N> suffix, e.g. 'risk-2026-10.7+t3'.",
             "example": "risk-2026-10.3"
           },
           "policy_basis": {
@@ -4931,7 +5077,7 @@
           "reasons": {
             "type": "array",
             "maxItems": 32,
-            "description": "Every reason that fired, highest weight first. The weights sum to score before clamping.",
+            "description": "Every reason that fired: risk-raising reasons first, then neutral, then risk-lowering, each strongest impact band first and then by code. The policy's numeric weights are kept private, so a reason carries only its direction and impact band.",
             "items": {
               "$ref": "#/components/schemas/RiskReason"
             }
@@ -5012,6 +5158,14 @@
             "items": {
               "$ref": "#/components/schemas/RiskDetailsBreachName"
             }
+          },
+          "events": {
+            "type": "array",
+            "maxItems": 100,
+            "description": "The identity's dated footprint events, newest first, at most 100: the year and month, what happened (created, last_active, breached), the site, its category, the kind of evidence and the identifier it belongs to. No breach value: dates are coarsened to the month.",
+            "items": {
+              "$ref": "#/components/schemas/RiskDetailsEvent"
+            }
           }
         }
       },
@@ -5034,6 +5188,57 @@
             "minimum": 1
           }
         }
+      },
+      "RiskDetailsEvent": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "year",
+          "kind",
+          "site",
+          "category",
+          "family",
+          "identifier"
+        ],
+        "properties": {
+          "year": {
+            "type": "integer",
+            "minimum": 1970,
+            "maximum": 2100
+          },
+          "month": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 12
+          },
+          "kind": {
+            "$ref": "#/components/schemas/RiskDetailsEventKind"
+          },
+          "site": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "example": "example.com"
+          },
+          "category": {
+            "type": "string",
+            "pattern": "^[a-z0-9_]{1,64}$",
+            "example": "site_breach"
+          },
+          "family": {
+            "$ref": "#/components/schemas/FootprintFamily"
+          },
+          "identifier": {
+            "$ref": "#/components/schemas/Identifier"
+          }
+        }
+      },
+      "RiskDetailsEventKind": {
+        "enum": [
+          "created",
+          "last_active",
+          "breached"
+        ]
       },
       "RiskDetailsPhoneName": {
         "type": "object",
@@ -5058,22 +5263,31 @@
       "RiskReason": {
         "type": "object",
         "additionalProperties": false,
+        "description": "One reason that fired. direction is whether it raises or lowers the score, or is neutral (informational, it moves nothing). impact is a coarse band of how much it moves the score: none for a neutral reason, otherwise low, medium or high.",
         "required": [
           "code",
-          "weight"
+          "direction",
+          "impact"
         ],
         "properties": {
           "code": {
             "$ref": "#/components/schemas/ReasonCode",
             "description": "A stable reason code. New codes may appear; ignore any you do not know."
           },
-          "weight": {
-            "type": "integer",
-            "minimum": -100,
-            "maximum": 100
+          "direction": {
+            "$ref": "#/components/schemas/Direction"
+          },
+          "impact": {
+            "$ref": "#/components/schemas/Impact"
           },
           "identifier": {
             "$ref": "#/components/schemas/ReasonIdentifier"
+          },
+          "weight": {
+            "type": "integer",
+            "const": 0,
+            "deprecated": true,
+            "description": "Deprecated and always 0: the policy's weights are not published. It is sent so that SDK versions that require it keep reading reasons. Read direction and impact."
           }
         }
       },
@@ -5095,6 +5309,9 @@
           },
           "consistency": {
             "$ref": "#/components/schemas/Consistency"
+          },
+          "footprint": {
+            "$ref": "#/components/schemas/Footprint"
           }
         },
         "description": "A few typed facts per identifier. Every fact is optional: absent means the evidence did not answer and makes no claim, while false or 0 is a definite answer. Lanes that do not exist yet leave their members absent."
@@ -5960,6 +6177,37 @@
             "$ref": "#/components/schemas/WorkspaceDeleted"
           }
         }
+      },
+      "AccountRiskReason": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "One reason that fired. direction is whether it raises or lowers the score, or is neutral (informational, it moves nothing). impact is a coarse band of how much it moves the score: none for a neutral reason, otherwise low, medium or high.",
+        "required": [
+          "code",
+          "direction",
+          "impact"
+        ],
+        "properties": {
+          "code": {
+            "$ref": "#/components/schemas/ReasonCode",
+            "description": "A stable reason code. New codes may appear; ignore any you do not know."
+          },
+          "direction": {
+            "$ref": "#/components/schemas/Direction"
+          },
+          "impact": {
+            "$ref": "#/components/schemas/Impact"
+          },
+          "identifier": {
+            "$ref": "#/components/schemas/ReasonIdentifier"
+          },
+          "weight": {
+            "type": "integer",
+            "const": 0,
+            "deprecated": true,
+            "description": "Deprecated and always 0: the policy's weights are not published. It is sent so that SDK versions that require it keep reading reasons. Read direction and impact."
+          }
+        }
       }
     },
     "parameters": {
@@ -6133,27 +6381,37 @@
                       "reasons": [
                         {
                           "code": "voip_number",
-                          "weight": 25,
+                          "weight": 0,
+                          "direction": "raises",
+                          "impact": "medium",
                           "identifier": "phone"
                         },
                         {
+                          "code": "aged_identity",
+                          "weight": 0,
+                          "direction": "lowers",
+                          "impact": "medium",
+                          "identifier": "email"
+                        },
+                        {
                           "code": "breach_cooccurrence",
-                          "weight": -10,
+                          "weight": 0,
+                          "direction": "lowers",
+                          "impact": "low",
                           "identifier": "phone"
                         },
                         {
                           "code": "breach_name_match",
-                          "weight": -15,
+                          "weight": 0,
+                          "direction": "lowers",
+                          "impact": "low",
                           "identifier": "name"
                         },
                         {
                           "code": "established_accounts",
-                          "weight": -15,
-                          "identifier": "email"
-                        },
-                        {
-                          "code": "aged_identity",
-                          "weight": -25,
+                          "weight": 0,
+                          "direction": "lowers",
+                          "impact": "low",
                           "identifier": "email"
                         }
                       ]
@@ -6186,27 +6444,37 @@
                       "reasons": [
                         {
                           "code": "voip_number",
-                          "weight": 25,
+                          "weight": 0,
+                          "direction": "raises",
+                          "impact": "medium",
                           "identifier": "phone"
                         },
                         {
+                          "code": "aged_identity",
+                          "weight": 0,
+                          "direction": "lowers",
+                          "impact": "medium",
+                          "identifier": "email"
+                        },
+                        {
                           "code": "breach_cooccurrence",
-                          "weight": -10,
+                          "weight": 0,
+                          "direction": "lowers",
+                          "impact": "low",
                           "identifier": "phone"
                         },
                         {
                           "code": "breach_name_match",
-                          "weight": -15,
+                          "weight": 0,
+                          "direction": "lowers",
+                          "impact": "low",
                           "identifier": "name"
                         },
                         {
                           "code": "established_accounts",
-                          "weight": -15,
-                          "identifier": "email"
-                        },
-                        {
-                          "code": "aged_identity",
-                          "weight": -25,
+                          "weight": 0,
+                          "direction": "lowers",
+                          "impact": "low",
                           "identifier": "email"
                         }
                       ],
@@ -6291,7 +6559,9 @@
                       "reasons": [
                         {
                           "code": "recent_password_exposure",
-                          "weight": 15,
+                          "weight": 0,
+                          "direction": "raises",
+                          "impact": "medium",
                           "identifier": "email"
                         }
                       ]
@@ -6324,7 +6594,9 @@
                       "reasons": [
                         {
                           "code": "recent_password_exposure",
-                          "weight": 15,
+                          "weight": 0,
+                          "direction": "raises",
+                          "impact": "medium",
                           "identifier": "email"
                         }
                       ],
@@ -6398,17 +6670,23 @@
                       "reasons": [
                         {
                           "code": "credential_list_exposure",
-                          "weight": 10,
+                          "weight": 0,
+                          "direction": "raises",
+                          "impact": "medium",
+                          "identifier": "email"
+                        },
+                        {
+                          "code": "aged_identity",
+                          "weight": 0,
+                          "direction": "lowers",
+                          "impact": "medium",
                           "identifier": "email"
                         },
                         {
                           "code": "established_accounts",
-                          "weight": -15
-                        },
-                        {
-                          "code": "aged_identity",
-                          "weight": -25,
-                          "identifier": "email"
+                          "weight": 0,
+                          "direction": "lowers",
+                          "impact": "low"
                         }
                       ]
                     },
@@ -6440,17 +6718,23 @@
                       "reasons": [
                         {
                           "code": "credential_list_exposure",
-                          "weight": 10,
+                          "weight": 0,
+                          "direction": "raises",
+                          "impact": "medium",
+                          "identifier": "email"
+                        },
+                        {
+                          "code": "aged_identity",
+                          "weight": 0,
+                          "direction": "lowers",
+                          "impact": "medium",
                           "identifier": "email"
                         },
                         {
                           "code": "established_accounts",
-                          "weight": -15
-                        },
-                        {
-                          "code": "aged_identity",
-                          "weight": -25,
-                          "identifier": "email"
+                          "weight": 0,
+                          "direction": "lowers",
+                          "impact": "low"
                         }
                       ],
                       "summary": {
@@ -6509,12 +6793,16 @@
                       "reasons": [
                         {
                           "code": "voip_number",
-                          "weight": 25,
+                          "weight": 0,
+                          "direction": "raises",
+                          "impact": "medium",
                           "identifier": "phone"
                         },
                         {
                           "code": "breach_name_match",
-                          "weight": -15,
+                          "weight": 0,
+                          "direction": "lowers",
+                          "impact": "low",
                           "identifier": "name"
                         }
                       ]
@@ -6547,12 +6835,16 @@
                       "reasons": [
                         {
                           "code": "voip_number",
-                          "weight": 25,
+                          "weight": 0,
+                          "direction": "raises",
+                          "impact": "medium",
                           "identifier": "phone"
                         },
                         {
                           "code": "breach_name_match",
-                          "weight": -15,
+                          "weight": 0,
+                          "direction": "lowers",
+                          "impact": "low",
                           "identifier": "name"
                         }
                       ],
@@ -6787,27 +7079,37 @@
                       "reasons": [
                         {
                           "code": "voip_number",
-                          "weight": 25,
+                          "weight": 0,
+                          "direction": "raises",
+                          "impact": "medium",
                           "identifier": "phone"
                         },
                         {
+                          "code": "aged_identity",
+                          "weight": 0,
+                          "direction": "lowers",
+                          "impact": "medium",
+                          "identifier": "email"
+                        },
+                        {
                           "code": "breach_cooccurrence",
-                          "weight": -10,
+                          "weight": 0,
+                          "direction": "lowers",
+                          "impact": "low",
                           "identifier": "phone"
                         },
                         {
                           "code": "breach_name_match",
-                          "weight": -15,
+                          "weight": 0,
+                          "direction": "lowers",
+                          "impact": "low",
                           "identifier": "name"
                         },
                         {
                           "code": "established_accounts",
-                          "weight": -15,
-                          "identifier": "email"
-                        },
-                        {
-                          "code": "aged_identity",
-                          "weight": -25,
+                          "weight": 0,
+                          "direction": "lowers",
+                          "impact": "low",
                           "identifier": "email"
                         }
                       ]
@@ -6908,27 +7210,37 @@
                       "reasons": [
                         {
                           "code": "voip_number",
-                          "weight": 25,
+                          "weight": 0,
+                          "direction": "raises",
+                          "impact": "medium",
                           "identifier": "phone"
                         },
                         {
+                          "code": "aged_identity",
+                          "weight": 0,
+                          "direction": "lowers",
+                          "impact": "medium",
+                          "identifier": "email"
+                        },
+                        {
                           "code": "breach_cooccurrence",
-                          "weight": -10,
+                          "weight": 0,
+                          "direction": "lowers",
+                          "impact": "low",
                           "identifier": "phone"
                         },
                         {
                           "code": "breach_name_match",
-                          "weight": -15,
+                          "weight": 0,
+                          "direction": "lowers",
+                          "impact": "low",
                           "identifier": "name"
                         },
                         {
                           "code": "established_accounts",
-                          "weight": -15,
-                          "identifier": "email"
-                        },
-                        {
-                          "code": "aged_identity",
-                          "weight": -25,
+                          "weight": 0,
+                          "direction": "lowers",
+                          "impact": "low",
                           "identifier": "email"
                         }
                       ]
@@ -6961,27 +7273,37 @@
                       "reasons": [
                         {
                           "code": "voip_number",
-                          "weight": 25,
+                          "weight": 0,
+                          "direction": "raises",
+                          "impact": "medium",
                           "identifier": "phone"
                         },
                         {
+                          "code": "aged_identity",
+                          "weight": 0,
+                          "direction": "lowers",
+                          "impact": "medium",
+                          "identifier": "email"
+                        },
+                        {
                           "code": "breach_cooccurrence",
-                          "weight": -10,
+                          "weight": 0,
+                          "direction": "lowers",
+                          "impact": "low",
                           "identifier": "phone"
                         },
                         {
                           "code": "breach_name_match",
-                          "weight": -15,
+                          "weight": 0,
+                          "direction": "lowers",
+                          "impact": "low",
                           "identifier": "name"
                         },
                         {
                           "code": "established_accounts",
-                          "weight": -15,
-                          "identifier": "email"
-                        },
-                        {
-                          "code": "aged_identity",
-                          "weight": -25,
+                          "weight": 0,
+                          "direction": "lowers",
+                          "impact": "low",
                           "identifier": "email"
                         }
                       ],
@@ -7066,7 +7388,9 @@
                       "reasons": [
                         {
                           "code": "recent_password_exposure",
-                          "weight": 15,
+                          "weight": 0,
+                          "direction": "raises",
+                          "impact": "medium",
                           "identifier": "email"
                         }
                       ]
@@ -7099,7 +7423,9 @@
                       "reasons": [
                         {
                           "code": "recent_password_exposure",
-                          "weight": 15,
+                          "weight": 0,
+                          "direction": "raises",
+                          "impact": "medium",
                           "identifier": "email"
                         }
                       ],
@@ -7211,27 +7537,37 @@
                       "reasons": [
                         {
                           "code": "voip_number",
-                          "weight": 25,
+                          "weight": 0,
+                          "direction": "raises",
+                          "impact": "medium",
                           "identifier": "phone"
                         },
                         {
+                          "code": "aged_identity",
+                          "weight": 0,
+                          "direction": "lowers",
+                          "impact": "medium",
+                          "identifier": "email"
+                        },
+                        {
                           "code": "breach_cooccurrence",
-                          "weight": -10,
+                          "weight": 0,
+                          "direction": "lowers",
+                          "impact": "low",
                           "identifier": "phone"
                         },
                         {
                           "code": "breach_name_match",
-                          "weight": -15,
+                          "weight": 0,
+                          "direction": "lowers",
+                          "impact": "low",
                           "identifier": "name"
                         },
                         {
                           "code": "established_accounts",
-                          "weight": -15,
-                          "identifier": "email"
-                        },
-                        {
-                          "code": "aged_identity",
-                          "weight": -25,
+                          "weight": 0,
+                          "direction": "lowers",
+                          "impact": "low",
                           "identifier": "email"
                         }
                       ]
@@ -7292,17 +7628,23 @@
                       "reasons": [
                         {
                           "code": "credential_list_exposure",
-                          "weight": 10,
+                          "weight": 0,
+                          "direction": "raises",
+                          "impact": "medium",
+                          "identifier": "email"
+                        },
+                        {
+                          "code": "aged_identity",
+                          "weight": 0,
+                          "direction": "lowers",
+                          "impact": "medium",
                           "identifier": "email"
                         },
                         {
                           "code": "established_accounts",
-                          "weight": -15
-                        },
-                        {
-                          "code": "aged_identity",
-                          "weight": -25,
-                          "identifier": "email"
+                          "weight": 0,
+                          "direction": "lowers",
+                          "impact": "low"
                         }
                       ]
                     },
@@ -7334,17 +7676,23 @@
                       "reasons": [
                         {
                           "code": "credential_list_exposure",
-                          "weight": 10,
+                          "weight": 0,
+                          "direction": "raises",
+                          "impact": "medium",
+                          "identifier": "email"
+                        },
+                        {
+                          "code": "aged_identity",
+                          "weight": 0,
+                          "direction": "lowers",
+                          "impact": "medium",
                           "identifier": "email"
                         },
                         {
                           "code": "established_accounts",
-                          "weight": -15
-                        },
-                        {
-                          "code": "aged_identity",
-                          "weight": -25,
-                          "identifier": "email"
+                          "weight": 0,
+                          "direction": "lowers",
+                          "impact": "low"
                         }
                       ],
                       "summary": {
@@ -7403,12 +7751,16 @@
                       "reasons": [
                         {
                           "code": "voip_number",
-                          "weight": 25,
+                          "weight": 0,
+                          "direction": "raises",
+                          "impact": "medium",
                           "identifier": "phone"
                         },
                         {
                           "code": "breach_name_match",
-                          "weight": -15,
+                          "weight": 0,
+                          "direction": "lowers",
+                          "impact": "low",
                           "identifier": "name"
                         }
                       ]
@@ -7441,12 +7793,16 @@
                       "reasons": [
                         {
                           "code": "voip_number",
-                          "weight": 25,
+                          "weight": 0,
+                          "direction": "raises",
+                          "impact": "medium",
                           "identifier": "phone"
                         },
                         {
                           "code": "breach_name_match",
-                          "weight": -15,
+                          "weight": 0,
+                          "direction": "lowers",
+                          "impact": "low",
                           "identifier": "name"
                         }
                       ],
@@ -8732,14 +9088,18 @@
                     "decision": "step_up",
                     "reasons": [
                       {
-                        "code": "new_email",
-                        "weight": 20,
-                        "identifier": "email"
+                        "code": "proxy_ip",
+                        "weight": 0,
+                        "direction": "raises",
+                        "impact": "high",
+                        "identifier": "ip"
                       },
                       {
-                        "code": "proxy_ip",
-                        "weight": 15,
-                        "identifier": "ip"
+                        "code": "new_email",
+                        "weight": 0,
+                        "direction": "raises",
+                        "impact": "low",
+                        "identifier": "email"
                       }
                     ]
                   },
@@ -8763,17 +9123,23 @@
                     "reasons": [
                       {
                         "code": "disposable_email",
-                        "weight": 40,
+                        "weight": 0,
+                        "direction": "raises",
+                        "impact": "high",
                         "identifier": "email"
                       },
                       {
-                        "code": "proxy_ip",
-                        "weight": 30,
-                        "identifier": "ip"
+                        "code": "many_recent_accounts",
+                        "weight": 0,
+                        "direction": "raises",
+                        "impact": "high"
                       },
                       {
-                        "code": "many_recent_accounts",
-                        "weight": 20
+                        "code": "proxy_ip",
+                        "weight": 0,
+                        "direction": "raises",
+                        "impact": "high",
+                        "identifier": "ip"
                       }
                     ]
                   },
@@ -8957,14 +9323,18 @@
                         "decision": "step_up",
                         "reasons": [
                           {
-                            "code": "new_email",
-                            "weight": 20,
-                            "identifier": "email"
+                            "code": "proxy_ip",
+                            "weight": 0,
+                            "direction": "raises",
+                            "impact": "high",
+                            "identifier": "ip"
                           },
                           {
-                            "code": "proxy_ip",
-                            "weight": 15,
-                            "identifier": "ip"
+                            "code": "new_email",
+                            "weight": 0,
+                            "direction": "raises",
+                            "impact": "low",
+                            "identifier": "email"
                           }
                         ]
                       },
@@ -8986,17 +9356,23 @@
                         "reasons": [
                           {
                             "code": "disposable_email",
-                            "weight": 40,
+                            "weight": 0,
+                            "direction": "raises",
+                            "impact": "high",
                             "identifier": "email"
                           },
                           {
-                            "code": "proxy_ip",
-                            "weight": 30,
-                            "identifier": "ip"
+                            "code": "many_recent_accounts",
+                            "weight": 0,
+                            "direction": "raises",
+                            "impact": "high"
                           },
                           {
-                            "code": "many_recent_accounts",
-                            "weight": 20
+                            "code": "proxy_ip",
+                            "weight": 0,
+                            "direction": "raises",
+                            "impact": "high",
+                            "identifier": "ip"
                           }
                         ]
                       },
@@ -9960,11 +10336,15 @@
                           "reasons": [
                             {
                               "code": "no_digital_footprint",
-                              "weight": 35
+                              "weight": 0,
+                              "direction": "raises",
+                              "impact": "medium"
                             },
                             {
                               "code": "new_email",
-                              "weight": 15,
+                              "weight": 0,
+                              "direction": "raises",
+                              "impact": "low",
                               "identifier": "email"
                             }
                           ]
@@ -10007,11 +10387,15 @@
                           "reasons": [
                             {
                               "code": "no_digital_footprint",
-                              "weight": 35
+                              "weight": 0,
+                              "direction": "raises",
+                              "impact": "medium"
                             },
                             {
                               "code": "new_email",
-                              "weight": 15,
+                              "weight": 0,
+                              "direction": "raises",
+                              "impact": "low",
                               "identifier": "email"
                             }
                           ],
@@ -10059,11 +10443,15 @@
                           "reasons": [
                             {
                               "code": "no_digital_footprint",
-                              "weight": 35
+                              "weight": 0,
+                              "direction": "raises",
+                              "impact": "medium"
                             },
                             {
                               "code": "new_email",
-                              "weight": 15,
+                              "weight": 0,
+                              "direction": "raises",
+                              "impact": "low",
                               "identifier": "email"
                             }
                           ]
@@ -10106,11 +10494,15 @@
                           "reasons": [
                             {
                               "code": "no_digital_footprint",
-                              "weight": 35
+                              "weight": 0,
+                              "direction": "raises",
+                              "impact": "medium"
                             },
                             {
                               "code": "new_email",
-                              "weight": 15,
+                              "weight": 0,
+                              "direction": "raises",
+                              "impact": "low",
                               "identifier": "email"
                             }
                           ],
@@ -10390,14 +10782,18 @@
                           "decision": "review",
                           "reasons": [
                             {
-                              "code": "recent_password_exposure",
-                              "weight": 55,
-                              "identifier": "email"
+                              "code": "proxy_ip",
+                              "weight": 0,
+                              "direction": "raises",
+                              "impact": "high",
+                              "identifier": "ip"
                             },
                             {
-                              "code": "proxy_ip",
-                              "weight": 15,
-                              "identifier": "ip"
+                              "code": "recent_password_exposure",
+                              "weight": 0,
+                              "direction": "raises",
+                              "impact": "medium",
+                              "identifier": "email"
                             }
                           ]
                         },

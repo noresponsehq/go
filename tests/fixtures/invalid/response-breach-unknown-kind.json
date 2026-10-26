@@ -17,12 +17,16 @@
     "reasons": [
       {
         "code": "voip_number",
-        "weight": 25,
+        "weight": 0,
+        "direction": "raises",
+        "impact": "medium",
         "identifier": "phone"
       },
       {
         "code": "breach_name_match",
-        "weight": -15,
+        "weight": 0,
+        "direction": "lowers",
+        "impact": "low",
         "identifier": "name"
       }
     ],

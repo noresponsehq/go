@@ -1,5 +1,14 @@
 # Changelog
 
+## 7.1.8
+
+* `Sdk.Assessments.Create()`:  `response` **Changed**
+* `Sdk.Assessments.Get()`:  `response` **Changed**
+* `Sdk.Assessments.Query()`:  `response.Items[].Risk` **Changed**
+* `Sdk.Accounts.ListChanged()`:  `response.Items[].Risk.Reasons[]` **Changed**
+* `Sdk.Accounts.Get()`:  `response.Risk.Reasons[]` **Changed**
+* `Sdk.Accounts.ListAssessments()`:  `response.Items[].Risk` **Changed**
+
 ## 7.1.7
 
 * `Sdk.Assessments.Create()`:  `response.Account.Risk.Reasons[].Code` **Changed**

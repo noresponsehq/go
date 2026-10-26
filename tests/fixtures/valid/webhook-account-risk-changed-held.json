@@ -11,14 +11,18 @@
         "decision": "review",
         "reasons": [
           {
-            "code": "recent_password_exposure",
-            "weight": 55,
-            "identifier": "email"
+            "code": "proxy_ip",
+            "weight": 0,
+            "direction": "raises",
+            "impact": "high",
+            "identifier": "ip"
           },
           {
-            "code": "proxy_ip",
-            "weight": 15,
-            "identifier": "ip"
+            "code": "recent_password_exposure",
+            "weight": 0,
+            "direction": "raises",
+            "impact": "medium",
+            "identifier": "email"
           }
         ]
       },

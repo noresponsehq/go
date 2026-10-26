@@ -1616,7 +1616,7 @@
       "errors": [
         [
           "enum",
-          "/risk/reasons/4/code"
+          "/risk/reasons/1/code"
         ]
       ],
       "why": "spec §6.7 old_breach_history was replaced by aged_identity"

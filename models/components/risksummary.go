@@ -13,6 +13,8 @@ type RiskSummary struct {
 	IP *IPSummary `json:"ip,omitzero"`
 	// Cross-identifier agreement, computed from facts only. Every member is optional; absent makes no claim.
 	Consistency *Consistency `json:"consistency,omitzero"`
+	// How long and how widely the signup's email and username have existed, and how far independent sources agree on the person behind them, in years and counts only. families are the kinds of evidence that found either identifier. Omitted when nothing found them: a footprint lookup that failed makes no claim, and absence is no_digital_footprint's to state.
+	Footprint *Footprint `json:"footprint,omitzero"`
 }
 
 func (r RiskSummary) MarshalJSON() ([]byte, error) {
@@ -59,4 +61,11 @@ func (r *RiskSummary) GetConsistency() *Consistency {
 		return nil
 	}
 	return r.Consistency
+}
+
+func (r *RiskSummary) GetFootprint() *Footprint {
+	if r == nil {
+		return nil
+	}
+	return r.Footprint
 }

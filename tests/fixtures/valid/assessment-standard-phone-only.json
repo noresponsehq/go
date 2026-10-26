@@ -17,7 +17,9 @@
     "reasons": [
       {
         "code": "voip_number",
-        "weight": 25,
+        "weight": 0,
+        "direction": "raises",
+        "impact": "medium",
         "identifier": "phone"
       }
     ],

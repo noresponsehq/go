@@ -27,11 +27,15 @@
     "reasons": [
       {
         "code": "truecaller_spam",
-        "weight": 35
+        "weight": 0,
+        "direction": "raises",
+        "impact": "high"
       },
       {
         "code": "new_email",
-        "weight": 15,
+        "weight": 0,
+        "direction": "raises",
+        "impact": "low",
         "identifier": "email"
       }
     ],

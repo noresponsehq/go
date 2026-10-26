@@ -8,14 +8,18 @@
         "decision": "step_up",
         "reasons": [
           {
-            "code": "new_email",
-            "weight": 20,
-            "identifier": "email"
+            "code": "proxy_ip",
+            "weight": 0,
+            "direction": "raises",
+            "impact": "high",
+            "identifier": "ip"
           },
           {
-            "code": "proxy_ip",
-            "weight": 15,
-            "identifier": "ip"
+            "code": "new_email",
+            "weight": 0,
+            "direction": "raises",
+            "impact": "low",
+            "identifier": "email"
           }
         ]
       },
@@ -37,17 +41,23 @@
         "reasons": [
           {
             "code": "disposable_email",
-            "weight": 40,
+            "weight": 0,
+            "direction": "raises",
+            "impact": "high",
             "identifier": "email"
           },
           {
-            "code": "proxy_ip",
-            "weight": 30,
-            "identifier": "ip"
+            "code": "many_recent_accounts",
+            "weight": 0,
+            "direction": "raises",
+            "impact": "high"
           },
           {
-            "code": "many_recent_accounts",
-            "weight": 20
+            "code": "proxy_ip",
+            "weight": 0,
+            "direction": "raises",
+            "impact": "high",
+            "identifier": "ip"
           }
         ]
       },
