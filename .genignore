@@ -11,6 +11,7 @@
 /issued_credential_test.go
 /auth_test.go
 /mockserver_test.go
+/live_test.go
 /late_results.go
 /late_results_test.go
 /webhook_vector_test.go
