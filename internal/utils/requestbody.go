@@ -15,8 +15,8 @@ import (
 	"regexp"
 	"time"
 
-	"github.com/noresponsehq/go/v7/optionalnullable"
-	"github.com/noresponsehq/go/v7/types"
+	"github.com/noresponsehq/go/v8/optionalnullable"
+	"github.com/noresponsehq/go/v8/types"
 )
 
 const (

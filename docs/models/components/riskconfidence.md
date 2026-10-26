@@ -6,7 +6,7 @@ How much of the planned evidence answered; it says nothing about risk.
 
 ```go
 import (
-	"github.com/noresponsehq/go/v7/models/components"
+	"github.com/noresponsehq/go/v8/models/components"
 )
 
 value := components.RiskConfidenceLow

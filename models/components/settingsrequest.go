@@ -1,7 +1,7 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v7/internal/utils"
+	"github.com/noresponsehq/go/v8/internal/utils"
 )
 
 // SettingsRequest - PATCH /v1/workspaces/{workspace_id}/settings/{environment} body. Changes only what it names, in one transaction; a policy change is one new policy_version. Needs the admin or owner role, or an API key with the management scope for its own environment.

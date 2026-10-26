@@ -6,7 +6,7 @@ The decision a held assessment takes when hold_seconds pass before its investiga
 
 ```go
 import (
-	"github.com/noresponsehq/go/v7/models/components"
+	"github.com/noresponsehq/go/v8/models/components"
 )
 
 value := components.OnExpiryAllow

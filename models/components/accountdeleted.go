@@ -1,7 +1,7 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v7/internal/utils"
+	"github.com/noresponsehq/go/v8/internal/utils"
 )
 
 // AccountDeleted - Terminal for the account's assessments created at or before deleted_at in the receiving endpoint's environment: delete what you hold from them and ignore later-arriving updates of them. deleted_at is no earlier than the creation of any assessment it erased. An assessment created after it belongs to the account assessed again: keep it, even when this event arrives after it.

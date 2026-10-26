@@ -13,7 +13,6 @@
       "reasons": [
         {
           "code": "recent_password_exposure",
-          "weight": 0,
           "direction": "raises",
           "impact": "medium",
           "identifier": "email"
@@ -48,7 +47,6 @@
       "reasons": [
         {
           "code": "recent_password_exposure",
-          "weight": 0,
           "direction": "raises",
           "impact": "medium",
           "identifier": "email"

@@ -1,7 +1,7 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v7/internal/utils"
+	"github.com/noresponsehq/go/v8/internal/utils"
 )
 
 // Risk - The one risk decision for this event. score is 0 (safe) to 100 (risky), set by the reasons that fired under a hand-set, versioned heuristic policy. Each reason carries its direction and impact band; the policy's weights are not published. Every answer with a recommendation carries it, and the top-level recommendation equals risk.recommendation. It names no source or provider.

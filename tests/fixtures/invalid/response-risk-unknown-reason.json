@@ -27,13 +27,11 @@
     "reasons": [
       {
         "code": "truecaller_spam",
-        "weight": 0,
         "direction": "raises",
         "impact": "high"
       },
       {
         "code": "new_email",
-        "weight": 0,
         "direction": "raises",
         "impact": "low",
         "identifier": "email"

@@ -1,7 +1,7 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v7/optionalnullable"
+	"github.com/noresponsehq/go/v8/optionalnullable"
 )
 
 // FlowChange - A change to one flow. A field left out keeps the value in force. Thresholds set on login or purchase start from the values in force, account_creation's while it inherits them. After the change, 0 < step_up < review <= 100 and block is off or review <= block <= 100.

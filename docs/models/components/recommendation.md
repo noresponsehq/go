@@ -6,7 +6,7 @@ The recommended action: allow, step_up or review. Your application applies it.
 
 ```go
 import (
-	"github.com/noresponsehq/go/v7/models/components"
+	"github.com/noresponsehq/go/v8/models/components"
 )
 
 value := components.RecommendationAllow

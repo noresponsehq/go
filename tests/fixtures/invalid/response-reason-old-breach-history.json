@@ -17,35 +17,30 @@
     "reasons": [
       {
         "code": "voip_number",
-        "weight": 0,
         "direction": "raises",
         "impact": "medium",
         "identifier": "phone"
       },
       {
         "code": "old_breach_history",
-        "weight": 0,
         "direction": "lowers",
         "impact": "high",
         "identifier": "email"
       },
       {
         "code": "breach_cooccurrence",
-        "weight": 0,
         "direction": "lowers",
         "impact": "low",
         "identifier": "phone"
       },
       {
         "code": "breach_name_match",
-        "weight": 0,
         "direction": "lowers",
         "impact": "low",
         "identifier": "name"
       },
       {
         "code": "established_accounts",
-        "weight": 0,
         "direction": "lowers",
         "impact": "low",
         "identifier": "email"

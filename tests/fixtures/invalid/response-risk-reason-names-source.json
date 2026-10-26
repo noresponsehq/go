@@ -27,14 +27,12 @@
     "reasons": [
       {
         "code": "no_digital_footprint",
-        "weight": 0,
         "direction": "raises",
         "impact": "medium",
         "source_id": "phone_src_04"
       },
       {
         "code": "new_email",
-        "weight": 0,
         "direction": "raises",
         "impact": "low",
         "identifier": "email"

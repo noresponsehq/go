@@ -1,7 +1,7 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v7/internal/utils"
+	"github.com/noresponsehq/go/v8/internal/utils"
 )
 
 // WebhookEndpointDisabled - One of the environment's endpoints stopped receiving events: every delivery attempt to it failed from failing_since until disabled_at, 72 hours or more. Its queued deliveries are dropped. Fix the receiver and verify it again with POST /v1/webhooks/{endpoint_id}/test (type endpoint.verification) to resume delivery.

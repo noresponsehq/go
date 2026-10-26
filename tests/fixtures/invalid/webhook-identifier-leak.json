@@ -17,13 +17,11 @@
         "reasons": [
           {
             "code": "no_digital_footprint",
-            "weight": 0,
             "direction": "raises",
             "impact": "medium"
           },
           {
             "code": "new_email",
-            "weight": 0,
             "direction": "raises",
             "impact": "low",
             "identifier": "email"
@@ -68,13 +66,11 @@
         "reasons": [
           {
             "code": "no_digital_footprint",
-            "weight": 0,
             "direction": "raises",
             "impact": "medium"
           },
           {
             "code": "new_email",
-            "weight": 0,
             "direction": "raises",
             "impact": "low",
             "identifier": "email"

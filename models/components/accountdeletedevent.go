@@ -1,7 +1,7 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v7/internal/utils"
+	"github.com/noresponsehq/go/v8/internal/utils"
 )
 
 // AccountDeletedEvent - The account.deleted event.

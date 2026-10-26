@@ -1,7 +1,7 @@
 package operations
 
 import (
-	"github.com/noresponsehq/go/v7/models/components"
+	"github.com/noresponsehq/go/v8/models/components"
 )
 
 type GetAssessmentRequest struct {

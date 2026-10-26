@@ -17,21 +17,18 @@
     "reasons": [
       {
         "code": "credential_list_exposure",
-        "weight": 0,
         "direction": "raises",
         "impact": "medium",
         "identifier": "email"
       },
       {
         "code": "aged_identity",
-        "weight": 0,
         "direction": "lowers",
         "impact": "medium",
         "identifier": "email"
       },
       {
         "code": "established_accounts",
-        "weight": 0,
         "direction": "lowers",
         "impact": "low"
       }

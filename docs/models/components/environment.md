@@ -6,7 +6,7 @@ The environment whose endpoints receive this event: live, or test for the worksp
 
 ```go
 import (
-	"github.com/noresponsehq/go/v7/models/components"
+	"github.com/noresponsehq/go/v8/models/components"
 )
 
 value := components.EnvironmentLive

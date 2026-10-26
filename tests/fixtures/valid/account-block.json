@@ -7,20 +7,17 @@
     "reasons": [
       {
         "code": "disposable_email",
-        "weight": 0,
         "direction": "raises",
         "impact": "high",
         "identifier": "email"
       },
       {
         "code": "many_recent_accounts",
-        "weight": 0,
         "direction": "raises",
         "impact": "high"
       },
       {
         "code": "proxy_ip",
-        "weight": 0,
         "direction": "raises",
         "impact": "high",
         "identifier": "ip"

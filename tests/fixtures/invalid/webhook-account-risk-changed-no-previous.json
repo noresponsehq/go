@@ -12,14 +12,12 @@
         "reasons": [
           {
             "code": "proxy_ip",
-            "weight": 0,
             "direction": "raises",
             "impact": "high",
             "identifier": "ip"
           },
           {
             "code": "recent_password_exposure",
-            "weight": 0,
             "direction": "raises",
             "impact": "medium",
             "identifier": "email"
