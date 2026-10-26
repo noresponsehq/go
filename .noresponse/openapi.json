@@ -2653,7 +2653,8 @@
             "maxLength": 256,
             "pattern": "^[A-Za-z0-9_-]+$",
             "description": "next_cursor from the previous page, unchanged. Opaque, MAC'd and bound to the workspace and account_id.",
-            "example": "eyJvIjoyMH0"
+            "example": "eyJvIjoyMH0",
+            "x-noresponse-example-unset": true
           },
           "response_mode": {
             "$ref": "#/components/schemas/ResponseMode",
@@ -4096,7 +4097,8 @@
             "maxLength": 256,
             "pattern": "^[!-~]{16,256}$",
             "description": "The WorkOS Actions signing secret or the Supabase hook secret, as the provider's dashboard shows it: 16 to 256 printable ASCII characters with no spaces. It is stored sealed and is not returned.",
-            "example": "wos_action_secret_k3Yx8pQ2mN7vR4tW"
+            "example": "wos_action_secret_k3Yx8pQ2mN7vR4tW",
+            "x-noresponse-example-unset": true
           }
         }
       },
@@ -4111,7 +4113,8 @@
             "maxLength": 256,
             "pattern": "^[!-~]{16,256}$",
             "description": "The WorkOS Actions signing secret or the Supabase hook secret, as the provider's dashboard shows it: 16 to 256 printable ASCII characters with no spaces. It is stored sealed and is not returned.",
-            "example": "wos_action_secret_Z9cD1eF5gH0jL4sP"
+            "example": "wos_action_secret_Z9cD1eF5gH0jL4sP",
+            "x-noresponse-example-unset": true
           }
         }
       },

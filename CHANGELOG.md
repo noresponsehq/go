@@ -1,5 +1,9 @@
 # Changelog
 
+## 8.0.1
+
+No changes detected.
+
 ## 8.0.0
 
 * `Sdk.Assessments.Create()`:  `response` **Changed** (Breaking ⚠️)

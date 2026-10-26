@@ -1006,7 +1006,7 @@ func main() {
 
     res, err := s.Assessments.Query(ctx, components.AssessmentQuery{
         AccountID: "acct_7f3a9c",
-        Cursor: noresponse.Pointer("eyJvIjoyMH0"),
+        Cursor: nil,
     })
     if err != nil {
         log.Fatal(err)

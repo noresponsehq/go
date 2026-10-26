@@ -70,7 +70,7 @@ func main() {
 
     res, err := s.Integrations.Create(ctx, components.IntegrationRequest{
         Platform: components.IntegrationPlatformSupabase,
-        SigningSecret: noresponse.Pointer("v1,whsec_dGVzdC1zdXBhYmFzZS1ob29rLXNlY3JldC1ub3QtcmVhbA=="),
+        SigningSecret: nil,
     })
     if err != nil {
         log.Fatal(err)
@@ -107,7 +107,7 @@ func main() {
             components.IntegrationHookPointPreRegistration,
             components.IntegrationHookPointPostLogin,
         },
-        SigningSecret: noresponse.Pointer("wos_action_secret_k3Yx8pQ2mN7vR4tW"),
+        SigningSecret: nil,
     })
     if err != nil {
         log.Fatal(err)
@@ -312,7 +312,7 @@ func main() {
     )
 
     res, err := s.Integrations.Rotate(ctx, "int_01JA2Z8K6Q4V7W9XBCDEFGHJKM", components.IntegrationRotationRequest{
-        SigningSecret: noresponse.Pointer("wos_action_secret_Z9cD1eF5gH0jL4sP"),
+        SigningSecret: nil,
     })
     if err != nil {
         log.Fatal(err)
