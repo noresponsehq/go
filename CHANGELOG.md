@@ -1,5 +1,10 @@
 # Changelog
 
+## 8.1.1
+
+* `Sdk.WebhookEndpoints.List()`:  `response.Items[]` **Changed**
+* `Sdk.WebhookEndpoints.Create()`:  `response.Endpoint` **Changed**
+
 ## 8.1.0
 
 No changes detected.
