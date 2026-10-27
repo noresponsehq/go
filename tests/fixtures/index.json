@@ -2524,6 +2524,18 @@
       "why": "NOR-352 account.risk_changed names the decisions it replaced"
     },
     {
+      "file": "invalid/webhook-account-risk-changed-previous-version-zero.json",
+      "schema": "webhook-event.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "minimum",
+          "/data/previous_risk_version"
+        ]
+      ],
+      "why": "NOR-627 the first event leaves previous_risk_version out, never 0"
+    },
+    {
       "file": "invalid/webhook-account-risk-changed-deny.json",
       "schema": "webhook-event.schema.json",
       "expect": "invalid",

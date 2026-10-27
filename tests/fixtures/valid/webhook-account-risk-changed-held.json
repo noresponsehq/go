@@ -37,6 +37,7 @@
       "account_creation": "held",
       "login": "allow",
       "purchase": "allow"
-    }
+    },
+    "previous_risk_version": 2
   }
 }

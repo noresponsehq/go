@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: 25ddae46-795d-45f5-b455-3f48c41d440e
 management:
-  docChecksum: b0088276ef6ebb8930cb06000568b4b1
+  docChecksum: a66ac30c114046ff365fd3860cdf4d3a
   docVersion: "1"
   speakeasyVersion: internal
   generationVersion: internal
-  releaseVersion: 8.0.3
-  configChecksum: 6f9ae05151f4cc70c820055830ad9eff
+  releaseVersion: 8.1.0
+  configChecksum: 0b7f02234634c8634a4eb5b99e740239
 features:
   go:
     additionalDependencies: 0.1.0
@@ -69,9 +69,9 @@ trackedFiles:
   docs/models/components/accountrisk.md:
     last_write_checksum: sha1:19c5a6264eb2297ca7895a37dd3d136ced64722f
   docs/models/components/accountriskchanged.md:
-    last_write_checksum: sha1:313f76019d37b9188f57599e1243c6eef722680c
+    last_write_checksum: sha1:8d7e316bd1a491b1b1e46a1b6de9b8e5ae4118eb
   docs/models/components/accountriskchangedevent.md:
-    last_write_checksum: sha1:7f388897a8601b7be63dd97ce94ef8ed43610533
+    last_write_checksum: sha1:a643b7786f9da64d3a017a376237155c41f65b5d
   docs/models/components/accountriskreason.md:
     last_write_checksum: sha1:3cf0a2d338fed195e05f018fd3cc296174af04b1
   docs/models/components/admission.md:
@@ -583,9 +583,9 @@ trackedFiles:
   models/components/accountrisk.go:
     last_write_checksum: sha1:0fc5a0bab9e570ea5249186c1c372348e95d5bec
   models/components/accountriskchanged.go:
-    last_write_checksum: sha1:4b44a2f8a466e78a73edacf9dc686ac47c709a38
+    last_write_checksum: sha1:7903874c6741be5cac341f5e6e2d0fd3fea351aa
   models/components/accountriskchangedevent.go:
-    last_write_checksum: sha1:8621b6c619bb84ed6251f4fcf39d0de485b23d88
+    last_write_checksum: sha1:ef35d01ecd913bd6f48f834ba6f5a91050d322f9
   models/components/accountriskreason.go:
     last_write_checksum: sha1:bab3a365483be6b0c7d8b1d6f2f51030cabd14bc
   models/components/admission.go:
@@ -935,7 +935,7 @@ trackedFiles:
   models/operations/updatesettings.go:
     last_write_checksum: sha1:1690bd6ba8862e3f6f0bc16f7360daaee97c26f2
   noresponse.go:
-    last_write_checksum: sha1:c0779557e79c4ce5126e835718174f4419b7b0de
+    last_write_checksum: sha1:a62e144b86cee00098c034edd01e371f1256ce39
   optionalnullable/optionalnullable.go:
     last_write_checksum: sha1:38cf187cd65a5213be09788f67d82dc49d46b583
   optionalnullable/optionalnullable_test.go:

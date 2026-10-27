@@ -1,5 +1,9 @@
 # Changelog
 
+## 8.1.0
+
+No changes detected.
+
 ## 8.0.3
 
 * `Sdk.Assessments.Create()`:  `response.Detail.Risk.Summary.Ip.Asn` **Added**
