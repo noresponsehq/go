@@ -1,0 +1,6 @@
+{
+  "kind": "email_domain",
+  "value": "throwaway-mail.example",
+  "action": "block",
+  "note": "Signup burst domain"
+}

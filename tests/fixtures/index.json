@@ -3088,6 +3088,61 @@
       "expect": "valid"
     },
     {
+      "file": "valid/list-entry.json",
+      "schema": "list-entry.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/list-entry-list.json",
+      "schema": "list-entry-list.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/list-entry-request.json",
+      "schema": "list-entry-request.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "invalid/list-entry-request-kind.json",
+      "schema": "list-entry-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "enum",
+          "/kind"
+        ]
+      ]
+    },
+    {
+      "file": "valid/list-entry-request-domain.json",
+      "schema": "list-entry-request.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "invalid/list-entry-request-email-value.json",
+      "schema": "list-entry-request.schema.json",
+      "expect": "invalid",
+      "why": "NOR-635 an email entry carries an address, as the server checks",
+      "errors": [
+        [
+          "pattern",
+          "/value"
+        ]
+      ]
+    },
+    {
+      "file": "invalid/list-entry-request-domain-value.json",
+      "schema": "list-entry-request.schema.json",
+      "expect": "invalid",
+      "why": "NOR-635 a domain entry carries a domain, not an address",
+      "errors": [
+        [
+          "pattern",
+          "/value"
+        ]
+      ]
+    },
+    {
       "file": "invalid/key-list-with-secret.json",
       "schema": "key-list.schema.json",
       "expect": "invalid",

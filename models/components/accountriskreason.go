@@ -12,6 +12,8 @@ type AccountRiskReason struct {
 	Impact    Impact     `json:"impact"`
 	// The submitted identifier or client context field a reason concerns; absent when it concerns the whole assessment. Client context is a claimed hint, not a device fingerprint.
 	Identifier *ReasonIdentifier `json:"identifier,omitzero"`
+	// The list entry a list_match reason applied. No other reason carries it.
+	ListEntryID *string `json:"list_entry_id,omitzero"`
 }
 
 func (a AccountRiskReason) MarshalJSON() ([]byte, error) {
@@ -51,4 +53,11 @@ func (a *AccountRiskReason) GetIdentifier() *ReasonIdentifier {
 		return nil
 	}
 	return a.Identifier
+}
+
+func (a *AccountRiskReason) GetListEntryID() *string {
+	if a == nil {
+		return nil
+	}
+	return a.ListEntryID
 }

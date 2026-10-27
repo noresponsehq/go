@@ -1,0 +1,25 @@
+{
+  "items": [
+    {
+      "id": "lst_01JA2ZE4K5M6N7P8Q9R0S1T2V3",
+      "workspace_id": "tnt_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+      "environment": "live",
+      "kind": "email_domain",
+      "value": "throwaway.example",
+      "action": "block",
+      "note": "Signup burst from one domain",
+      "created_at": "2026-10-23T09:00:00.000Z",
+      "created_by": "user_2abc"
+    },
+    {
+      "id": "lst_01JA2ZD4K5M6N7P8Q9R0S1T2V3",
+      "workspace_id": "tnt_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+      "environment": "live",
+      "kind": "email",
+      "value": "qa-bot@example.com",
+      "action": "allow",
+      "created_at": "2026-10-23T08:00:00.000Z",
+      "created_by": "nrk_live_01JA2ZE4K5M6N7P8Q9R0S1T2V3"
+    }
+  ]
+}

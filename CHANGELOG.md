@@ -1,5 +1,51 @@
 # Changelog
 
+## 8.1.2
+
+* `Sdk.Lists.List()`: **Added**
+* `Sdk.Lists.Create()`: **Added**
+* `Sdk.Lists.Delete()`: **Added**
+* `Sdk.Assessments.Create()`: 
+  *  `response` **Changed**
+  *  `error.Code` **Changed**
+* `Sdk.Assessments.Get()`: 
+  *  `response` **Changed**
+  *  `error.Code` **Changed**
+* `Sdk.Assessments.Delete()`:  `error.Code` **Changed**
+* `Sdk.Assessments.RecordOutcome()`:  `error.Code` **Changed**
+* `Sdk.Assessments.Query()`: 
+  *  `response.Items[].Risk.Reasons[]` **Changed**
+  *  `error.Code` **Changed**
+* `Sdk.Accounts.ListChanged()`: 
+  *  `response.Items[].Risk.Reasons[]` **Changed**
+  *  `error.Code` **Changed**
+* `Sdk.Accounts.Get()`: 
+  *  `response.Risk.Reasons[]` **Changed**
+  *  `error.Code` **Changed**
+* `Sdk.Accounts.Delete()`:  `error.Code` **Changed**
+* `Sdk.Accounts.ListAssessments()`: 
+  *  `response.Items[].Risk.Reasons[]` **Changed**
+  *  `error.Code` **Changed**
+* `Sdk.Accounts.RecordEnforcement()`:  `error.Code` **Changed**
+* `Sdk.KeyUsage.Record()`:  `error.Code` **Changed**
+* `Sdk.Keys.Rotate()`:  `error.Code` **Changed**
+* `Sdk.Keys.Create()`:  `error.Code` **Changed**
+* `Sdk.Keys.List()`:  `error.Code` **Changed**
+* `Sdk.Keys.Revoke()`:  `error.Code` **Changed**
+* `Sdk.Integrations.Create()`:  `error.Code` **Changed**
+* `Sdk.Integrations.List()`:  `error.Code` **Changed**
+* `Sdk.Integrations.Delete()`:  `error.Code` **Changed**
+* `Sdk.Integrations.Rotate()`:  `error.Code` **Changed**
+* `Sdk.WebhookEndpoints.List()`:  `error.Code` **Changed**
+* `Sdk.WebhookEndpoints.Create()`:  `error.Code` **Changed**
+* `Sdk.WebhookEndpoints.Delete()`:  `error.Code` **Changed**
+* `Sdk.WebhookEndpoints.RotateSigningKey()`:  `error.Code` **Changed**
+* `Sdk.WebhookEndpoints.SendTestEvent()`:  `error.Code` **Changed**
+* `Sdk.WebhookEndpoints.ListDeliveries()`:  `error.Code` **Changed**
+* `Sdk.WebhookEndpoints.ReplayDelivery()`:  `error.Code` **Changed**
+* `Sdk.Settings.Get()`:  `error.Code` **Changed**
+* `Sdk.Settings.Update()`:  `error.Code` **Changed**
+
 ## 8.1.1
 
 * `Sdk.WebhookEndpoints.List()`:  `response.Items[]` **Changed**

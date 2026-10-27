@@ -28,3 +28,5 @@ custom := components.ConflictErrorCode("custom_value")
 | `ConflictErrorCodeRiskVersionAhead`            | risk_version_ahead                             |
 | `ConflictErrorCodeKeyLimitReached`             | key_limit_reached                              |
 | `ConflictErrorCodeSelfRevocation`              | self_revocation                                |
+| `ConflictErrorCodeListEntryExists`             | list_entry_exists                              |
+| `ConflictErrorCodeListLimitReached`            | list_limit_reached                             |
