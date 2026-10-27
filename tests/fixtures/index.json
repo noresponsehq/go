@@ -1586,6 +1586,18 @@
       "why": "spec §5.1 ip.type is a closed list"
     },
     {
+      "file": "invalid/response-ip-asn-zero.json",
+      "schema": "assessment-detail.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "minimum",
+          "/risk/summary/ip/asn"
+        ]
+      ],
+      "why": "spec §7 an unknown ASN makes no claim: it is absent, never 0"
+    },
+    {
       "file": "invalid/response-consistency-country-match.json",
       "schema": "assessment-detail.schema.json",
       "expect": "invalid",

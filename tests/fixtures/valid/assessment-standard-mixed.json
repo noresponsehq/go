@@ -82,6 +82,7 @@
       "ip": {
         "country": "US",
         "type": "residential",
+        "asn": 7922,
         "seen_in_workspace": 1
       },
       "consistency": {

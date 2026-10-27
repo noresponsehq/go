@@ -10,6 +10,8 @@ type IPSummary struct {
 	Country *string `json:"country,omitzero"`
 	// The address's network type.
 	Type *IPSummaryType `json:"type,omitzero"`
+	// Autonomous system number of the network that announces the address, from the offline database. Absent when unknown.
+	Asn *int64 `json:"asn,omitzero"`
 	// Assessments in this workspace with the same IP in the last 24 hours, this one included. A count only.
 	SeenInWorkspace *int64 `json:"seen_in_workspace,omitzero"`
 }
@@ -37,6 +39,13 @@ func (i *IPSummary) GetType() *IPSummaryType {
 		return nil
 	}
 	return i.Type
+}
+
+func (i *IPSummary) GetAsn() *int64 {
+	if i == nil {
+		return nil
+	}
+	return i.Asn
 }
 
 func (i *IPSummary) GetSeenInWorkspace() *int64 {

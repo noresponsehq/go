@@ -1,5 +1,12 @@
 # Changelog
 
+## 8.0.3
+
+* `Sdk.Assessments.Create()`:  `response.Detail.Risk.Summary.Ip.Asn` **Added**
+* `Sdk.Assessments.Get()`:  `response.Detail.Risk.Summary.Ip.Asn` **Added**
+* `Sdk.Assessments.Query()`:  `response.Items[].Risk.Summary.Ip.Asn` **Added**
+* `Sdk.Accounts.ListAssessments()`:  `response.Items[].Risk.Summary.Ip.Asn` **Added**
+
 ## 8.0.2
 
 No changes detected.

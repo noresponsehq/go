@@ -4133,6 +4133,12 @@
             "$ref": "#/components/schemas/IpSummaryType",
             "description": "The address's network type."
           },
+          "asn": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 4294967295,
+            "description": "Autonomous system number of the network that announces the address, from the offline database. Absent when unknown."
+          },
           "seen_in_workspace": {
             "type": "integer",
             "minimum": 0,
@@ -6495,6 +6501,7 @@
                         "ip": {
                           "country": "US",
                           "type": "residential",
+                          "asn": 7922,
                           "seen_in_workspace": 1
                         },
                         "consistency": {
@@ -7297,6 +7304,7 @@
                         "ip": {
                           "country": "US",
                           "type": "residential",
+                          "asn": 7922,
                           "seen_in_workspace": 1
                         },
                         "consistency": {
