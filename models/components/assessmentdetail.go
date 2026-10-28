@@ -13,6 +13,8 @@ type AssessmentDetail struct {
 	AssessmentID string `json:"assessment_id"`
 	// Your own opaque identifier for the account being checked, scoped to your workspace. Use an id you mint, with no direct identifier (email, phone, name or national id) in it. '|' is accepted so an Auth0 user id such as 'auth0|64abc' passes unchanged; '@', '+', '$' and whitespace are refused by the pattern, as is an exact-shape JWT; a hex digest such as a SHA-256 is allowed, because hashing an internal id is a common pseudonymous scheme. A value such as '07700900123' or 'jane.doe.gmail.com' cannot be told apart from an opaque id. It travels in bodies, and in a URL only as the path segment of GET /v1/accounts/{account_id} and its /assessments. An assessment requested by a provider hook at pre_registration, which has no account yet, carries the server-issued account_id pre: followed by its assessment_id.
 	AccountID string `json:"account_id"`
+	// The identifiers an assessment was sent: each member of the request's identifiers object exactly as received, before the server normalised it (the email domain keeps its case, the name its Unicode form). A member the request did not send is absent. NoResponse keeps them encrypted under the workspace's own key, does not index or log them, and deletes them with the assessment: on DELETE of the assessment or its account, at its expires_at, and with the workspace.
+	Identifiers *SentIdentifiers `json:"identifiers,omitzero"`
 	// An optional provider correlation id, echoed back. It is not an idempotency key. Refuses an exact-shape JWT or a bare 40, 64 or 128 character hex digest; a UUID is accepted.
 	RequestID *string `json:"request_id,omitzero"`
 	// complete: final; nothing is still running. A lane that failed or missed its 10 s deadline stays listed in incomplete_sources, and confidence is lower. partial: a recommendation exists and at least one lane is still running or did not settle (see incomplete_sources). pending: nothing usable before the deadline; no recommendation yet, poll or wait for the webhook.
@@ -73,6 +75,13 @@ func (a *AssessmentDetail) GetAccountID() string {
 		return ""
 	}
 	return a.AccountID
+}
+
+func (a *AssessmentDetail) GetIdentifiers() *SentIdentifiers {
+	if a == nil {
+		return nil
+	}
+	return a.Identifiers
 }
 
 func (a *AssessmentDetail) GetRequestID() *string {

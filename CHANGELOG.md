@@ -1,5 +1,15 @@
 # Changelog
 
+## 8.2.1
+
+* `Sdk.Assessments.Create()`:  `response.Detail.Identifiers` **Added**
+* `Sdk.Assessments.Get()`:  `response.Detail.Identifiers` **Added**
+* `Sdk.Assessments.Query()`:  `response.Items[].Identifiers` **Added**
+* `Sdk.Assessments.Search()`:  `response.Items[].Detail.Identifiers` **Added**
+* `Sdk.Assessments.RetrieveVersion()`:  `response.Detail.Identifiers` **Added**
+* `Sdk.Accounts.ListAssessments()`:  `response.Items[].Identifiers` **Added**
+* `Sdk.Accounts.Export()`:  `response.Assessments[].Detail.Identifiers` **Added**
+
 ## 8.2.0
 
 * `Sdk.Assessments.Search()`: **Added**

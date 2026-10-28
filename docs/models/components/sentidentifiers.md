@@ -1,0 +1,14 @@
+# SentIdentifiers
+
+The identifiers an assessment was sent: each member of the request's identifiers object exactly as received, before the server normalised it (the email domain keeps its case, the name its Unicode form). A member the request did not send is absent. NoResponse keeps them encrypted under the workspace's own key, does not index or log them, and deletes them with the assessment: on DELETE of the assessment or its account, at its expires_at, and with the workspace.
+
+
+## Fields
+
+| Field                                                              | Type                                                               | Required                                                           | Description                                                        | Example                                                            |
+| ------------------------------------------------------------------ | ------------------------------------------------------------------ | ------------------------------------------------------------------ | ------------------------------------------------------------------ | ------------------------------------------------------------------ |
+| `Email`                                                            | `*string`                                                          | :heavy_minus_sign:                                                 | identifiers.email as the request sent it.                          | New.User@Example.com                                               |
+| `Username`                                                         | `*string`                                                          | :heavy_minus_sign:                                                 | identifiers.username as the request sent it.                       | new.user                                                           |
+| `Phone`                                                            | `*string`                                                          | :heavy_minus_sign:                                                 | identifiers.phone as the request sent it.                          | +61412345678                                                       |
+| `Name`                                                             | `*string`                                                          | :heavy_minus_sign:                                                 | identifiers.name as the request sent it, before NFC normalisation. | Alex Example                                                       |
+| `IP`                                                               | `*string`                                                          | :heavy_minus_sign:                                                 | identifiers.ip as the request sent it.                             | 203.0.113.45                                                       |

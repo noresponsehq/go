@@ -3707,6 +3707,36 @@
         ]
       ],
       "why": "NOR-468 null resets rate and burst together"
+    },
+    {
+      "file": "valid/assessment-identifiers.json",
+      "schema": "assessment-detail.schema.json",
+      "expect": "valid",
+      "why": "NOR-642 a history read serves the identifiers the assessment was sent, exactly as sent"
+    },
+    {
+      "file": "invalid/assessment-identifiers-unknown-member.json",
+      "schema": "assessment-detail.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "additionalProperties",
+          "/identifiers"
+        ]
+      ],
+      "why": "NOR-642 identifiers carries only what the request's identifiers object accepts"
+    },
+    {
+      "file": "invalid/assessment-identifiers-empty.json",
+      "schema": "assessment-detail.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "minProperties",
+          "/identifiers"
+        ]
+      ],
+      "why": "NOR-642 an assessment that kept no identifiers leaves the member out"
     }
   ]
 }
