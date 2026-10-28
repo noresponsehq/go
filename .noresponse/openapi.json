@@ -1848,6 +1848,56 @@
         }
       }
     },
+    "/v1/assessments/aggregate": {
+      "post": {
+        "operationId": "aggregateAssessments",
+        "x-noresponse-group": "assessments",
+        "x-noresponse-name-override": "aggregate",
+        "tags": [
+          "assessments"
+        ],
+        "summary": "Count assessments by time, decision and reason",
+        "description": "Count this environment's assessments created in [from,to) by hour, day or week, grouped by up to two of decision, flow, recommendation, band, reason, lane, country, asn and list_match. Each assessment counts once, by its first answer; late results do not count it again and appear in late_flips. Optional metrics add a score histogram per flow and late account decision changes. from and to start a bucket and cover at most 366 days (31 for hour buckets) inside the retention period. The filters are search's and describe the first answer: send them to search with revision first to list a cell's assessments. Counts hold no identifier, stay when an assessment or account is deleted, and report reasons by code and impact band. No Idempotency-Key.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssessmentAggregateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/AggregateAssessments200"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidAggregate"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/WorkspaceForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/IdempotencyConflict"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
     "/v1/assessments/search": {
       "post": {
         "operationId": "searchAssessments",
@@ -3446,12 +3496,182 @@
         ],
         "description": "immediate (the default): an assessment of this flow is decided from the evidence its answer has, and later evidence may change the decision. held: while the account's current assessment of this flow has not completed, the account's decision for the flow is held, and the final decision arrives as account.risk_changed when the investigation completes or hold_seconds pass, whichever is first. Each flow has its own admission."
       },
+      "AggregateBucket": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "start"
+        ],
+        "properties": {
+          "start": {
+            "type": "string",
+            "example": "2026-10-19T00:00:00.000Z"
+          },
+          "count": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Assessments first answered whose creation falls in the bucket. With metric count."
+          },
+          "groups": {
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+              "$ref": "#/components/schemas/AggregateGroup"
+            },
+            "description": "With metric count and group_by: the bucket's counts of the groups answered, largest group first."
+          },
+          "score_histogram": {
+            "type": "array",
+            "maxItems": 60,
+            "items": {
+              "$ref": "#/components/schemas/AggregateScoreCount"
+            }
+          },
+          "late_flips": {
+            "type": "array",
+            "maxItems": 180,
+            "items": {
+              "$ref": "#/components/schemas/AggregateLateFlip"
+            }
+          }
+        }
+      },
+      "AggregateDimension": {
+        "enum": [
+          "decision",
+          "flow",
+          "recommendation",
+          "band",
+          "reason",
+          "lane",
+          "country",
+          "asn",
+          "list_match"
+        ],
+        "description": "decision, recommendation and band: the first answer's. flow: the assessment's. list_match: the action of the list entry that decided the account when it was first answered. reason: a reason the first answer fired, with its impact band. lane: an evidence lane the first answer listed in incomplete_sources. country and asn: the submitted IP's, from the IP data."
+      },
+      "AggregateGroup": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "count"
+        ],
+        "description": "One group's count in one bucket. It holds each grouped dimension the counted assessments had a value for: a pending first answer has no decision, recommendation or band; an answer that fired no reason, listed no incomplete lane, matched no list entry or whose IP has no known country or ASN leaves that dimension out.",
+        "properties": {
+          "decision": {
+            "$ref": "#/components/schemas/Decision",
+            "description": "The first answer's decision."
+          },
+          "flow": {
+            "$ref": "#/components/schemas/Flow"
+          },
+          "recommendation": {
+            "$ref": "#/components/schemas/Recommendation"
+          },
+          "band": {
+            "$ref": "#/components/schemas/Band"
+          },
+          "list_match": {
+            "$ref": "#/components/schemas/ListMatch",
+            "description": "The action of the list entry that decided the account."
+          },
+          "reason": {
+            "$ref": "#/components/schemas/ReasonCode"
+          },
+          "impact": {
+            "$ref": "#/components/schemas/Impact",
+            "description": "The reason's impact band in the first answer. Present with reason."
+          },
+          "lane": {
+            "$ref": "#/components/schemas/Lane"
+          },
+          "country": {
+            "type": "string",
+            "pattern": "^[A-Z]{2}$",
+            "example": "GB"
+          },
+          "asn": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 4294967295
+          },
+          "count": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      },
+      "AggregateLateFlip": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "from",
+          "to",
+          "delay",
+          "count"
+        ],
+        "description": "Changes of the account decision for an assessment's flow after its first answer, as account.risk_changed announces them, counted in the bucket of the assessment's creation. from is the decision announced before (allow before the first announcement); an assessment that changes twice counts twice.",
+        "properties": {
+          "from": {
+            "$ref": "#/components/schemas/AccountDecision"
+          },
+          "to": {
+            "$ref": "#/components/schemas/AccountDecision"
+          },
+          "delay": {
+            "$ref": "#/components/schemas/Delay",
+            "description": "How long after the assessment's creation the change was made."
+          },
+          "count": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      },
+      "AggregateScoreCount": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "flow",
+          "score_min",
+          "score_max",
+          "count"
+        ],
+        "description": "First answers of one flow whose risk.score is in [score_min, score_max]: 0-4, 5-9 up to 95-100. A pending answer has no score.",
+        "properties": {
+          "flow": {
+            "$ref": "#/components/schemas/Flow"
+          },
+          "score_min": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 95,
+            "description": "A multiple of 5."
+          },
+          "score_max": {
+            "type": "integer",
+            "minimum": 4,
+            "maximum": 100
+          },
+          "count": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      },
       "Agreement": {
         "enum": [
           "match",
           "partial",
           "mismatch"
         ]
+      },
+      "AnswerRevision": {
+        "enum": [
+          "latest",
+          "first"
+        ],
+        "description": "Which answer of each assessment the filters describe: latest, the latest stored revision, or first, the first answer, as served when the assessment was first answered (POST /v1/assessments/aggregate counts first answers). A cell of an aggregate drills down to POST /v1/assessments/search with the same filters, revision first and the cell's bucket as from and to."
       },
       "Assessment": {
         "description": "One assessment, as POST /v1/assessments, GET /v1/assessments/{assessment_id} and the assessment.updated webhook return it. account is the account's one current risk: its score, the decision for this assessment's flow, the reasons and the decision for each flow. detail holds this assessment's own facts. status says whether the assessment is final (complete), usable with a source still running (partial) or not yet usable (pending). While the account's first assessment is pending, account is absent; wait for the webhook or poll the assessment. Keep the highest detail.assessment_version.",
@@ -3495,6 +3715,154 @@
           "detail": {
             "$ref": "#/components/schemas/AssessmentDetail",
             "description": "This assessment's own facts: its score, recommendation, signals, coverage and timing."
+          }
+        }
+      },
+      "AssessmentAggregate": {
+        "description": "Body of the 200 answer to POST /v1/assessments/aggregate: one entry per bucket of [from,to), empty buckets included. Counts are of first answers and stay when an assessment or account is deleted or erased; search returns only assessments still retained.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schema_version",
+          "from",
+          "to",
+          "bucket",
+          "group_by",
+          "metrics",
+          "retention_days",
+          "groups_truncated",
+          "buckets"
+        ],
+        "properties": {
+          "schema_version": {
+            "const": "1",
+            "description": "Version of the body shape."
+          },
+          "from": {
+            "type": "string",
+            "example": "2026-10-19T00:00:00.000Z"
+          },
+          "to": {
+            "type": "string",
+            "example": "2026-10-26T00:00:00.000Z"
+          },
+          "bucket": {
+            "$ref": "#/components/schemas/Bucket"
+          },
+          "group_by": {
+            "type": "array",
+            "maxItems": 2,
+            "items": {
+              "$ref": "#/components/schemas/AggregateDimension"
+            }
+          },
+          "metrics": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 3,
+            "items": {
+              "enum": [
+                "count",
+                "score_histogram",
+                "late_flips"
+              ]
+            }
+          },
+          "retention_days": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 365,
+            "default": 365,
+            "description": "The calling workspace's configured retention period in days. Default 365 (12 months), which is also the maximum: a workspace may only shorten it, to at least 1 day. Each record expires from its own created_at; see assessment expires_at."
+          },
+          "groups_truncated": {
+            "type": "boolean",
+            "description": "true when more groups had counts than limit allowed."
+          },
+          "buckets": {
+            "type": "array",
+            "maxItems": 744,
+            "items": {
+              "$ref": "#/components/schemas/AggregateBucket"
+            }
+          }
+        }
+      },
+      "AssessmentAggregateRequest": {
+        "description": "Count this environment's assessments created in [from,to) by bucket, from counts kept as each assessment is first answered, not by scanning assessments. Each assessment counts once, by its first answer (the answer served when it was first answered); later revisions and late results do not count it again, and late_flips counts its later account decision changes. from and to start a bucket (an hour, a UTC day, or a week from Monday 00:00 UTC), cover at most 366 days (31 for hour buckets) and from is inside the retention period. The filters are POST /v1/assessments/search's and describe the first answer, so a cell drills down to search with the same filters, revision first and the cell's bucket as from and to. Counts hold no identifier and stay when an assessment or account is deleted or erased; they expire with retention and go with the workspace. Reasons are counted by code and impact band, not by weight. No Idempotency-Key.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "from",
+          "to",
+          "bucket"
+        ],
+        "properties": {
+          "from": {
+            "type": "string",
+            "description": "The first bucket's start.",
+            "example": "2026-10-19T00:00:00Z"
+          },
+          "to": {
+            "type": "string",
+            "description": "The end, excluded: the start of the bucket after the last.",
+            "example": "2026-10-26T00:00:00Z"
+          },
+          "bucket": {
+            "$ref": "#/components/schemas/Bucket",
+            "description": "The period each count covers, in UTC; a week starts on Monday."
+          },
+          "group_by": {
+            "type": "array",
+            "maxItems": 2,
+            "uniqueItems": true,
+            "items": {
+              "$ref": "#/components/schemas/AggregateDimension"
+            },
+            "description": "At most two dimensions to count by, of which at most one is reason, lane, country or asn. An assessment counts once in each of its reasons and incomplete lanes, so those groups can add up to more than the bucket's count."
+          },
+          "metrics": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 3,
+            "uniqueItems": true,
+            "items": {
+              "enum": [
+                "count",
+                "score_histogram",
+                "late_flips"
+              ]
+            },
+            "default": [
+              "count"
+            ],
+            "description": "count: each bucket's count and groups. score_histogram: first answers by flow and 5-point score bucket. late_flips: changes of an assessment's account decision for its flow after its first answer, by from, to and delay."
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100,
+            "default": 20,
+            "description": "The most groups answered: the largest over the whole range, then by value. groups_truncated says when there were more."
+          },
+          "flow": {
+            "$ref": "#/components/schemas/Flow"
+          },
+          "status": {
+            "$ref": "#/components/schemas/Status",
+            "description": "The first answer's status."
+          },
+          "recommendation": {
+            "$ref": "#/components/schemas/Recommendation",
+            "description": "The first answer's recommendation."
+          },
+          "decision": {
+            "$ref": "#/components/schemas/Decision",
+            "description": "The first answer's decision: block when its risk.block was true, otherwise its recommendation. Combined with recommendation using AND."
+          },
+          "revision": {
+            "$ref": "#/components/schemas/AnswerRevision",
+            "description": "Always first: the aggregate counts first answers. Accepted so a filter can be sent to search unchanged; latest is refused."
           }
         }
       },
@@ -4293,7 +4661,11 @@
           },
           "decision": {
             "$ref": "#/components/schemas/Decision",
-            "description": "The decision of the assessment's latest stored revision: block when its stored risk.block is true, otherwise its recommendation. This is not the account's current decision or held-admission state. Combined with recommendation using AND."
+            "description": "The decision of the assessment's latest stored revision, or with revision first its first answer: block when its stored risk.block is true, otherwise its recommendation. This is not the account's current decision or held-admission state. Combined with recommendation using AND."
+          },
+          "revision": {
+            "$ref": "#/components/schemas/AnswerRevision",
+            "description": "latest (the default) searches and returns each assessment's latest stored revision; first searches and returns its first answer, the revision POST /v1/assessments/aggregate counts. The filters describe that revision."
           }
         }
       },
@@ -4771,6 +5143,14 @@
           }
         }
       },
+      "Bucket": {
+        "enum": [
+          "hour",
+          "day",
+          "week"
+        ],
+        "description": "The period each count covers, in UTC; a week starts on Monday."
+      },
       "Confidence": {
         "enum": [
           "low",
@@ -4994,7 +5374,7 @@
           "review",
           "block"
         ],
-        "description": "The decision of the assessment's latest stored revision: block when its stored risk.block is true, otherwise its recommendation. This is not the account's current decision or held-admission state. Combined with recommendation using AND."
+        "description": "An assessment's own decision: block when its stored risk.block is true, otherwise its recommendation. It is not the account's decision or held-admission state."
       },
       "DecisionReceipt": {
         "description": "The decision prepared for one HTTP attempt. Its account field preserves the account decision returned for that attempt, even after subsequent changes.",
@@ -5049,6 +5429,17 @@
           "full"
         ],
         "description": "The depth a request for this flow that names none is served at. Defaults: full for account_creation and purchase, quick for login."
+      },
+      "Delay": {
+        "enum": [
+          "under_10s",
+          "under_1m",
+          "under_10m",
+          "under_1h",
+          "under_1d",
+          "over_1d"
+        ],
+        "description": "How long after the assessment's creation the change was made."
       },
       "Depth": {
         "enum": [
@@ -6316,6 +6707,13 @@
             "example": "Signup burst from one domain"
           }
         }
+      },
+      "ListMatch": {
+        "enum": [
+          "block",
+          "allow"
+        ],
+        "description": "The action of the list entry that decided the account."
       },
       "NotFoundError": {
         "description": "HTTP 404 problem document.",
@@ -10118,6 +10516,34 @@
           }
         }
       },
+      "InvalidAggregate": {
+        "description": "The body does not match the aggregate request schema, or its range is not bucket aligned, too long or before the retention period, or it groups by two of reason, lane, country and asn.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/BadRequestError"
+            }
+          }
+        }
+      },
       "InvalidHistoryQuery": {
         "description": "The body does not match the query schema, or the cursor is invalid, belongs to another workspace or account, or has expired.",
         "headers": {
@@ -12200,6 +12626,34 @@
           "application/problem+json": {
             "schema": {
               "$ref": "#/components/schemas/PermissionDeniedError"
+            }
+          }
+        }
+      },
+      "AggregateAssessments200": {
+        "description": "Counts of first answers per bucket.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/AssessmentAggregate"
             }
           }
         }

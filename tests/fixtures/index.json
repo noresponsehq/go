@@ -204,6 +204,11 @@
       "expect": "valid"
     },
     {
+      "file": "valid/problem-lookup-limit-reached.json",
+      "schema": "problem-details.schema.json",
+      "expect": "valid"
+    },
+    {
       "file": "valid/problem-invalid-request.json",
       "schema": "problem-details.schema.json",
       "expect": "valid"
@@ -2826,6 +2831,11 @@
       "expect": "valid"
     },
     {
+      "file": "valid/workspace-update-request.json",
+      "schema": "workspace-update-request.schema.json",
+      "expect": "valid"
+    },
+    {
       "file": "valid/workspace.json",
       "schema": "workspace.schema.json",
       "expect": "valid"
@@ -2932,6 +2942,18 @@
         ]
       ],
       "why": "a name has no leading or trailing space"
+    },
+    {
+      "file": "invalid/workspace-update-request-no-name.json",
+      "schema": "workspace-update-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "required",
+          ""
+        ]
+      ],
+      "why": "a rename names the new name"
     },
     {
       "file": "invalid/member-removed.json",
@@ -3298,6 +3320,11 @@
       "expect": "valid"
     },
     {
+      "file": "valid/signup-request-named.json",
+      "schema": "signup-request.schema.json",
+      "expect": "valid"
+    },
+    {
       "file": "valid/signup-created.json",
       "schema": "signup-created.schema.json",
       "expect": "valid"
@@ -3348,6 +3375,18 @@
         ]
       ],
       "why": "a signup names only its address"
+    },
+    {
+      "file": "invalid/signup-request-padded-workspace-name.json",
+      "schema": "signup-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "pattern",
+          "/workspace_name"
+        ]
+      ],
+      "why": "a workspace name has no leading or trailing space"
     },
     {
       "file": "invalid/signup-verification-request-invite-token.json",
@@ -3707,6 +3746,41 @@
         ]
       ],
       "why": "NOR-468 null resets rate and burst together"
+    },
+    {
+      "file": "valid/assessment-aggregate-request.json",
+      "schema": "assessment-aggregate-request.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/assessment-aggregate.json",
+      "schema": "assessment-aggregate.schema.json",
+      "expect": "valid",
+      "why": "NOR-640 a group leaves out a dimension with no value; empty buckets are listed"
+    },
+    {
+      "file": "invalid/assessment-aggregate-request-three-groups.json",
+      "schema": "assessment-aggregate-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "maxItems",
+          "/group_by"
+        ]
+      ],
+      "why": "NOR-640 at most two group_by dimensions"
+    },
+    {
+      "file": "invalid/assessment-aggregate-request-account-id.json",
+      "schema": "assessment-aggregate-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "additionalProperties",
+          ""
+        ]
+      ],
+      "why": "NOR-640 rollups hold no identifier, so the aggregate takes no account_id"
     },
     {
       "file": "valid/assessment-identifiers.json",

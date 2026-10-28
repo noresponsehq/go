@@ -793,5 +793,84 @@
       "legacy_outcome_notes",
       "uncaptured_historical_decisions"
     ]
+  },
+  "aggregate": {
+    "schema_version": "1",
+    "from": "2026-10-19T00:00:00.000Z",
+    "to": "2026-10-21T00:00:00.000Z",
+    "bucket": "day",
+    "group_by": [
+      "decision",
+      "reason"
+    ],
+    "metrics": [
+      "count",
+      "score_histogram",
+      "late_flips"
+    ],
+    "retention_days": 365,
+    "groups_truncated": false,
+    "buckets": [
+      {
+        "start": "2026-10-19T00:00:00.000Z",
+        "count": 412,
+        "groups": [
+          {
+            "decision": "allow",
+            "reason": "aged_identity",
+            "impact": "medium",
+            "count": 301
+          },
+          {
+            "decision": "allow",
+            "count": 64
+          },
+          {
+            "decision": "block",
+            "reason": "disposable_email",
+            "impact": "high",
+            "count": 18
+          },
+          {
+            "decision": "step_up",
+            "reason": "proxy_ip",
+            "impact": "high",
+            "count": 12
+          }
+        ],
+        "score_histogram": [
+          {
+            "flow": "account_creation",
+            "score_min": 0,
+            "score_max": 4,
+            "count": 288
+          },
+          {
+            "flow": "account_creation",
+            "score_min": 40,
+            "score_max": 44,
+            "count": 21
+          },
+          {
+            "flow": "account_creation",
+            "score_min": 95,
+            "score_max": 100,
+            "count": 18
+          }
+        ],
+        "late_flips": [
+          {
+            "from": "allow",
+            "to": "review",
+            "delay": "under_1m",
+            "count": 3
+          }
+        ]
+      },
+      {
+        "start": "2026-10-20T00:00:00.000Z",
+        "count": 0
+      }
+    ]
   }
 }

@@ -11,6 +11,7 @@ Assessments of account creation, login and purchase.
 * [Delete](#delete) - Delete one assessment.
 * [RecordOutcome](#recordoutcome) - Report what was later learned about an assessed account.
 * [Query](#query) - Page through one account's unexpired assessments.
+* [Aggregate](#aggregate) - Count assessments by time, decision and reason
 * [Search](#search) - Search assessments across this environment
 * [RetrieveVersion](#retrieveversion) - Retrieve an exact assessment revision
 * [BindAccount](#bindaccount) - Bind a provisional signup account
@@ -1043,6 +1044,69 @@ func main() {
 ### Response
 
 **[*operations.QueryAccountAssessmentsResponse](../../models/operations/queryaccountassessmentsresponse.md), error**
+
+### Errors
+
+| Error Type                      | Status Code                     | Content Type                    |
+| ------------------------------- | ------------------------------- | ------------------------------- |
+| apierrors.BadRequestError       | 400                             | application/problem+json        |
+| apierrors.AuthenticationError   | 401                             | application/problem+json        |
+| apierrors.PermissionDeniedError | 403                             | application/problem+json        |
+| apierrors.NotFoundError         | 404                             | application/problem+json        |
+| apierrors.ConflictError         | 409                             | application/problem+json        |
+| apierrors.RateLimitError        | 429                             | application/problem+json        |
+| apierrors.APIStatusError        | 4XX, 5XX                        | \*/\*                           |
+
+## Aggregate
+
+Count this environment's assessments created in [from,to) by hour, day or week, grouped by up to two of decision, flow, recommendation, band, reason, lane, country, asn and list_match. Each assessment counts once, by its first answer; late results do not count it again and appear in late_flips. Optional metrics add a score histogram per flow and late account decision changes. from and to start a bucket and cover at most 366 days (31 for hour buckets) inside the retention period. The filters are search's and describe the first answer: send them to search with revision first to list a cell's assessments. Counts hold no identifier, stay when an assessment or account is deleted, and report reasons by code and impact band. No Idempotency-Key.
+
+### Example Usage
+
+<!-- UsageSnippet language="go" operationID="aggregateAssessments" method="post" path="/v1/assessments/aggregate" -->
+```go
+package main
+
+import(
+	"context"
+	"os"
+	noresponse "github.com/noresponsehq/go/v8"
+	"github.com/noresponsehq/go/v8/models/components"
+	"log"
+)
+
+func main() {
+    ctx := context.Background()
+
+    s := noresponse.New(
+        noresponse.WithSecurity(os.Getenv("NORESPONSE_API_KEY")),
+    )
+
+    res, err := s.Assessments.Aggregate(ctx, components.AssessmentAggregateRequest{
+        From: "2026-10-19T00:00:00Z",
+        To: "2026-10-26T00:00:00Z",
+        Bucket: components.BucketWeek,
+    })
+    if err != nil {
+        log.Fatal(err)
+    }
+    if res != nil {
+        // handle response
+    }
+}
+```
+
+### Parameters
+
+| Parameter                                                                                      | Type                                                                                           | Required                                                                                       | Description                                                                                    |
+| ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| `ctx`                                                                                          | [context.Context](https://pkg.go.dev/context#Context)                                          | :heavy_check_mark:                                                                             | The context to use for the request.                                                            |
+| `request`                                                                                      | [components.AssessmentAggregateRequest](../../models/components/assessmentaggregaterequest.md) | :heavy_check_mark:                                                                             | The request object to use for the request.                                                     |
+| `opts`                                                                                         | [][operations.Option](../../models/operations/option.md)                                       | :heavy_minus_sign:                                                                             | The options for this request.                                                                  |
+
+### Response
+
+**[*operations.AggregateAssessmentsResponse](../../models/operations/aggregateassessmentsresponse.md), error**
 
 ### Errors
 

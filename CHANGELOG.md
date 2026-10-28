@@ -1,5 +1,11 @@
 # Changelog
 
+## 8.3.0
+
+* `Sdk.Assessments.Aggregate()`: **Added**
+* `Sdk.Assessments.Search()`: 
+  *  `request.Request.Revision` **Added**
+
 ## 8.2.1
 
 * `Sdk.Assessments.Create()`:  `response.Detail.Identifiers` **Added**

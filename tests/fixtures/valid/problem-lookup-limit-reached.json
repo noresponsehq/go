@@ -1,0 +1,8 @@
+{
+  "type": "https://docs.noresponse.org/problems/lookup-limit-reached",
+  "title": "Lookup limit reached",
+  "status": 429,
+  "detail": "The workspace has made its 50 live console lookups for this UTC day; more run after midnight UTC.",
+  "code": "lookup_limit_reached",
+  "request_id": "0123456789abcdef0123456789abcdef"
+}
