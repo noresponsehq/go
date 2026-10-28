@@ -7484,11 +7484,11 @@
           },
           "breaches": {
             "type": "array",
-            "maxItems": 50,
+            "maxItems": 100,
             "items": {
               "$ref": "#/components/schemas/Breach"
             },
-            "description": "The matching breach tables, newest first, at most 50."
+            "description": "The matching breach tables, newest first, at most 100."
           },
           "breach_names": {
             "type": "array",
@@ -7500,8 +7500,8 @@
           },
           "events": {
             "type": "array",
-            "maxItems": 100,
-            "description": "The identity's dated footprint events, newest first, at most 100: the year and month, what happened (created, last_active, breached), the site, its category, the kind of evidence and the identifier it belongs to. No breach value: dates are coarsened to the month.",
+            "maxItems": 300,
+            "description": "The identity's dated footprint events, newest first, at most 300: the year and month, what happened (created, last_active, breached), the site, its category, the kind of evidence and the identifier it belongs to. No breach value: dates are coarsened to the month.",
             "items": {
               "$ref": "#/components/schemas/RiskDetailsEvent"
             }

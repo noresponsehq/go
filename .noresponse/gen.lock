@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: 25ddae46-795d-45f5-b455-3f48c41d440e
 management:
-  docChecksum: 706615fc2a298d8b1a8d2c29fb2ffe49
+  docChecksum: c7633ce527060e650571dab1ee1e88d6
   docVersion: "1"
   speakeasyVersion: internal
   generationVersion: internal
-  releaseVersion: 8.4.0
-  configChecksum: 0e02b7f0b442ce99241f04c53c14f8f9
+  releaseVersion: 8.4.1
+  configChecksum: ddae486709864dcacc7a108ce6042b7c
 features:
   go:
     additionalDependencies: 0.1.0
@@ -383,7 +383,7 @@ trackedFiles:
   docs/models/components/riskcoverage.md:
     last_write_checksum: sha1:a73fcd18a59b6dc014368949ce3adfea007541cd
   docs/models/components/riskdetails.md:
-    last_write_checksum: sha1:3d05dbfb59090da7d45336cfefc91060963c83d3
+    last_write_checksum: sha1:c3dd1dcd026c7adae1acef5a425dfec5fe4a0cf3
   docs/models/components/riskdetailsbreachname.md:
     last_write_checksum: sha1:b4ee3f40f5e28a5d5515ccfb58049533ab245ae4
   docs/models/components/riskdetailsevent.md:
@@ -1017,7 +1017,7 @@ trackedFiles:
   models/components/riskcoverage.go:
     last_write_checksum: sha1:3bf2642aab5cc3a01b458784e6fe8ae3bba4a451
   models/components/riskdetails.go:
-    last_write_checksum: sha1:27d0e6ae945de5dff37f8bf9e692bb1b759652fb
+    last_write_checksum: sha1:5e1a289ccb4ced45edc9fa15243656adefa707af
   models/components/riskdetailsbreachname.go:
     last_write_checksum: sha1:22fb163580ff8a9fe71e87434d193b96e4958642
   models/components/riskdetailsevent.go:
@@ -1193,7 +1193,7 @@ trackedFiles:
   models/operations/updatesettings.go:
     last_write_checksum: sha1:1690bd6ba8862e3f6f0bc16f7360daaee97c26f2
   noresponse.go:
-    last_write_checksum: sha1:b5d0e6501bcc98e95a89de07f4762fbb44eba6aa
+    last_write_checksum: sha1:97a82415a736457a3304357d70054147f7b2f9b1
   optionalnullable/optionalnullable.go:
     last_write_checksum: sha1:38cf187cd65a5213be09788f67d82dc49d46b583
   optionalnullable/optionalnullable_test.go:

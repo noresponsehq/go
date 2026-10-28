@@ -7,11 +7,11 @@ import (
 // RiskDetails - Detailed view only (response_mode=detailed, which needs the detailed scope); a standard answer leaves it out. Merged observations without provider, source, origin, raw breach record, value or score.
 type RiskDetails struct {
 	PhoneNames []RiskDetailsPhoneName `json:"phone_names,omitzero"`
-	// The matching breach tables, newest first, at most 50.
+	// The matching breach tables, newest first, at most 100.
 	Breaches []Breach `json:"breaches,omitzero"`
 	// Names found next to the identifiers in breach records, merged, with the number of distinct tables each was seen in.
 	BreachNames []RiskDetailsBreachName `json:"breach_names,omitzero"`
-	// The identity's dated footprint events, newest first, at most 100: the year and month, what happened (created, last_active, breached), the site, its category, the kind of evidence and the identifier it belongs to. No breach value: dates are coarsened to the month.
+	// The identity's dated footprint events, newest first, at most 300: the year and month, what happened (created, last_active, breached), the site, its category, the kind of evidence and the identifier it belongs to. No breach value: dates are coarsened to the month.
 	Events []RiskDetailsEvent `json:"events,omitzero"`
 }
 

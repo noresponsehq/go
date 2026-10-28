@@ -1,5 +1,9 @@
 # Changelog
 
+## 8.4.1
+
+No changes detected.
+
 ## 8.4.0
 
 * `Sdk.Assessments.Aggregate()`: 
