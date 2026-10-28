@@ -11,6 +11,7 @@ type AssessmentAggregateRequestMetric string
 const (
 	AssessmentAggregateRequestMetricCount          AssessmentAggregateRequestMetric = "count"
 	AssessmentAggregateRequestMetricScoreHistogram AssessmentAggregateRequestMetric = "score_histogram"
+	AssessmentAggregateRequestMetricScoreOutcomes  AssessmentAggregateRequestMetric = "score_outcomes"
 	AssessmentAggregateRequestMetricLateFlips      AssessmentAggregateRequestMetric = "late_flips"
 )
 
@@ -26,6 +27,8 @@ func (e *AssessmentAggregateRequestMetric) UnmarshalJSON(data []byte) error {
 	case "count":
 		fallthrough
 	case "score_histogram":
+		fallthrough
+	case "score_outcomes":
 		fallthrough
 	case "late_flips":
 		*e = AssessmentAggregateRequestMetric(v)
@@ -45,7 +48,7 @@ type AssessmentAggregateRequest struct {
 	Bucket Bucket `json:"bucket"`
 	// At most two dimensions to count by, of which at most one is reason, lane, country or asn. An assessment counts once in each of its reasons and incomplete lanes, so those groups can add up to more than the bucket's count.
 	GroupBy []AggregateDimension `json:"group_by,omitzero"`
-	// count: each bucket's count and groups. score_histogram: first answers by flow and 5-point score bucket. late_flips: changes of an assessment's account decision for its flow after its first answer, by from, to and delay.
+	// count: each bucket's count and groups. score_histogram: first answers by flow and 5-point score bucket. score_outcomes: the histogram's first answers that have a reported outcome, by flow, 5-point score bucket and the latest outcome reported for the assessment (POST /v1/assessments/{assessment_id}/outcomes); the rest of a bin has none reported. late_flips: changes of an assessment's account decision for its flow after its first answer, by from, to and delay.
 	Metrics []AssessmentAggregateRequestMetric `json:"metrics,omitzero"`
 	// The most groups answered: the largest over the whole range, then by value. groups_truncated says when there were more.
 	Limit *int64 `default:"20" json:"limit"`

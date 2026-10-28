@@ -3,7 +3,7 @@
   "to": "2026-10-26T00:00:00Z",
   "bucket": "day",
   "group_by": ["decision", "reason"],
-  "metrics": ["count", "score_histogram", "late_flips"],
+  "metrics": ["count", "score_histogram", "score_outcomes", "late_flips"],
   "flow": "account_creation",
   "limit": 10
 }

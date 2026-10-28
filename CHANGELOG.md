@@ -1,5 +1,11 @@
 # Changelog
 
+## 8.4.0
+
+* `Sdk.Assessments.Aggregate()`: 
+  *  `request.Request.Metrics[].Enum(scoreOutcomes)` **Added**
+  *  `response` **Changed**
+
 ## 8.3.0
 
 * `Sdk.Assessments.Aggregate()`: **Added**

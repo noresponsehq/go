@@ -4,7 +4,7 @@
   "to": "2026-10-21T00:00:00.000Z",
   "bucket": "day",
   "group_by": ["decision", "reason"],
-  "metrics": ["count", "score_histogram", "late_flips"],
+  "metrics": ["count", "score_histogram", "score_outcomes", "late_flips"],
   "retention_days": 365,
   "groups_truncated": false,
   "buckets": [
@@ -21,6 +21,11 @@
         {"flow": "account_creation", "score_min": 0, "score_max": 4, "count": 288},
         {"flow": "account_creation", "score_min": 40, "score_max": 44, "count": 21},
         {"flow": "account_creation", "score_min": 95, "score_max": 100, "count": 18}
+      ],
+      "score_outcomes": [
+        {"flow": "account_creation", "score_min": 0, "score_max": 4, "outcome": "legitimate", "count": 7},
+        {"flow": "account_creation", "score_min": 95, "score_max": 100, "outcome": "confirmed_abuse", "count": 11},
+        {"flow": "account_creation", "score_min": 95, "score_max": 100, "outcome": "false_positive", "count": 1}
       ],
       "late_flips": [
         {"from": "allow", "to": "review", "delay": "under_1m", "count": 3}

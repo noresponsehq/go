@@ -11,7 +11,9 @@ type AggregateBucket struct {
 	// With metric count and group_by: the bucket's counts of the groups answered, largest group first.
 	Groups         []AggregateGroup      `json:"groups,omitzero"`
 	ScoreHistogram []AggregateScoreCount `json:"score_histogram,omitzero"`
-	LateFlips      []AggregateLateFlip   `json:"late_flips,omitzero"`
+	// With metric score_outcomes: the score_histogram's first answers whose assessment has a reported outcome, by its latest. A bin's count less its score_outcomes is the first answers with none reported.
+	ScoreOutcomes []AggregateScoreOutcome `json:"score_outcomes,omitzero"`
+	LateFlips     []AggregateLateFlip     `json:"late_flips,omitzero"`
 }
 
 func (a AggregateBucket) MarshalJSON() ([]byte, error) {
@@ -51,6 +53,13 @@ func (a *AggregateBucket) GetScoreHistogram() []AggregateScoreCount {
 		return nil
 	}
 	return a.ScoreHistogram
+}
+
+func (a *AggregateBucket) GetScoreOutcomes() []AggregateScoreOutcome {
+	if a == nil {
+		return nil
+	}
+	return a.ScoreOutcomes
 }
 
 func (a *AggregateBucket) GetLateFlips() []AggregateLateFlip {

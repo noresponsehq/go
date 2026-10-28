@@ -20,4 +20,5 @@ custom := components.AssessmentAggregateMetric("custom_value")
 | ----------------------------------------- | ----------------------------------------- |
 | `AssessmentAggregateMetricCount`          | count                                     |
 | `AssessmentAggregateMetricScoreHistogram` | score_histogram                           |
+| `AssessmentAggregateMetricScoreOutcomes`  | score_outcomes                            |
 | `AssessmentAggregateMetricLateFlips`      | late_flips                                |

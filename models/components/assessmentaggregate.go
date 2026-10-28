@@ -9,6 +9,7 @@ type AssessmentAggregateMetric string
 const (
 	AssessmentAggregateMetricCount          AssessmentAggregateMetric = "count"
 	AssessmentAggregateMetricScoreHistogram AssessmentAggregateMetric = "score_histogram"
+	AssessmentAggregateMetricScoreOutcomes  AssessmentAggregateMetric = "score_outcomes"
 	AssessmentAggregateMetricLateFlips      AssessmentAggregateMetric = "late_flips"
 )
 
@@ -20,7 +21,7 @@ func (e AssessmentAggregateMetric) ToPointer() *AssessmentAggregateMetric {
 func (e *AssessmentAggregateMetric) IsExact() bool {
 	if e != nil {
 		switch *e {
-		case "count", "score_histogram", "late_flips":
+		case "count", "score_histogram", "score_outcomes", "late_flips":
 			return true
 		}
 	}

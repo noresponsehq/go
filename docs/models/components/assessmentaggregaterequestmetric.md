@@ -17,4 +17,5 @@ value := components.AssessmentAggregateRequestMetricCount
 | ------------------------------------------------ | ------------------------------------------------ |
 | `AssessmentAggregateRequestMetricCount`          | count                                            |
 | `AssessmentAggregateRequestMetricScoreHistogram` | score_histogram                                  |
+| `AssessmentAggregateRequestMetricScoreOutcomes`  | score_outcomes                                   |
 | `AssessmentAggregateRequestMetricLateFlips`      | late_flips                                       |

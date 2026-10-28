@@ -1857,7 +1857,7 @@
           "assessments"
         ],
         "summary": "Count assessments by time, decision and reason",
-        "description": "Count this environment's assessments created in [from,to) by hour, day or week, grouped by up to two of decision, flow, recommendation, band, reason, lane, country, asn and list_match. Each assessment counts once, by its first answer; late results do not count it again and appear in late_flips. Optional metrics add a score histogram per flow and late account decision changes. from and to start a bucket and cover at most 366 days (31 for hour buckets) inside the retention period. The filters are search's and describe the first answer: send them to search with revision first to list a cell's assessments. Counts hold no identifier, stay when an assessment or account is deleted, and report reasons by code and impact band. No Idempotency-Key.",
+        "description": "Count this environment's assessments created in [from,to) by hour, day or week, grouped by up to two of decision, flow, recommendation, band, reason, lane, country, asn and list_match. Each assessment counts once, by its first answer; late results do not count it again and appear in late_flips. Optional metrics add a score histogram per flow, that histogram by the latest reported outcome, and late account decision changes. from and to start a bucket and cover at most 366 days (31 for hour buckets) inside the retention period. The filters are search's and describe the first answer: send them to search with revision first to list a cell's assessments. Counts hold no identifier, stay when an assessment or account is deleted, and report reasons by code and impact band. No Idempotency-Key.",
         "requestBody": {
           "required": true,
           "content": {
@@ -3527,6 +3527,14 @@
               "$ref": "#/components/schemas/AggregateScoreCount"
             }
           },
+          "score_outcomes": {
+            "type": "array",
+            "maxItems": 360,
+            "items": {
+              "$ref": "#/components/schemas/AggregateScoreOutcome"
+            },
+            "description": "With metric score_outcomes: the score_histogram's first answers whose assessment has a reported outcome, by its latest. A bin's count less its score_outcomes is the first answers with none reported."
+          },
           "late_flips": {
             "type": "array",
             "maxItems": 180,
@@ -3659,6 +3667,41 @@
           }
         }
       },
+      "AggregateScoreOutcome": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "flow",
+          "score_min",
+          "score_max",
+          "outcome",
+          "count"
+        ],
+        "description": "First answers of one flow whose risk.score is in [score_min, score_max] and whose assessment's latest reported outcome (the latest received) is outcome. Counted when the first answer is counted and moved when a later outcome wins; outcomes reported before the first answer was counted are counted with it. An outcome reported before this count existed is counted only once another outcome is reported for the assessment.",
+        "properties": {
+          "flow": {
+            "$ref": "#/components/schemas/Flow"
+          },
+          "score_min": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 95,
+            "description": "A multiple of 5."
+          },
+          "score_max": {
+            "type": "integer",
+            "minimum": 4,
+            "maximum": 100
+          },
+          "outcome": {
+            "$ref": "#/components/schemas/Outcome"
+          },
+          "count": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      },
       "Agreement": {
         "enum": [
           "match",
@@ -3759,11 +3802,12 @@
           "metrics": {
             "type": "array",
             "minItems": 1,
-            "maxItems": 3,
+            "maxItems": 4,
             "items": {
               "enum": [
                 "count",
                 "score_histogram",
+                "score_outcomes",
                 "late_flips"
               ]
             }
@@ -3824,19 +3868,20 @@
           "metrics": {
             "type": "array",
             "minItems": 1,
-            "maxItems": 3,
+            "maxItems": 4,
             "uniqueItems": true,
             "items": {
               "enum": [
                 "count",
                 "score_histogram",
+                "score_outcomes",
                 "late_flips"
               ]
             },
             "default": [
               "count"
             ],
-            "description": "count: each bucket's count and groups. score_histogram: first answers by flow and 5-point score bucket. late_flips: changes of an assessment's account decision for its flow after its first answer, by from, to and delay."
+            "description": "count: each bucket's count and groups. score_histogram: first answers by flow and 5-point score bucket. score_outcomes: the histogram's first answers that have a reported outcome, by flow, 5-point score bucket and the latest outcome reported for the assessment (POST /v1/assessments/{assessment_id}/outcomes); the rest of a bin has none reported. late_flips: changes of an assessment's account decision for its flow after its first answer, by from, to and delay."
           },
           "limit": {
             "type": "integer",
