@@ -14,6 +14,7 @@ const (
 	ConflictErrorCodeSelfRevocation              ConflictErrorCode = "self_revocation"
 	ConflictErrorCodeListEntryExists             ConflictErrorCode = "list_entry_exists"
 	ConflictErrorCodeListLimitReached            ConflictErrorCode = "list_limit_reached"
+	ConflictErrorCodeListEntryTooBroad           ConflictErrorCode = "list_entry_too_broad"
 )
 
 func (e ConflictErrorCode) ToPointer() *ConflictErrorCode {
@@ -24,7 +25,7 @@ func (e ConflictErrorCode) ToPointer() *ConflictErrorCode {
 func (e *ConflictErrorCode) IsExact() bool {
 	if e != nil {
 		switch *e {
-		case "idempotency_key_reused", "key_rotation_in_progress", "webhook_endpoint_limit_reached", "webhook_endpoint_unverified", "too_many_integrations", "risk_version_ahead", "key_limit_reached", "self_revocation", "list_entry_exists", "list_limit_reached":
+		case "idempotency_key_reused", "key_rotation_in_progress", "webhook_endpoint_limit_reached", "webhook_endpoint_unverified", "too_many_integrations", "risk_version_ahead", "key_limit_reached", "self_revocation", "list_entry_exists", "list_limit_reached", "list_entry_too_broad":
 			return true
 		}
 	}

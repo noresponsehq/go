@@ -30,3 +30,4 @@ custom := components.ConflictErrorCode("custom_value")
 | `ConflictErrorCodeSelfRevocation`              | self_revocation                                |
 | `ConflictErrorCodeListEntryExists`             | list_entry_exists                              |
 | `ConflictErrorCodeListLimitReached`            | list_limit_reached                             |
+| `ConflictErrorCodeListEntryTooBroad`           | list_entry_too_broad                           |
