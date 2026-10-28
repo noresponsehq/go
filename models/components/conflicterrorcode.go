@@ -12,6 +12,9 @@ const (
 	ConflictErrorCodeRiskVersionAhead            ConflictErrorCode = "risk_version_ahead"
 	ConflictErrorCodeKeyLimitReached             ConflictErrorCode = "key_limit_reached"
 	ConflictErrorCodeSelfRevocation              ConflictErrorCode = "self_revocation"
+	ConflictErrorCodeOutcomeConflict             ConflictErrorCode = "outcome_conflict"
+	ConflictErrorCodeCredentialConflict          ConflictErrorCode = "credential_conflict"
+	ConflictErrorCodeBindingConflict             ConflictErrorCode = "binding_conflict"
 	ConflictErrorCodeListEntryExists             ConflictErrorCode = "list_entry_exists"
 	ConflictErrorCodeListLimitReached            ConflictErrorCode = "list_limit_reached"
 	ConflictErrorCodeListEntryTooBroad           ConflictErrorCode = "list_entry_too_broad"
@@ -25,7 +28,7 @@ func (e ConflictErrorCode) ToPointer() *ConflictErrorCode {
 func (e *ConflictErrorCode) IsExact() bool {
 	if e != nil {
 		switch *e {
-		case "idempotency_key_reused", "key_rotation_in_progress", "webhook_endpoint_limit_reached", "webhook_endpoint_unverified", "too_many_integrations", "risk_version_ahead", "key_limit_reached", "self_revocation", "list_entry_exists", "list_limit_reached", "list_entry_too_broad":
+		case "idempotency_key_reused", "key_rotation_in_progress", "webhook_endpoint_limit_reached", "webhook_endpoint_unverified", "too_many_integrations", "risk_version_ahead", "key_limit_reached", "self_revocation", "outcome_conflict", "credential_conflict", "binding_conflict", "list_entry_exists", "list_limit_reached", "list_entry_too_broad":
 			return true
 		}
 	}

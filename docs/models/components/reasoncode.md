@@ -69,3 +69,4 @@ custom := components.ReasonCode("custom_value")
 | `ReasonCodeBreachSharedIP`             | breach_shared_ip                       |
 | `ReasonCodeNationalityMismatch`        | nationality_mismatch                   |
 | `ReasonCodeMinorIdentity`              | minor_identity                         |
+| `ReasonCodeReportedAccountAbuse`       | reported_account_abuse                 |

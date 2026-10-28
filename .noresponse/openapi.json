@@ -1700,6 +1700,854 @@
         ]
       }
     },
+    "/v1/webhooks/{endpoint_id}/deliveries": {
+      "get": {
+        "operationId": "listWebhookDeliveries",
+        "x-noresponse-group": "webhookEndpoints",
+        "x-noresponse-name-override": "listDeliveries",
+        "tags": [
+          "webhookEndpoints"
+        ],
+        "summary": "List an endpoint's delivery attempts.",
+        "description": "Every POST the endpoint received, newest first: the event id and type, which attempt it was, whether it was a replay, delivered or failed, the response code, why it failed and how long it took. Attempts are kept for 30 days, or your retention_days when that is shorter, and are deleted with the assessment they carried. Requires the webhooks scope. Read-only and safe to retry. The cursor is opaque and bound to your workspace and the endpoint; a tampered or expired cursor answers 400 invalid_cursor.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/EndpointId"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "Attempts per page.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "description": "next_cursor from the previous page, unchanged.",
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/WebhookDeliveryList"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidWebhookDeliveriesRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/WorkspaceForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/WebhookEndpointNotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/IdempotencyConflict"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ],
+        "x-noresponse-pagination": {
+          "type": "cursor",
+          "inputs": [
+            {
+              "name": "cursor",
+              "in": "parameters",
+              "type": "cursor"
+            }
+          ],
+          "outputs": {
+            "nextCursor": "$.next_cursor"
+          }
+        }
+      }
+    },
+    "/v1/webhooks/{endpoint_id}/deliveries/{event_id}/replay": {
+      "post": {
+        "operationId": "replayWebhookDelivery",
+        "x-noresponse-group": "webhookEndpoints",
+        "x-noresponse-name-override": "replayDelivery",
+        "tags": [
+          "webhookEndpoints"
+        ],
+        "summary": "Send one delivery again.",
+        "description": "Queues the event for the endpoint again: the same event id and body it received, with a new NR-Webhook-Timestamp and a signature from the endpoint's current signing key, retried like any other delivery and listed with replay: true. Your receiver deduplicates on the event id. The endpoint must be verified. Requires the webhooks scope. Not idempotent: each call, a retry included, sends the event again.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/EndpointId"
+          },
+          {
+            "$ref": "#/components/parameters/EventId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebhookReplayRequest"
+              },
+              "examples": {
+                "empty": {
+                  "value": {}
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "$ref": "#/components/responses/WebhookReplayAccepted"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidWebhookRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/WorkspaceForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/WebhookDeliveryNotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/WebhookEndpointUnverified"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ],
+        "x-noresponse-retries": {
+          "strategy": "none"
+        }
+      }
+    },
+    "/v1/assessments/search": {
+      "post": {
+        "operationId": "searchAssessments",
+        "x-noresponse-group": "assessments",
+        "x-noresponse-name-override": "search",
+        "tags": [
+          "assessments"
+        ],
+        "summary": "Search assessments across this environment",
+        "description": "Search retained assessments created in [from,to), over at most 366 days. Filters use each assessment decision, rather than the current account decision. Results can change between pages. Keep the assessment version to retrieve the exact decision later. This read does not require an idempotency key.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssessmentSearchRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/SearchAssessments200"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidHistoryQuery"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/WorkspaceForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/IdempotencyConflict"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/v1/assessments/{assessment_id}/versions/{version}": {
+      "get": {
+        "operationId": "getAssessmentVersion",
+        "x-noresponse-group": "assessments",
+        "x-noresponse-name-override": "retrieveVersion",
+        "tags": [
+          "assessments"
+        ],
+        "summary": "Retrieve an exact assessment revision",
+        "description": "Retrieve a retained assessment version with its original decision, policy, flow and depth. This response excludes the current account decision. Current retention and response-mode permissions still apply.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/AssessmentId"
+          },
+          {
+            "name": "response_mode",
+            "in": "query",
+            "required": false,
+            "description": "Optional standard or separately authorised detailed customer view; raw is rejected.",
+            "schema": {
+              "$ref": "#/components/schemas/ResponseMode",
+              "default": "standard"
+            }
+          },
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000
+            },
+            "description": "The stored assessment_version, in canonical decimal form. An unavailable or malformed version answers 404."
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/GetAssessmentVersion200"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidQuery"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/WorkspaceForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/IdempotencyConflict"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/v1/accounts/{account_id}/outcomes": {
+      "post": {
+        "operationId": "recordAccountOutcome",
+        "x-noresponse-group": "accounts",
+        "x-noresponse-name-override": "recordOutcome",
+        "tags": [
+          "accounts"
+        ],
+        "summary": "Record or correct an account outcome",
+        "description": "Record a factual report, not an enforcement action. A known outcome replaces the effective report. unknown alone records uncertainty without changing it; unknown with supersedes explicitly retracts it. supersedes must name the current effective report or the request answers 409 outcome_conflict. Reports remain append-only. Idempotency-Key is required. observed_at defaults to receipt time and cannot be over five minutes ahead.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/AccountId"
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AccountOutcomeRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "$ref": "#/components/responses/RecordAccountOutcome202"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidOutcome"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/WorkspaceForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/AccountOutcomeConflict"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      },
+      "get": {
+        "operationId": "listAccountOutcomes",
+        "x-noresponse-group": "accounts",
+        "x-noresponse-name-override": "listOutcomes",
+        "tags": [
+          "accounts"
+        ],
+        "summary": "List retained account feedback",
+        "description": "List retained account reports, newest first. The page-level effective outcome id names the current report. Each receipt preserves the effective report and risk version from its original write. Page with the returned cursor.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/AccountId"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "Items per page.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50,
+              "default": 20
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "description": "next_cursor from the previous page, unchanged.",
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ListAccountOutcomes200"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidAccountRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/WorkspaceForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/IdempotencyConflict"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/v1/accounts/{account_id}/decisions/{risk_version}": {
+      "get": {
+        "operationId": "getAccountDecision",
+        "x-noresponse-group": "accounts",
+        "x-noresponse-name-override": "retrieveDecision",
+        "tags": [
+          "accounts"
+        ],
+        "summary": "Retrieve an exact historical account decision",
+        "description": "Retrieve the account decision at one recorded risk version. The answer uses the original assessment and account-specific risk inputs. Earlier versions that were not captured return 404. The assessment version, policy version and account calculation version identify the decision.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/AccountId"
+          },
+          {
+            "name": "risk_version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "description": "The canonical decimal risk_version originally served."
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/GetAccountDecision200"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidAccountRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/WorkspaceForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/AccountNotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/IdempotencyConflict"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/v1/accounts/{account_id}/credentials": {
+      "post": {
+        "operationId": "associateCredential",
+        "x-noresponse-group": "accounts",
+        "x-noresponse-name-override": "associateCredential",
+        "tags": [
+          "accounts"
+        ],
+        "summary": "Associate a customer-issued API key",
+        "description": "Associate the SHA-256 of a high-entropy key issued by your service. Send the hash instead of the key. Repeating a hash returns its original association, including its retirement state. A hash associated with another account returns a conflict.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/AccountId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CredentialRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/AssociateCredential200"
+          },
+          "201": {
+            "$ref": "#/components/responses/AssociateCredential201"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidAccountRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/WorkspaceForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/AssociateCredential409"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      },
+      "get": {
+        "operationId": "listAccountCredentials",
+        "x-noresponse-group": "accounts",
+        "x-noresponse-name-override": "listCredentials",
+        "tags": [
+          "accounts"
+        ],
+        "summary": "List issued credential associations",
+        "description": "Retained credential associations, ordered by id. Page with the authenticated cursor. Associations are removed on account erasure.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/AccountId"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "Items per page.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50,
+              "default": 20
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "description": "next_cursor from the previous page, unchanged.",
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ListAccountCredentials200"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidAccountRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/WorkspaceForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/IdempotencyConflict"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/v1/accounts/{account_id}/credentials/{credential_id}": {
+      "delete": {
+        "operationId": "retireAccountCredential",
+        "x-noresponse-group": "accounts",
+        "x-noresponse-name-override": "retireCredential",
+        "tags": [
+          "accounts"
+        ],
+        "summary": "Retire an issued credential association",
+        "description": "Mark this association retired, idempotently. This does not revoke the actual key. Requires delete scope.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/AccountId"
+          },
+          {
+            "name": "credential_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^cred_[0-9A-HJKMNP-TV-Z]{26}$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/RetireAccountCredential200"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidAccountRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/WorkspaceForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/RetireAccountCredential409"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/v1/assessments/{assessment_id}/bind": {
+      "post": {
+        "operationId": "bindProvisionalAccount",
+        "x-noresponse-group": "assessments",
+        "x-noresponse-name-override": "bindAccount",
+        "tags": [
+          "assessments"
+        ],
+        "summary": "Bind a provisional signup account",
+        "description": "One-time association to an opaque stable customer account. The assessment is its natural idempotency key. Repeating the same binding returns its first receipt; a conflicting target is refused. No arbitrary account merging.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/AssessmentId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AccountBindingRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/BindProvisionalAccount200"
+          },
+          "201": {
+            "$ref": "#/components/responses/BindProvisionalAccount201"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidAccountRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/WorkspaceForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/BindProvisionalAccount409"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/v1/accounts/{account_id}/export": {
+      "get": {
+        "operationId": "exportAccount",
+        "x-noresponse-group": "accounts",
+        "x-noresponse-name-override": "export",
+        "tags": [
+          "accounts"
+        ],
+        "summary": "Export an account",
+        "description": "Retrieve one consistent snapshot of retained customer-accessible records, including assessment revisions, account decisions, feedback, key associations, enforcements and request diagnostics. Secrets, restricted source information, other customers' data and legacy free-text notes are excluded. The same standard/detailed permissions apply. An export exceeding 10000 records or 8 MiB returns export_too_large without a partial result. Historical decisions that were not captured are identified as an exclusion.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/AccountId"
+          },
+          {
+            "name": "response_mode",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/ResponseMode",
+              "default": "standard"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ExportAccount200"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidAccountRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/WorkspaceForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/IdempotencyConflict"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/v1/requests": {
+      "get": {
+        "operationId": "listRequestDiagnostics",
+        "x-noresponse-group": "requests",
+        "x-noresponse-name-override": "list",
+        "tags": [
+          "requests"
+        ],
+        "summary": "Search request diagnostics",
+        "description": "Search authenticated request attempts by time, route, status or request correlation id. The interval is at most seven days. Each attempt has a unique id and may include the exact served decision. Records are bounded best effort and exclude request bodies, secrets and source payloads. A repeated correlation id does not overwrite another attempt.",
+        "parameters": [
+          {
+            "name": "from",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "2026-10-21T00:00:00Z"
+            },
+            "description": "Inclusive start of a range of at most seven days."
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "2026-10-22T00:00:00Z"
+            },
+            "description": "Exclusive end of the range."
+          },
+          {
+            "name": "request_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$"
+            },
+            "description": "Optional filter or paging parameter."
+          },
+          {
+            "name": "route",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Optional filter or paging parameter."
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 100,
+              "maximum": 599
+            },
+            "description": "Optional filter or paging parameter."
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 50
+            },
+            "description": "Optional filter or paging parameter."
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Optional filter or paging parameter."
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ListRequestDiagnostics200"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidAccountRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/WorkspaceForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/IdempotencyConflict"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
     "/v1/workspaces/{workspace_id}/lists/{environment}": {
       "get": {
         "operationId": "listListEntries",
@@ -1864,154 +2712,6 @@
           }
         ]
       }
-    },
-    "/v1/webhooks/{endpoint_id}/deliveries": {
-      "get": {
-        "operationId": "listWebhookDeliveries",
-        "x-noresponse-group": "webhookEndpoints",
-        "x-noresponse-name-override": "listDeliveries",
-        "tags": [
-          "webhookEndpoints"
-        ],
-        "summary": "List an endpoint's delivery attempts.",
-        "description": "Every POST the endpoint received, newest first: the event id and type, which attempt it was, whether it was a replay, delivered or failed, the response code, why it failed and how long it took. Attempts are kept for 30 days, or your retention_days when that is shorter, and are deleted with the assessment they carried. Requires the webhooks scope. Read-only and safe to retry. The cursor is opaque and bound to your workspace and the endpoint; a tampered or expired cursor answers 400 invalid_cursor.",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/EndpointId"
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "required": false,
-            "description": "Attempts per page.",
-            "schema": {
-              "type": "integer",
-              "minimum": 1,
-              "maximum": 100,
-              "default": 20
-            }
-          },
-          {
-            "name": "cursor",
-            "in": "query",
-            "required": false,
-            "description": "next_cursor from the previous page, unchanged.",
-            "schema": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 256,
-              "pattern": "^[A-Za-z0-9_-]+$"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "$ref": "#/components/responses/WebhookDeliveryList"
-          },
-          "400": {
-            "$ref": "#/components/responses/InvalidWebhookDeliveriesRequest"
-          },
-          "401": {
-            "$ref": "#/components/responses/Unauthorized"
-          },
-          "403": {
-            "$ref": "#/components/responses/WorkspaceForbidden"
-          },
-          "404": {
-            "$ref": "#/components/responses/WebhookEndpointNotFound"
-          },
-          "409": {
-            "$ref": "#/components/responses/IdempotencyConflict"
-          },
-          "429": {
-            "$ref": "#/components/responses/RateLimited"
-          }
-        },
-        "security": [
-          {
-            "apiKey": []
-          }
-        ],
-        "x-noresponse-pagination": {
-          "type": "cursor",
-          "inputs": [
-            {
-              "name": "cursor",
-              "in": "parameters",
-              "type": "cursor"
-            }
-          ],
-          "outputs": {
-            "nextCursor": "$.next_cursor"
-          }
-        }
-      }
-    },
-    "/v1/webhooks/{endpoint_id}/deliveries/{event_id}/replay": {
-      "post": {
-        "operationId": "replayWebhookDelivery",
-        "x-noresponse-group": "webhookEndpoints",
-        "x-noresponse-name-override": "replayDelivery",
-        "tags": [
-          "webhookEndpoints"
-        ],
-        "summary": "Send one delivery again.",
-        "description": "Queues the event for the endpoint again: the same event id and body it received, with a new NR-Webhook-Timestamp and a signature from the endpoint's current signing key, retried like any other delivery and listed with replay: true. Your receiver deduplicates on the event id. The endpoint must be verified. Requires the webhooks scope. Not idempotent: each call, a retry included, sends the event again.",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/EndpointId"
-          },
-          {
-            "$ref": "#/components/parameters/EventId"
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/WebhookReplayRequest"
-              },
-              "examples": {
-                "empty": {
-                  "value": {}
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "202": {
-            "$ref": "#/components/responses/WebhookReplayAccepted"
-          },
-          "400": {
-            "$ref": "#/components/responses/InvalidWebhookRequest"
-          },
-          "401": {
-            "$ref": "#/components/responses/Unauthorized"
-          },
-          "403": {
-            "$ref": "#/components/responses/WorkspaceForbidden"
-          },
-          "404": {
-            "$ref": "#/components/responses/WebhookDeliveryNotFound"
-          },
-          "409": {
-            "$ref": "#/components/responses/WebhookEndpointUnverified"
-          },
-          "429": {
-            "$ref": "#/components/responses/RateLimited"
-          }
-        },
-        "security": [
-          {
-            "apiKey": []
-          }
-        ],
-        "x-noresponse-retries": {
-          "strategy": "none"
-        }
-      }
     }
   },
   "components": {
@@ -2074,6 +2774,93 @@
           }
         }
       },
+      "AccountBinding": {
+        "description": "Binding appends an assessment revision and preserves earlier versions. Continuations use the same assessment. Erasing either the provisional or canonical name erases the canonical account, including the bound assessment.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "assessment_id",
+          "provisional_account_id",
+          "account_id",
+          "assessment_version",
+          "created_at",
+          "actor"
+        ],
+        "properties": {
+          "assessment_id": {
+            "type": "string",
+            "pattern": "^asm_[0-9A-HJKMNP-TV-Z]{26}$",
+            "description": "Opaque, server-assigned assessment id: 'asm_' and a 26-character Crockford base32 ULID. Unique within the workspace; another workspace's assessment id answers 404.",
+            "example": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          },
+          "provisional_account_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:|-]{0,127}$",
+            "description": "Your own opaque identifier for the account being checked, scoped to your workspace. Use an id you mint, with no direct identifier (email, phone, name or national id) in it. '|' is accepted so an Auth0 user id such as 'auth0|64abc' passes unchanged; '@', '+', '$' and whitespace are refused by the pattern, as is an exact-shape JWT; a hex digest such as a SHA-256 is allowed, because hashing an internal id is a common pseudonymous scheme. A value such as '07700900123' or 'jane.doe.gmail.com' cannot be told apart from an opaque id. It travels in bodies, and in a URL only as the path segment of GET /v1/accounts/{account_id} and its /assessments. An assessment requested by a provider hook at pre_registration, which has no account yet, carries the server-issued account_id pre: followed by its assessment_id.",
+            "example": "pre:asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          },
+          "account_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:|-]{0,127}$",
+            "description": "Your own opaque identifier for the account being checked, scoped to your workspace. Use an id you mint, with no direct identifier (email, phone, name or national id) in it. '|' is accepted so an Auth0 user id such as 'auth0|64abc' passes unchanged; '@', '+', '$' and whitespace are refused by the pattern, as is an exact-shape JWT; a hex digest such as a SHA-256 is allowed, because hashing an internal id is a common pseudonymous scheme. A value such as '07700900123' or 'jane.doe.gmail.com' cannot be told apart from an opaque id. It travels in bodies, and in a URL only as the path segment of GET /v1/accounts/{account_id} and its /assessments. An assessment requested by a provider hook at pre_registration, which has no account yet, carries the server-issued account_id pre: followed by its assessment_id.",
+            "example": "acct_7f3a9c"
+          },
+          "assessment_version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000,
+            "description": "Monotonic revision of this assessment. 1 on the synchronous answer; each material change while the assessment is served (an async continuation settling a source, a change of recommendation, confidence or status) increments it. Expiry does not increment it: an expired assessment is gone, not revised, and the expiry webhook carries the last served version."
+          },
+          "created_at": {
+            "type": "string",
+            "example": "2026-01-01T00:00:00Z"
+          },
+          "actor": {
+            "$ref": "#/components/schemas/AccountBindingActor"
+          }
+        }
+      },
+      "AccountBindingActor": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "type",
+          "key_id"
+        ],
+        "properties": {
+          "type": {
+            "const": "api_key"
+          },
+          "key_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "example": "01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          }
+        }
+      },
+      "AccountBindingRequest": {
+        "description": "One-time association to an opaque stable customer account. The assessment is its natural idempotency key. Repeating the same binding returns its first receipt; a conflicting target is refused. No arbitrary account merging.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "account_id"
+        ],
+        "properties": {
+          "account_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:|-]{0,127}$",
+            "description": "Your own opaque identifier for the account being checked, scoped to your workspace. Use an id you mint, with no direct identifier (email, phone, name or national id) in it. '|' is accepted so an Auth0 user id such as 'auth0|64abc' passes unchanged; '@', '+', '$' and whitespace are refused by the pattern, as is an exact-shape JWT; a hex digest such as a SHA-256 is allowed, because hashing an internal id is a common pseudonymous scheme. A value such as '07700900123' or 'jane.doe.gmail.com' cannot be told apart from an opaque id. It travels in bodies, and in a URL only as the path segment of GET /v1/accounts/{account_id} and its /assessments. An assessment requested by a provider hook at pre_registration, which has no account yet, carries the server-issued account_id pre: followed by its assessment_id.",
+            "example": "acct_7f3a9c"
+          }
+        }
+      },
       "AccountDecision": {
         "enum": [
           "allow",
@@ -2083,6 +2870,51 @@
           "held"
         ],
         "description": "block when the score reached your block threshold (risk.block of the assessment), otherwise the assessment's recommendation. held only for a flow whose admission is held (settings flows.<flow>.admission), when the account's current assessment was made for that flow and its investigation has not completed (status partial): the final decision arrives as account.risk_changed when the investigation completes, decided by its score, or when the hold's deadline (hold_seconds after the assessment was created) passes first, as the flow's on_expiry action or the decision the evidence so far gives, whichever is stricter. Your application applies it."
+      },
+      "AccountDecisionSnapshot": {
+        "description": "Retrieve the account decision at one recorded risk version. The answer uses the original assessment and account-specific risk inputs. Earlier versions that were not captured return 404. The assessment version, policy version and account calculation version identify the decision.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "account",
+          "assessment_version",
+          "policy_version",
+          "overlay_version",
+          "changed_at"
+        ],
+        "properties": {
+          "account": {
+            "$ref": "#/components/schemas/Account"
+          },
+          "assessment_version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000,
+            "description": "Monotonic revision of this assessment. 1 on the synchronous answer; each material change while the assessment is served (an async continuation settling a source, a change of recommendation, confidence or status) increments it. Expiry does not increment it: an expired assessment is gone, not revised, and the expiry webhook carries the last served version."
+          },
+          "policy_version": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9._-]{0,63}(\\+t[1-9][0-9]{0,8})?$",
+            "description": "Version of the hand-authored heuristic policy that produced the recommendation, for example 'risk-2026-10.7'. A workspace threshold override adds a +t<N> suffix, e.g. 'risk-2026-10.7+t3'.",
+            "example": "risk-2026-10.17+t1"
+          },
+          "overlay_version": {
+            "type": "integer",
+            "const": 1
+          },
+          "changed_at": {
+            "type": "string",
+            "example": "2026-01-01T00:00:00Z"
+          },
+          "feedback_outcome_id": {
+            "type": "string",
+            "pattern": "^out_[0-9A-HJKMNP-TV-Z]{26}$",
+            "description": "Opaque, server-assigned id of one recorded outcome: 'out_' and a 26-character Crockford base32 ULID. Unique within the workspace.",
+            "example": "out_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          }
+        }
       },
       "AccountDecisionsByFlow": {
         "type": "object",
@@ -2209,6 +3041,123 @@
           }
         }
       },
+      "AccountExport": {
+        "description": "Retrieve one consistent snapshot of retained customer-accessible records, including assessment revisions, account decisions, feedback, key associations, enforcements and request diagnostics. Secrets, restricted source information, other customers' data and legacy free-text notes are excluded. The same standard/detailed permissions apply. An export exceeding 10000 records or 8 MiB returns export_too_large without a partial result. Historical decisions that were not captured are identified as an exclusion.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schema_version",
+          "account_id",
+          "exported_at",
+          "complete",
+          "current_risk_version",
+          "assessments",
+          "decisions",
+          "outcomes",
+          "assessment_outcomes",
+          "credentials",
+          "bindings",
+          "enforcements",
+          "requests",
+          "exclusions"
+        ],
+        "properties": {
+          "schema_version": {
+            "const": "1",
+            "description": "Version of the body shape."
+          },
+          "account_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:|-]{0,127}$",
+            "description": "Your own opaque identifier for the account being checked, scoped to your workspace. Use an id you mint, with no direct identifier (email, phone, name or national id) in it. '|' is accepted so an Auth0 user id such as 'auth0|64abc' passes unchanged; '@', '+', '$' and whitespace are refused by the pattern, as is an exact-shape JWT; a hex digest such as a SHA-256 is allowed, because hashing an internal id is a common pseudonymous scheme. A value such as '07700900123' or 'jane.doe.gmail.com' cannot be told apart from an opaque id. It travels in bodies, and in a URL only as the path segment of GET /v1/accounts/{account_id} and its /assessments. An assessment requested by a provider hook at pre_registration, which has no account yet, carries the server-issued account_id pre: followed by its assessment_id.",
+            "example": "acct_7f3a9c"
+          },
+          "exported_at": {
+            "type": "string",
+            "example": "2026-01-01T00:00:00Z"
+          },
+          "complete": {
+            "const": true
+          },
+          "current_risk_version": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "assessments": {
+            "type": "array",
+            "maxItems": 10000,
+            "items": {
+              "$ref": "#/components/schemas/AssessmentRevision"
+            }
+          },
+          "decisions": {
+            "type": "array",
+            "maxItems": 10000,
+            "items": {
+              "$ref": "#/components/schemas/AccountDecisionSnapshot"
+            }
+          },
+          "outcomes": {
+            "type": "array",
+            "maxItems": 10000,
+            "items": {
+              "$ref": "#/components/schemas/AccountOutcome"
+            }
+          },
+          "assessment_outcomes": {
+            "type": "array",
+            "maxItems": 10000,
+            "items": {
+              "$ref": "#/components/schemas/ExportAssessmentOutcome"
+            }
+          },
+          "credentials": {
+            "type": "array",
+            "maxItems": 10000,
+            "items": {
+              "$ref": "#/components/schemas/CredentialAssociation"
+            }
+          },
+          "bindings": {
+            "type": "array",
+            "maxItems": 10000,
+            "items": {
+              "$ref": "#/components/schemas/AccountBinding"
+            }
+          },
+          "enforcements": {
+            "type": "array",
+            "maxItems": 10000,
+            "items": {
+              "$ref": "#/components/schemas/Enforcement"
+            }
+          },
+          "requests": {
+            "type": "array",
+            "maxItems": 10000,
+            "items": {
+              "$ref": "#/components/schemas/RequestDiagnostic"
+            }
+          },
+          "exclusions": {
+            "type": "array",
+            "maxItems": 6,
+            "uniqueItems": true,
+            "items": {
+              "enum": [
+                "expired_or_erased_records",
+                "secrets_and_credential_digests",
+                "private_source_and_work_payloads",
+                "cross_customer_data",
+                "legacy_outcome_notes",
+                "uncaptured_historical_decisions"
+              ]
+            }
+          }
+        }
+      },
       "AccountList": {
         "description": "Body of the 200 answer to GET /v1/accounts: the calling workspace's accounts whose risk changed after changed_since, in the environment of the calling key, oldest change first. An account is listed when its risk_version advanced and it has a current risk, and each item is the account exactly as GET /v1/accounts/{account_id} answers it. An account appears once per page, at its latest change; when its risk changes again later, it appears again on a later page with the newer risk_version. next_cursor is always present: pass it back as changed_since to read the changes made after this page.",
         "type": "object",
@@ -2232,6 +3181,174 @@
             "pattern": "^[A-Za-z0-9_-]+$",
             "description": "Opaque cursor after the last change this page read, bound to the workspace and the environment of the calling key. Pass it back unchanged as changed_since. It is present on every page, the last one included: when nothing changed after changed_since it is the cursor that was sent, so a poller keeps calling with the latest next_cursor. A tampered or foreign cursor answers 400 invalid_cursor. Consumers do not parse it.",
             "example": "eyJ4IjoxMDQyLCJhIjoiOWYyYyJ9"
+          }
+        }
+      },
+      "AccountOutcome": {
+        "description": "Immutable acceptance receipt. risk_version is the account version after this report committed, not the version when a retry reads it. effective_outcome_id names the effective head at that write. The effective expiration may shorten under retention changes. A legitimate report or correction removes only the account-feedback contribution, not unrelated risk.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "account_id",
+          "outcome",
+          "observed_at",
+          "received_at",
+          "expires_at",
+          "actor",
+          "risk_version_before",
+          "risk_version"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^out_[0-9A-HJKMNP-TV-Z]{26}$",
+            "description": "Opaque, server-assigned id of one recorded outcome: 'out_' and a 26-character Crockford base32 ULID. Unique within the workspace.",
+            "example": "out_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          },
+          "account_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:|-]{0,127}$",
+            "description": "Your own opaque identifier for the account being checked, scoped to your workspace. Use an id you mint, with no direct identifier (email, phone, name or national id) in it. '|' is accepted so an Auth0 user id such as 'auth0|64abc' passes unchanged; '@', '+', '$' and whitespace are refused by the pattern, as is an exact-shape JWT; a hex digest such as a SHA-256 is allowed, because hashing an internal id is a common pseudonymous scheme. A value such as '07700900123' or 'jane.doe.gmail.com' cannot be told apart from an opaque id. It travels in bodies, and in a URL only as the path segment of GET /v1/accounts/{account_id} and its /assessments. An assessment requested by a provider hook at pre_registration, which has no account yet, carries the server-issued account_id pre: followed by its assessment_id.",
+            "example": "acct_7f3a9c"
+          },
+          "outcome": {
+            "$ref": "#/components/schemas/Outcome"
+          },
+          "supersedes": {
+            "type": "string",
+            "pattern": "^out_[0-9A-HJKMNP-TV-Z]{26}$",
+            "description": "Opaque, server-assigned id of one recorded outcome: 'out_' and a 26-character Crockford base32 ULID. Unique within the workspace.",
+            "example": "out_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          },
+          "observed_at": {
+            "type": "string",
+            "example": "2026-01-01T00:00:00Z"
+          },
+          "received_at": {
+            "type": "string",
+            "example": "2026-01-01T00:00:00Z"
+          },
+          "expires_at": {
+            "type": "string",
+            "example": "2026-01-02T00:00:00Z"
+          },
+          "external_ref": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+            "description": "Your own opaque reference for the outcome, such as a case or ticket id. Stored as given and not interpreted; keep direct identifiers out of it.",
+            "example": "case_123"
+          },
+          "actor": {
+            "$ref": "#/components/schemas/AccountOutcomeActor"
+          },
+          "risk_version_before": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "risk_version": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "effective_outcome_id": {
+            "type": "string",
+            "pattern": "^out_[0-9A-HJKMNP-TV-Z]{26}$",
+            "description": "Opaque, server-assigned id of one recorded outcome: 'out_' and a 26-character Crockford base32 ULID. Unique within the workspace.",
+            "example": "out_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          }
+        }
+      },
+      "AccountOutcomeActor": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "type",
+          "key_id"
+        ],
+        "properties": {
+          "type": {
+            "const": "api_key"
+          },
+          "key_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "example": "01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          }
+        }
+      },
+      "AccountOutcomePage": {
+        "description": "List retained account reports, newest first. The page-level effective outcome id names the current report. Each receipt preserves the effective report and risk version from its original write. Page with the returned cursor.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "account_id",
+          "items"
+        ],
+        "properties": {
+          "account_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:|-]{0,127}$",
+            "description": "Your own opaque identifier for the account being checked, scoped to your workspace. Use an id you mint, with no direct identifier (email, phone, name or national id) in it. '|' is accepted so an Auth0 user id such as 'auth0|64abc' passes unchanged; '@', '+', '$' and whitespace are refused by the pattern, as is an exact-shape JWT; a hex digest such as a SHA-256 is allowed, because hashing an internal id is a common pseudonymous scheme. A value such as '07700900123' or 'jane.doe.gmail.com' cannot be told apart from an opaque id. It travels in bodies, and in a URL only as the path segment of GET /v1/accounts/{account_id} and its /assessments. An assessment requested by a provider hook at pre_registration, which has no account yet, carries the server-issued account_id pre: followed by its assessment_id.",
+            "example": "acct_7f3a9c"
+          },
+          "items": {
+            "type": "array",
+            "maxItems": 50,
+            "items": {
+              "$ref": "#/components/schemas/AccountOutcome"
+            }
+          },
+          "next_cursor": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1024,
+            "pattern": "^[A-Za-z0-9_-]+$",
+            "description": "Opaque, expiring cursor bound to this environment, operation and every filter. Keep the filters unchanged.",
+            "example": "eyJ0IjoxNzY3MjI1NjAwMDAwMDAwLCJpIjoiYXNtX2V4YW1wbGUiLCJlIjoxNzY3MjI5MjAwfQ"
+          },
+          "effective_outcome_id": {
+            "type": "string",
+            "pattern": "^out_[0-9A-HJKMNP-TV-Z]{26}$",
+            "description": "Opaque, server-assigned id of one recorded outcome: 'out_' and a 26-character Crockford base32 ULID. Unique within the workspace.",
+            "example": "out_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          }
+        }
+      },
+      "AccountOutcomeRequest": {
+        "description": "Record a factual report, not an enforcement action. A known outcome replaces the effective report. unknown alone records uncertainty without changing it; unknown with supersedes explicitly retracts it. supersedes must name the current effective report or the request answers 409 outcome_conflict. Reports remain append-only. Idempotency-Key is required. observed_at defaults to receipt time and cannot be over five minutes ahead.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "outcome"
+        ],
+        "properties": {
+          "outcome": {
+            "$ref": "#/components/schemas/Outcome"
+          },
+          "observed_at": {
+            "type": "string",
+            "example": "2026-01-01T00:00:00Z"
+          },
+          "external_ref": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+            "description": "Your own opaque reference for the outcome, such as a case or ticket id. Stored as given and not interpreted; keep direct identifiers out of it.",
+            "example": "case_123"
+          },
+          "supersedes": {
+            "type": "string",
+            "pattern": "^out_[0-9A-HJKMNP-TV-Z]{26}$",
+            "description": "Opaque, server-assigned id of one recorded outcome: 'out_' and a 26-character Crockford base32 ULID. Unique within the workspace.",
+            "example": "out_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
           }
         }
       },
@@ -3039,6 +4156,143 @@
         },
         "description": "Optional policy inputs: region."
       },
+      "AssessmentRevision": {
+        "description": "Retrieve a retained assessment version with its original decision, policy, flow and depth. This response excludes the current account decision. Current retention and response-mode permissions still apply.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schema_version",
+          "id",
+          "status",
+          "flow",
+          "depth",
+          "detail"
+        ],
+        "properties": {
+          "schema_version": {
+            "const": "1",
+            "description": "Version of the body shape."
+          },
+          "id": {
+            "type": "string",
+            "pattern": "^asm_[0-9A-HJKMNP-TV-Z]{26}$",
+            "description": "This assessment's id, equal to detail.assessment_id.",
+            "example": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          },
+          "status": {
+            "$ref": "#/components/schemas/Status",
+            "description": "The status of this exact stored revision."
+          },
+          "flow": {
+            "$ref": "#/components/schemas/Flow",
+            "description": "The flow that created the assessment."
+          },
+          "depth": {
+            "$ref": "#/components/schemas/Depth",
+            "description": "The depth the assessment was served at: the request's, or its flow's default. An assessment made before depths existed reports full."
+          },
+          "detail": {
+            "$ref": "#/components/schemas/AssessmentDetail",
+            "description": "This assessment's own facts: its score, recommendation, signals, coverage and timing."
+          }
+        }
+      },
+      "AssessmentSearchPage": {
+        "description": "A bounded page of latest assessment revisions, newest creation first. Each revision identifies the exact result found; no current account risk is attached.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schema_version",
+          "items",
+          "retention_days"
+        ],
+        "properties": {
+          "schema_version": {
+            "const": "1",
+            "description": "Version of the body shape."
+          },
+          "items": {
+            "type": "array",
+            "maxItems": 50,
+            "items": {
+              "$ref": "#/components/schemas/AssessmentRevision"
+            }
+          },
+          "next_cursor": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1024,
+            "pattern": "^[A-Za-z0-9_-]+$",
+            "description": "Opaque, expiring cursor bound to this environment, operation and every filter. Keep the filters unchanged.",
+            "example": "eyJ0IjoxNzY3MjI1NjAwMDAwMDAwLCJpIjoiYXNtX2V4YW1wbGUiLCJlIjoxNzY3MjI5MjAwfQ"
+          },
+          "retention_days": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 365,
+            "default": 365,
+            "description": "The calling workspace's configured retention period in days. Default 365 (12 months), which is also the maximum: a workspace may only shorten it, to at least 1 day. Each record expires from its own created_at; see assessment expires_at."
+          }
+        }
+      },
+      "AssessmentSearchRequest": {
+        "description": "Search retained assessments created in [from,to), over at most 366 days. Filters use each assessment decision, rather than the current account decision. Results can change between pages. Keep the assessment version to retrieve the exact decision later. This read does not require an idempotency key.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "from",
+          "to"
+        ],
+        "properties": {
+          "from": {
+            "type": "string",
+            "example": "2026-01-01T00:00:00Z"
+          },
+          "to": {
+            "type": "string",
+            "example": "2026-01-02T00:00:00Z"
+          },
+          "account_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:|-]{0,127}$",
+            "description": "Your own opaque identifier for the account being checked, scoped to your workspace. Use an id you mint, with no direct identifier (email, phone, name or national id) in it. '|' is accepted so an Auth0 user id such as 'auth0|64abc' passes unchanged; '@', '+', '$' and whitespace are refused by the pattern, as is an exact-shape JWT; a hex digest such as a SHA-256 is allowed, because hashing an internal id is a common pseudonymous scheme. A value such as '07700900123' or 'jane.doe.gmail.com' cannot be told apart from an opaque id. It travels in bodies, and in a URL only as the path segment of GET /v1/accounts/{account_id} and its /assessments. An assessment requested by a provider hook at pre_registration, which has no account yet, carries the server-issued account_id pre: followed by its assessment_id.",
+            "example": "acct_7f3a9c"
+          },
+          "flow": {
+            "$ref": "#/components/schemas/Flow"
+          },
+          "status": {
+            "$ref": "#/components/schemas/Status"
+          },
+          "recommendation": {
+            "$ref": "#/components/schemas/Recommendation"
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 50,
+            "default": 20
+          },
+          "cursor": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1024,
+            "pattern": "^[A-Za-z0-9_-]+$",
+            "description": "Opaque, expiring cursor bound to this environment, operation and every filter. Keep the filters unchanged.",
+            "example": "eyJ0IjoxNzY3MjI1NjAwMDAwMDAwLCJpIjoiYXNtX2V4YW1wbGUiLCJlIjoxNzY3MjI5MjAwfQ"
+          },
+          "response_mode": {
+            "$ref": "#/components/schemas/ResponseMode",
+            "default": "standard"
+          },
+          "decision": {
+            "$ref": "#/components/schemas/Decision",
+            "description": "The decision of the assessment's latest stored revision: block when its stored risk.block is true, otherwise its recommendation. This is not the account's current decision or held-admission state. Combined with recommendation using AND."
+          }
+        }
+      },
       "AssessmentUpdatedData": {
         "description": "The assessment, or the minimal notice that it expired.",
         "oneOf": [
@@ -3552,6 +4806,9 @@
           "risk_version_ahead",
           "key_limit_reached",
           "self_revocation",
+          "outcome_conflict",
+          "credential_conflict",
+          "binding_conflict",
           "list_entry_exists",
           "list_limit_reached",
           "list_entry_too_broad"
@@ -3597,6 +4854,190 @@
           "unknown"
         ],
         "description": "IP country, phone country, breach countries and policy_context.region together."
+      },
+      "CredentialAssociation": {
+        "description": "An association between an account and an issued key. The response excludes the key and its hash. Retirement removes this association from risk calculations; revoke the actual key through your own service.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "account_id",
+          "created_at",
+          "actor"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^cred_[0-9A-HJKMNP-TV-Z]{26}$",
+            "example": "cred_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          },
+          "account_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:|-]{0,127}$",
+            "description": "Your own opaque identifier for the account being checked, scoped to your workspace. Use an id you mint, with no direct identifier (email, phone, name or national id) in it. '|' is accepted so an Auth0 user id such as 'auth0|64abc' passes unchanged; '@', '+', '$' and whitespace are refused by the pattern, as is an exact-shape JWT; a hex digest such as a SHA-256 is allowed, because hashing an internal id is a common pseudonymous scheme. A value such as '07700900123' or 'jane.doe.gmail.com' cannot be told apart from an opaque id. It travels in bodies, and in a URL only as the path segment of GET /v1/accounts/{account_id} and its /assessments. An assessment requested by a provider hook at pre_registration, which has no account yet, carries the server-issued account_id pre: followed by its assessment_id.",
+            "example": "acct_7f3a9c"
+          },
+          "created_at": {
+            "type": "string",
+            "example": "2026-01-01T00:00:00Z"
+          },
+          "retired_at": {
+            "type": "string",
+            "example": "2026-01-01T00:00:00Z"
+          },
+          "actor": {
+            "$ref": "#/components/schemas/CredentialAssociationActor"
+          },
+          "retired_by": {
+            "$ref": "#/components/schemas/CredentialAssociationRetiredBy"
+          }
+        }
+      },
+      "CredentialAssociationActor": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "type",
+          "key_id"
+        ],
+        "properties": {
+          "type": {
+            "const": "api_key"
+          },
+          "key_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "example": "01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          }
+        }
+      },
+      "CredentialAssociationRetiredBy": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "type",
+          "key_id"
+        ],
+        "properties": {
+          "type": {
+            "const": "api_key"
+          },
+          "key_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "example": "01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          }
+        }
+      },
+      "CredentialPage": {
+        "description": "Retained credential associations, ordered by id. Page with the authenticated cursor. Associations are removed on account erasure.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "account_id",
+          "items"
+        ],
+        "properties": {
+          "account_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:|-]{0,127}$",
+            "description": "Your own opaque identifier for the account being checked, scoped to your workspace. Use an id you mint, with no direct identifier (email, phone, name or national id) in it. '|' is accepted so an Auth0 user id such as 'auth0|64abc' passes unchanged; '@', '+', '$' and whitespace are refused by the pattern, as is an exact-shape JWT; a hex digest such as a SHA-256 is allowed, because hashing an internal id is a common pseudonymous scheme. A value such as '07700900123' or 'jane.doe.gmail.com' cannot be told apart from an opaque id. It travels in bodies, and in a URL only as the path segment of GET /v1/accounts/{account_id} and its /assessments. An assessment requested by a provider hook at pre_registration, which has no account yet, carries the server-issued account_id pre: followed by its assessment_id.",
+            "example": "acct_7f3a9c"
+          },
+          "items": {
+            "type": "array",
+            "maxItems": 50,
+            "items": {
+              "$ref": "#/components/schemas/CredentialAssociation"
+            }
+          },
+          "next_cursor": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1024,
+            "pattern": "^[A-Za-z0-9_-]+$",
+            "description": "Opaque, expiring cursor bound to this environment, operation and every filter. Keep the filters unchanged.",
+            "example": "eyJ0IjoxNzY3MjI1NjAwMDAwMDAwLCJpIjoiYXNtX2V4YW1wbGUiLCJlIjoxNzY3MjI5MjAwfQ"
+          }
+        }
+      },
+      "CredentialRequest": {
+        "description": "Associate the SHA-256 of a high-entropy key issued by your service. Send the hash instead of the key. Repeating a hash returns its original association, including its retirement state. A hash associated with another account returns a conflict.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "sha256"
+        ],
+        "properties": {
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$",
+            "example": "5da2158606a4cb396280c842b578872bb64b96c4eb80dc02e6fb4e0e864b77c6"
+          }
+        }
+      },
+      "Decision": {
+        "type": "string",
+        "enum": [
+          "allow",
+          "step_up",
+          "review",
+          "block"
+        ],
+        "description": "The decision of the assessment's latest stored revision: block when its stored risk.block is true, otherwise its recommendation. This is not the account's current decision or held-admission state. Combined with recommendation using AND."
+      },
+      "DecisionReceipt": {
+        "description": "The decision prepared for one HTTP attempt. Its account field preserves the account decision returned for that attempt, even after subsequent changes.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "assessment_id",
+          "assessment_version",
+          "flow",
+          "status"
+        ],
+        "properties": {
+          "assessment_id": {
+            "type": "string",
+            "pattern": "^asm_[0-9A-HJKMNP-TV-Z]{26}$",
+            "description": "Opaque, server-assigned assessment id: 'asm_' and a 26-character Crockford base32 ULID. Unique within the workspace; another workspace's assessment id answers 404.",
+            "example": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          },
+          "assessment_version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000,
+            "description": "Monotonic revision of this assessment. 1 on the synchronous answer; each material change while the assessment is served (an async continuation settling a source, a change of recommendation, confidence or status) increments it. Expiry does not increment it: an expired assessment is gone, not revised, and the expiry webhook carries the last served version."
+          },
+          "policy_version": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9._-]{0,63}(\\+t[1-9][0-9]{0,8})?$",
+            "description": "Version of the hand-authored heuristic policy that produced the recommendation, for example 'risk-2026-10.7'. A workspace threshold override adds a +t<N> suffix, e.g. 'risk-2026-10.7+t3'.",
+            "example": "risk-2026-10.17+t1"
+          },
+          "flow": {
+            "$ref": "#/components/schemas/Flow"
+          },
+          "status": {
+            "$ref": "#/components/schemas/Status"
+          },
+          "score": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "account": {
+            "$ref": "#/components/schemas/Account"
+          }
+        }
       },
       "DefaultDepth": {
         "enum": [
@@ -3830,6 +5271,51 @@
           "test"
         ],
         "description": "The environment whose endpoints receive this event: live, or test for the workspace's test environment."
+      },
+      "ExportAssessmentOutcome": {
+        "description": "Structured fields of a retained per-assessment outcome. Legacy notes remain private as promised by the existing outcome contract.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "assessment_id",
+          "outcome",
+          "observed_at",
+          "received_at"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^out_[0-9A-HJKMNP-TV-Z]{26}$",
+            "description": "Opaque, server-assigned id of one recorded outcome: 'out_' and a 26-character Crockford base32 ULID. Unique within the workspace.",
+            "example": "out_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          },
+          "assessment_id": {
+            "type": "string",
+            "pattern": "^asm_[0-9A-HJKMNP-TV-Z]{26}$",
+            "description": "Opaque, server-assigned assessment id: 'asm_' and a 26-character Crockford base32 ULID. Unique within the workspace; another workspace's assessment id answers 404.",
+            "example": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          },
+          "outcome": {
+            "$ref": "#/components/schemas/Outcome"
+          },
+          "observed_at": {
+            "type": "string",
+            "example": "2026-01-01T00:00:00Z"
+          },
+          "received_at": {
+            "type": "string",
+            "example": "2026-01-01T00:00:00Z"
+          },
+          "external_ref": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+            "description": "Your own opaque reference for the outcome, such as a case or ticket id. Stored as given and not interpreted; keep direct identifiers out of it.",
+            "example": "case_123"
+          }
+        }
       },
       "Failure": {
         "enum": [
@@ -5303,7 +6789,8 @@
           "impossible_identity_age",
           "breach_shared_ip",
           "nationality_mismatch",
-          "minor_identity"
+          "minor_identity",
+          "reported_account_abuse"
         ],
         "description": "A stable reason code. New codes may appear; ignore any you do not know."
       },
@@ -5325,6 +6812,99 @@
           "review"
         ],
         "description": "The recommended action: allow, step_up or review. Your application applies it."
+      },
+      "RequestDiagnostic": {
+        "description": "One authenticated HTTP attempt. An attempt id is independent of the caller correlation id. No raw body, path parameter, credential or source payload is retained. write_complete means the server wrote/flushed its response, not proof the client processed it. Collection is bounded best effort; ii_signup_request_diagnostic_failures_total exposes gaps. Retained for seven days or the shorter environment retention.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "request_id",
+          "route",
+          "http_status",
+          "duration_ms",
+          "started_at",
+          "completed_at",
+          "expires_at",
+          "idempotent_replayed",
+          "write_complete"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^req_[0-9a-f]{32}$",
+            "example": "req_77777777777777777777777777777777"
+          },
+          "request_id": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{32}$",
+            "example": "77777777777777777777777777777777"
+          },
+          "route": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160,
+            "example": "POST /v1/assessments"
+          },
+          "http_status": {
+            "type": "integer",
+            "minimum": 100,
+            "maximum": 599
+          },
+          "duration_ms": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "started_at": {
+            "type": "string",
+            "example": "2026-01-01T00:00:00Z"
+          },
+          "completed_at": {
+            "type": "string",
+            "example": "2026-01-01T00:00:00Z"
+          },
+          "expires_at": {
+            "type": "string",
+            "example": "2026-01-02T00:00:00Z"
+          },
+          "error_code": {
+            "type": "string",
+            "pattern": "^[a-z0-9_]+$",
+            "example": "invalid_request"
+          },
+          "idempotent_replayed": {
+            "type": "boolean"
+          },
+          "write_complete": {
+            "type": "boolean"
+          },
+          "decision": {
+            "$ref": "#/components/schemas/DecisionReceipt"
+          }
+        }
+      },
+      "RequestDiagnosticPage": {
+        "description": "Authenticated attempts in a bounded interval, newest first. Keep the same filters when paging.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "items"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+              "$ref": "#/components/schemas/RequestDiagnostic"
+            }
+          },
+          "next_cursor": {
+            "type": "string",
+            "maxLength": 1024,
+            "pattern": "^[A-Za-z0-9_-]+$",
+            "example": "eyJ0IjoxNzY3MjI1NjAwMDAwMDAwLCJpIjoiYXNtX2V4YW1wbGUiLCJlIjoxNzY3MjI5MjAwfQ"
+          }
+        }
       },
       "ResponseMode": {
         "enum": [
@@ -10574,6 +12154,490 @@
           "application/problem+json": {
             "schema": {
               "$ref": "#/components/schemas/PermissionDeniedError"
+            }
+          }
+        }
+      },
+      "SearchAssessments200": {
+        "description": "Search assessments across this environment. A repeat returns the original receipt.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/AssessmentSearchPage"
+            }
+          }
+        }
+      },
+      "GetAssessmentVersion200": {
+        "description": "Retrieve an exact assessment revision. The retained snapshot; no current decision is substituted for historical evidence.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/AssessmentRevision"
+            }
+          }
+        }
+      },
+      "RecordAccountOutcome202": {
+        "description": "Record or correct an account outcome. The retained snapshot; no current decision is substituted for historical evidence.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          },
+          "Idempotent-Replayed": {
+            "description": "Present and true when this answer replays an earlier request with the same Idempotency-Key and body: the body is the record that request created.",
+            "schema": {
+              "type": "string",
+              "const": "true"
+            },
+            "required": false
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/AccountOutcome"
+            }
+          }
+        }
+      },
+      "AccountOutcomeConflict": {
+        "description": "The idempotency key was reused for a different report, or supersedes does not name the effective outcome for this account.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/ConflictError"
+            }
+          }
+        }
+      },
+      "ListAccountOutcomes200": {
+        "description": "List retained account feedback. The retained snapshot; no current decision is substituted for historical evidence.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/AccountOutcomePage"
+            }
+          }
+        }
+      },
+      "GetAccountDecision200": {
+        "description": "Retrieve an exact historical account decision. The retained snapshot; no current decision is substituted for historical evidence.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/AccountDecisionSnapshot"
+            }
+          }
+        }
+      },
+      "AssociateCredential409": {
+        "description": "credential_conflict: the natural-key association conflicts or its bounded account limit is reached.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/ConflictError"
+            }
+          }
+        }
+      },
+      "AssociateCredential201": {
+        "description": "Associate a customer-issued API key. A repeat returns the original receipt.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/CredentialAssociation"
+            }
+          }
+        }
+      },
+      "AssociateCredential200": {
+        "description": "Associate a customer-issued API key. A repeat returns the original receipt.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/CredentialAssociation"
+            }
+          }
+        }
+      },
+      "ListAccountCredentials200": {
+        "description": "List issued credential associations. The retained snapshot; no current decision is substituted for historical evidence.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/CredentialPage"
+            }
+          }
+        }
+      },
+      "RetireAccountCredential200": {
+        "description": "Retire an issued credential association. A repeat returns the original receipt.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/CredentialAssociation"
+            }
+          }
+        }
+      },
+      "RetireAccountCredential409": {
+        "description": "credential_conflict: the natural-key association conflicts or its bounded account limit is reached.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/ConflictError"
+            }
+          }
+        }
+      },
+      "BindProvisionalAccount201": {
+        "description": "Bind a provisional signup account. A repeat returns the original receipt.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/AccountBinding"
+            }
+          }
+        }
+      },
+      "BindProvisionalAccount200": {
+        "description": "Bind a provisional signup account. A repeat returns the original receipt.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/AccountBinding"
+            }
+          }
+        }
+      },
+      "BindProvisionalAccount409": {
+        "description": "binding_conflict: the check is not provisional, was bound elsewhere, or source-account state prevents a safe binding.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/ConflictError"
+            }
+          }
+        }
+      },
+      "ExportAccount200": {
+        "description": "Export an account. The retained snapshot; no current decision is substituted for historical evidence.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/AccountExport"
+            }
+          }
+        }
+      },
+      "ListRequestDiagnostics200": {
+        "description": "Search request diagnostics. The retained snapshot; no current decision is substituted for historical evidence.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/RequestDiagnosticPage"
             }
           }
         }

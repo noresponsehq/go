@@ -28,6 +28,9 @@ custom := components.ConflictErrorCode("custom_value")
 | `ConflictErrorCodeRiskVersionAhead`            | risk_version_ahead                             |
 | `ConflictErrorCodeKeyLimitReached`             | key_limit_reached                              |
 | `ConflictErrorCodeSelfRevocation`              | self_revocation                                |
+| `ConflictErrorCodeOutcomeConflict`             | outcome_conflict                               |
+| `ConflictErrorCodeCredentialConflict`          | credential_conflict                            |
+| `ConflictErrorCodeBindingConflict`             | binding_conflict                               |
 | `ConflictErrorCodeListEntryExists`             | list_entry_exists                              |
 | `ConflictErrorCodeListLimitReached`            | list_limit_reached                             |
 | `ConflictErrorCodeListEntryTooBroad`           | list_entry_too_broad                           |
