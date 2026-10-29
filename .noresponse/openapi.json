@@ -2592,7 +2592,7 @@
           "assessments"
         ],
         "summary": "Search assessments across this environment",
-        "description": "Search retained assessments created in [from,to), over at most 366 days. Filters use each assessment decision, rather than the current account decision. Results can change between pages. Keep the assessment version to retrieve the exact decision later. Each item's detail.identifiers holds the identifiers its assessment was sent, exactly as received. This read does not require an idempotency key.",
+        "description": "Search retained assessments created in [from,to), over at most 366 days. Filters use each assessment decision, rather than the current account decision. Results can change between pages. Keep the assessment version to retrieve the exact decision later. Each item's detail.identifiers holds the identifiers its assessment was sent, exactly as received, and first_decision holds the decision of its first answer. email finds every assessment of the accounts that sent a mailbox, matched as lists match it. changed keeps the assessments a later revision changed. total counts every match, exactly up to 10000. This read does not require an idempotency key.",
         "requestBody": {
           "required": true,
           "content": {
@@ -8571,13 +8571,60 @@
           }
         }
       },
+      "AssessmentSearchItem": {
+        "description": "One stored assessment revision, exactly as GET /v1/assessments/{assessment_id}/versions/{version} returns it, with the decision of the assessment's first answer. It is not re-scored and carries no current account risk.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schema_version",
+          "id",
+          "status",
+          "flow",
+          "depth",
+          "detail"
+        ],
+        "properties": {
+          "schema_version": {
+            "const": "1",
+            "description": "Version of the body shape."
+          },
+          "id": {
+            "type": "string",
+            "pattern": "^asm_[0-9A-HJKMNP-TV-Z]{26}$",
+            "description": "This assessment's id, equal to detail.assessment_id.",
+            "example": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          },
+          "status": {
+            "$ref": "#/components/schemas/Status",
+            "description": "The status of this exact stored revision."
+          },
+          "flow": {
+            "$ref": "#/components/schemas/Flow",
+            "description": "The flow that created the assessment."
+          },
+          "depth": {
+            "$ref": "#/components/schemas/Depth",
+            "description": "The depth the assessment was served at: the request's, or its flow's default. An assessment made before depths existed reports full."
+          },
+          "detail": {
+            "$ref": "#/components/schemas/AssessmentDetail",
+            "description": "This assessment's own facts: its score, recommendation, signals, coverage and timing."
+          },
+          "first_decision": {
+            "$ref": "#/components/schemas/Decision",
+            "description": "The decision of the assessment's first answer (the revision revision first returns and POST /v1/assessments/aggregate counts): block when its stored risk.block is true, otherwise its recommendation. Absent when the first answer had no decision yet. With revision first it is the item's own decision."
+          }
+        }
+      },
       "AssessmentSearchPage": {
-        "description": "A bounded page of latest assessment revisions, newest creation first. Each revision identifies the exact result found; no current account risk is attached.",
+        "description": "A bounded page of latest assessment revisions, newest creation first, with how many assessments match the filters. Each item is the revision found and its first answer's decision; no current account risk is attached.",
         "type": "object",
         "additionalProperties": false,
         "required": [
           "schema_version",
           "items",
+          "total",
+          "total_capped",
           "retention_days"
         ],
         "properties": {
@@ -8589,8 +8636,18 @@
             "type": "array",
             "maxItems": 50,
             "items": {
-              "$ref": "#/components/schemas/AssessmentRevision"
+              "$ref": "#/components/schemas/AssessmentSearchItem"
             }
+          },
+          "total": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 10000,
+            "description": "How many assessments match the filters over every page, counted when this page was read: exact up to 10000. At 10000 or more it is 10000 and total_capped is true. The cursor does not change it; a later page can count differently, as results are live."
+          },
+          "total_capped": {
+            "type": "boolean",
+            "description": "True when at least 10000 assessments match, so total is 10000 and not the exact count."
           },
           "next_cursor": {
             "type": "string",
@@ -8633,6 +8690,14 @@
             "pattern": "^[A-Za-z0-9][A-Za-z0-9._:|-]{0,127}$",
             "description": "Your own opaque identifier for the account being checked, scoped to your workspace. Use an id you mint, with no direct identifier (email, phone, name or national id) in it. '|' is accepted so an Auth0 user id such as 'auth0|64abc' passes unchanged; '@', '+', '$' and whitespace are refused by the pattern, as is an exact-shape JWT; a hex digest such as a SHA-256 is allowed, because hashing an internal id is a common pseudonymous scheme. A value such as '07700900123' or 'jane.doe.gmail.com' cannot be told apart from an opaque id. It travels in bodies, and in a URL only as the path segment of GET /v1/accounts/{account_id} and its /assessments. An assessment requested by a provider hook at pre_registration, which has no account yet, carries the server-issued account_id pre: followed by its assessment_id.",
             "example": "acct_7f3a9c"
+          },
+          "email": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 254,
+            "pattern": "^[^\\s\\x00-\\x1f\\x7f]+$",
+            "description": "Assessments of every account that one of its retained admitted assessments sent this mailbox as identifiers.email, matched as lists match an email entry: case-insensitive, a +tag removed and, at gmail.com and googlemail.com, the dots of the local part ignored. Only assessments stored since email list matching began carry the mailbox. An address that is not a valid mailbox is refused with 400.",
+            "example": "new.user@example.com"
           },
           "flow": {
             "$ref": "#/components/schemas/Flow"
@@ -8709,6 +8774,10 @@
           "list_match": {
             "$ref": "#/components/schemas/ListMatch",
             "description": "The list action captured at the first answer. Requires revision first. Older answers without captured list state do not match, including none."
+          },
+          "changed": {
+            "type": "boolean",
+            "description": "true returns only assessments whose latest stored revision's decision differs from their first answer's decision (see decision); false only the others. An assessment whose first answer or latest revision has no decision yet is not changed. Cannot be combined with revision first."
           }
         }
       },

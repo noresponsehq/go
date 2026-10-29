@@ -3771,6 +3771,36 @@
       "why": "NOR-640 a group leaves out a dimension with no value; empty buckets are listed"
     },
     {
+      "file": "valid/assessment-search-request-email-changed.json",
+      "schema": "assessment-search-request.schema.json",
+      "expect": "valid",
+      "why": "NOR-725 search by a mailbox in any spelling, for answers a later revision changed"
+    },
+    {
+      "file": "invalid/assessment-search-request-changed-first.json",
+      "schema": "assessment-search-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "not",
+          ""
+        ]
+      ],
+      "why": "NOR-725 changed compares with the latest revision, so revision first is refused"
+    },
+    {
+      "file": "invalid/assessment-search-request-email-newline.json",
+      "schema": "assessment-search-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "not",
+          "/email"
+        ]
+      ],
+      "why": "NOR-725 II-004 trailing line feed refused"
+    },
+    {
       "file": "invalid/assessment-aggregate-request-three-groups.json",
       "schema": "assessment-aggregate-request.schema.json",
       "expect": "invalid",

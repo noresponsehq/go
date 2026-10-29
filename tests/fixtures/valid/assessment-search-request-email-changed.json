@@ -1,0 +1,8 @@
+{
+  "from": "2026-10-01T00:00:00Z",
+  "to": "2026-10-29T00:00:00Z",
+  "email": "Jane.Doe+promo@googlemail.com",
+  "changed": true,
+  "decision": "block",
+  "limit": 20
+}

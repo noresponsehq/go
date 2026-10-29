@@ -238,9 +238,12 @@
             "deadline_ms": 500,
             "elapsed_ms": 4000
           }
-        }
+        },
+        "first_decision": "allow"
       }
     ],
+    "total": 1,
+    "total_capped": false,
     "retention_days": 365,
     "next_cursor": "next_fixture"
   },

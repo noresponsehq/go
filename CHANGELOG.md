@@ -1,5 +1,11 @@
 # Changelog
 
+## 9.2.0
+
+* `Sdk.Assessments.Search()`: 
+  *  `request.Request` **Changed**
+  *  `response` **Changed**
+
 ## 9.1.0
 
 * `Sdk.Usage.Get()`:  `response.ConsoleLookups` **Added**

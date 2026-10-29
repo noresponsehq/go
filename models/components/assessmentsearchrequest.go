@@ -10,6 +10,8 @@ type AssessmentSearchRequest struct {
 	To   string `json:"to"`
 	// Your own opaque identifier for the account being checked, scoped to your workspace. Use an id you mint, with no direct identifier (email, phone, name or national id) in it. '|' is accepted so an Auth0 user id such as 'auth0|64abc' passes unchanged; '@', '+', '$' and whitespace are refused by the pattern, as is an exact-shape JWT; a hex digest such as a SHA-256 is allowed, because hashing an internal id is a common pseudonymous scheme. A value such as '07700900123' or 'jane.doe.gmail.com' cannot be told apart from an opaque id. It travels in bodies, and in a URL only as the path segment of GET /v1/accounts/{account_id} and its /assessments. An assessment requested by a provider hook at pre_registration, which has no account yet, carries the server-issued account_id pre: followed by its assessment_id.
 	AccountID *string `json:"account_id,omitzero"`
+	// Assessments of every account that one of its retained admitted assessments sent this mailbox as identifiers.email, matched as lists match an email entry: case-insensitive, a +tag removed and, at gmail.com and googlemail.com, the dots of the local part ignored. Only assessments stored since email list matching began carry the mailbox. An address that is not a valid mailbox is refused with 400.
+	Email *string `json:"email,omitzero"`
 	// The event an assessment is made for: account_creation (a user creates an account), login (a user returns to an existing account) or purchase (a payment or a credit grant). The account's risk is reported with the decision for this flow.
 	Flow *Flow `json:"flow,omitzero"`
 	// complete: final; nothing is still running. A lane that failed or missed its 10 s deadline stays listed in incomplete_sources, and confidence is lower. partial: a recommendation exists and at least one lane is still running or did not settle (see incomplete_sources). pending: nothing usable before the deadline; no recommendation yet, poll or wait for the webhook.
@@ -40,6 +42,8 @@ type AssessmentSearchRequest struct {
 	ScoreMax *int64 `json:"score_max,omitzero"`
 	// The list action captured at the first answer. Requires revision first. Older answers without captured list state do not match, including none.
 	ListMatch *ListMatch `json:"list_match,omitzero"`
+	// true returns only assessments whose latest stored revision's decision differs from their first answer's decision (see decision); false only the others. An assessment whose first answer or latest revision has no decision yet is not changed. Cannot be combined with revision first.
+	Changed *bool `json:"changed,omitzero"`
 }
 
 func (a AssessmentSearchRequest) MarshalJSON() ([]byte, error) {
@@ -72,6 +76,13 @@ func (a *AssessmentSearchRequest) GetAccountID() *string {
 		return nil
 	}
 	return a.AccountID
+}
+
+func (a *AssessmentSearchRequest) GetEmail() *string {
+	if a == nil {
+		return nil
+	}
+	return a.Email
 }
 
 func (a *AssessmentSearchRequest) GetFlow() *Flow {
@@ -191,4 +202,11 @@ func (a *AssessmentSearchRequest) GetListMatch() *ListMatch {
 		return nil
 	}
 	return a.ListMatch
+}
+
+func (a *AssessmentSearchRequest) GetChanged() *bool {
+	if a == nil {
+		return nil
+	}
+	return a.Changed
 }
