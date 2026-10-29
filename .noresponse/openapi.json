@@ -2542,7 +2542,7 @@
           "assessments"
         ],
         "summary": "Count assessments by time, decision and reason",
-        "description": "Count this environment's assessments created in [from,to) by hour, day or week, grouped by up to two of decision, flow, recommendation, band, reason, lane, country, asn and list_match. Each assessment counts once, by its first answer; late results do not count it again and appear in late_flips. Optional metrics add a score histogram per flow, that histogram by the latest reported outcome, and late account decision changes. from and to start a bucket and cover at most 366 days (31 for hour buckets) inside the retention period. The filters are search's and describe the first answer: send them to search with revision first to list a cell's assessments. Counts hold no identifier, stay when an assessment or account is deleted, and report reasons by code and impact band. No Idempotency-Key.",
+        "description": "Count this environment's assessments created in [from,to) by UTC hour, or by day or week from local midnight in time_zone (an IANA name, UTC by default; at most 92 days in a zone other than UTC), grouped by up to two of decision, flow, recommendation, band, reason, lane, country, asn and list_match. Each assessment counts once, by its first answer; late results do not count it again and appear in late_flips. Optional metrics add a score histogram per flow, that histogram by the latest reported outcome, and late account decision changes. from and to start a bucket and cover at most 366 days (31 for hour buckets) inside the retention period. The filters are search's and describe the first answer: send them to search with revision first to list a cell's assessments. Counts hold no identifier, stay when an assessment or account is deleted, and report reasons by code and impact band. No Idempotency-Key.",
         "requestBody": {
           "required": true,
           "content": {
@@ -7349,6 +7349,7 @@
         "properties": {
           "start": {
             "type": "string",
+            "description": "The bucket's first instant, in UTC. A day or week bucket in a time zone starts at local midnight there, so in Asia/Tokyo a day starts at 15:00Z the day before.",
             "example": "2026-10-19T00:00:00.000Z"
           },
           "count": {
@@ -7624,6 +7625,7 @@
           "bucket",
           "group_by",
           "metrics",
+          "time_zone",
           "retention_days",
           "groups_truncated",
           "buckets"
@@ -7663,6 +7665,12 @@
                 "late_flips"
               ]
             }
+          },
+          "time_zone": {
+            "type": "string",
+            "maxLength": 64,
+            "description": "The time zone whose local midnight started each day and week bucket, as requested; UTC when the request named none.",
+            "example": "UTC"
           },
           "retention_days": {
             "type": "integer",
@@ -7738,7 +7746,7 @@
         }
       },
       "AssessmentAggregateRequest": {
-        "description": "Count this environment's assessments created in [from,to) by bucket, from counts kept as each assessment is first answered, not by scanning assessments. Each assessment counts once, by its first answer (the answer served when it was first answered); later revisions and late results do not count it again, and late_flips counts its later account decision changes. from and to start a bucket (an hour, a UTC day, or a week from Monday 00:00 UTC), cover at most 366 days (31 for hour buckets) and from is inside the retention period. The filters are POST /v1/assessments/search's and describe the first answer, so a cell drills down to search with the same filters, revision first and the cell's bucket as from and to. Counts hold no identifier and stay when an assessment or account is deleted or erased; they expire with retention and go with the workspace. Reasons are counted by code and impact band, not by weight. No Idempotency-Key. Select retained_first_answers for exact facet filters and pairs over retained detail. This mode supports count, score_histogram and score_outcomes, and refuses late_flips. It has a 31-day and 100000-record work budget.",
+        "description": "Count this environment's assessments created in [from,to) by bucket, from counts kept as each assessment is first answered, not by scanning assessments. Each assessment counts once, by its first answer (the answer served when it was first answered); later revisions and late results do not count it again, and late_flips counts its later account decision changes. from and to start a bucket (an hour, or a day or a week from Monday that starts at midnight in time_zone, UTC by default), cover at most 366 days (31 for hour buckets, 92 for day and week buckets in a time_zone other than UTC) and from is inside the retention period. The filters are POST /v1/assessments/search's and describe the first answer, so a cell drills down to search with the same filters, revision first and the cell's bucket as from and to. Counts hold no identifier and stay when an assessment or account is deleted or erased; they expire with retention and go with the workspace. Reasons are counted by code and impact band, not by weight. No Idempotency-Key. Select retained_first_answers for exact facet filters and pairs over retained detail. This mode supports count, score_histogram and score_outcomes, and refuses late_flips. It has a 31-day and 100000-record work budget.",
         "type": "object",
         "additionalProperties": false,
         "required": [
@@ -7759,7 +7767,15 @@
           },
           "bucket": {
             "$ref": "#/components/schemas/Bucket",
-            "description": "The period each count covers, in UTC; a week starts on Monday."
+            "description": "The period each count covers: an hour, or a day or a week (from Monday) in time_zone. Hour buckets are whole UTC hours in any time zone."
+          },
+          "time_zone": {
+            "type": "string",
+            "maxLength": 64,
+            "pattern": "^(?:UTC|[A-Za-z_]+(?:/[A-Za-z0-9_+.-]+)+)$",
+            "default": "UTC",
+            "description": "The IANA time zone whose local midnight starts each day and week bucket, such as Europe/London or Asia/Kolkata; daylight saving changes make those days 23 or 25 hours long. A name the zone database does not know is refused (400 invalid_request naming time_zone). Day and week buckets in a zone other than UTC cover at most 92 days (400 invalid_request naming to); a year of them reads too many hourly counts to answer in time. Hour buckets stay whole UTC hours. Bucket starts, from and to stay instants. With the default population, a zone whose local midnight falls inside a UTC hour (a half-hour offset such as Asia/Kolkata) is refused for day and week buckets, as those counts are kept by the hour; retained_first_answers counts it.",
+            "example": "UTC"
           },
           "group_by": {
             "type": "array",
@@ -9594,7 +9610,7 @@
           "day",
           "week"
         ],
-        "description": "The period each count covers, in UTC; a week starts on Monday."
+        "description": "The period each count covers: an hour, or a day or a week (from Monday) in time_zone. Hour buckets are whole UTC hours in any time zone."
       },
       "Conclusion": {
         "enum": [
@@ -18475,7 +18491,7 @@
         }
       },
       "InvalidAggregate": {
-        "description": "The body does not match the aggregate request schema, or its range is not bucket aligned, too long or before the retention period, or it groups by two of reason, lane, country and asn.",
+        "description": "The body does not match the aggregate request schema, or its time_zone is unknown, or its range is not bucket aligned in that zone, too long (over 92 days for day or week buckets in a time_zone other than UTC) or before the retention period, or it groups by two of reason, lane, country and asn, or it asks the default population for day or week buckets in a zone whose midnight falls inside an hour.",
         "headers": {
           "Cache-Control": {
             "schema": {

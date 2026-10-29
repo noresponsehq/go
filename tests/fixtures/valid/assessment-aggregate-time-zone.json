@@ -1,0 +1,26 @@
+{
+  "schema_version": "1",
+  "from": "2026-10-03T14:00:00.000Z",
+  "to": "2026-10-05T13:00:00.000Z",
+  "bucket": "day",
+  "group_by": [],
+  "metrics": ["count"],
+  "time_zone": "Australia/Sydney",
+  "retention_days": 365,
+  "groups_truncated": false,
+  "buckets": [
+    {"start": "2026-10-03T14:00:00.000Z", "count": 118},
+    {"start": "2026-10-04T13:00:00.000Z", "count": 0}
+  ],
+  "coverage": {
+    "as_of": "2026-10-29T06:30:00.000Z",
+    "first_answers_started_at": "2026-10-20T00:00:00.000Z",
+    "score_outcomes_started_at": "2026-10-28T00:00:00.000Z",
+    "retained_from": "2025-10-29T06:00:00.000Z",
+    "population": "first_answers",
+    "erased_records_included": true,
+    "overlapping_groups": false,
+    "late_flip_unit": "decision_transitions",
+    "historical_backfill": false
+  }
+}

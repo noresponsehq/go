@@ -5,6 +5,7 @@
   "bucket": "day",
   "group_by": ["decision", "reason"],
   "metrics": ["count", "score_histogram", "score_outcomes", "late_flips"],
+  "time_zone": "UTC",
   "retention_days": 365,
   "groups_truncated": false,
   "buckets": [

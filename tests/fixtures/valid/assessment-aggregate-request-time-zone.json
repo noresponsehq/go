@@ -1,0 +1,8 @@
+{
+  "from": "2026-10-04T13:00:00Z",
+  "to": "2026-10-11T13:00:00Z",
+  "bucket": "day",
+  "time_zone": "Australia/Sydney",
+  "group_by": ["decision"],
+  "metrics": ["count"]
+}

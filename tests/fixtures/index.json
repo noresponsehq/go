@@ -3825,6 +3825,30 @@
       "why": "NOR-640 rollups hold no identifier, so the aggregate takes no account_id"
     },
     {
+      "file": "valid/assessment-aggregate-request-time-zone.json",
+      "schema": "assessment-aggregate-request.schema.json",
+      "expect": "valid",
+      "why": "NOR-726 day buckets start at local midnight in time_zone, so from and to are those instants"
+    },
+    {
+      "file": "valid/assessment-aggregate-time-zone.json",
+      "schema": "assessment-aggregate.schema.json",
+      "expect": "valid",
+      "why": "NOR-726 the answer names its time zone; the local day the clocks go forward is 23 hours long"
+    },
+    {
+      "file": "invalid/assessment-aggregate-request-offset-time-zone.json",
+      "schema": "assessment-aggregate-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "pattern",
+          "/time_zone"
+        ]
+      ],
+      "why": "NOR-726 time_zone is an IANA name, never a fixed offset"
+    },
+    {
       "file": "valid/assessment-identifiers.json",
       "schema": "assessment-detail.schema.json",
       "expect": "valid",

@@ -1,6 +1,6 @@
 # Bucket
 
-The period each count covers, in UTC; a week starts on Monday.
+The period each count covers: an hour, or a day or a week (from Monday) in time_zone. Hour buckets are whole UTC hours in any time zone.
 
 ## Example Usage
 

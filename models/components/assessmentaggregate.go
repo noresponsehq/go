@@ -35,10 +35,12 @@ type AssessmentAggregate struct {
 	schemaVersion string `const:"1" json:"schema_version"`
 	From          string `json:"from"`
 	To            string `json:"to"`
-	// The period each count covers, in UTC; a week starts on Monday.
+	// The period each count covers: an hour, or a day or a week (from Monday) in time_zone. Hour buckets are whole UTC hours in any time zone.
 	Bucket  Bucket                      `json:"bucket"`
 	GroupBy []AggregateDimension        `json:"group_by"`
 	Metrics []AssessmentAggregateMetric `json:"metrics"`
+	// The time zone whose local midnight started each day and week bucket, as requested; UTC when the request named none.
+	TimeZone string `json:"time_zone"`
 	// The calling workspace's configured retention period in days. Default 365 (12 months), which is also the maximum: a workspace may only shorten it, to at least 1 day. Each record expires from its own created_at; see assessment expires_at.
 	RetentionDays *int64 `default:"365" json:"retention_days"`
 	// true when more groups had counts than limit allowed.
@@ -96,6 +98,13 @@ func (a *AssessmentAggregate) GetMetrics() []AssessmentAggregateMetric {
 		return []AssessmentAggregateMetric{}
 	}
 	return a.Metrics
+}
+
+func (a *AssessmentAggregate) GetTimeZone() string {
+	if a == nil {
+		return ""
+	}
+	return a.TimeZone
 }
 
 func (a *AssessmentAggregate) GetRetentionDays() *int64 {

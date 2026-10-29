@@ -5,6 +5,7 @@ import (
 )
 
 type AggregateBucket struct {
+	// The bucket's first instant, in UTC. A day or week bucket in a time zone starts at local midnight there, so in Asia/Tokyo a day starts at 15:00Z the day before.
 	Start string `json:"start"`
 	// Assessments first answered whose creation falls in the bucket. With metric count.
 	Count *int64 `json:"count,omitzero"`

@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: 25ddae46-795d-45f5-b455-3f48c41d440e
 management:
-  docChecksum: 3b2dd35b282209036eb4e6313bdd1eed
+  docChecksum: 7d74d8c2c01e85c634dd964d9f06e5d1
   docVersion: "1"
   speakeasyVersion: internal
   generationVersion: internal
-  releaseVersion: 9.2.0
-  configChecksum: 0a8d19ce93bd31217075263d13201566
+  releaseVersion: 9.3.0
+  configChecksum: ac9f618191f8637985345372f2cda9c3
 features:
   go:
     additionalDependencies: 0.1.0
@@ -39,7 +39,7 @@ trackedFiles:
   accounts.go:
     last_write_checksum: sha1:f210ae06396cf289418c3afb588509348019f676
   assessments.go:
-    last_write_checksum: sha1:0e61cea6d25626865de2f4343e9e961108354f78
+    last_write_checksum: sha1:e08d7a90a9a6310e19a02929a70bb1316469a406
   audit.go:
     last_write_checksum: sha1:2d45a2a6d29bbaebc9387a8b46b6bc88f1f73689
   docs/models/apierrors/authenticationerror.md:
@@ -107,7 +107,7 @@ trackedFiles:
   docs/models/components/admission.md:
     last_write_checksum: sha1:abd3a9b2ae3ee067c9ecad08b1e364104a19f44c
   docs/models/components/aggregatebucket.md:
-    last_write_checksum: sha1:e00aca0e89aa88d779afd265cc1fa253ddd34fe7
+    last_write_checksum: sha1:1ee6f6fc61b6a79182e1fa393882c13fe008c26f
   docs/models/components/aggregatedimension.md:
     last_write_checksum: sha1:e76974cab3744cc997de747a736fbf13b8630e62
   docs/models/components/aggregategroup.md:
@@ -131,13 +131,13 @@ trackedFiles:
   docs/models/components/assessment.md:
     last_write_checksum: sha1:a82090e4da0805cc0738214eb3ca006c8c7eec41
   docs/models/components/assessmentaggregate.md:
-    last_write_checksum: sha1:f96899e45c2bc9be0f1bb3b99d295a0faa463122
+    last_write_checksum: sha1:278454688332c2b7da494001a27baf47417da576
   docs/models/components/assessmentaggregatecoverage.md:
     last_write_checksum: sha1:468496ed66cf4165bb10f9e9d36e18df3cfdab81
   docs/models/components/assessmentaggregatemetric.md:
     last_write_checksum: sha1:e515d97d00183e14ca6d4eefb564ca4c17ea62f1
   docs/models/components/assessmentaggregaterequest.md:
-    last_write_checksum: sha1:422cd8218229bb259b790146e5a21295320e581d
+    last_write_checksum: sha1:d883fb01984e5d191d5cee2f5d7b7b8fb98d2ff5
   docs/models/components/assessmentaggregaterequestmetric.md:
     last_write_checksum: sha1:56895732eeebb1c9c4d35db03e4ff413e7086066
   docs/models/components/assessmentdeletion.md:
@@ -231,7 +231,7 @@ trackedFiles:
   docs/models/components/breachsummary.md:
     last_write_checksum: sha1:eb307d4de39524696a5d51b02c2eab1cb17ad0a8
   docs/models/components/bucket.md:
-    last_write_checksum: sha1:a089cf59bf24286fee37ec7b0187b1c1ce9721d1
+    last_write_checksum: sha1:325ca770e9fe1222eef0472a28e9ac467113dd6e
   docs/models/components/conclusion.md:
     last_write_checksum: sha1:a12a479b34d97d2932b74df02a2e88f60e7b6ec1
   docs/models/components/confidence.md:
@@ -1137,7 +1137,7 @@ trackedFiles:
   docs/sdks/accounts/README.md:
     last_write_checksum: sha1:9114fa98df5d1631cd10167be353989fad5391c3
   docs/sdks/assessments/README.md:
-    last_write_checksum: sha1:492ae9d23014a81b3019f2b2d0e65705e45960ad
+    last_write_checksum: sha1:9813a7769f3d4137c594fd00dcb2cd0aa0daca66
   docs/sdks/audit/README.md:
     last_write_checksum: sha1:ef6010c3e062e8bfc6079db755602e525cba3fbe
   docs/sdks/erasures/README.md:
@@ -1287,7 +1287,7 @@ trackedFiles:
   models/components/admission.go:
     last_write_checksum: sha1:e896c3a977b9b34a3196548edb56a4945b8adc68
   models/components/aggregatebucket.go:
-    last_write_checksum: sha1:f8dba9b71b185672e855c9465ef7d7e5edc7ebea
+    last_write_checksum: sha1:5c1263693689d21499be5ae9f832ca8a6c7be92f
   models/components/aggregatedimension.go:
     last_write_checksum: sha1:2ba129c9346b1ca8c5aedf3e166215c0d894a2d7
   models/components/aggregategroup.go:
@@ -1307,11 +1307,11 @@ trackedFiles:
   models/components/assessment.go:
     last_write_checksum: sha1:578a55ecceb77370d069445246efdaa8dff3ffe0
   models/components/assessmentaggregate.go:
-    last_write_checksum: sha1:3f08bf55776ed368375247bcf19ca3f619c0dc9c
+    last_write_checksum: sha1:82afbffa489d885e6d668a182d24a1dbf6af5806
   models/components/assessmentaggregatecoverage.go:
     last_write_checksum: sha1:ba48bb7bd2eb423c0c801eb3b696de0236a70854
   models/components/assessmentaggregaterequest.go:
-    last_write_checksum: sha1:860b70c0ff0f11d44c31f93feb74d9cbed1bba98
+    last_write_checksum: sha1:ad057d13bf00732f479f77ccb1895faea800a73e
   models/components/assessmentdeletion.go:
     last_write_checksum: sha1:8c708c139503d02c25dff07206944d6c4b2aad5e
   models/components/assessmentdeletionaccount.go:
@@ -1403,7 +1403,7 @@ trackedFiles:
   models/components/breachsummary.go:
     last_write_checksum: sha1:c8b2abfaf1b37179f7dc0ddbf3ea892283511c19
   models/components/bucket.go:
-    last_write_checksum: sha1:f264ce71eac2e1a49bb5d9a97117cdaaf6cdb504
+    last_write_checksum: sha1:067009826bb18f1063fc33ad063441ab490e8e32
   models/components/conclusion.go:
     last_write_checksum: sha1:95238183f23dfc86f568bc6951c35d8363c4e106
   models/components/confidence.go:
@@ -2079,7 +2079,7 @@ trackedFiles:
   models/operations/updatesettings.go:
     last_write_checksum: sha1:1e640b0439a6475aac0e226f1ace0e61f8e8270b
   noresponse.go:
-    last_write_checksum: sha1:c3c196712197616c3bc29c15489b03e09fd83e59
+    last_write_checksum: sha1:fcbc6a4ee5ade0c1307f83bbca19fafbe6540224
   operations.go:
     last_write_checksum: sha1:bebffc725ab6c3807a25a8fad495f4f892064cc0
   optionalnullable/optionalnullable.go:
@@ -2353,10 +2353,10 @@ examples:
   aggregateAssessments:
     noresponse-default-aggregate-assessments:
       requestBody:
-        application/json: {"from": "2026-10-19T00:00:00Z", "to": "2026-10-26T00:00:00Z", "bucket": "week", "limit": 20, "country": "GB"}
+        application/json: {"from": "2026-10-19T00:00:00Z", "to": "2026-10-26T00:00:00Z", "bucket": "week", "time_zone": "UTC", "limit": 20, "country": "GB"}
       responses:
         "200":
-          application/json: {"schema_version": "1", "from": "2026-10-19T00:00:00.000Z", "to": "2026-10-26T00:00:00.000Z", "bucket": "week", "group_by": [], "metrics": [], "retention_days": 365, "groups_truncated": false, "coverage": {"as_of": "2026-01-01T00:00:00Z", "first_answers_started_at": "2026-01-01T00:00:00Z", "score_outcomes_started_at": "2026-01-01T00:00:00Z", "retained_from": "2026-01-01T00:00:00Z", "population": "first_answers", "erased_records_included": true, "overlapping_groups": false, "late_flip_unit": "decision_transitions", "historical_backfill": false}, "buckets": []}
+          application/json: {"schema_version": "1", "from": "2026-10-19T00:00:00.000Z", "to": "2026-10-26T00:00:00.000Z", "bucket": "week", "group_by": [], "metrics": [], "time_zone": "UTC", "retention_days": 365, "groups_truncated": false, "coverage": {"as_of": "2026-01-01T00:00:00Z", "first_answers_started_at": "2026-01-01T00:00:00Z", "score_outcomes_started_at": "2026-01-01T00:00:00Z", "retained_from": "2026-01-01T00:00:00Z", "population": "first_answers", "erased_records_included": true, "overlapping_groups": false, "late_flip_unit": "decision_transitions", "historical_backfill": false}, "buckets": []}
         "400":
           application/problem+json: {"type": "https://docs.noresponse.org/errors/invalid_request", "title": "Invalid request", "status": 400, "detail": "identifiers: at least one of email, username or phone is required.", "instance": "/v1/assessments", "code": "invalid_idempotency_key", "request_id": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c", "invalid_params": [{"field": "identifiers", "reason": "at least one of email, username or phone is required", "example": "new.user@example.com"}]}
         "401":

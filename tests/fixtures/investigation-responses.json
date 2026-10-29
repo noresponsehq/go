@@ -811,6 +811,7 @@
       "score_histogram",
       "late_flips"
     ],
+    "time_zone": "UTC",
     "retention_days": 365,
     "groups_truncated": false,
     "buckets": [
