@@ -1,5 +1,9 @@
 # Changelog
 
+## 9.1.0
+
+* `Sdk.Usage.Get()`:  `response.ConsoleLookups` **Added**
+
 ## 9.0.0
 
 * `Sdk.Accounts.ListOutcomes()`: 

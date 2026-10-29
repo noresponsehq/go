@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: 25ddae46-795d-45f5-b455-3f48c41d440e
 management:
-  docChecksum: 79c78abd35da0aef7c4885dd309c7a44
+  docChecksum: 9ece318308711c2b31be5b30179cc5d2
   docVersion: "1"
   speakeasyVersion: internal
   generationVersion: internal
-  releaseVersion: 9.0.0
-  configChecksum: 5c155c013884853ac5856893342d6996
+  releaseVersion: 9.1.0
+  configChecksum: 3ec67d9e1187406127f5b277308dfc0f
 features:
   go:
     additionalDependencies: 0.1.0
@@ -240,6 +240,8 @@ trackedFiles:
     last_write_checksum: sha1:5c7807299ea28f985a8d2e37ab2bb6aa0c892297
   docs/models/components/consistencyvalue.md:
     last_write_checksum: sha1:23f48aa4aba35dd9e960c381a4b19bdbec45b594
+  docs/models/components/consolelookups.md:
+    last_write_checksum: sha1:beccfd2135da2d103b2f471f44b6c3d172a9727f
   docs/models/components/cost.md:
     last_write_checksum: sha1:36053103ecef0f93f78079096bf72a0dd2dbe335
   docs/models/components/country.md:
@@ -693,7 +695,7 @@ trackedFiles:
   docs/models/components/transport.md:
     last_write_checksum: sha1:46574fb6ee775c22583ac2821b3e7642c91eb5f2
   docs/models/components/usage.md:
-    last_write_checksum: sha1:691439ca0a845026d8132f1d99320d131e8e6b47
+    last_write_checksum: sha1:0b5b792d49e60faed3fde508222ba10ede5a1e95
   docs/models/components/usagecount.md:
     last_write_checksum: sha1:d265c3e0c367755b1de5482bcee954b69180da2a
   docs/models/components/usagecountdepth.md:
@@ -1163,7 +1165,7 @@ trackedFiles:
   docs/sdks/settings/README.md:
     last_write_checksum: sha1:a3ac464eebb09f85d542e14100570e28047ccf67
   docs/sdks/usage/README.md:
-    last_write_checksum: sha1:378baf98b87cd9c586bf45d28e500d9bb7ad78cd
+    last_write_checksum: sha1:8e608a291a8cec8f7e6f0788c11f19112517a52d
   docs/sdks/webhookendpoints/README.md:
     last_write_checksum: sha1:339309554d8ad0dec91fa2cf8cc91d46a2ff9916
   erasures.go:
@@ -1408,6 +1410,8 @@ trackedFiles:
     last_write_checksum: sha1:5b04afda6608b474789b6d05e81d4aba79b26dd9
   models/components/consistencyvalue.go:
     last_write_checksum: sha1:6e70e56fa42a3f37a90858ab696e13d077e12ef0
+  models/components/consolelookups.go:
+    last_write_checksum: sha1:df73b71efb967ee00167f263ff03d996be59db78
   models/components/cost.go:
     last_write_checksum: sha1:4efc4a7045a4c66eb81ff9485f4e15a79c06a4eb
   models/components/country.go:
@@ -1815,7 +1819,7 @@ trackedFiles:
   models/components/transport.go:
     last_write_checksum: sha1:d4fe134a1281508302ae45565f6be929e23e4e4c
   models/components/usage.go:
-    last_write_checksum: sha1:337561529b440a937c14c7c9312780d0874e7bc6
+    last_write_checksum: sha1:c405a6ea93832b475b12bab9f553e8760da74f32
   models/components/usagecount.go:
     last_write_checksum: sha1:721c5127f722295d6a4a08d512873e6206072d0f
   models/components/usagecountdepth.go:
@@ -2071,7 +2075,7 @@ trackedFiles:
   models/operations/updatesettings.go:
     last_write_checksum: sha1:1e640b0439a6475aac0e226f1ace0e61f8e8270b
   noresponse.go:
-    last_write_checksum: sha1:6574f42720edfe57543e2c00c648180579fa5cc2
+    last_write_checksum: sha1:a6722feb73e6d31ab96b2c77b8dcc0e077c57a37
   operations.go:
     last_write_checksum: sha1:bebffc725ab6c3807a25a8fad495f4f892064cc0
   optionalnullable/optionalnullable.go:
@@ -2095,7 +2099,7 @@ trackedFiles:
   types/pointers.go:
     last_write_checksum: sha1:5408c55cb9032712d01649a61148b3aa2634483d
   usage.go:
-    last_write_checksum: sha1:65c04123e21e0eb67a653c4c983277803842e77a
+    last_write_checksum: sha1:0fc11d25fb2470084669a6970a3a8a32a2ef9f57
   webhook_verification.go:
     last_write_checksum: sha1:539762c61a11d903477d695c0c54517871df5c31
   webhookendpoints.go:
@@ -3312,7 +3316,7 @@ examples:
           workspace_id: "tnt_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
       responses:
         "200":
-          application/json: {"workspace_id": "tnt_01JA2Z8K6Q4V7W9XBCDEFGHJKM", "from": "2026-10-22", "to": "2026-10-23", "items": [{"environment": "live", "day": "2026-10-22", "metric": "assessments", "flow": "login", "depth": "quick", "count": 412}, {"environment": "live", "day": "2026-10-22", "metric": "assessments", "flow": "account_creation", "depth": "full", "count": 96}, {"environment": "live", "day": "2026-10-22", "metric": "webhook_deliveries", "count": 508}, {"environment": "live", "day": "2026-10-23", "metric": "assessments", "flow": "account_creation", "depth": "full", "count": 101}, {"environment": "live", "day": "2026-10-23", "metric": "key_usage_events", "count": 2330}, {"environment": "test", "day": "2026-10-23", "metric": "assessments", "flow": "purchase", "depth": "full", "count": 7}]}
+          application/json: {"workspace_id": "tnt_01JA2Z8K6Q4V7W9XBCDEFGHJKM", "from": "2026-10-22", "to": "2026-10-23", "items": [{"environment": "live", "day": "2026-10-22", "metric": "assessments", "flow": "login", "depth": "quick", "count": 412}, {"environment": "live", "day": "2026-10-22", "metric": "assessments", "flow": "account_creation", "depth": "full", "count": 96}, {"environment": "live", "day": "2026-10-22", "metric": "webhook_deliveries", "count": 508}, {"environment": "live", "day": "2026-10-23", "metric": "assessments", "flow": "account_creation", "depth": "full", "count": 101}, {"environment": "live", "day": "2026-10-23", "metric": "key_usage_events", "count": 2330}, {"environment": "test", "day": "2026-10-23", "metric": "assessments", "flow": "purchase", "depth": "full", "count": 7}], "console_lookups": {"used": 12, "limit": 50, "resets_at": "2026-10-24T00:00:00.000Z"}}
   createInvite:
     open:
       parameters:

@@ -3661,6 +3661,18 @@
       "expect": "valid"
     },
     {
+      "file": "invalid/usage-console-lookups-no-reset.json",
+      "schema": "usage.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "required",
+          "/console_lookups"
+        ]
+      ],
+      "why": "NOR-727 console_lookups always says when the cap resets"
+    },
+    {
       "file": "invalid/usage-delivery-with-flow.json",
       "schema": "usage.schema.json",
       "expect": "invalid",

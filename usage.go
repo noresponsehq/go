@@ -30,7 +30,7 @@ func newUsage(rootSDK *NoResponse, sdkConfig config.SDKConfiguration, hooks *hoo
 }
 
 // Get - Read a workspace's usage.
-// Read daily usage units for the environments you can access. These counts are unpriced.
+// Read daily usage units for the environments you can access. These counts are unpriced. With live access it also returns the daily console lookup cap: used, limit and resets_at.
 func (s *Usage) Get(ctx context.Context, workspaceID string, from *string, to *string, opts ...operations.Option) (*operations.GetUsageResponse, error) {
 	request := operations.GetUsageRequest{
 		WorkspaceID: workspaceID,

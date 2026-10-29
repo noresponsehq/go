@@ -1855,7 +1855,7 @@
           "usage"
         ],
         "summary": "Read a workspace's usage.",
-        "description": "Read daily usage units for the environments you can access. These counts are unpriced.",
+        "description": "Read daily usage units for the environments you can access. These counts are unpriced. With live access it also returns the daily console lookup cap: used, limit and resets_at.",
         "parameters": [
           {
             "$ref": "#/components/parameters/WorkspaceId"
@@ -9624,6 +9624,33 @@
         ],
         "description": "How a submitted identifier agrees with what the evidence holds for the other identifiers. unknown is a definite 'cannot tell' (for example a truncated or too-common breach result); absent means the comparison was not made."
       },
+      "ConsoleLookups": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "used",
+          "limit",
+          "resets_at"
+        ],
+        "description": "The live environment's daily cap on assessments members make through the console (the playground), as spent on the current UTC day. Each console submission with a new Idempotency-Key spends one lookup; a replay spends nothing, and API keys and the test environment spend none. When used reaches limit, the next lookup answers 429 lookup_limit_reached until resets_at. The count is the one the cap enforces.",
+        "properties": {
+          "used": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Lookups spent since the last reset."
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Lookups allowed per UTC day."
+          },
+          "resets_at": {
+            "type": "string",
+            "description": "The next reset: the coming midnight UTC, when used returns to 0.",
+            "example": "2026-01-02T00:00:00.000Z"
+          }
+        }
+      },
       "Cost": {
         "type": "object",
         "additionalProperties": false,
@@ -15551,7 +15578,7 @@
         "description": "Where the context was derived: backend (also when the request named no transport), browser, or provider_hook for a hosted provider hook."
       },
       "Usage": {
-        "description": "Body of the 200 answer to GET /v1/workspaces/{workspace_id}/usage: what the workspace's environments were metered for on each UTC day from from through to. Each billable unit is counted once, where it becomes final: an assessment when it is admitted (by flow and depth), a webhook delivery once per event per endpoint (retries and replays add nothing), and a key-usage event once when the ingest accepts it. A count does not change when the assessment, account or workspace is later deleted. A day, environment or metric with nothing counted has no item. No prices, limits or billing.",
+        "description": "Body of the 200 answer to GET /v1/workspaces/{workspace_id}/usage: what the workspace's environments were metered for on each UTC day from from through to. Each billable unit is counted once, where it becomes final: an assessment when it is admitted (by flow and depth), a webhook delivery once per event per endpoint (retries and replays add nothing), and a key-usage event once when the ingest accepts it. A count does not change when the assessment, account or workspace is later deleted. A day, environment or metric with nothing counted has no item. No prices or billing. console_lookups is the one limit: the live environment's daily cap on console lookups, as spent today.",
         "type": "object",
         "additionalProperties": false,
         "required": [
@@ -15584,6 +15611,10 @@
             "items": {
               "$ref": "#/components/schemas/UsageCount"
             }
+          },
+          "console_lookups": {
+            "$ref": "#/components/schemas/ConsoleLookups",
+            "description": "Present when the caller may read the live environment (a member allowed live, or a live key with the usage scope) and the API enforces the console lookup cap. Absent otherwise; it does not depend on from and to."
           }
         }
       },
@@ -20069,7 +20100,12 @@
                       "depth": "full",
                       "count": 7
                     }
-                  ]
+                  ],
+                  "console_lookups": {
+                    "used": 12,
+                    "limit": 50,
+                    "resets_at": "2026-10-24T00:00:00.000Z"
+                  }
                 }
               }
             }
