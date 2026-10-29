@@ -20,6 +20,7 @@ Your accounts, each with one current risk, and their assessment history.
 * [RetireCredential](#retirecredential) - Retire an issued credential association
 * [Export](#export) - Export an account
 * [ListDecisions](#listdecisions) - Page through recorded account decisions
+* [Search](#search) - Search distinct accounts by email or account ID
 
 ## ListChanged
 
@@ -1042,6 +1043,69 @@ func main() {
 ### Response
 
 **[*operations.ListAccountDecisionsResponse](../../models/operations/listaccountdecisionsresponse.md), error**
+
+### Errors
+
+| Error Type                      | Status Code                     | Content Type                    |
+| ------------------------------- | ------------------------------- | ------------------------------- |
+| apierrors.BadRequestError       | 400                             | application/problem+json        |
+| apierrors.AuthenticationError   | 401                             | application/problem+json        |
+| apierrors.PermissionDeniedError | 403                             | application/problem+json        |
+| apierrors.NotFoundError         | 404                             | application/problem+json        |
+| apierrors.ConflictError         | 409                             | application/problem+json        |
+| apierrors.RateLimitError        | 429                             | application/problem+json        |
+| apierrors.APIStatusError        | 4XX, 5XX                        | \*/\*                           |
+
+## Search
+
+Search distinct accounts observed in retained assessments in this environment. Match an exact account_id or canonical email; an email matches any retained assessment belonging to the account. The response contains one row per account with its newest retained assessment, current decision when available, per-account assessment count, and total distinct-account count. Send next_cursor with unchanged filters to continue. Totals are exact below 10000 and capped at 10000. Results are live across pages. Requires history access and identifier access for email. Read-only and safe to retry.
+
+### Example Usage
+
+<!-- UsageSnippet language="go" operationID="searchAccounts" method="post" path="/v1/accounts/search" -->
+```go
+package main
+
+import(
+	"context"
+	"os"
+	noresponse "github.com/noresponsehq/go/v9"
+	"github.com/noresponsehq/go/v9/models/components"
+	"log"
+)
+
+func main() {
+    ctx := context.Background()
+
+    s := noresponse.New(
+        noresponse.WithSecurity(os.Getenv("NORESPONSE_API_KEY")),
+    )
+
+    res, err := s.Accounts.Search(ctx, components.AccountDirectorySearchRequest{
+        AccountID: noresponse.Pointer("acct_7f3a9c"),
+        Email: noresponse.Pointer("new.user@example.com"),
+        Cursor: noresponse.Pointer("eyJ0IjoxNzY3MjI1NjAwMDAwMDAwLCJpIjoiYXNtX2V4YW1wbGUiLCJlIjoxNzY3MjI5MjAwfQ"),
+    })
+    if err != nil {
+        log.Fatal(err)
+    }
+    if res != nil {
+        // handle response
+    }
+}
+```
+
+### Parameters
+
+| Parameter                                                                                            | Type                                                                                                 | Required                                                                                             | Description                                                                                          |
+| ---------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `ctx`                                                                                                | [context.Context](https://pkg.go.dev/context#Context)                                                | :heavy_check_mark:                                                                                   | The context to use for the request.                                                                  |
+| `request`                                                                                            | [components.AccountDirectorySearchRequest](../../models/components/accountdirectorysearchrequest.md) | :heavy_check_mark:                                                                                   | The request object to use for the request.                                                           |
+| `opts`                                                                                               | [][operations.Option](../../models/operations/option.md)                                             | :heavy_minus_sign:                                                                                   | The options for this request.                                                                        |
+
+### Response
+
+**[*operations.SearchAccountsResponse](../../models/operations/searchaccountsresponse.md), error**
 
 ### Errors
 

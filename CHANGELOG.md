@@ -1,5 +1,9 @@
 # Changelog
 
+## 9.4.1
+
+* `Sdk.Accounts.Search()`: **Added**
+
 ## 9.4.0
 
 * `Sdk.Assessments.Create()`:  `response.Detail.Risk.Details.BreachNames[]` **Changed**
