@@ -152,3 +152,85 @@ func TestKeysAndSettingsSendOnlyWhatTheyName(t *testing.T) {
 		t.Fatalf("settings change sent %v", requests[1].body)
 	}
 }
+
+func TestIdentifierSearchRequestsAndMatchEvidence(t *testing.T) {
+	raw, err := os.ReadFile(filepath.Join("tests", "fixtures", "investigation-responses.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	var examples map[string]json.RawMessage
+	if err := json.Unmarshal(raw, &examples); err != nil {
+		t.Fatal(err)
+	}
+	var revision map[string]any
+	if err := json.Unmarshal(examples["revision"], &revision); err != nil {
+		t.Fatal(err)
+	}
+	match := map[string]any{"kind": "username", "value": "JaneDoe", "match_basis": "canonical", "namespace": "customer", "provenance": "submitted", "assessment_id": revision["id"]}
+	matchedRevision := map[string]any{}
+	for key, value := range revision {
+		matchedRevision[key] = value
+	}
+	matchedRevision["matched_identifier"] = match
+	pages := map[string]any{
+		"/v1/accounts/search":    map[string]any{"schema_version": "1", "items": []any{map[string]any{"account_id": "acct_7f3a9c", "latest": revision, "assessments": 2, "matched_identifier": match}}, "total": 1, "total_capped": false},
+		"/v1/assessments/search": map[string]any{"retention_days": 365, "schema_version": "1", "items": []any{matchedRevision}, "total": 1, "total_capped": false},
+	}
+	seen := 0
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		seen++
+		if r.Method != http.MethodPost || r.Header.Get("Authorization") != "Bearer nrk_test_identifier_fixture" {
+			t.Error("incorrect method or credential")
+		}
+		var body map[string]any
+		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+			t.Error(err)
+		}
+		identifier, ok := body["identifier"].(map[string]any)
+		if !ok || identifier["kind"] != "username" || identifier["value"] != "janedoe" || identifier["match"] != "canonical" || identifier["namespace"] != "customer" {
+			t.Errorf("identifier was not preserved: %#v", identifier)
+		}
+		page, ok := pages[r.URL.Path]
+		if !ok {
+			t.Errorf("unexpected path %s", r.URL.Path)
+			w.WriteHeader(404)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		_ = json.NewEncoder(w).Encode(page)
+	}))
+	defer server.Close()
+	identifierJSON := `{"kind":"username","value":"janedoe","match":"canonical","namespace":"customer"}`
+	var identifier components.IdentifierSearch
+	if err := json.Unmarshal([]byte(identifierJSON), &identifier); err != nil {
+		t.Fatal(err)
+	}
+	var accountRequest components.AccountDirectorySearchRequest
+	if err := json.Unmarshal([]byte(`{"identifier":`+identifierJSON+`,"limit":1}`), &accountRequest); err != nil {
+		t.Fatal(err)
+	}
+	var assessmentRequest components.AssessmentSearchRequest
+	if err := json.Unmarshal([]byte(`{"from":"2026-10-01T00:00:00Z","to":"2026-10-02T00:00:00Z","identifier":`+identifierJSON+`}`), &assessmentRequest); err != nil {
+		t.Fatal(err)
+	}
+	client := NewClient("nrk_test_identifier_fixture", WithServerURL(server.URL))
+	accounts, err := client.Accounts.Search(context.Background(), accountRequest)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assessments, err := client.Assessments.Search(context.Background(), assessmentRequest)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, found := range []*components.IdentifierMatch{accounts.Result.Items[0].MatchedIdentifier, assessments.Result.Items[0].MatchedIdentifier} {
+		if found == nil || found.Value != "JaneDoe" || string(found.MatchBasis) != "canonical" || string(found.Provenance) != "submitted" || found.AssessmentID != revision["id"] {
+			t.Errorf("match evidence changed: %#v", found)
+		}
+	}
+	if accounts.Result.Items[0].Current != nil {
+		t.Error("missing current risk must remain absent")
+	}
+	if identifier.Value != "janedoe" || seen != 2 {
+		t.Fatalf("identifier value %q, calls %d", identifier.Value, seen)
+	}
+}

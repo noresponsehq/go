@@ -1123,7 +1123,7 @@ func main() {
 
 ## Search
 
-Search retained assessments created in [from,to), over at most 366 days. Filters use each assessment decision, rather than the current account decision. Results can change between pages. Keep the assessment version to retrieve the exact decision later. Each item's detail.identifiers holds the identifiers its assessment was sent, exactly as received, and first_decision holds the decision of its first answer. email finds every assessment of the accounts that sent a mailbox, matched as lists match it. changed keeps the assessments a later revision changed. total counts every match, exactly up to 10000. This read does not require an idempotency key.
+Search retained assessments created in [from,to), at most 366 days. identifier directly matches that assessment's submitted email, phone or customer-namespace username using exact, canonical or explicitly selected email mailbox matching. matched_identifier explains the original value and match basis. Legacy email keeps its account-wide mailbox semantics and cannot be combined with identifier. Other filters combine using AND and describe assessment decisions, separate from current account decisions. Each item carries the original submitted identifiers and its first_decision when available. Newest-created order has an assessment-ID tie break. Results are live across pages; each page's total and items use one database snapshot. Totals are exact below 10000 and capped at 10000. Requires history or investigate authority and identifier-read permission for identifier/email filters; detailed mode also requires detailed permission. No Idempotency-Key.
 
 ### Example Usage
 
@@ -1147,12 +1147,14 @@ func main() {
     )
 
     res, err := s.Assessments.Search(ctx, components.AssessmentSearchRequest{
-        From: "2026-01-01T00:00:00Z",
-        To: "2026-01-02T00:00:00Z",
-        AccountID: noresponse.Pointer("acct_7f3a9c"),
-        Email: noresponse.Pointer("new.user@example.com"),
-        Cursor: noresponse.Pointer("eyJ0IjoxNzY3MjI1NjAwMDAwMDAwLCJpIjoiYXNtX2V4YW1wbGUiLCJlIjoxNzY3MjI5MjAwfQ"),
-        Country: noresponse.Pointer("GB"),
+        From: "2026-10-01T00:00:00Z",
+        To: "2026-10-02T00:00:00Z",
+        Identifier: &components.IdentifierSearch{
+            Kind: components.IdentifierSearchKindUsername,
+            Value: "janedoe",
+            Match: components.MatchCanonical.ToPointer(),
+            Namespace: components.NamespaceCustomer.ToPointer(),
+        },
     })
     if err != nil {
         log.Fatal(err)

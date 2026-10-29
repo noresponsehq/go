@@ -4,7 +4,7 @@ import (
 	"github.com/noresponsehq/go/v9/internal/utils"
 )
 
-// AssessmentSearchRequest - Search retained assessments created in [from,to), over at most 366 days. Filters use each assessment decision, rather than the current account decision. Results can change between pages. Keep the assessment version to retrieve the exact decision later. This read does not require an idempotency key.
+// AssessmentSearchRequest - Search retained assessments created in [from,to), at most 366 days. identifier matches the submitted value of each returned assessment directly. The legacy email filter keeps its account-wide mailbox semantics and cannot be combined with identifier. Other filters combine using AND and describe assessment decisions, separate from current account decisions. Results use newest-created order with an assessment-ID tie break and are live, not a snapshot across pages. Requires history or investigate authority; identifier/email filtering also requires identifier-read permission. Detailed response mode additionally requires detailed permission. No Idempotency-Key.
 type AssessmentSearchRequest struct {
 	From string `json:"from"`
 	To   string `json:"to"`
@@ -44,6 +44,8 @@ type AssessmentSearchRequest struct {
 	ListMatch *ListMatch `json:"list_match,omitzero"`
 	// true returns only assessments whose latest stored revision's decision differs from their first answer's decision (see decision); false only the others. An assessment whose first answer or latest revision has no decision yet is not changed. Cannot be combined with revision first.
 	Changed *bool `json:"changed,omitzero"`
+	// One customer-submitted identifier. Defaults to exact comparison of the original submitted value. canonical uses the supported identifier normalisation without an ownership claim: email preserves local-part case, NFC-normalises it and lowercases the domain without removing dots or tags; phone uses international E.164 without extensions or an inferred region; username uses NFC and Unicode case folding within the customer namespace. mailbox is email-only and explicitly selects existing list rules: case-insensitive, remove +tag, and ignore local-part dots at gmail.com and googlemail.com; googlemail.com maps to gmail.com. Username requires namespace customer. Email and phone forbid namespace. Source-discovered identifiers and platform handles are not searched. Unsupported kinds, namespaces, modes and invalid values return 400. Search equality does not establish verified ownership or merge accounts.
+	Identifier *IdentifierSearch `json:"identifier,omitzero"`
 }
 
 func (a AssessmentSearchRequest) MarshalJSON() ([]byte, error) {
@@ -209,4 +211,11 @@ func (a *AssessmentSearchRequest) GetChanged() *bool {
 		return nil
 	}
 	return a.Changed
+}
+
+func (a *AssessmentSearchRequest) GetIdentifier() *IdentifierSearch {
+	if a == nil {
+		return nil
+	}
+	return a.Identifier
 }

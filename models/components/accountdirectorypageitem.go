@@ -37,6 +37,8 @@ type AccountDirectoryPageItem struct {
 	Current *Account `json:"current,omitzero"`
 	// Count of admitted retained assessments belonging to this account, not just the returned page.
 	Assessments int64 `json:"assessments"`
+	// Why this result matched a typed identifier search. value is the original value submitted in assessment_id. Provenance records a customer submission, not a source discovery or verified ownership. Equality is deterministic and has no inferred confidence score. An account result names its newest retained matching assessment, which can differ from latest.
+	MatchedIdentifier *IdentifierMatch `json:"matched_identifier,omitzero"`
 }
 
 func (a AccountDirectoryPageItem) MarshalJSON() ([]byte, error) {
@@ -83,4 +85,11 @@ func (a *AccountDirectoryPageItem) GetAssessments() int64 {
 		return 0
 	}
 	return a.Assessments
+}
+
+func (a *AccountDirectoryPageItem) GetMatchedIdentifier() *IdentifierMatch {
+	if a == nil {
+		return nil
+	}
+	return a.MatchedIdentifier
 }

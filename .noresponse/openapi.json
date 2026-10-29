@@ -2592,7 +2592,7 @@
           "assessments"
         ],
         "summary": "Search assessments across this environment",
-        "description": "Search retained assessments created in [from,to), over at most 366 days. Filters use each assessment decision, rather than the current account decision. Results can change between pages. Keep the assessment version to retrieve the exact decision later. Each item's detail.identifiers holds the identifiers its assessment was sent, exactly as received, and first_decision holds the decision of its first answer. email finds every assessment of the accounts that sent a mailbox, matched as lists match it. changed keeps the assessments a later revision changed. total counts every match, exactly up to 10000. This read does not require an idempotency key.",
+        "description": "Search retained assessments created in [from,to), at most 366 days. identifier directly matches that assessment's submitted email, phone or customer-namespace username using exact, canonical or explicitly selected email mailbox matching. matched_identifier explains the original value and match basis. Legacy email keeps its account-wide mailbox semantics and cannot be combined with identifier. Other filters combine using AND and describe assessment decisions, separate from current account decisions. Each item carries the original submitted identifiers and its first_decision when available. Newest-created order has an assessment-ID tie break. Results are live across pages; each page's total and items use one database snapshot. Totals are exact below 10000 and capped at 10000. Requires history or investigate authority and identifier-read permission for identifier/email filters; detailed mode also requires detailed permission. No Idempotency-Key.",
         "requestBody": {
           "required": true,
           "content": {
@@ -6523,8 +6523,8 @@
         "tags": [
           "accounts"
         ],
-        "summary": "Search distinct accounts by email or account ID",
-        "description": "Search distinct accounts observed in retained assessments in this environment. Match an exact account_id or canonical email; an email matches any retained assessment belonging to the account. Set needs_action to select accounts with an open or in-progress retained review, or a current review/block decision without an effective retained outcome. This filter applies before pagination and counting, adds waiting_for reasons to each row and requires management scope as well as history or investigate access. The response contains one row per account with its newest retained assessment, current decision when available, per-account assessment count, and total distinct-account count. Send next_cursor with unchanged filters to continue. Totals are exact below 10000 and capped at 10000. Results are live across pages. Requires history access and identifier access for email. Read-only and safe to retry.",
+        "summary": "Search distinct accounts by submitted identifier or account ID",
+        "description": "Search distinct accounts observed in retained assessments in this environment. identifier matches an exact, canonical or explicitly selected mailbox form of a submitted email, phone or customer-namespace username. It matches historical retained inputs and returns matched_identifier with the original value and matching assessment. Each row has its newest retained assessment, current account decision when available, retained assessment count, and total distinct-account count. identifier and legacy email are mutually exclusive; account_id and needs_action combine with either using AND. Set needs_action to select accounts with a retained open or in-progress review, or a current review/block account decision without an effective retained account outcome. This filter applies before counting and pagination and adds waiting_for reasons. Current decisions include account list overrides and shared-key scoring and preserve admission holds. Typed identifier search uses stable opaque account order; ordinary and legacy email searches retain newest-seen order. Results are live across pages; each page's items and total share a database snapshot, while current account risk is read separately. Cursors are expiring and bound to scope, operation and filters. Totals are exact below 10000 and capped at 10000. Requires history or investigate authority and identifier-read permission for identifier or email filtering. needs_action additionally requires management scope. Source-discovered associations are not searched and equality is not verified ownership.",
         "requestBody": {
           "required": true,
           "content": {
@@ -6933,7 +6933,7 @@
         }
       },
       "AccountDirectoryPage": {
-        "description": "Accounts observed in retained assessments, newest seen first, with each account once per page and across pages. Counts and keyset pagination are computed over distinct accounts in one database snapshot per page. Live data can change between pages.",
+        "description": "Distinct observed accounts with retained assessments. Typed identifier searches use stable opaque account order, independent of newly submitted assessments; ordinary and legacy email searches use newest-seen order. One repeatable-read database snapshot supplies each page's rows and totals. Pages do not share a snapshot: new matching accounts may appear on a later page or before the cursor and be missed until a fresh search; retention, erasure and changed membership can remove results. Current account decisions are read separately and may advance during a page. Cursors bind the workspace/environment, operation and filters, expire, and cannot cross scopes. Erasure and retention always take precedence over pagination.",
         "type": "object",
         "additionalProperties": false,
         "required": [
@@ -7008,17 +7008,21 @@
             "$ref": "#/components/schemas/AssessmentRevision"
           },
           "current": {
-            "$ref": "#/components/schemas/Account"
+            "$ref": "#/components/schemas/Account",
+            "description": "The account's actual current decision and score, when a current decision exists. It is separate from latest, which is an assessment revision. When omitted, show no current account decision instead of substituting the assessment decision."
           },
           "assessments": {
             "type": "integer",
             "minimum": 1,
             "description": "Count of admitted retained assessments belonging to this account, not just the returned page."
+          },
+          "matched_identifier": {
+            "$ref": "#/components/schemas/IdentifierMatch"
           }
         }
       },
       "AccountDirectorySearchRequest": {
-        "description": "Bounded distinct-account search for a single authenticated workspace/environment. Email matches any retained admitted assessment of an account, using assessment search's canonical mailbox rules. No assessment history download is required.",
+        "description": "Bounded distinct-account search for one authenticated workspace/environment. identifier matches any retained admitted assessment of an account, including historical submitted values. email preserves the legacy canonical-mailbox filter. identifier and email cannot be combined. All other filters combine using AND. Typed identifier search uses stable opaque account order; ordinary and legacy email searches retain newest-seen ordering. Pages are live, not a cross-page snapshot. Requires history or investigate authority and identifier-read permission for identifier or email filtering.",
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -7056,7 +7060,31 @@
             "pattern": "^[A-Za-z0-9_-]+$",
             "description": "Opaque, expiring cursor bound to this environment, operation and every filter. Keep the filters unchanged.",
             "example": "eyJ0IjoxNzY3MjI1NjAwMDAwMDAwLCJpIjoiYXNtX2V4YW1wbGUiLCJlIjoxNzY3MjI5MjAwfQ"
+          },
+          "identifier": {
+            "$ref": "#/components/schemas/IdentifierSearch",
+            "description": "Match a retained assessment's submitted identifier directly. Mutually exclusive with legacy email. All other supported filters combine using AND."
           }
+        },
+        "examples": [
+          {
+            "identifier": {
+              "kind": "username",
+              "value": "janedoe",
+              "match": "canonical",
+              "namespace": "customer"
+            },
+            "limit": 25
+          }
+        ],
+        "example": {
+          "identifier": {
+            "kind": "username",
+            "value": "janedoe",
+            "match": "canonical",
+            "namespace": "customer"
+          },
+          "limit": 25
         }
       },
       "AccountEnforcementList": {
@@ -8818,6 +8846,9 @@
           "first_decision": {
             "$ref": "#/components/schemas/Decision",
             "description": "The decision of the assessment's first answer (the revision revision first returns and POST /v1/assessments/aggregate counts): block when its stored risk.block is true, otherwise its recommendation. Absent when the first answer had no decision yet. With revision first it is the item's own decision."
+          },
+          "matched_identifier": {
+            "$ref": "#/components/schemas/IdentifierMatch"
           }
         }
       },
@@ -8872,7 +8903,7 @@
         }
       },
       "AssessmentSearchRequest": {
-        "description": "Search retained assessments created in [from,to), over at most 366 days. Filters use each assessment decision, rather than the current account decision. Results can change between pages. Keep the assessment version to retrieve the exact decision later. This read does not require an idempotency key.",
+        "description": "Search retained assessments created in [from,to), at most 366 days. identifier matches the submitted value of each returned assessment directly. The legacy email filter keeps its account-wide mailbox semantics and cannot be combined with identifier. Other filters combine using AND and describe assessment decisions, separate from current account decisions. Results use newest-created order with an assessment-ID tie break and are live, not a snapshot across pages. Requires history or investigate authority; identifier/email filtering also requires identifier-read permission. Detailed response mode additionally requires detailed permission. No Idempotency-Key.",
         "type": "object",
         "additionalProperties": false,
         "required": [
@@ -8983,7 +9014,35 @@
           "changed": {
             "type": "boolean",
             "description": "true returns only assessments whose latest stored revision's decision differs from their first answer's decision (see decision); false only the others. An assessment whose first answer or latest revision has no decision yet is not changed. Cannot be combined with revision first."
+          },
+          "identifier": {
+            "$ref": "#/components/schemas/IdentifierSearch",
+            "description": "Match a retained assessment's submitted identifier directly. Mutually exclusive with legacy email. All other supported filters combine using AND."
           }
+        },
+        "examples": [
+          {
+            "from": "2026-10-01T00:00:00Z",
+            "to": "2026-10-02T00:00:00Z",
+            "identifier": {
+              "kind": "username",
+              "value": "janedoe",
+              "match": "canonical",
+              "namespace": "customer"
+            },
+            "limit": 20
+          }
+        ],
+        "example": {
+          "from": "2026-10-01T00:00:00Z",
+          "to": "2026-10-02T00:00:00Z",
+          "identifier": {
+            "kind": "username",
+            "value": "janedoe",
+            "match": "canonical",
+            "namespace": "customer"
+          },
+          "limit": 20
         }
       },
       "AssessmentUpdatedData": {
@@ -11223,6 +11282,127 @@
         ],
         "description": "Which submitted identifier a signal concerns. ip is a selector of breach_exposure only."
       },
+      "IdentifierMatch": {
+        "description": "Why this result matched a typed identifier search. value is the original value submitted in assessment_id. Provenance records a customer submission, not a source discovery or verified ownership. Equality is deterministic and has no inferred confidence score. An account result names its newest retained matching assessment, which can differ from latest.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "kind",
+          "value",
+          "match_basis",
+          "provenance",
+          "assessment_id"
+        ],
+        "properties": {
+          "kind": {
+            "$ref": "#/components/schemas/IdentifierSearchKind"
+          },
+          "value": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 254,
+            "example": "Jane.Doe+case@EXAMPLE.COM"
+          },
+          "match_basis": {
+            "$ref": "#/components/schemas/Match"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/Provenance",
+            "description": "Customer-submitted input. It does not mean the customer or NoResponse verified ownership."
+          },
+          "namespace": {
+            "$ref": "#/components/schemas/Namespace",
+            "description": "Present only for username. A source platform handle is not a customer-namespace username."
+          },
+          "assessment_id": {
+            "type": "string",
+            "pattern": "^asm_[0-9A-HJKMNP-TV-Z]{26}$",
+            "description": "Opaque, server-assigned assessment id: 'asm_' and a 26-character Crockford base32 ULID. Unique within the workspace; another workspace's assessment id answers 404.",
+            "example": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          }
+        },
+        "examples": [
+          {
+            "kind": "username",
+            "value": "JaneDoe",
+            "match_basis": "canonical",
+            "namespace": "customer",
+            "provenance": "submitted",
+            "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          }
+        ],
+        "example": {
+          "kind": "username",
+          "value": "JaneDoe",
+          "match_basis": "canonical",
+          "namespace": "customer",
+          "provenance": "submitted",
+          "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+        }
+      },
+      "IdentifierSearch": {
+        "description": "One customer-submitted identifier. Defaults to exact comparison of the original submitted value. canonical uses the supported identifier normalisation without an ownership claim: email preserves local-part case, NFC-normalises it and lowercases the domain without removing dots or tags; phone uses international E.164 without extensions or an inferred region; username uses NFC and Unicode case folding within the customer namespace. mailbox is email-only and explicitly selects existing list rules: case-insensitive, remove +tag, and ignore local-part dots at gmail.com and googlemail.com; googlemail.com maps to gmail.com. Username requires namespace customer. Email and phone forbid namespace. Source-discovered identifiers and platform handles are not searched. Unsupported kinds, namespaces, modes and invalid values return 400. Search equality does not establish verified ownership or merge accounts.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "kind",
+          "value"
+        ],
+        "properties": {
+          "kind": {
+            "$ref": "#/components/schemas/IdentifierSearchKind"
+          },
+          "value": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 254,
+            "description": "The comparison value. Stored original identifiers remain unchanged. An invalid identifier is refused instead of returning an empty result.",
+            "pattern": "^[^\\x00-\\x1f\\x7f]+$",
+            "example": "Jane.Doe+case@example.com"
+          },
+          "match": {
+            "$ref": "#/components/schemas/Match",
+            "description": "exact compares the original submitted value; canonical uses identifier-specific normalisation; mailbox explicitly selects the email alias rules used by lists.",
+            "default": "exact"
+          },
+          "namespace": {
+            "$ref": "#/components/schemas/Namespace",
+            "description": "Required for username: the username submitted by this customer in this workspace/environment. It does not name or join a source platform. Omit for email and phone."
+          }
+        },
+        "examples": [
+          {
+            "kind": "username",
+            "value": "janedoe",
+            "match": "canonical",
+            "namespace": "customer"
+          },
+          {
+            "kind": "email",
+            "value": "Jane.Doe+case@example.com",
+            "match": "canonical"
+          },
+          {
+            "kind": "phone",
+            "value": "+1 (415) 555-2671",
+            "match": "canonical"
+          }
+        ],
+        "example": {
+          "kind": "username",
+          "value": "janedoe",
+          "match": "canonical",
+          "namespace": "customer"
+        }
+      },
+      "IdentifierSearchKind": {
+        "type": "string",
+        "enum": [
+          "email",
+          "phone",
+          "username"
+        ]
+      },
       "Impact": {
         "enum": [
           "none",
@@ -12459,6 +12639,15 @@
           }
         }
       },
+      "Match": {
+        "type": "string",
+        "enum": [
+          "exact",
+          "canonical",
+          "mailbox"
+        ],
+        "description": "exact compares the original submitted value; canonical uses identifier-specific normalisation; mailbox explicitly selects the email alias rules used by lists."
+      },
       "Member": {
         "description": "One member of a workspace: an external user id holding one role. A removed member loses every permission at once.",
         "type": "object",
@@ -12631,6 +12820,13 @@
           "key_usage_events"
         ],
         "description": "assessments: assessments admitted. webhook_deliveries: events sent to endpoints, one per event per endpoint. key_usage_events: key-usage events accepted."
+      },
+      "Namespace": {
+        "type": "string",
+        "enum": [
+          "customer"
+        ],
+        "description": "Required for username: the username submitted by this customer in this workspace/environment. It does not name or join a source platform. Omit for email and phone."
       },
       "NotFoundError": {
         "description": "HTTP 404 problem document.",
@@ -14012,6 +14208,13 @@
             "example": "new.user@example.com"
           }
         }
+      },
+      "Provenance": {
+        "type": "string",
+        "enum": [
+          "submitted"
+        ],
+        "description": "Customer-submitted input. It does not mean the customer or NoResponse verified ownership."
       },
       "Publication": {
         "type": "object",
