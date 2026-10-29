@@ -1,5 +1,26 @@
 # Changelog
 
+## 9.4.2
+
+* `Sdk.Assessments.Create()`:  `response.Account.Risk.Reasons[].Code.Enum(noEmailMatches)` **Added**
+* `Sdk.Assessments.Get()`:  `response.Account.Risk.Reasons[].Code.Enum(noEmailMatches)` **Added**
+* `Sdk.Assessments.Query()`:  `response.Items[].Risk.Reasons[].Code.Enum(noEmailMatches)` **Added**
+* `Sdk.Assessments.Aggregate()`: 
+  *  `request.Request.Reason.Enum(noEmailMatches)` **Added**
+  *  `response.Buckets[].Groups[].Reason.Enum(noEmailMatches)` **Added**
+* `Sdk.Assessments.Search()`: 
+  *  `request.Request.Reason.Enum(noEmailMatches)` **Added**
+  *  `response.Items[].Detail.Risk.Reasons[].Code.Enum(noEmailMatches)` **Added**
+* `Sdk.Assessments.RetrieveVersion()`:  `response.Detail.Risk.Reasons[].Code.Enum(noEmailMatches)` **Added**
+* `Sdk.Accounts.ListChanged()`:  `response.Items[].Risk.Reasons[].Code.Enum(noEmailMatches)` **Added**
+* `Sdk.Accounts.Get()`:  `response.Risk.Reasons[].Code.Enum(noEmailMatches)` **Added**
+* `Sdk.Accounts.ListAssessments()`:  `response.Items[].Risk.Reasons[].Code.Enum(noEmailMatches)` **Added**
+* `Sdk.Accounts.RetrieveDecision()`:  `response.Account.Risk.Reasons[].Code.Enum(noEmailMatches)` **Added**
+* `Sdk.Accounts.Export()`:  `response.Assessments[].Detail.Risk.Reasons[].Code.Enum(noEmailMatches)` **Added**
+* `Sdk.Accounts.ListDecisions()`:  `response.Items[].Account.Risk.Reasons[].Code.Enum(noEmailMatches)` **Added**
+* `Sdk.Accounts.Search()`:  `response.Items[].Latest.Detail.Risk.Reasons[].Code.Enum(noEmailMatches)` **Added**
+* `Sdk.Requests.List()`:  `response.Items[].Decision.Account.Risk.Reasons[].Code.Enum(noEmailMatches)` **Added**
+
 ## 9.4.1
 
 * `Sdk.Accounts.Search()`: **Added**

@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: 25ddae46-795d-45f5-b455-3f48c41d440e
 management:
-  docChecksum: c8f5b2f1eab4199ca69d73ebca04eb6a
+  docChecksum: cd237983aca31020ca020ebe161bf464
   docVersion: "1"
   speakeasyVersion: internal
   generationVersion: internal
-  releaseVersion: 9.4.1
-  configChecksum: 7c726fb6804daa295a02d206575b1869
+  releaseVersion: 9.4.2
+  configChecksum: 4922ca140e3ac7b27aea4752c8f5899a
 features:
   go:
     additionalDependencies: 0.1.0
@@ -135,7 +135,7 @@ trackedFiles:
   docs/models/components/answerrevision.md:
     last_write_checksum: sha1:4cf5d65116e3e480523c9b818634f7c9cec16659
   docs/models/components/assessment.md:
-    last_write_checksum: sha1:a82090e4da0805cc0738214eb3ca006c8c7eec41
+    last_write_checksum: sha1:214cbaf24a2b84027914b8c368ecc31415cae6a9
   docs/models/components/assessmentaggregate.md:
     last_write_checksum: sha1:278454688332c2b7da494001a27baf47417da576
   docs/models/components/assessmentaggregatecoverage.md:
@@ -143,7 +143,7 @@ trackedFiles:
   docs/models/components/assessmentaggregatemetric.md:
     last_write_checksum: sha1:e515d97d00183e14ca6d4eefb564ca4c17ea62f1
   docs/models/components/assessmentaggregaterequest.md:
-    last_write_checksum: sha1:d883fb01984e5d191d5cee2f5d7b7b8fb98d2ff5
+    last_write_checksum: sha1:819ca0a0f193517f95e0aa54efdae8e34d26491a
   docs/models/components/assessmentaggregaterequestmetric.md:
     last_write_checksum: sha1:56895732eeebb1c9c4d35db03e4ff413e7086066
   docs/models/components/assessmentdeletion.md:
@@ -151,7 +151,7 @@ trackedFiles:
   docs/models/components/assessmentdeletionaccount.md:
     last_write_checksum: sha1:65df9877a89ffd3bd346d1176b743d8b532d623e
   docs/models/components/assessmentdetail.md:
-    last_write_checksum: sha1:4af9ae78fec78704122c45f305d1a5c48b8f54b8
+    last_write_checksum: sha1:fce734d072e3bb1db16ccef2cd347f3d460d4a22
   docs/models/components/assessmentdetailauthcontext.md:
     last_write_checksum: sha1:84af5007efeb4dd265ab063faed5a3a658c36120
   docs/models/components/assessmentdetailtiming.md:
@@ -177,13 +177,13 @@ trackedFiles:
   docs/models/components/assessmentrequestpolicycontext.md:
     last_write_checksum: sha1:bcf935bb38eb6b8f31e3a0395f80fb264616dfb1
   docs/models/components/assessmentrevision.md:
-    last_write_checksum: sha1:2d89ba20ef04faa406b7b02444b4c5241f77acfe
+    last_write_checksum: sha1:375905e6e276fbbcd8adc4afc464e141f6182400
   docs/models/components/assessmentsearchitem.md:
-    last_write_checksum: sha1:78c4b4861d1d99d957fde18a375bf002df2fc456
+    last_write_checksum: sha1:884765ba37419d8e56dd8e6d8f5779566ae914d4
   docs/models/components/assessmentsearchpage.md:
     last_write_checksum: sha1:223e65b052bb816300ed16f05d09a45f083d04dd
   docs/models/components/assessmentsearchrequest.md:
-    last_write_checksum: sha1:1b9c629c4315b0434a33b539f2f891bd0e251254
+    last_write_checksum: sha1:86ba5ca53df9ec7272bdf0854e45b7d64366492f
   docs/models/components/assessmentupdateddata.md:
     last_write_checksum: sha1:1d8e3741429cb6efb00dc646760a186908da9030
   docs/models/components/assessmentupdatedevent.md:
@@ -241,7 +241,7 @@ trackedFiles:
   docs/models/components/conclusion.md:
     last_write_checksum: sha1:a12a479b34d97d2932b74df02a2e88f60e7b6ec1
   docs/models/components/confidence.md:
-    last_write_checksum: sha1:f3b7c4e415b2e168751cea3043b1b4ce5cb4237b
+    last_write_checksum: sha1:6a445cf345b4ebf736eda346f8584bbcf8f6dcff
   docs/models/components/conflicterrorcode.md:
     last_write_checksum: sha1:c6549709a5e379d92c8a1c797888c306ecbbf59a
   docs/models/components/consistency.md:
@@ -287,7 +287,7 @@ trackedFiles:
   docs/models/components/decision.md:
     last_write_checksum: sha1:778d75d2f650f0aa6e4b02c1fef0272ec6de81b4
   docs/models/components/decisionreceipt.md:
-    last_write_checksum: sha1:96cdb82b5f2abb95841780eec0604bec8fdc57e0
+    last_write_checksum: sha1:6fe32aa5195954c4088b273aa28cc46bc73bf5e7
   docs/models/components/delay.md:
     last_write_checksum: sha1:6a0acb15d12dbcd01ed20d7d08605be35c3d7b47
   docs/models/components/depth.md:
@@ -569,7 +569,7 @@ trackedFiles:
   docs/models/components/ratelimiterrorcode.md:
     last_write_checksum: sha1:06e024b676f7da25bd925e962adb6c0c21c474fa
   docs/models/components/reasoncode.md:
-    last_write_checksum: sha1:0d5e956d546cd396b0c626426004b4e2cd9521bf
+    last_write_checksum: sha1:bbb68d0a83fd83dec477b5129ed306d86e5b78d2
   docs/models/components/reasonidentifier.md:
     last_write_checksum: sha1:82e55ead0c62daa5d2fef2d44368f42b7275efef
   docs/models/components/recommendation.md:
@@ -637,11 +637,11 @@ trackedFiles:
   docs/models/components/reviewviewrequest.md:
     last_write_checksum: sha1:8815ba390e2f9776d7f743ccafabc391629e946e
   docs/models/components/risk.md:
-    last_write_checksum: sha1:2d3073e1161289340c7054178695dd0958acb566
+    last_write_checksum: sha1:e47a5247f0cd3c968b23528752c423a1aea4bca9
   docs/models/components/riskconfidence.md:
     last_write_checksum: sha1:a57bd077ceb91a9c4302db55bd264a31730fc009
   docs/models/components/riskcoverage.md:
-    last_write_checksum: sha1:a73fcd18a59b6dc014368949ce3adfea007541cd
+    last_write_checksum: sha1:bf8197116bf770a6b32380048231b67c5855523e
   docs/models/components/riskdetails.md:
     last_write_checksum: sha1:660c93799cc9a9aafaa798109ad13eb5561e370d
   docs/models/components/riskdetailsbreachname.md:
@@ -693,7 +693,7 @@ trackedFiles:
   docs/models/components/sourceid.md:
     last_write_checksum: sha1:d1005f6151d96c18db94ec8bbc86ae7581eb4365
   docs/models/components/status.md:
-    last_write_checksum: sha1:30f76731a5f4b7149c1a3d5c1bd33067e9f34dac
+    last_write_checksum: sha1:3402c6f513e9012dc893cd245673934379a4093d
   docs/models/components/thresholds.md:
     last_write_checksum: sha1:f0d94be266f91f8ba7cf96a46ffe4254dd906ce1
   docs/models/components/timezone.md:
@@ -1319,19 +1319,19 @@ trackedFiles:
   models/components/answerrevision.go:
     last_write_checksum: sha1:1e0315bf793aca42862b4e95885f44b07034601d
   models/components/assessment.go:
-    last_write_checksum: sha1:578a55ecceb77370d069445246efdaa8dff3ffe0
+    last_write_checksum: sha1:748287a86f4f4800c30f000c9d8e1d06788c4079
   models/components/assessmentaggregate.go:
     last_write_checksum: sha1:82afbffa489d885e6d668a182d24a1dbf6af5806
   models/components/assessmentaggregatecoverage.go:
     last_write_checksum: sha1:ba48bb7bd2eb423c0c801eb3b696de0236a70854
   models/components/assessmentaggregaterequest.go:
-    last_write_checksum: sha1:ad057d13bf00732f479f77ccb1895faea800a73e
+    last_write_checksum: sha1:6ba7c5bb6097a19b72bca5d3e0a7ce66f7d59b30
   models/components/assessmentdeletion.go:
     last_write_checksum: sha1:8c708c139503d02c25dff07206944d6c4b2aad5e
   models/components/assessmentdeletionaccount.go:
     last_write_checksum: sha1:802cec7bbdf2115898fe8dd6b0d7d9a59ebd0a25
   models/components/assessmentdetail.go:
-    last_write_checksum: sha1:d76ecec0f549f0ff1f12c8798b3b7a2586714229
+    last_write_checksum: sha1:f0283951d62795a83ed3442b33cd90774a952d9e
   models/components/assessmentdetailauthcontext.go:
     last_write_checksum: sha1:b98b6a50558f20cfaa42efb386292a5b63cb0158
   models/components/assessmentdetailtiming.go:
@@ -1357,13 +1357,13 @@ trackedFiles:
   models/components/assessmentrequestpolicycontext.go:
     last_write_checksum: sha1:ce096826ff0454db03b5759d3c3a17efe38b2e57
   models/components/assessmentrevision.go:
-    last_write_checksum: sha1:8fa7329d63a60b679b1ac59893ccee8787804da4
+    last_write_checksum: sha1:732fb59cf6c2916475ed6a4a842603d4b9ee0611
   models/components/assessmentsearchitem.go:
-    last_write_checksum: sha1:2956b402136dfae44c200fc38442394124dc295a
+    last_write_checksum: sha1:6b4c271ac58defef929faf44387792e8b6d80e1f
   models/components/assessmentsearchpage.go:
     last_write_checksum: sha1:b4596fdcdee1d7c412b50f4cfc746a766ccfdd0c
   models/components/assessmentsearchrequest.go:
-    last_write_checksum: sha1:bdcb4c9851707c442a6a5839351721c69e7de774
+    last_write_checksum: sha1:7f478b01f0daf5e08cf7be1fda9c873752bbdf53
   models/components/assessmentupdateddata.go:
     last_write_checksum: sha1:330ca177963d8758662b4a0ae5325601a1e26dad
   models/components/assessmentupdatedevent.go:
@@ -1421,7 +1421,7 @@ trackedFiles:
   models/components/conclusion.go:
     last_write_checksum: sha1:95238183f23dfc86f568bc6951c35d8363c4e106
   models/components/confidence.go:
-    last_write_checksum: sha1:d17a4257ee33624e4b897492aecb78e402243619
+    last_write_checksum: sha1:bcb370e4de1ec6620334c6f453bd30498748979d
   models/components/conflicterrorcode.go:
     last_write_checksum: sha1:8791b46dd6434b4296dd6e791c19963af4badfa8
   models/components/consistency.go:
@@ -1467,7 +1467,7 @@ trackedFiles:
   models/components/decision.go:
     last_write_checksum: sha1:819bbc886b31ebaeb03c26a856784a8668680822
   models/components/decisionreceipt.go:
-    last_write_checksum: sha1:45a3a4df0edb8ddd835f7860ac25b1586bf2c4c9
+    last_write_checksum: sha1:b8cc17098145d2e3729e0c1b1b8bc55a5cf6b067
   models/components/delay.go:
     last_write_checksum: sha1:87f641d536f14efb29cf5cc351c5c98e029b6ae4
   models/components/depth.go:
@@ -1713,7 +1713,7 @@ trackedFiles:
   models/components/ratelimiterrorcode.go:
     last_write_checksum: sha1:3a32602b91353ec2340c3a23bbec8b164f2f49b3
   models/components/reasoncode.go:
-    last_write_checksum: sha1:9bcd5871fb4c8da44f2bf57ca66188da45a07640
+    last_write_checksum: sha1:5ef767bf81689709c457c09945fd0859b791699f
   models/components/reasonidentifier.go:
     last_write_checksum: sha1:6039b7367a22acd04c0b9d3989aefcb9ba5f2216
   models/components/recommendation.go:
@@ -1779,11 +1779,11 @@ trackedFiles:
   models/components/reviewviewrequest.go:
     last_write_checksum: sha1:e1f90be91b731cca0de50a25ca748df1ec33978f
   models/components/risk.go:
-    last_write_checksum: sha1:0def265047d613db82312f45a06d3a20840e941b
+    last_write_checksum: sha1:533d21ac7392fe87458c2e75b04e8f4a33cb6578
   models/components/riskconfidence.go:
     last_write_checksum: sha1:56fb4b7efde73f4a232343e2a913a3ea0f192c9a
   models/components/riskcoverage.go:
-    last_write_checksum: sha1:04d58905b7ff8ea467246f2cbb3ad40ba6dc85ae
+    last_write_checksum: sha1:82e85b70e7b05b458d06cd05c7d32d106bfc932b
   models/components/riskdetails.go:
     last_write_checksum: sha1:dfed265147c50f679b86dba4669c5291772e5822
   models/components/riskdetailsbreachname.go:
@@ -1831,7 +1831,7 @@ trackedFiles:
   models/components/sourceid.go:
     last_write_checksum: sha1:4c88f1d6af2f4938b63dee7cba29daec4bb36c3c
   models/components/status.go:
-    last_write_checksum: sha1:87772d609f2892b4ccfa3b3675f25dab2f0236f8
+    last_write_checksum: sha1:250e13a1a507d608c84475d622fe8e462d2814ef
   models/components/thresholds.go:
     last_write_checksum: sha1:164f51afda666ba02b9f1448d3c0da5520d15687
   models/components/transport.go:
@@ -2095,7 +2095,7 @@ trackedFiles:
   models/operations/updatesettings.go:
     last_write_checksum: sha1:1e640b0439a6475aac0e226f1ace0e61f8e8270b
   noresponse.go:
-    last_write_checksum: sha1:30706e3713ff8df144c192dcc2a23920a6294ee0
+    last_write_checksum: sha1:95f5b0b9afc1921a5b6f828bfacf3297b80c944d
   operations.go:
     last_write_checksum: sha1:bebffc725ab6c3807a25a8fad495f4f892064cc0
   optionalnullable/optionalnullable.go:
@@ -2391,7 +2391,7 @@ examples:
         application/json: {"from": "2026-01-01T00:00:00Z", "to": "2026-01-02T00:00:00Z", "account_id": "acct_7f3a9c", "email": "new.user@example.com", "limit": 20, "cursor": "eyJ0IjoxNzY3MjI1NjAwMDAwMDAwLCJpIjoiYXNtX2V4YW1wbGUiLCJlIjoxNzY3MjI5MjAwfQ", "country": "GB"}
       responses:
         "200":
-          application/json: {"schema_version": "1", "items": [{"schema_version": "1", "id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM", "status": "pending", "flow": "purchase", "depth": "quick", "detail": {"schema_version": "1", "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM", "account_id": "acct_7f3a9c", "identifiers": {"email": "New.User@Example.com", "username": "new.user", "phone": "+61412345678", "name": "Alex Example", "ip": "203.0.113.45"}, "request_id": "req-2026-10-14-0001", "status": "pending", "confidence": "unavailable", "risk": {"score": 201010, "band": "critical", "recommendation": "review", "confidence": "medium", "policy_version": "risk-2026-10.3", "policy_basis": "heuristic_unvalidated", "reasons": [{"code": "auth_new_account", "direction": "neutral", "impact": "low", "list_entry_id": "lst_01JA2ZE4K5M6N7P8Q9R0S1T2V3"}], "summary": {"phone": {"country": "AU", "carrier": "Telstra"}, "ip": {"country": "AU"}}, "coverage": {"answered": 478203, "failed": 588785, "pending": 9313}, "details": {"phone_names": [{"value": "Alex Example", "seen_by": 389016}], "breaches": [{"name": "Example Forum", "domain": "forum.example.com", "category": "forum", "kind": "site_breach", "matched_on": "username"}], "breach_names": [{"value": "Alex Example", "seen_in": 918383, "sites": ["forum.example.com"]}], "events": [{"year": 179999, "kind": "breached", "site": "example.com", "category": "site_breach", "family": "auth_provider", "identifier": "username"}]}}, "signals": [{"type": "account_presence", "identifier": "email", "outcome": "unavailable", "source_id": "github", "evidence_ref": "evr_01JA2Z8K6Q4V7W9XBCDEFGHJKN", "observed_at": "2026-10-14T09:00:00.210Z", "last_checked_at": "2026-10-14T09:00:00.210Z", "freshness": "fresh", "enrichment": {"fields": {"phone": "+61412345678", "name": "Alex Example", "carrier": "Telstra", "line_type": "mobile", "entity_type": "person", "country_code": "61", "country": "Australia", "state": "New South Wales", "city": "Sydney", "location": "Sydney, New South Wales, Australia", "national_format": "0412 345 678", "job_title": "Engineer", "company_name": "Example Pty Ltd", "email": "new.user@example.com", "website": "https://example.com", "first_call_at": "2026-09-01T00:00:00.000Z", "last_call_at": "2026-10-10T00:00:00.000Z", "matched_name": "Alex Example", "alternate_names": ["Alex E."], "name_candidates": ["Alex Example"], "timezones": ["Australia/Sydney"], "emails": ["new.user@example.com"], "websites": ["https://example.com"], "locations": ["Sydney, New South Wales, Australia"], "social_profiles": ["https://example.com/alexexample"]}}}], "incomplete_sources": [], "policy_version": "heuristic-2026-10.1", "policy_basis": "heuristic_unvalidated", "assessment_version": 215608, "created_at": "2026-10-14T09:00:00.000Z", "updated_at": "2026-10-14T09:00:00.412Z", "expires_at": "2027-10-14T09:00:00.000Z", "assessment_url": "/v1/assessments/asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM", "timing": {"deadline_ms": 207473, "elapsed_ms": 276104}, "auth_context": {"provider": "clerk", "issuer": "https://example-app.clerk.accounts.dev", "subject": "user_2EXAMPLE", "session_id": "sess_2EXAMPLE", "organization_id": "org_2EXAMPLE", "verified": true, "transport": "provider_hook"}}}], "total": 273076, "total_capped": true, "next_cursor": "eyJ0IjoxNzY3MjI1NjAwMDAwMDAwLCJpIjoiYXNtX2V4YW1wbGUiLCJlIjoxNzY3MjI5MjAwfQ", "retention_days": 365}
+          application/json: {"schema_version": "1", "items": [{"schema_version": "1", "id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM", "status": "pending", "flow": "purchase", "depth": "quick", "detail": {"schema_version": "1", "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM", "account_id": "acct_7f3a9c", "identifiers": {"email": "New.User@Example.com", "username": "new.user", "phone": "+61412345678", "name": "Alex Example", "ip": "203.0.113.45"}, "request_id": "req-2026-10-14-0001", "status": "pending", "confidence": "unavailable", "risk": {"score": 201010, "band": "critical", "recommendation": "review", "confidence": "medium", "policy_version": "risk-2026-10.3", "policy_basis": "heuristic_unvalidated", "reasons": [{"code": "auth_new_session", "direction": "neutral", "impact": "low", "list_entry_id": "lst_01JA2ZE4K5M6N7P8Q9R0S1T2V3"}], "summary": {"phone": {"country": "AU", "carrier": "Telstra"}, "ip": {"country": "AU"}}, "coverage": {"answered": 478203, "failed": 588785, "pending": 9313}, "details": {"phone_names": [{"value": "Alex Example", "seen_by": 389016}], "breaches": [{"name": "Example Forum", "domain": "forum.example.com", "category": "forum", "kind": "site_breach", "matched_on": "username"}], "breach_names": [{"value": "Alex Example", "seen_in": 918383, "sites": ["forum.example.com"]}], "events": [{"year": 179999, "kind": "breached", "site": "example.com", "category": "site_breach", "family": "auth_provider", "identifier": "username"}]}}, "signals": [{"type": "account_presence", "identifier": "email", "outcome": "unavailable", "source_id": "github", "evidence_ref": "evr_01JA2Z8K6Q4V7W9XBCDEFGHJKN", "observed_at": "2026-10-14T09:00:00.210Z", "last_checked_at": "2026-10-14T09:00:00.210Z", "freshness": "fresh", "enrichment": {"fields": {"phone": "+61412345678", "name": "Alex Example", "carrier": "Telstra", "line_type": "mobile", "entity_type": "person", "country_code": "61", "country": "Australia", "state": "New South Wales", "city": "Sydney", "location": "Sydney, New South Wales, Australia", "national_format": "0412 345 678", "job_title": "Engineer", "company_name": "Example Pty Ltd", "email": "new.user@example.com", "website": "https://example.com", "first_call_at": "2026-09-01T00:00:00.000Z", "last_call_at": "2026-10-10T00:00:00.000Z", "matched_name": "Alex Example", "alternate_names": ["Alex E."], "name_candidates": ["Alex Example"], "timezones": ["Australia/Sydney"], "emails": ["new.user@example.com"], "websites": ["https://example.com"], "locations": ["Sydney, New South Wales, Australia"], "social_profiles": ["https://example.com/alexexample"]}}}], "incomplete_sources": [], "policy_version": "heuristic-2026-10.1", "policy_basis": "heuristic_unvalidated", "assessment_version": 215608, "created_at": "2026-10-14T09:00:00.000Z", "updated_at": "2026-10-14T09:00:00.412Z", "expires_at": "2027-10-14T09:00:00.000Z", "assessment_url": "/v1/assessments/asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM", "timing": {"deadline_ms": 207473, "elapsed_ms": 276104}, "auth_context": {"provider": "clerk", "issuer": "https://example-app.clerk.accounts.dev", "subject": "user_2EXAMPLE", "session_id": "sess_2EXAMPLE", "organization_id": "org_2EXAMPLE", "verified": true, "transport": "provider_hook"}}}], "total": 273076, "total_capped": true, "next_cursor": "eyJ0IjoxNzY3MjI1NjAwMDAwMDAwLCJpIjoiYXNtX2V4YW1wbGUiLCJlIjoxNzY3MjI5MjAwfQ", "retention_days": 365}
         "400":
           application/problem+json: {"type": "https://docs.noresponse.org/errors/invalid_request", "title": "Invalid request", "status": 400, "detail": "identifiers: at least one of email, username or phone is required.", "instance": "/v1/assessments", "code": "webhook_url_refused", "request_id": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c", "invalid_params": [{"field": "identifiers", "reason": "at least one of email, username or phone is required", "example": "new.user@example.com"}]}
         "401":
@@ -2599,7 +2599,7 @@ examples:
           risk_version: 269840
       responses:
         "200":
-          application/json: {"account": {"schema_version": "1", "id": "acct_7f3a9c", "risk": {"score": 989404, "decision": "allow", "reasons": [{"code": "shared_api_key", "direction": "neutral", "impact": "high", "list_entry_id": "lst_01JA2ZE4K5M6N7P8Q9R0S1T2V3"}]}, "decisions_by_flow": {"account_creation": "review", "login": "held", "purchase": "step_up"}, "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM", "updated_at": "2026-10-14T09:00:00.412Z", "risk_version": 901372}, "assessment_version": 988550, "policy_version": "risk-2026-10.17+t1", "overlay_version": 1, "changed_at": "2026-01-01T00:00:00Z", "feedback_outcome_id": "out_01JA2Z8K6Q4V7W9XBCDEFGHJKM"}
+          application/json: {"account": {"schema_version": "1", "id": "acct_7f3a9c", "risk": {"score": 989404, "decision": "allow", "reasons": [{"code": "test_scenario", "direction": "neutral", "impact": "high", "list_entry_id": "lst_01JA2ZE4K5M6N7P8Q9R0S1T2V3"}]}, "decisions_by_flow": {"account_creation": "review", "login": "held", "purchase": "step_up"}, "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM", "updated_at": "2026-10-14T09:00:00.412Z", "risk_version": 901372}, "assessment_version": 988550, "policy_version": "risk-2026-10.17+t1", "overlay_version": 1, "changed_at": "2026-01-01T00:00:00Z", "feedback_outcome_id": "out_01JA2Z8K6Q4V7W9XBCDEFGHJKM"}
         "400":
           application/problem+json: {"type": "https://docs.noresponse.org/errors/invalid_request", "title": "Invalid request", "status": 400, "detail": "identifiers: at least one of email, username or phone is required.", "instance": "/v1/assessments", "code": "invalid_request", "request_id": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c", "invalid_params": [{"field": "identifiers", "reason": "at least one of email, username or phone is required", "example": "new.user@example.com"}]}
         "401":
@@ -3588,7 +3588,7 @@ examples:
           limit: 50
       responses:
         "200":
-          application/json: {"items": [{"id": "req_77777777777777777777777777777777", "request_id": "77777777777777777777777777777777", "route": "POST /v1/assessments", "http_status": 577297, "duration_ms": 477785, "started_at": "2026-01-01T00:00:00Z", "completed_at": "2026-01-01T00:00:00Z", "expires_at": "2026-01-02T00:00:00Z", "error_code": "invalid_request", "idempotent_replayed": true, "write_complete": true, "decision": {"assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM", "assessment_version": 570825, "policy_version": "risk-2026-10.17+t1", "flow": "purchase", "status": "complete", "account": {"schema_version": "1", "id": "acct_7f3a9c", "risk": {"score": 251370, "decision": "step_up", "reasons": [{"code": "many_recent_accounts", "direction": "lowers", "impact": "high", "list_entry_id": "lst_01JA2ZE4K5M6N7P8Q9R0S1T2V3"}]}, "decisions_by_flow": {"account_creation": "held", "login": "review", "purchase": "allow"}, "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM", "updated_at": "2026-10-14T09:00:00.412Z", "risk_version": 397307}}, "api_key_id": "01JA2Z8K6Q4V7W9XBCDEFGHJKM"}], "next_cursor": "eyJ0IjoxNzY3MjI1NjAwMDAwMDAwLCJpIjoiYXNtX2V4YW1wbGUiLCJlIjoxNzY3MjI5MjAwfQ"}
+          application/json: {"items": [{"id": "req_77777777777777777777777777777777", "request_id": "77777777777777777777777777777777", "route": "POST /v1/assessments", "http_status": 577297, "duration_ms": 477785, "started_at": "2026-01-01T00:00:00Z", "completed_at": "2026-01-01T00:00:00Z", "expires_at": "2026-01-02T00:00:00Z", "error_code": "invalid_request", "idempotent_replayed": true, "write_complete": true, "decision": {"assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM", "assessment_version": 570825, "policy_version": "risk-2026-10.17+t1", "flow": "purchase", "status": "complete", "account": {"schema_version": "1", "id": "acct_7f3a9c", "risk": {"score": 251370, "decision": "step_up", "reasons": [{"code": "shared_ip", "direction": "lowers", "impact": "high", "list_entry_id": "lst_01JA2ZE4K5M6N7P8Q9R0S1T2V3"}]}, "decisions_by_flow": {"account_creation": "held", "login": "review", "purchase": "allow"}, "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM", "updated_at": "2026-10-14T09:00:00.412Z", "risk_version": 397307}}, "api_key_id": "01JA2Z8K6Q4V7W9XBCDEFGHJKM"}], "next_cursor": "eyJ0IjoxNzY3MjI1NjAwMDAwMDAwLCJpIjoiYXNtX2V4YW1wbGUiLCJlIjoxNzY3MjI5MjAwfQ"}
         "400":
           application/problem+json: {"type": "https://docs.noresponse.org/errors/invalid_request", "title": "Invalid request", "status": 400, "detail": "identifiers: at least one of email, username or phone is required.", "instance": "/v1/assessments", "code": "invalid_request", "request_id": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c", "invalid_params": [{"field": "identifiers", "reason": "at least one of email, username or phone is required", "example": "new.user@example.com"}]}
         "401":

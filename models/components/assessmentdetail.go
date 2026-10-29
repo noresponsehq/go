@@ -17,11 +17,11 @@ type AssessmentDetail struct {
 	Identifiers *SentIdentifiers `json:"identifiers,omitzero"`
 	// An optional provider correlation id, echoed back. It is not an idempotency key. Refuses an exact-shape JWT or a bare 40, 64 or 128 character hex digest; a UUID is accepted.
 	RequestID *string `json:"request_id,omitzero"`
-	// complete: final; nothing is still running. A lane that failed or missed its 10 s deadline stays listed in incomplete_sources, and confidence is lower. partial: a recommendation exists and at least one lane is still running or did not settle (see incomplete_sources). pending: nothing usable before the deadline; no recommendation yet, poll or wait for the webhook.
+	// Processing state, separate from evidence coverage. complete: final; nothing is still running, but unsupported, failed or unanswered lanes remain in incomplete_sources. partial: a recommendation exists and evidence is incomplete; assessment_url identifies continuing work when present. pending: no recommendation yet; poll or wait for the webhook. Finished processing does not mean all sources answered.
 	Status Status `json:"status"`
 	// The recommended action: allow, step_up or review. Your application applies it.
 	Recommendation *Recommendation `json:"recommendation,omitzero"`
-	// Ordinal confidence in the recommendation under the current policy: low, medium, high or unavailable.
+	// Evidence coverage: how much of the planned source evidence gave a definite answer. This is not confidence that an identity is genuine, agreement between identifiers, a risk score or a probability. unavailable means no usable evidence answered; a terminal uncovered assessment can have this value and recommend review.
 	Confidence Confidence `json:"confidence"`
 	// The one risk decision for this event. score is 0 (safe) to 100 (risky), set by the reasons that fired under a hand-set, versioned heuristic policy. Each reason carries its direction and impact band; the policy's weights are not published. Every answer with a recommendation carries it, and the top-level recommendation equals risk.recommendation. It names no source or provider.
 	Risk *Risk `json:"risk,omitzero"`

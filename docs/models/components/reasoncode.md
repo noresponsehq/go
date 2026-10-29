@@ -24,6 +24,7 @@ custom := components.ReasonCode("custom_value")
 | `ReasonCodeVoipNumber`                 | voip_number                            |
 | `ReasonCodeDisposableEmail`            | disposable_email                       |
 | `ReasonCodeNewEmail`                   | new_email                              |
+| `ReasonCodeNoEmailMatches`             | no_email_matches                       |
 | `ReasonCodeSpamReports`                | spam_reports                           |
 | `ReasonCodeFraudFlag`                  | fraud_flag                             |
 | `ReasonCodeIdentityMismatch`           | identity_mismatch                      |

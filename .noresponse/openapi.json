@@ -9785,7 +9785,7 @@
           "high",
           "unavailable"
         ],
-        "description": "Ordinal confidence in the recommendation under the current policy: low, medium, high or unavailable."
+        "description": "Evidence coverage: how much of the planned source evidence gave a definite answer. This is not confidence that an identity is genuine, agreement between identifiers, a risk score or a probability. unavailable means no usable evidence answered; a terminal uncovered assessment can have this value and recommend review."
       },
       "ConflictError": {
         "description": "HTTP 409 problem document.",
@@ -14075,6 +14075,7 @@
           "voip_number",
           "disposable_email",
           "new_email",
+          "no_email_matches",
           "spam_reports",
           "fraud_flag",
           "identity_mismatch",
@@ -15145,7 +15146,7 @@
           },
           "coverage": {
             "$ref": "#/components/schemas/RiskCoverage",
-            "description": "Sources counted by state, not named."
+            "description": "Counts of planned source-identifier pairs by evidence outcome, deduplicated across signals and incomplete entries. These counts do not measure identity agreement or prove that processing is still running. A lane that was not searched is not an answered source."
           },
           "details": {
             "$ref": "#/components/schemas/RiskDetails",
@@ -15169,22 +15170,22 @@
           "failed",
           "pending"
         ],
-        "description": "Sources counted by state, not named.",
+        "description": "Counts of planned source-identifier pairs by evidence outcome, deduplicated across signals and incomplete entries. These counts do not measure identity agreement or prove that processing is still running. A lane that was not searched is not an answered source.",
         "properties": {
           "answered": {
             "type": "integer",
             "minimum": 0,
-            "description": "Sources that gave a definite answer."
+            "description": "Source-identifier pairs that gave a definite found or not_found answer."
           },
           "failed": {
             "type": "integer",
             "minimum": 0,
-            "description": "Sources that could not answer."
+            "description": "Source-identifier pairs that could not answer, including unsupported coverage markers and source failures. Read detailed signals to distinguish Not covered from Failed."
           },
           "pending": {
             "type": "integer",
             "minimum": 0,
-            "description": "Sources still being asked."
+            "description": "Source-identifier pairs with deferred or timed_out evidence. A terminal timeout can remain here after processing finishes; use assessment status and continuation metadata to determine whether work is still running."
           }
         }
       },
@@ -15796,7 +15797,7 @@
           "partial",
           "pending"
         ],
-        "description": "complete: final; nothing is still running. A lane that failed or missed its 10 s deadline stays listed in incomplete_sources, and confidence is lower. partial: a recommendation exists and at least one lane is still running or did not settle (see incomplete_sources). pending: nothing usable before the deadline; no recommendation yet, poll or wait for the webhook."
+        "description": "Processing state, separate from evidence coverage. complete: final; nothing is still running, but unsupported, failed or unanswered lanes remain in incomplete_sources. partial: a recommendation exists and evidence is incomplete; assessment_url identifies continuing work when present. pending: no recommendation yet; poll or wait for the webhook. Finished processing does not mean all sources answered."
       },
       "Thresholds": {
         "type": "object",
