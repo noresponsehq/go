@@ -9,7 +9,7 @@ type RiskDetails struct {
 	PhoneNames []RiskDetailsPhoneName `json:"phone_names,omitzero"`
 	// The matching breach tables, newest first, at most 100.
 	Breaches []Breach `json:"breaches,omitzero"`
-	// Names found next to the identifiers in breach records, merged, with the number of distinct tables each was seen in.
+	// Names found next to the identifiers in breach records, merged, with the number of distinct tables each was seen in and the sites of those tables.
 	BreachNames []RiskDetailsBreachName `json:"breach_names,omitzero"`
 	// The identity's dated footprint events, newest first, at most 300: the year and month, what happened (created, last_active, breached), the site, its category, the kind of evidence and the identifier it belongs to. No breach value: dates are coarsened to the month.
 	Events []RiskDetailsEvent `json:"events,omitzero"`

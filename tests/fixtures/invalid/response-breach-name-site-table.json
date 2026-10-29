@@ -1,0 +1,150 @@
+{
+  "schema_version": "1",
+  "assessment_id": "asm_01JB3C4D5E6F7G8H9JKMNPQRST",
+  "account_id": "acct_8412",
+  "request_id": "req_01",
+  "status": "complete",
+  "recommendation": "allow",
+  "confidence": "high",
+  "risk": {
+    "score": 10,
+    "band": "low",
+    "recommendation": "allow",
+    "block": false,
+    "confidence": "high",
+    "policy_version": "risk-2026-10.3",
+    "policy_basis": "heuristic_unvalidated",
+    "reasons": [
+      {
+        "code": "voip_number",
+        "direction": "raises",
+        "impact": "medium",
+        "identifier": "phone"
+      },
+      {
+        "code": "breach_name_match",
+        "direction": "lowers",
+        "impact": "low",
+        "identifier": "name"
+      }
+    ],
+    "summary": {
+      "email": {
+        "disposable": false,
+        "accounts_found": 1,
+        "breach": {
+          "found": true,
+          "breach_count": 2,
+          "first_year": 2016,
+          "last_year": 2019,
+          "exposed": [
+            "email",
+            "password",
+            "password_hash"
+          ],
+          "in_credential_lists": true,
+          "truncated": false
+        }
+      },
+      "phone": {
+        "line_type": "voip",
+        "country": "US"
+      },
+      "consistency": {
+        "name": "match"
+      }
+    },
+    "coverage": {
+      "answered": 4,
+      "failed": 0,
+      "pending": 0
+    },
+    "details": {
+      "phone_names": [
+        {
+          "value": "Jane Doe",
+          "seen_by": 3
+        }
+      ],
+      "breaches": [
+        {
+          "name": "Collection #1",
+          "category": "combolist",
+          "kind": "credential_list",
+          "year": 2019,
+          "matched_on": "email",
+          "exposed": [
+            "email",
+            "password"
+          ]
+        },
+        {
+          "name": "LinkedIn",
+          "domain": "linkedin.com",
+          "category": "social",
+          "kind": "site_breach",
+          "year": 2016,
+          "month": 5,
+          "matched_on": "email",
+          "exposed": [
+            "email",
+            "password_hash"
+          ]
+        }
+      ],
+      "breach_names": [
+        {
+          "value": "Jane Doe",
+          "seen_in": 2,
+          "sites": [
+            "0309_000WEBHOST_COM_13M_HOSTING_032015"
+          ],
+          "unsited": 1
+        }
+      ]
+    }
+  },
+  "signals": [
+    {
+      "type": "account_presence",
+      "identifier": "email",
+      "outcome": "found",
+      "source_id": "src_3f9a1c",
+      "evidence_ref": "evr_01JB3C4D5E6F7G8H9JKMNPQRSV",
+      "observed_at": "2026-10-18T11:00:00.180Z",
+      "last_checked_at": "2026-10-18T11:00:00.180Z",
+      "freshness": "fresh"
+    },
+    {
+      "type": "breach_exposure",
+      "identifier": "email",
+      "outcome": "found",
+      "source_id": "src_8d27e4",
+      "evidence_ref": "evr_01JB3C4D5E6F7G8H9JKMNPQRSW",
+      "observed_at": "2026-10-18T11:00:01.900Z",
+      "last_checked_at": "2026-10-18T11:00:01.900Z",
+      "freshness": "fresh"
+    },
+    {
+      "type": "account_presence",
+      "identifier": "phone",
+      "outcome": "found",
+      "source_id": "src_51b0d7",
+      "evidence_ref": "evr_01JB3C4D5E6F7G8H9JKMNPQRSX",
+      "observed_at": "2026-10-18T11:00:03.700Z",
+      "last_checked_at": "2026-10-18T11:00:03.700Z",
+      "freshness": "fresh"
+    }
+  ],
+  "incomplete_sources": [],
+  "policy_version": "risk-2026-10.3",
+  "policy_basis": "heuristic_unvalidated",
+  "assessment_version": 2,
+  "created_at": "2026-10-18T11:00:00.000Z",
+  "updated_at": "2026-10-18T11:00:04.000Z",
+  "expires_at": "2027-10-18T11:00:00.000Z",
+  "timing": {
+    "deadline_ms": 500,
+    "elapsed_ms": 4000
+  }
+}

@@ -15052,7 +15052,7 @@
           "breach_names": {
             "type": "array",
             "maxItems": 32,
-            "description": "Names found next to the identifiers in breach records, merged, with the number of distinct tables each was seen in.",
+            "description": "Names found next to the identifiers in breach records, merged, with the number of distinct tables each was seen in and the sites of those tables.",
             "items": {
               "$ref": "#/components/schemas/RiskDetailsBreachName"
             }
@@ -15084,6 +15084,25 @@
           "seen_in": {
             "type": "integer",
             "minimum": 1
+          },
+          "sites": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 32,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 253,
+              "pattern": "^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\\.)+[a-z]{2,63}$",
+              "example": "forum.example.com"
+            },
+            "description": "The domains of the breached sites whose tables hold the name, lower case, each once, newest breach first, at most 32: the domain values of breaches[]. Covers the email's and the username's tables together. Absent when none of the tables has a site."
+          },
+          "unsited": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "How many of the tables that hold the name have no site, such as a credential list or a stealer log. Absent when none."
           }
         }
       },
@@ -17231,7 +17250,11 @@
                         "breach_names": [
                           {
                             "value": "Jane Doe",
-                            "seen_in": 2
+                            "seen_in": 2,
+                            "sites": [
+                              "linkedin.com"
+                            ],
+                            "unsited": 1
                           }
                         ]
                       }
@@ -18158,7 +18181,11 @@
                         "breach_names": [
                           {
                             "value": "Jane Doe",
-                            "seen_in": 2
+                            "seen_in": 2,
+                            "sites": [
+                              "linkedin.com"
+                            ],
+                            "unsited": 1
                           }
                         ]
                       }

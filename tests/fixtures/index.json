@@ -1495,6 +1495,18 @@
       "why": "II-007 spec \u00a75.1 raw-value refusal: no member carries a plaintext password"
     },
     {
+      "file": "invalid/response-breach-name-site-table.json",
+      "schema": "assessment-detail.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "pattern",
+          "/risk/details/breach_names/0/sites/0"
+        ]
+      ],
+      "why": "NOR-728: a breach name's site is the breached site's domain, never the table it came from"
+    },
+    {
       "file": "invalid/response-breach-raw-record.json",
       "schema": "assessment-detail.schema.json",
       "expect": "invalid",
