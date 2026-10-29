@@ -3898,7 +3898,7 @@
           "reviews"
         ],
         "summary": "List retained account reviews.",
-        "description": "List retained investigation reviews using filters and an authenticated cursor.",
+        "description": "List retained investigation reviews using filters and an authenticated cursor. Optional account_id selects one exact account in this environment before pagination. All filters are bound into the cursor.",
         "parameters": [
           {
             "$ref": "#/components/parameters/WorkspaceId"
@@ -3963,6 +3963,18 @@
               "pattern": "^mem_[0-7][0-9A-HJKMNP-TV-Z]{25}$"
             },
             "description": "Filter by immutable member ID. Mutually exclusive with assignee and unassigned=true."
+          },
+          {
+            "name": "account_id",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:|-]{0,127}$",
+              "description": "Your own opaque identifier for the account being checked, scoped to your workspace. Use an id you mint, with no direct identifier (email, phone, name or national id) in it. '|' is accepted so an Auth0 user id such as 'auth0|64abc' passes unchanged; '@', '+', '$' and whitespace are refused by the pattern, as is an exact-shape JWT; a hex digest such as a SHA-256 is allowed, because hashing an internal id is a common pseudonymous scheme. A value such as '07700900123' or 'jane.doe.gmail.com' cannot be told apart from an opaque id. It travels in bodies, and in a URL only as the path segment of GET /v1/accounts/{account_id} and its /assessments. An assessment requested by a provider hook at pre_registration, which has no account yet, carries the server-issued account_id pre: followed by its assessment_id."
+            },
+            "description": "Only reviews of this exact account in the authenticated workspace and environment. Applied before pagination and bound into the cursor."
           }
         ],
         "responses": {
@@ -6512,7 +6524,7 @@
           "accounts"
         ],
         "summary": "Search distinct accounts by email or account ID",
-        "description": "Search distinct accounts observed in retained assessments in this environment. Match an exact account_id or canonical email; an email matches any retained assessment belonging to the account. The response contains one row per account with its newest retained assessment, current decision when available, per-account assessment count, and total distinct-account count. Send next_cursor with unchanged filters to continue. Totals are exact below 10000 and capped at 10000. Results are live across pages. Requires history access and identifier access for email. Read-only and safe to retry.",
+        "description": "Search distinct accounts observed in retained assessments in this environment. Match an exact account_id or canonical email; an email matches any retained assessment belonging to the account. Set needs_action to select accounts with an open or in-progress retained review, or a current review/block decision without an effective retained outcome. This filter applies before pagination and counting, adds waiting_for reasons to each row and requires management scope as well as history or investigate access. The response contains one row per account with its newest retained assessment, current decision when available, per-account assessment count, and total distinct-account count. Send next_cursor with unchanged filters to continue. Totals are exact below 10000 and capped at 10000. Results are live across pages. Requires history access and identifier access for email. Read-only and safe to retry.",
         "requestBody": {
           "required": true,
           "content": {
@@ -6971,6 +6983,19 @@
           "assessments"
         ],
         "properties": {
+          "waiting_for": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 2,
+            "uniqueItems": true,
+            "items": {
+              "enum": [
+                "outcome",
+                "review"
+              ]
+            },
+            "description": "Present for needs_action searches. outcome means a current review/block decision lacks a retained effective outcome; review means a retained open or in-progress review. Both can apply."
+          },
           "account_id": {
             "type": "string",
             "minLength": 1,
@@ -6997,6 +7022,11 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
+          "needs_action": {
+            "type": "boolean",
+            "default": false,
+            "description": "Select accounts with a retained open or in-progress review, or a current review/block account decision with no retained effective account outcome. The server applies this filter before counting and pagination. Requires reviews.read as well as history.read for console members; API keys additionally require management."
+          },
           "account_id": {
             "type": "string",
             "minLength": 1,
@@ -10892,6 +10922,14 @@
         "additionalProperties": false,
         "required": [],
         "properties": {
+          "account_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:|-]{0,127}$",
+            "description": "Only reviews of this exact account in the authenticated workspace and environment. Applied before pagination.",
+            "example": "acct_7f3a9c"
+          },
           "status": {
             "$ref": "#/components/schemas/ReviewStatus"
           },

@@ -18,6 +18,8 @@ type ListReviewsRequest struct {
 	Unassigned  *bool                     `queryParam:"style=form,explode=true,name=unassigned"`
 	// Filter by immutable member ID. Mutually exclusive with assignee and unassigned=true.
 	AssigneePrincipalID *string `queryParam:"style=form,explode=true,name=assignee_principal_id"`
+	// Only reviews of this exact account in the authenticated workspace and environment. Applied before pagination and bound into the cursor.
+	AccountID *string `queryParam:"style=form,explode=true,name=account_id"`
 }
 
 func (l ListReviewsRequest) MarshalJSON() ([]byte, error) {
@@ -92,6 +94,13 @@ func (l *ListReviewsRequest) GetAssigneePrincipalID() *string {
 		return nil
 	}
 	return l.AssigneePrincipalID
+}
+
+func (l *ListReviewsRequest) GetAccountID() *string {
+	if l == nil {
+		return nil
+	}
+	return l.AccountID
 }
 
 type ListReviewsResponse struct {

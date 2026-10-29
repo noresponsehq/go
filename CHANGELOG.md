@@ -1,5 +1,20 @@
 # Changelog
 
+## 9.4.3
+
+* `Sdk.Accounts.Search()`: 
+  *  `request.Request.NeedsAction` **Added**
+  *  `response.Items[].WaitingFor` **Added**
+* `Sdk.Reviews.List()`: 
+  *  `request.Request.AccountId` **Added**
+* `Sdk.Reviews.ListViews()`:  `response.Items[].Filter.AccountId` **Added**
+* `Sdk.Reviews.CreateView()`: 
+  *  `request.Body.Filter.AccountId` **Added**
+  *  `response.Filter.AccountId` **Added**
+* `Sdk.Reviews.UpdateView()`: 
+  *  `request.Body.Filter.AccountId` **Added**
+  *  `response.Filter.AccountId` **Added**
+
 ## 9.4.2
 
 * `Sdk.Assessments.Create()`:  `response.Account.Risk.Reasons[].Code.Enum(noEmailMatches)` **Added**

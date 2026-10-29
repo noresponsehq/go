@@ -33,7 +33,7 @@ func newReviews(rootSDK *NoResponse, sdkConfig config.SDKConfiguration, hooks *h
 }
 
 // List retained account reviews.
-// List retained investigation reviews using filters and an authenticated cursor.
+// List retained investigation reviews using filters and an authenticated cursor. Optional account_id selects one exact account in this environment before pagination. All filters are bound into the cursor.
 func (s *Reviews) List(ctx context.Context, request operations.ListReviewsRequest, opts ...operations.Option) (*operations.ListReviewsResponse, error) {
 	o := operations.Options{}
 	supportedOptions := []string{
