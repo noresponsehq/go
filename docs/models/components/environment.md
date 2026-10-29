@@ -1,21 +1,23 @@
 # Environment
 
-The environment whose endpoints receive this event: live, or test for the workspace's test environment.
-
 ## Example Usage
 
 ```go
 import (
-	"github.com/noresponsehq/go/v8/models/components"
+	"github.com/noresponsehq/go/v9/models/components"
 )
 
 value := components.EnvironmentLive
+
+// Open enum: custom values can be created with a direct type cast
+custom := components.Environment("custom_value")
 ```
 
 
 ## Values
 
-| Name              | Value             |
-| ----------------- | ----------------- |
-| `EnvironmentLive` | live              |
-| `EnvironmentTest` | test              |
+| Name                   | Value                  |
+| ---------------------- | ---------------------- |
+| `EnvironmentLive`      | live                   |
+| `EnvironmentTest`      | test                   |
+| `EnvironmentWorkspace` | workspace              |

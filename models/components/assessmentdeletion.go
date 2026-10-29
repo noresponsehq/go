@@ -1,7 +1,7 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v8/internal/utils"
+	"github.com/noresponsehq/go/v9/internal/utils"
 )
 
 // AssessmentDeletion - Body of the 200 answer to DELETE /v1/assessments/{assessment_id}: one of the calling workspace's assessments was deleted, with its versions, evidence, outcomes and the identity-graph marks its outcomes set. Afterwards GET /v1/assessments/{assessment_id} answers 404 and the assessment leaves the account's history. The account is scored again from what remains: account.current_assessment_id names the assessment GET /v1/accounts/{account_id} now serves its risk from, and is absent when the account has no assessment with a decision left. Deleting an assessment that is already gone answers 404.
@@ -16,6 +16,8 @@ type AssessmentDeletion struct {
 	Account AssessmentDeletionAccount `json:"account"`
 	// When the deletion took effect.
 	DeletedAt string `json:"deleted_at"`
+	// Receipt for GET /v1/erasures/{erasure_id}, when durable storage issued one.
+	ErasureID *string `json:"erasure_id,omitzero"`
 }
 
 func (a AssessmentDeletion) MarshalJSON() ([]byte, error) {
@@ -56,4 +58,11 @@ func (a *AssessmentDeletion) GetDeletedAt() string {
 		return ""
 	}
 	return a.DeletedAt
+}
+
+func (a *AssessmentDeletion) GetErasureID() *string {
+	if a == nil {
+		return nil
+	}
+	return a.ErasureID
 }

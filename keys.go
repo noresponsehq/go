@@ -4,13 +4,13 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"github.com/noresponsehq/go/v8/internal/config"
-	"github.com/noresponsehq/go/v8/internal/hooks"
-	"github.com/noresponsehq/go/v8/internal/utils"
-	"github.com/noresponsehq/go/v8/models/apierrors"
-	"github.com/noresponsehq/go/v8/models/components"
-	"github.com/noresponsehq/go/v8/models/operations"
-	"github.com/noresponsehq/go/v8/retry"
+	"github.com/noresponsehq/go/v9/internal/config"
+	"github.com/noresponsehq/go/v9/internal/hooks"
+	"github.com/noresponsehq/go/v9/internal/utils"
+	"github.com/noresponsehq/go/v9/models/apierrors"
+	"github.com/noresponsehq/go/v9/models/components"
+	"github.com/noresponsehq/go/v9/models/operations"
+	"github.com/noresponsehq/go/v9/retry"
 	"net/http"
 	"net/url"
 )
@@ -317,7 +317,7 @@ func (s *Keys) Rotate(ctx context.Context, request components.KeyRotationRequest
 }
 
 // Create an API key.
-// Creates an API key in the environment of the key that signs the request, with scopes that key holds itself, and returns its secret once in key. Requires the management scope; the new key may hold it too. A scope the signing key lacks answers 403 workspace_forbidden, and the other environment 404 not_found. An environment holds at most 100 keys that authenticate (409 key_limit_reached). created_by is the signing key's prefix. Not idempotent: a retry after a lost answer creates a second key, which you can list and revoke.
+// Create an API key in the signing key environment with authority no greater than the issuer holds. Requires management. Optional name, purpose, kind and expiry describe its lifecycle. Send request_id for safe issuance retries: the first successful response returns the secret once; a repeat returns existing metadata without the secret, and changed parameters conflict. Without request_id a retry can create another key. A service credential is independent of its issuer; personal credentials require an authenticated member and retire when that member loses authority.
 func (s *Keys) Create(ctx context.Context, workspaceID string, body components.KeyRequest, opts ...operations.Option) (*operations.CreateKeyResponse, error) {
 	request := operations.CreateKeyRequest{
 		WorkspaceID: workspaceID,
@@ -422,6 +422,8 @@ func (s *Keys) Create(ctx context.Context, workspaceID string, body components.K
 	res := &operations.CreateKeyResponse{}
 
 	switch {
+	case httpRes.StatusCode == 200:
+		fallthrough
 	case httpRes.StatusCode == 201:
 		res.Headers = httpRes.Header
 

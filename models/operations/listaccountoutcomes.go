@@ -1,8 +1,8 @@
 package operations
 
 import (
-	"github.com/noresponsehq/go/v8/internal/utils"
-	"github.com/noresponsehq/go/v8/models/components"
+	"github.com/noresponsehq/go/v9/internal/utils"
+	"github.com/noresponsehq/go/v9/models/components"
 )
 
 type ListAccountOutcomesRequest struct {
@@ -49,6 +49,8 @@ func (l *ListAccountOutcomesRequest) GetCursor() *string {
 type ListAccountOutcomesResponse struct {
 	Headers map[string][]string
 	Result  components.AccountOutcomePage
+
+	Next func() (*ListAccountOutcomesResponse, error)
 }
 
 func (l *ListAccountOutcomesResponse) GetHeaders() map[string][]string {

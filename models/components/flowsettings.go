@@ -6,8 +6,8 @@ type FlowSettings struct {
 	Review int64 `json:"review"`
 	// The score from which the decision is block. Absent while blocking is off, the default.
 	Block *int64 `json:"block,omitzero"`
-	// The depth a request for this flow that names none is served at. Defaults: full for account_creation and purchase, quick for login.
-	DefaultDepth DefaultDepth `json:"default_depth"`
+	// assessments only.
+	DefaultDepth UsageCountDepth `json:"default_depth"`
 	// true while this flow has no thresholds of its own and uses account_creation's, the default for login and purchase. Always false for signup.
 	InheritsAccountCreation bool `json:"inherits_account_creation"`
 	// immediate (the default): an assessment of this flow is decided from the evidence its answer has, and later evidence may change the decision. held: while the account's current assessment of this flow has not completed, the account's decision for the flow is held, and the final decision arrives as account.risk_changed when the investigation completes or hold_seconds pass, whichever is first. Each flow has its own admission.
@@ -39,9 +39,9 @@ func (f *FlowSettings) GetBlock() *int64 {
 	return f.Block
 }
 
-func (f *FlowSettings) GetDefaultDepth() DefaultDepth {
+func (f *FlowSettings) GetDefaultDepth() UsageCountDepth {
 	if f == nil {
-		return DefaultDepth("")
+		return UsageCountDepth("")
 	}
 	return f.DefaultDepth
 }

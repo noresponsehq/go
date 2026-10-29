@@ -1,0 +1,10 @@
+# ListImpactTransition
+
+
+## Fields
+
+| Field                                                                                      | Type                                                                                       | Required                                                                                   | Description                                                                                |
+| ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------ |
+| `From`                                                                                     | [components.ListImpactTransitionFrom](../../models/components/listimpacttransitionfrom.md) | :heavy_check_mark:                                                                         | N/A                                                                                        |
+| `To`                                                                                       | [components.ListImpactTransitionFrom](../../models/components/listimpacttransitionfrom.md) | :heavy_check_mark:                                                                         | N/A                                                                                        |
+| `Count`                                                                                    | `int64`                                                                                    | :heavy_check_mark:                                                                         | N/A                                                                                        |

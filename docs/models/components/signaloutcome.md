@@ -6,7 +6,7 @@ Per-signal outcome. A source that timed out, was blocked or errored reports bloc
 
 ```go
 import (
-	"github.com/noresponsehq/go/v8/models/components"
+	"github.com/noresponsehq/go/v9/models/components"
 )
 
 value := components.SignalOutcomeFound

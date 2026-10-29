@@ -1,5 +1,6 @@
 package components
 
+// Impact - The selected reason's served impact band. Requires reason.
 type Impact string
 
 const (

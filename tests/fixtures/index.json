@@ -805,7 +805,7 @@
           "/incomplete_sources/0/reason"
         ]
       ],
-      "why": "§5.4 a complete assessment may list a failed or timed-out lane, never one still running"
+      "why": "\u00a75.4 a complete assessment may list a failed or timed-out lane, never one still running"
     },
     {
       "file": "invalid/response-partial-without-incomplete-sources.json",
@@ -929,7 +929,7 @@
           "/incomplete_sources/0"
         ]
       ],
-      "why": "§5.1 a served incomplete entry names a lane, never a source"
+      "why": "\u00a75.1 a served incomplete entry names a lane, never a source"
     },
     {
       "file": "invalid/response-request-id-trailing-newline.json",
@@ -1042,7 +1042,7 @@
           "/data/detail/incomplete_sources/0"
         ]
       ],
-      "why": "§5.1 incomplete_sources names a lane, never a source"
+      "why": "\u00a75.1 incomplete_sources names a lane, never a source"
     },
     {
       "file": "invalid/webhook-tenant-id.json",
@@ -1094,7 +1094,7 @@
           "/data"
         ]
       ],
-      "why": "§5.3 an update carries the full assessment, not a pointer"
+      "why": "\u00a75.3 an update carries the full assessment, not a pointer"
     },
     {
       "file": "invalid/webhook-expired-with-assessment-url.json",
@@ -1397,7 +1397,7 @@
           "/risk/policy_version"
         ]
       ],
-      "why": "spec §9: a tenant override suffix is +t<N>"
+      "why": "spec \u00a79: a tenant override suffix is +t<N>"
     },
     {
       "file": "invalid/response-risk-score-over-100.json",
@@ -1452,35 +1452,35 @@
       "schema": "assessment-detail.schema.json",
       "expect": "valid",
       "response_mode": "standard",
-      "why": "spec §5.1 standard view of a phone-only assessment once phone settled: no signals[], phone facts only, nothing claimed about lanes that did not run"
+      "why": "spec \u00a75.1 standard view of a phone-only assessment once phone settled: no signals[], phone facts only, nothing claimed about lanes that did not run"
     },
     {
       "file": "valid/assessment-standard-breach-only.json",
       "schema": "assessment-detail.schema.json",
       "expect": "valid",
       "response_mode": "standard",
-      "why": "spec §5.1 §6.7 breach facts for the email in the standard view: counts, years and exposed kinds, never a value"
+      "why": "spec \u00a75.1 \u00a76.7 breach facts for the email in the standard view: counts, years and exposed kinds, never a value"
     },
     {
       "file": "valid/assessment-standard-mixed.json",
       "schema": "assessment-detail.schema.json",
       "expect": "valid",
       "response_mode": "standard",
-      "why": "spec §5.1 the standard example: every lane's summary, consistency and the breach reasons, no signals[]"
+      "why": "spec \u00a75.1 the standard example: every lane's summary, consistency and the breach reasons, no signals[]"
     },
     {
       "file": "valid/assessment-standard-truncated.json",
       "schema": "assessment-detail.schema.json",
       "expect": "valid",
       "response_mode": "standard",
-      "why": "spec §6.3 a truncated username result is found with absence claims withheld (name unknown); a standard partial lists its incomplete pair without signals[]"
+      "why": "spec \u00a76.3 a truncated username result is found with absence claims withheld (name unknown); a standard partial lists its incomplete pair without signals[]"
     },
     {
       "file": "valid/assessment-detailed.json",
       "schema": "assessment-detail.schema.json",
       "expect": "valid",
       "response_mode": "detailed",
-      "why": "spec §5.2 the detailed view adds signals[] and risk.details: breach tables by display name and kind, breach names and phone names"
+      "why": "spec \u00a75.2 the detailed view adds signals[] and risk.details: breach tables by display name and kind, breach names and phone names"
     },
     {
       "file": "invalid/response-breach-plaintext-password.json",
@@ -1492,7 +1492,7 @@
           "/risk/summary/email/breach"
         ]
       ],
-      "why": "II-007 spec §5.1 raw-value refusal: no member carries a plaintext password"
+      "why": "II-007 spec \u00a75.1 raw-value refusal: no member carries a plaintext password"
     },
     {
       "file": "invalid/response-breach-raw-record.json",
@@ -1504,7 +1504,7 @@
           "/risk/details/breaches/0"
         ]
       ],
-      "why": "II-007 spec §5.2 raw-value refusal: a breach entry names the table, never a record"
+      "why": "II-007 spec \u00a75.2 raw-value refusal: a breach entry names the table, never a record"
     },
     {
       "file": "invalid/response-breach-exposed-value.json",
@@ -1516,7 +1516,7 @@
           "/risk/summary/email/breach/exposed/1"
         ]
       ],
-      "why": "II-007 spec §5.1 exposed names data kinds from a closed list, never a value"
+      "why": "II-007 spec \u00a75.1 exposed names data kinds from a closed list, never a value"
     },
     {
       "file": "invalid/response-breached-boolean.json",
@@ -1528,7 +1528,7 @@
           "/risk/summary/email"
         ]
       ],
-      "why": "spec §5.1 summary.email.breached became the breach object"
+      "why": "spec \u00a75.1 summary.email.breached became the breach object"
     },
     {
       "file": "invalid/response-breach-unknown-kind.json",
@@ -1540,7 +1540,7 @@
           "/risk/details/breaches/0/kind"
         ]
       ],
-      "why": "spec §6.2 the table kind is a closed list"
+      "why": "spec \u00a76.2 the table kind is a closed list"
     },
     {
       "file": "invalid/response-breaches-over-cap.json",
@@ -1552,7 +1552,7 @@
           "/risk/details/breaches"
         ]
       ],
-      "why": "spec §5.2 breaches[] is capped at 50"
+      "why": "spec \u00a75.2 breaches[] is capped at 50"
     },
     {
       "file": "invalid/response-breach-truncated-not-found.json",
@@ -1564,7 +1564,7 @@
           "/risk/summary/username/breach/found"
         ]
       ],
-      "why": "spec §6.3 a truncated result matched too much, so it is found"
+      "why": "spec \u00a76.3 a truncated result matched too much, so it is found"
     },
     {
       "file": "invalid/response-breach-not-found-with-years.json",
@@ -1576,7 +1576,7 @@
           "/risk/summary/email/breach"
         ]
       ],
-      "why": "spec §6.4 a value in no table has no table years or exposure"
+      "why": "spec \u00a76.4 a value in no table has no table years or exposure"
     },
     {
       "file": "invalid/response-ip-unknown-type.json",
@@ -1588,7 +1588,7 @@
           "/risk/summary/ip/type"
         ]
       ],
-      "why": "spec §5.1 ip.type is a closed list"
+      "why": "spec \u00a75.1 ip.type is a closed list"
     },
     {
       "file": "invalid/response-ip-asn-zero.json",
@@ -1600,7 +1600,7 @@
           "/risk/summary/ip/asn"
         ]
       ],
-      "why": "spec §7 an unknown ASN makes no claim: it is absent, never 0"
+      "why": "spec \u00a77 an unknown ASN makes no claim: it is absent, never 0"
     },
     {
       "file": "invalid/response-consistency-country-match.json",
@@ -1612,7 +1612,7 @@
           "/risk/summary/consistency/country"
         ]
       ],
-      "why": "spec §5.1 country consistency is consistent, mismatch or unknown"
+      "why": "spec \u00a75.1 country consistency is consistent, mismatch or unknown"
     },
     {
       "file": "invalid/response-reason-device-identifier.json",
@@ -1624,7 +1624,7 @@
           "/risk/reasons/0/identifier"
         ]
       ],
-      "why": "spec §4 no device identifier in v1"
+      "why": "spec \u00a74 no device identifier in v1"
     },
     {
       "file": "invalid/response-reason-old-breach-history.json",
@@ -1636,7 +1636,7 @@
           "/risk/reasons/1/code"
         ]
       ],
-      "why": "spec §6.7 old_breach_history was replaced by aged_identity"
+      "why": "spec \u00a76.7 old_breach_history was replaced by aged_identity"
     },
     {
       "file": "invalid/response-details-without-signals.json",
@@ -1648,7 +1648,7 @@
           ""
         ]
       ],
-      "why": "spec §5.2 risk.details marks a detailed view, which carries signals[]"
+      "why": "spec \u00a75.2 risk.details marks a detailed view, which carries signals[]"
     },
     {
       "file": "invalid/response-standard-with-signals.json",
@@ -1656,7 +1656,7 @@
       "expect": "semantic_invalid",
       "rule": "signals_in_standard_mode",
       "response_mode": "standard",
-      "why": "spec §5.1 signals[] is removed from the standard view"
+      "why": "spec \u00a75.1 signals[] is removed from the standard view"
     },
     {
       "file": "invalid/response-detailed-without-signals.json",
@@ -1664,19 +1664,19 @@
       "expect": "semantic_invalid",
       "rule": "detailed_without_signals",
       "response_mode": "detailed",
-      "why": "spec §5.2 a detailed view always carries signals[], possibly empty"
+      "why": "spec \u00a75.2 a detailed view always carries signals[], possibly empty"
     },
     {
       "file": "valid/assessment-request-name-ip.json",
       "schema": "assessment-request.schema.json",
       "expect": "valid",
-      "why": "spec §4 name and ip beside a lookup identifier"
+      "why": "spec \u00a74 name and ip beside a lookup identifier"
     },
     {
       "file": "valid/assessment-request-ipv6-name.json",
       "schema": "assessment-request.schema.json",
       "expect": "valid",
-      "why": "spec §4 an RFC 5952 IPv6 address and a non-ASCII name"
+      "why": "spec \u00a74 an RFC 5952 IPv6 address and a non-ASCII name"
     },
     {
       "file": "valid/assessment-request-hook-post-login.json",
@@ -1698,7 +1698,7 @@
           "/identifiers"
         ]
       ],
-      "why": "spec §4 a name alone has nothing to look up"
+      "why": "spec \u00a74 a name alone has nothing to look up"
     },
     {
       "file": "invalid/request-ip-only.json",
@@ -1710,7 +1710,7 @@
           "/identifiers"
         ]
       ],
-      "why": "spec §4 an ip alone has nothing to look up"
+      "why": "spec \u00a74 an ip alone has nothing to look up"
     },
     {
       "file": "invalid/request-name-and-ip-only.json",
@@ -1722,7 +1722,7 @@
           "/identifiers"
         ]
       ],
-      "why": "spec §4 name and ip together still need email, username or phone"
+      "why": "spec \u00a74 name and ip together still need email, username or phone"
     },
     {
       "file": "invalid/request-private-ip.json",
@@ -1734,7 +1734,7 @@
           "/identifiers/ip"
         ]
       ],
-      "why": "spec §4 a private address is refused by the server"
+      "why": "spec \u00a74 a private address is refused by the server"
     },
     {
       "file": "invalid/request-loopback-ipv6.json",
@@ -1746,7 +1746,7 @@
           "/identifiers/ip"
         ]
       ],
-      "why": "spec §4 loopback is refused"
+      "why": "spec \u00a74 loopback is refused"
     },
     {
       "file": "invalid/request-link-local-ip.json",
@@ -1758,7 +1758,7 @@
           "/identifiers/ip"
         ]
       ],
-      "why": "spec §4 link-local is refused"
+      "why": "spec \u00a74 link-local is refused"
     },
     {
       "file": "invalid/request-documentation-ipv6.json",
@@ -1770,7 +1770,7 @@
           "/identifiers/ip"
         ]
       ],
-      "why": "spec §4 reserved (documentation) ranges are refused"
+      "why": "spec \u00a74 reserved (documentation) ranges are refused"
     },
     {
       "file": "invalid/request-ipv6-not-canonical.json",
@@ -1782,7 +1782,7 @@
           "/identifiers/ip"
         ]
       ],
-      "why": "spec §4 IPv6 in RFC 5952 form only, so one address has one spelling"
+      "why": "spec \u00a74 IPv6 in RFC 5952 form only, so one address has one spelling"
     },
     {
       "file": "invalid/request-ip-leading-zero.json",
@@ -1794,7 +1794,7 @@
           "/identifiers/ip"
         ]
       ],
-      "why": "spec §4 a dotted quad without leading zeros (no octal ambiguity)"
+      "why": "spec \u00a74 a dotted quad without leading zeros (no octal ambiguity)"
     },
     {
       "file": "invalid/request-ip-with-port.json",
@@ -1806,7 +1806,7 @@
           "/identifiers/ip"
         ]
       ],
-      "why": "spec §4 an address, not an endpoint"
+      "why": "spec \u00a74 an address, not an endpoint"
     },
     {
       "file": "invalid/request-device.json",
@@ -1818,7 +1818,7 @@
           "/identifiers"
         ]
       ],
-      "why": "spec §2 §4 no device fingerprint in v1"
+      "why": "spec \u00a72 \u00a74 no device fingerprint in v1"
     },
     {
       "file": "invalid/request-name-control-character.json",
@@ -1830,7 +1830,7 @@
           "/identifiers/name"
         ]
       ],
-      "why": "spec §4 no control characters in a name"
+      "why": "spec \u00a74 no control characters in a name"
     },
     {
       "file": "invalid/request-name-line-separator.json",
@@ -1842,7 +1842,7 @@
           "/identifiers/name"
         ]
       ],
-      "why": "spec §4 server normalisation refuses a line separator in a name"
+      "why": "spec \u00a74 server normalisation refuses a line separator in a name"
     },
     {
       "file": "invalid/request-oversized-name.json",
@@ -1860,7 +1860,7 @@
           "/identifiers/name"
         ]
       ],
-      "why": "spec §4 a name is at most 128 characters"
+      "why": "spec \u00a74 a name is at most 128 characters"
     },
     {
       "file": "invalid/request-missing-account-id.json",
@@ -3811,6 +3811,91 @@
         ]
       ],
       "why": "NOR-642 an assessment that kept no identifiers leaves the member out"
+    },
+    {
+      "file": "valid/account-decision-list.json",
+      "schema": "account-decision-list.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/account-enforcement-list.json",
+      "schema": "account-enforcement-list.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/erasure-receipt.json",
+      "schema": "erasure-receipt.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/customer-evidence-customer-export-request.json",
+      "schema": "customer-export-request.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/customer-evidence-customer-export.json",
+      "schema": "customer-export.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/customer-evidence-customer-export-list.json",
+      "schema": "customer-export-list.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/customer-evidence-customer-export-chunk.json",
+      "schema": "customer-export-chunk.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/customer-evidence-audit-settings-request.json",
+      "schema": "audit-settings-request.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/customer-evidence-audit-settings.json",
+      "schema": "audit-settings.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/customer-evidence-audit-stream-request.json",
+      "schema": "audit-stream-request.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/customer-evidence-audit-stream-replay-request.json",
+      "schema": "audit-stream-replay-request.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/customer-evidence-audit-stream.json",
+      "schema": "audit-stream.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/customer-evidence-audit-stream-list.json",
+      "schema": "audit-stream-list.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/customer-evidence-customer-export-record.json",
+      "schema": "customer-export-record.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/customer-evidence-audit-event.json",
+      "schema": "audit-event.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/webhook-audit.json",
+      "schema": "webhook-event.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/customer-evidence-customer-export-action-request.json",
+      "schema": "customer-export-action-request.schema.json",
+      "expect": "valid"
     }
   ]
 }

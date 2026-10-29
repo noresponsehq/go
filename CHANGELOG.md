@@ -1,5 +1,139 @@
 # Changelog
 
+## 9.0.0
+
+* `Sdk.Accounts.ListOutcomes()`: 
+  *  `response.Items[].Actor` **Changed** (Breaking ⚠️)
+  *  `error.Code` **Changed**
+* `Sdk.Accounts.RecordOutcome()`: 
+  *  `response.Actor` **Changed** (Breaking ⚠️)
+  *  `error.Code` **Changed**
+* `Sdk.Accounts.Export()`: 
+  *  `response` **Changed** (Breaking ⚠️)
+  *  `error.Code` **Changed**
+* `Sdk.Keys.Create()`: 
+  *  `request.Body` **Changed**
+  *  `response` **Changed** (Breaking ⚠️)
+  *  `error.Code` **Changed**
+* `Sdk.Accounts.ListEnforcements()`: **Added**
+* `Sdk.Accounts.ListDecisions()`: **Added**
+* `Sdk.WebhookEndpoints.Aggregate()`: **Added**
+* `Sdk.Members.List()`: **Added**
+* `Sdk.Members.Remove()`: **Added**
+* `Sdk.Members.Update()`: **Added**
+* `Sdk.Audit.List()`: **Added**
+* `Sdk.Audit.GetRetention()`: **Added**
+* `Sdk.Audit.UpdateRetention()`: **Added**
+* `Sdk.Audit.ListStreams()`: **Added**
+* `Sdk.Audit.ConfigureStream()`: **Added**
+* `Sdk.Audit.RemoveStream()`: **Added**
+* `Sdk.Audit.ReplayStream()`: **Added**
+* `Sdk.Usage.Get()`: **Added**
+* `Sdk.Invites.List()`: **Added**
+* `Sdk.Invites.Create()`: **Added**
+* `Sdk.Invites.Revoke()`: **Added**
+* `Sdk.Invites.Resend()`: **Added**
+* `Sdk.Settings.ListHistory()`: **Added**
+* `Sdk.Settings.Restore()`: **Added**
+* `Sdk.Settings.Preview()`: **Added**
+* `Sdk.Requests.Aggregate()`: **Added**
+* `Sdk.Lists.Preview()`: **Added**
+* `Sdk.Lists.Change()`: **Added**
+* `Sdk.Lists.GetChange()`: **Added**
+* `Sdk.Reviews.List()`: **Added**
+* `Sdk.Reviews.Create()`: **Added**
+* `Sdk.Reviews.Get()`: **Added**
+* `Sdk.Reviews.Update()`: **Added**
+* `Sdk.Reviews.Resolve()`: **Added**
+* `Sdk.Reviews.ListComments()`: **Added**
+* `Sdk.Reviews.Comment()`: **Added**
+* `Sdk.Reviews.ListResolutions()`: **Added**
+* `Sdk.Reviews.ListViews()`: **Added**
+* `Sdk.Reviews.CreateView()`: **Added**
+* `Sdk.Reviews.DeleteView()`: **Added**
+* `Sdk.Reviews.UpdateView()`: **Added**
+* `Sdk.Reviews.Export()`: **Added**
+* `Sdk.Reviews.ListSubjects()`: **Added**
+* `Sdk.Reviews.AddSubject()`: **Added**
+* `Sdk.Reviews.DeleteSubject()`: **Added**
+* `Sdk.Erasures.Get()`: **Added**
+* `Sdk.Exports.List()`: **Added**
+* `Sdk.Exports.Create()`: **Added**
+* `Sdk.Exports.Get()`: **Added**
+* `Sdk.Exports.Cancel()`: **Added**
+* `Sdk.Exports.Retry()`: **Added**
+* `Sdk.Exports.DownloadChunk()`: **Added**
+* `Sdk.Evaluations.List()`: **Added**
+* `Sdk.Evaluations.Create()`: **Added**
+* `Sdk.Evaluations.Get()`: **Added**
+* `Sdk.Evaluations.GetResult()`: **Added**
+* `Sdk.Evaluations.Cancel()`: **Added**
+* `Sdk.Evaluations.Publish()`: **Added**
+* `Sdk.Operations.Summarize()`: **Added**
+* `Sdk.Assessments.Create()`:  `error.Code` **Changed**
+* `Sdk.Assessments.Get()`:  `error.Code` **Changed**
+* `Sdk.Assessments.Delete()`: 
+  *  `response.ErasureId` **Added**
+  *  `error.Code` **Changed**
+* `Sdk.Assessments.RecordOutcome()`:  `error.Code` **Changed**
+* `Sdk.Assessments.Query()`:  `error.Code` **Changed**
+* `Sdk.Assessments.Aggregate()`: 
+  *  `request.Request` **Changed**
+  *  `response` **Changed**
+  *  `error.Code` **Changed**
+* `Sdk.Assessments.Search()`: 
+  *  `request.Request` **Changed**
+  *  `error.Code` **Changed**
+* `Sdk.Assessments.RetrieveVersion()`:  `error.Code` **Changed**
+* `Sdk.Assessments.BindAccount()`:  `error.Code` **Changed**
+* `Sdk.Accounts.ListChanged()`:  `error.Code` **Changed**
+* `Sdk.Accounts.Get()`:  `error.Code` **Changed**
+* `Sdk.Accounts.Delete()`: 
+  *  `response.ErasureId` **Added**
+  *  `error.Code` **Changed**
+* `Sdk.Accounts.ListAssessments()`:  `error.Code` **Changed**
+* `Sdk.Accounts.RecordEnforcement()`:  `error.Code` **Changed**
+* `Sdk.Accounts.RetrieveDecision()`:  `error.Code` **Changed**
+* `Sdk.Accounts.ListCredentials()`:  `error.Code` **Changed**
+* `Sdk.Accounts.AssociateCredential()`:  `error.Code` **Changed**
+* `Sdk.Accounts.RetireCredential()`:  `error.Code` **Changed**
+* `Sdk.KeyUsage.Record()`:  `error.Code` **Changed**
+* `Sdk.Keys.Rotate()`:  `error.Code` **Changed**
+* `Sdk.Keys.List()`: 
+  *  `response.Items[]` **Changed**
+  *  `error.Code` **Changed**
+* `Sdk.Keys.Revoke()`: 
+  *  `response` **Changed**
+  *  `error.Code` **Changed**
+* `Sdk.Integrations.List()`:  `error.Code` **Changed**
+* `Sdk.Integrations.Create()`:  `error.Code` **Changed**
+* `Sdk.Integrations.Delete()`:  `error.Code` **Changed**
+* `Sdk.Integrations.Rotate()`:  `error.Code` **Changed**
+* `Sdk.WebhookEndpoints.List()`:  `error.Code` **Changed**
+* `Sdk.WebhookEndpoints.Create()`:  `error.Code` **Changed**
+* `Sdk.WebhookEndpoints.Delete()`:  `error.Code` **Changed**
+* `Sdk.WebhookEndpoints.RotateSigningKey()`:  `error.Code` **Changed**
+* `Sdk.WebhookEndpoints.SendTestEvent()`:  `error.Code` **Changed**
+* `Sdk.WebhookEndpoints.ListDeliveries()`:  `error.Code` **Changed**
+* `Sdk.WebhookEndpoints.ReplayDelivery()`:  `error.Code` **Changed**
+* `Sdk.Settings.Get()`:  `error.Code` **Changed**
+* `Sdk.Settings.Update()`: 
+  *  `request.Body` **Changed**
+  *  `error.Code` **Changed**
+* `Sdk.Requests.List()`: 
+  *  `request.Request.ApiKeyId` **Added**
+  *  `response.Items[].ApiKeyId` **Added**
+  *  `error.Code` **Changed**
+* `Sdk.Lists.List()`: 
+  *  `request` **Changed**
+  *  `response` **Changed**
+  *  `error.Code` **Changed**
+* `Sdk.Lists.Create()`: 
+  *  `request.Body.ExpiresAt` **Added**
+  *  `response.ExpiresAt` **Added**
+  *  `error.Code` **Changed**
+* `Sdk.Lists.Delete()`:  `error.Code` **Changed**
+
 ## 8.4.1
 
 No changes detected.

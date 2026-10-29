@@ -5,7 +5,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
-	"github.com/noresponsehq/go/v8/models/components"
+	"github.com/noresponsehq/go/v9/models/components"
 	"net/http"
 	"strconv"
 	"strings"

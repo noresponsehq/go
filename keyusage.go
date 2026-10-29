@@ -4,17 +4,18 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"github.com/noresponsehq/go/v8/internal/config"
-	"github.com/noresponsehq/go/v8/internal/hooks"
-	"github.com/noresponsehq/go/v8/internal/utils"
-	"github.com/noresponsehq/go/v8/models/apierrors"
-	"github.com/noresponsehq/go/v8/models/components"
-	"github.com/noresponsehq/go/v8/models/operations"
-	"github.com/noresponsehq/go/v8/retry"
+	"github.com/noresponsehq/go/v9/internal/config"
+	"github.com/noresponsehq/go/v9/internal/hooks"
+	"github.com/noresponsehq/go/v9/internal/utils"
+	"github.com/noresponsehq/go/v9/models/apierrors"
+	"github.com/noresponsehq/go/v9/models/components"
+	"github.com/noresponsehq/go/v9/models/operations"
+	"github.com/noresponsehq/go/v9/retry"
 	"net/http"
 	"net/url"
 )
 
+// KeyUsage - Usage of keys issued to your accounts.
 type KeyUsage struct {
 	rootSDK          *NoResponse
 	sdkConfiguration config.SDKConfiguration

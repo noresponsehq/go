@@ -1,7 +1,7 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v8/internal/utils"
+	"github.com/noresponsehq/go/v9/internal/utils"
 )
 
 // AccountRiskReason - One reason that fired. direction is whether it raises or lowers the score, or is neutral (informational, it moves nothing). impact is a coarse band of how much it moves the score: none for a neutral reason, otherwise low, medium or high.
@@ -9,7 +9,8 @@ type AccountRiskReason struct {
 	// A stable reason code. New codes may appear; ignore any you do not know.
 	Code      ReasonCode `json:"code"`
 	Direction Direction  `json:"direction"`
-	Impact    Impact     `json:"impact"`
+	// The selected reason's served impact band. Requires reason.
+	Impact Impact `json:"impact"`
 	// The submitted identifier or client context field a reason concerns; absent when it concerns the whole assessment. Client context is a claimed hint, not a device fingerprint.
 	Identifier *ReasonIdentifier `json:"identifier,omitzero"`
 	// The list entry a list_match reason applied. No other reason carries it.

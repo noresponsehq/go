@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/noresponsehq/go/v8/internal/utils"
+	"github.com/noresponsehq/go/v9/internal/utils"
 )
 
 type WebhookEventType string
@@ -16,6 +16,7 @@ const (
 	WebhookEventTypeWorkspaceDeleted        WebhookEventType = "workspace.deleted"
 	WebhookEventTypeWebhookEndpointDisabled WebhookEventType = "webhook_endpoint.disabled"
 	WebhookEventTypeAccountRiskChanged      WebhookEventType = "account.risk_changed"
+	WebhookEventTypeAuditEvent              WebhookEventType = "audit.event"
 )
 
 // WebhookEvent - The body of every webhook delivery: {id, type, created_at, data}, where type chooses the shape of data. Deliveries are at least once and unordered: deduplicate on id, and keep an assessment only when its detail.assessment_version is newer than the one you hold. GET /v1/assessments/{assessment_id} stays authoritative.
@@ -26,6 +27,7 @@ type WebhookEvent struct {
 	WorkspaceDeletedEvent        *WorkspaceDeletedEvent        `queryParam:"inline" union:"member"`
 	WebhookEndpointDisabledEvent *WebhookEndpointDisabledEvent `queryParam:"inline" union:"member"`
 	AccountRiskChangedEvent      *AccountRiskChangedEvent      `queryParam:"inline" union:"member"`
+	AuditEventEvent              *AuditEventEvent              `queryParam:"inline" union:"member"`
 
 	Type WebhookEventType
 }
@@ -81,6 +83,15 @@ func CreateWebhookEventAccountRiskChanged(accountRiskChanged AccountRiskChangedE
 	return WebhookEvent{
 		AccountRiskChangedEvent: &accountRiskChanged,
 		Type:                    typ,
+	}
+}
+
+func CreateWebhookEventAuditEvent(auditEvent AuditEventEvent) WebhookEvent {
+	typ := WebhookEventTypeAuditEvent
+
+	return WebhookEvent{
+		AuditEventEvent: &auditEvent,
+		Type:            typ,
 	}
 }
 
@@ -157,6 +168,15 @@ func (u *WebhookEvent) UnmarshalJSON(data []byte) (err error) {
 		u.AccountRiskChangedEvent = accountRiskChangedEvent
 		u.Type = WebhookEventTypeAccountRiskChanged
 		return nil
+	case "audit.event":
+		auditEventEvent := new(AuditEventEvent)
+		if err := utils.UnmarshalJSON(data, &auditEventEvent, "", true, nil); err != nil {
+			return fmt.Errorf("could not unmarshal `%s` into expected (Type == audit.event) type AuditEventEvent within WebhookEvent: %w", string(data), err)
+		}
+
+		u.AuditEventEvent = auditEventEvent
+		u.Type = WebhookEventTypeAuditEvent
+		return nil
 	}
 
 	return fmt.Errorf("could not unmarshal `%s` into any supported union types for WebhookEvent", string(data))
@@ -185,6 +205,10 @@ func (u WebhookEvent) MarshalJSON() ([]byte, error) {
 
 	if u.AccountRiskChangedEvent != nil {
 		return utils.MarshalJSON(u.AccountRiskChangedEvent, "", true)
+	}
+
+	if u.AuditEventEvent != nil {
+		return utils.MarshalJSON(u.AuditEventEvent, "", true)
 	}
 
 	return nil, errors.New("could not marshal union type WebhookEvent: all fields are null")

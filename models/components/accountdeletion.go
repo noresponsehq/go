@@ -1,7 +1,7 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v8/internal/utils"
+	"github.com/noresponsehq/go/v9/internal/utils"
 )
 
 // AccountDeletion - Body of the 200 answer to DELETE /v1/accounts/{account_id}: the calling workspace's account was erased in the environment of the calling key. Every assessment of the account went, with its revisions, evidence, outcomes and the identity-graph marks its outcomes set, and an assessment that was still running when the call arrived is stopped. Afterwards GET /v1/accounts/{account_id} and GET /v1/assessments/{assessment_id} of each erased assessment answer 404, and the history page is empty. The call is idempotent: a repeat, or an account with nothing to erase, answers 200 with assessments_deleted 0. The account_id can be assessed again later, as a new account.
@@ -17,6 +17,8 @@ type AccountDeletion struct {
 	AssessmentsDeleted int64 `json:"assessments_deleted"`
 	// When the erasure took effect. An assessment of the account begun before this time is refused or stopped.
 	DeletedAt string `json:"deleted_at"`
+	// Receipt for GET /v1/erasures/{erasure_id}, when durable storage issued one.
+	ErasureID *string `json:"erasure_id,omitzero"`
 }
 
 func (a AccountDeletion) MarshalJSON() ([]byte, error) {
@@ -57,4 +59,11 @@ func (a *AccountDeletion) GetDeletedAt() string {
 		return ""
 	}
 	return a.DeletedAt
+}
+
+func (a *AccountDeletion) GetErasureID() *string {
+	if a == nil {
+		return nil
+	}
+	return a.ErasureID
 }

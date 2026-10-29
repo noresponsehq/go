@@ -1,7 +1,7 @@
 package operations
 
 import (
-	"github.com/noresponsehq/go/v8/models/components"
+	"github.com/noresponsehq/go/v9/models/components"
 )
 
 type ListListEntriesRequest struct {
@@ -9,6 +9,8 @@ type ListListEntriesRequest struct {
 	WorkspaceID string `pathParam:"style=simple,explode=false,name=workspace_id"`
 	// The environment: live or test. Each has its own settings. Any other value answers 400. An API key reads and changes only its own environment's; the other answers 404.
 	Environment components.KeyEnvironment `pathParam:"style=simple,explode=false,name=environment"`
+	Limit       *int64                    `queryParam:"style=form,explode=true,name=limit"`
+	Cursor      *string                   `queryParam:"style=form,explode=true,name=cursor"`
 }
 
 func (l *ListListEntriesRequest) GetWorkspaceID() string {
@@ -25,9 +27,25 @@ func (l *ListListEntriesRequest) GetEnvironment() components.KeyEnvironment {
 	return l.Environment
 }
 
+func (l *ListListEntriesRequest) GetLimit() *int64 {
+	if l == nil {
+		return nil
+	}
+	return l.Limit
+}
+
+func (l *ListListEntriesRequest) GetCursor() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Cursor
+}
+
 type ListListEntriesResponse struct {
 	Headers map[string][]string
 	Result  components.ListEntryList
+
+	Next func() (*ListListEntriesResponse, error)
 }
 
 func (l *ListListEntriesResponse) GetHeaders() map[string][]string {

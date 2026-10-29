@@ -1,0 +1,14 @@
+# Export
+
+Retained review snapshot.
+
+
+## Fields
+
+| Field                                                                  | Type                                                                   | Required                                                               | Description                                                            | Example                                                                |
+| ---------------------------------------------------------------------- | ---------------------------------------------------------------------- | ---------------------------------------------------------------------- | ---------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| `ExportedAt`                                                           | `string`                                                               | :heavy_check_mark:                                                     | N/A                                                                    | 2026-01-01T00:00:00Z                                                   |
+| `Review`                                                               | [components.Review](../../models/components/review.md)                 | :heavy_check_mark:                                                     | N/A                                                                    |                                                                        |
+| `Comments`                                                             | [][components.ReviewComment](../../models/components/reviewcomment.md) | :heavy_check_mark:                                                     | N/A                                                                    |                                                                        |
+| `Resolutions`                                                          | [][components.Resolution](../../models/components/resolution.md)       | :heavy_check_mark:                                                     | N/A                                                                    |                                                                        |
+| `Subjects`                                                             | [][components.ReviewSubject](../../models/components/reviewsubject.md) | :heavy_check_mark:                                                     | N/A                                                                    |                                                                        |

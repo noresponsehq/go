@@ -1,7 +1,7 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v8/internal/utils"
+	"github.com/noresponsehq/go/v9/internal/utils"
 )
 
 // PhoneEnrichment - Facts about the number only: line type, carrier and country. The upstream provider, its scores and its verdicts stay internal.

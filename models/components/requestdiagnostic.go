@@ -1,7 +1,7 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v8/internal/utils"
+	"github.com/noresponsehq/go/v9/internal/utils"
 )
 
 // RequestDiagnostic - One authenticated HTTP attempt. An attempt id is independent of the caller correlation id. No raw body, path parameter, credential or source payload is retained. write_complete means the server wrote/flushed its response, not proof the client processed it. Collection is bounded best effort; ii_signup_request_diagnostic_failures_total exposes gaps. Retained for seven days or the shorter environment retention.
@@ -19,6 +19,8 @@ type RequestDiagnostic struct {
 	WriteComplete      bool    `json:"write_complete"`
 	// The decision prepared for one HTTP attempt. Its account field preserves the account decision returned for that attempt, even after subsequent changes.
 	Decision *DecisionReceipt `json:"decision,omitzero"`
+	// Public authenticated API key identifier. Absent for member requests and older unattributed diagnostics.
+	APIKeyID *string `json:"api_key_id,omitzero"`
 }
 
 func (r RequestDiagnostic) MarshalJSON() ([]byte, error) {
@@ -114,4 +116,11 @@ func (r *RequestDiagnostic) GetDecision() *DecisionReceipt {
 		return nil
 	}
 	return r.Decision
+}
+
+func (r *RequestDiagnostic) GetAPIKeyID() *string {
+	if r == nil {
+		return nil
+	}
+	return r.APIKeyID
 }

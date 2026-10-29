@@ -1,0 +1,18 @@
+{
+  "record_type": "manifest",
+  "data": {
+    "schema_version": "2026-03-22",
+    "format": "ndjson",
+    "snapshot_at": "2026-10-29T00:00:00Z",
+    "request": {
+      "kind": "audit",
+      "environment": "test"
+    },
+    "capture": "retained_records_at_snapshot",
+    "exclusions": [
+      "events_before_audit_capture",
+      "events_outside_retention",
+      "request_bodies_and_secrets"
+    ]
+  }
+}

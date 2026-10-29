@@ -11,6 +11,7 @@ Your accounts, each with one current risk, and their assessment history.
 * [Delete](#delete) - Erase an account and its history.
 * [ListAssessments](#listassessments) - Page through one account's unexpired assessments.
 * [RecordEnforcement](#recordenforcement) - Record what you did to an account in your identity provider.
+* [ListEnforcements](#listenforcements) - Page through account enforcements
 * [RecordOutcome](#recordoutcome) - Record or correct an account outcome
 * [ListOutcomes](#listoutcomes) - List retained account feedback
 * [RetrieveDecision](#retrievedecision) - Retrieve an exact historical account decision
@@ -18,6 +19,7 @@ Your accounts, each with one current risk, and their assessment history.
 * [ListCredentials](#listcredentials) - List issued credential associations
 * [RetireCredential](#retirecredential) - Retire an issued credential association
 * [Export](#export) - Export an account
+* [ListDecisions](#listdecisions) - Page through recorded account decisions
 
 ## ListChanged
 
@@ -32,7 +34,7 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v8"
+	noresponse "github.com/noresponsehq/go/v9"
 	"log"
 )
 
@@ -61,7 +63,7 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v8"
+	noresponse "github.com/noresponsehq/go/v9"
 	"log"
 )
 
@@ -121,7 +123,7 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v8"
+	noresponse "github.com/noresponsehq/go/v9"
 	"log"
 )
 
@@ -150,7 +152,7 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v8"
+	noresponse "github.com/noresponsehq/go/v9"
 	"log"
 )
 
@@ -208,7 +210,7 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v8"
+	noresponse "github.com/noresponsehq/go/v9"
 	"log"
 )
 
@@ -237,7 +239,7 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v8"
+	noresponse "github.com/noresponsehq/go/v9"
 	"log"
 )
 
@@ -295,7 +297,7 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v8"
+	noresponse "github.com/noresponsehq/go/v9"
 	"log"
 )
 
@@ -368,8 +370,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v8"
-	"github.com/noresponsehq/go/v8/models/components"
+	noresponse "github.com/noresponsehq/go/v9"
+	"github.com/noresponsehq/go/v9/models/components"
 	"log"
 )
 
@@ -405,8 +407,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v8"
-	"github.com/noresponsehq/go/v8/models/components"
+	noresponse "github.com/noresponsehq/go/v9"
+	"github.com/noresponsehq/go/v9/models/components"
 	"log"
 )
 
@@ -460,6 +462,78 @@ func main() {
 | apierrors.RateLimitError        | 429                             | application/problem+json        |
 | apierrors.APIStatusError        | 4XX, 5XX                        | \*/\*                           |
 
+## ListEnforcements
+
+List retained enforcement reports for one account with an authenticated cursor.
+
+### Example Usage
+
+<!-- UsageSnippet language="go" operationID="listAccountEnforcements" method="get" path="/v1/accounts/{account_id}/enforcements" example="page" -->
+```go
+package main
+
+import(
+	"context"
+	"os"
+	noresponse "github.com/noresponsehq/go/v9"
+	"log"
+)
+
+func main() {
+    ctx := context.Background()
+
+    s := noresponse.New(
+        noresponse.WithSecurity(os.Getenv("NORESPONSE_API_KEY")),
+    )
+
+    res, err := s.Accounts.ListEnforcements(ctx, "acct_7f3a9c", noresponse.Pointer[int64](20), nil)
+    if err != nil {
+        log.Fatal(err)
+    }
+    if res != nil {
+        for {
+            // handle items
+
+            res, err = res.Next()
+
+            if err != nil {
+                // handle error
+            }
+
+            if res == nil {
+                break
+            }
+        }
+    }
+}
+```
+
+### Parameters
+
+| Parameter                                                                                                                                                                                                          | Type                                                                                                                                                                                                               | Required                                                                                                                                                                                                           | Description                                                                                                                                                                                                        | Example                                                                                                                                                                                                            |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `ctx`                                                                                                                                                                                                              | [context.Context](https://pkg.go.dev/context#Context)                                                                                                                                                              | :heavy_check_mark:                                                                                                                                                                                                 | The context to use for the request.                                                                                                                                                                                |                                                                                                                                                                                                                    |
+| `accountID`                                                                                                                                                                                                        | `string`                                                                                                                                                                                                           | :heavy_check_mark:                                                                                                                                                                                                 | The account_id the workspace sends with its assessments, as one path segment (percent-encode '\|' and ':' if the client requires it). A value that does not match the account_id shape answers 400 invalid_request. | acct_7f3a9c                                                                                                                                                                                                        |
+| `limit`                                                                                                                                                                                                            | `*int64`                                                                                                                                                                                                           | :heavy_minus_sign:                                                                                                                                                                                                 | Items per page.                                                                                                                                                                                                    |                                                                                                                                                                                                                    |
+| `cursor`                                                                                                                                                                                                           | `*string`                                                                                                                                                                                                          | :heavy_minus_sign:                                                                                                                                                                                                 | next_cursor from the previous page, unchanged.                                                                                                                                                                     |                                                                                                                                                                                                                    |
+| `opts`                                                                                                                                                                                                             | [][operations.Option](../../models/operations/option.md)                                                                                                                                                           | :heavy_minus_sign:                                                                                                                                                                                                 | The options for this request.                                                                                                                                                                                      |                                                                                                                                                                                                                    |
+
+### Response
+
+**[*operations.ListAccountEnforcementsResponse](../../models/operations/listaccountenforcementsresponse.md), error**
+
+### Errors
+
+| Error Type                      | Status Code                     | Content Type                    |
+| ------------------------------- | ------------------------------- | ------------------------------- |
+| apierrors.BadRequestError       | 400                             | application/problem+json        |
+| apierrors.AuthenticationError   | 401                             | application/problem+json        |
+| apierrors.PermissionDeniedError | 403                             | application/problem+json        |
+| apierrors.NotFoundError         | 404                             | application/problem+json        |
+| apierrors.ConflictError         | 409                             | application/problem+json        |
+| apierrors.RateLimitError        | 429                             | application/problem+json        |
+| apierrors.APIStatusError        | 4XX, 5XX                        | \*/\*                           |
+
 ## RecordOutcome
 
 Record a factual report, not an enforcement action. A known outcome replaces the effective report. unknown alone records uncertainty without changing it; unknown with supersedes explicitly retracts it. supersedes must name the current effective report or the request answers 409 outcome_conflict. Reports remain append-only. Idempotency-Key is required. observed_at defaults to receipt time and cannot be over five minutes ahead.
@@ -473,8 +547,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v8"
-	"github.com/noresponsehq/go/v8/models/components"
+	noresponse "github.com/noresponsehq/go/v9"
+	"github.com/noresponsehq/go/v9/models/components"
 	"log"
 )
 
@@ -539,7 +613,7 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v8"
+	noresponse "github.com/noresponsehq/go/v9"
 	"log"
 )
 
@@ -555,7 +629,19 @@ func main() {
         log.Fatal(err)
     }
     if res != nil {
-        // handle response
+        for {
+            // handle items
+
+            res, err = res.Next()
+
+            if err != nil {
+                // handle error
+            }
+
+            if res == nil {
+                break
+            }
+        }
     }
 }
 ```
@@ -599,7 +685,7 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v8"
+	noresponse "github.com/noresponsehq/go/v9"
 	"log"
 )
 
@@ -658,8 +744,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v8"
-	"github.com/noresponsehq/go/v8/models/components"
+	noresponse "github.com/noresponsehq/go/v9"
+	"github.com/noresponsehq/go/v9/models/components"
 	"log"
 )
 
@@ -720,7 +806,7 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v8"
+	noresponse "github.com/noresponsehq/go/v9"
 	"log"
 )
 
@@ -736,7 +822,19 @@ func main() {
         log.Fatal(err)
     }
     if res != nil {
-        // handle response
+        for {
+            // handle items
+
+            res, err = res.Next()
+
+            if err != nil {
+                // handle error
+            }
+
+            if res == nil {
+                break
+            }
+        }
     }
 }
 ```
@@ -780,7 +878,7 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v8"
+	noresponse "github.com/noresponsehq/go/v9"
 	"log"
 )
 
@@ -839,7 +937,7 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v8"
+	noresponse "github.com/noresponsehq/go/v9"
 	"log"
 )
 
@@ -872,6 +970,78 @@ func main() {
 ### Response
 
 **[*operations.ExportAccountResponse](../../models/operations/exportaccountresponse.md), error**
+
+### Errors
+
+| Error Type                      | Status Code                     | Content Type                    |
+| ------------------------------- | ------------------------------- | ------------------------------- |
+| apierrors.BadRequestError       | 400                             | application/problem+json        |
+| apierrors.AuthenticationError   | 401                             | application/problem+json        |
+| apierrors.PermissionDeniedError | 403                             | application/problem+json        |
+| apierrors.NotFoundError         | 404                             | application/problem+json        |
+| apierrors.ConflictError         | 409                             | application/problem+json        |
+| apierrors.RateLimitError        | 429                             | application/problem+json        |
+| apierrors.APIStatusError        | 4XX, 5XX                        | \*/\*                           |
+
+## ListDecisions
+
+List retained immutable risk decisions for one account with an authenticated cursor.
+
+### Example Usage
+
+<!-- UsageSnippet language="go" operationID="listAccountDecisions" method="get" path="/v1/accounts/{account_id}/decisions" example="page" -->
+```go
+package main
+
+import(
+	"context"
+	"os"
+	noresponse "github.com/noresponsehq/go/v9"
+	"log"
+)
+
+func main() {
+    ctx := context.Background()
+
+    s := noresponse.New(
+        noresponse.WithSecurity(os.Getenv("NORESPONSE_API_KEY")),
+    )
+
+    res, err := s.Accounts.ListDecisions(ctx, "acct_7f3a9c", noresponse.Pointer[int64](20), nil)
+    if err != nil {
+        log.Fatal(err)
+    }
+    if res != nil {
+        for {
+            // handle items
+
+            res, err = res.Next()
+
+            if err != nil {
+                // handle error
+            }
+
+            if res == nil {
+                break
+            }
+        }
+    }
+}
+```
+
+### Parameters
+
+| Parameter                                                                                                                                                                                                          | Type                                                                                                                                                                                                               | Required                                                                                                                                                                                                           | Description                                                                                                                                                                                                        | Example                                                                                                                                                                                                            |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `ctx`                                                                                                                                                                                                              | [context.Context](https://pkg.go.dev/context#Context)                                                                                                                                                              | :heavy_check_mark:                                                                                                                                                                                                 | The context to use for the request.                                                                                                                                                                                |                                                                                                                                                                                                                    |
+| `accountID`                                                                                                                                                                                                        | `string`                                                                                                                                                                                                           | :heavy_check_mark:                                                                                                                                                                                                 | The account_id the workspace sends with its assessments, as one path segment (percent-encode '\|' and ':' if the client requires it). A value that does not match the account_id shape answers 400 invalid_request. | acct_7f3a9c                                                                                                                                                                                                        |
+| `limit`                                                                                                                                                                                                            | `*int64`                                                                                                                                                                                                           | :heavy_minus_sign:                                                                                                                                                                                                 | Items per page.                                                                                                                                                                                                    |                                                                                                                                                                                                                    |
+| `cursor`                                                                                                                                                                                                           | `*string`                                                                                                                                                                                                          | :heavy_minus_sign:                                                                                                                                                                                                 | next_cursor from the previous page, unchanged.                                                                                                                                                                     |                                                                                                                                                                                                                    |
+| `opts`                                                                                                                                                                                                             | [][operations.Option](../../models/operations/option.md)                                                                                                                                                           | :heavy_minus_sign:                                                                                                                                                                                                 | The options for this request.                                                                                                                                                                                      |                                                                                                                                                                                                                    |
+
+### Response
+
+**[*operations.ListAccountDecisionsResponse](../../models/operations/listaccountdecisionsresponse.md), error**
 
 ### Errors
 

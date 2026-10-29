@@ -6,7 +6,7 @@ complete: final; nothing is still running. A lane that failed or missed its 10 s
 
 ```go
 import (
-	"github.com/noresponsehq/go/v8/models/components"
+	"github.com/noresponsehq/go/v9/models/components"
 )
 
 value := components.StatusComplete

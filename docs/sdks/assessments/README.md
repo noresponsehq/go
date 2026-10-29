@@ -29,8 +29,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v8"
-	"github.com/noresponsehq/go/v8/models/components"
+	noresponse "github.com/noresponsehq/go/v9"
+	"github.com/noresponsehq/go/v9/models/components"
 	"log"
 )
 
@@ -43,7 +43,7 @@ func main() {
 
     res, err := s.Assessments.Create(ctx, "account-acct_7f3a9c", components.AssessmentRequest{
         AccountID: "acct_7f3a9c",
-        Flow: components.FlowPurchase,
+        Flow: components.FlowAccountCreation,
         Identifiers: components.AssessmentRequestIdentifiers{
             Email: noresponse.Pointer("new.user@example.com"),
             Username: noresponse.Pointer("new.user"),
@@ -81,7 +81,7 @@ func main() {
             SessionCreatedAt: noresponse.Pointer("2026-10-14T08:57:00.000Z"),
             AuthTime: noresponse.Pointer("2026-10-14T08:55:00.000Z"),
             AccountCreatedAt: noresponse.Pointer("2026-10-14T08:56:00.000Z"),
-            Verified: true,
+            Verified: false,
             Mfa: &components.AuthContextMfa{
                 Methods: []string{
                     "totp",
@@ -115,8 +115,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v8"
-	"github.com/noresponsehq/go/v8/models/components"
+	noresponse "github.com/noresponsehq/go/v9"
+	"github.com/noresponsehq/go/v9/models/components"
 	"log"
 )
 
@@ -129,7 +129,7 @@ func main() {
 
     res, err := s.Assessments.Create(ctx, "account-acct_7f3a9c", components.AssessmentRequest{
         AccountID: "acct_7f3a9c",
-        Flow: components.FlowPurchase,
+        Flow: components.FlowAccountCreation,
         Identifiers: components.AssessmentRequestIdentifiers{
             Email: noresponse.Pointer("new.user@example.com"),
             Username: noresponse.Pointer("new.user"),
@@ -167,7 +167,7 @@ func main() {
             SessionCreatedAt: noresponse.Pointer("2026-10-14T08:57:00.000Z"),
             AuthTime: noresponse.Pointer("2026-10-14T08:55:00.000Z"),
             AccountCreatedAt: noresponse.Pointer("2026-10-14T08:56:00.000Z"),
-            Verified: true,
+            Verified: false,
             Mfa: &components.AuthContextMfa{
                 Methods: []string{
                     "totp",
@@ -201,8 +201,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v8"
-	"github.com/noresponsehq/go/v8/models/components"
+	noresponse "github.com/noresponsehq/go/v9"
+	"github.com/noresponsehq/go/v9/models/components"
 	"log"
 )
 
@@ -244,8 +244,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v8"
-	"github.com/noresponsehq/go/v8/models/components"
+	noresponse "github.com/noresponsehq/go/v9"
+	"github.com/noresponsehq/go/v9/models/components"
 	"log"
 )
 
@@ -258,7 +258,7 @@ func main() {
 
     res, err := s.Assessments.Create(ctx, "account-acct_7f3a9c", components.AssessmentRequest{
         AccountID: "acct_7f3a9c",
-        Flow: components.FlowPurchase,
+        Flow: components.FlowAccountCreation,
         Identifiers: components.AssessmentRequestIdentifiers{
             Email: noresponse.Pointer("new.user@example.com"),
             Username: noresponse.Pointer("new.user"),
@@ -296,7 +296,7 @@ func main() {
             SessionCreatedAt: noresponse.Pointer("2026-10-14T08:57:00.000Z"),
             AuthTime: noresponse.Pointer("2026-10-14T08:55:00.000Z"),
             AccountCreatedAt: noresponse.Pointer("2026-10-14T08:56:00.000Z"),
-            Verified: true,
+            Verified: false,
             Mfa: &components.AuthContextMfa{
                 Methods: []string{
                     "totp",
@@ -330,8 +330,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v8"
-	"github.com/noresponsehq/go/v8/models/components"
+	noresponse "github.com/noresponsehq/go/v9"
+	"github.com/noresponsehq/go/v9/models/components"
 	"log"
 )
 
@@ -366,8 +366,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v8"
-	"github.com/noresponsehq/go/v8/models/components"
+	noresponse "github.com/noresponsehq/go/v9"
+	"github.com/noresponsehq/go/v9/models/components"
 	"log"
 )
 
@@ -412,8 +412,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v8"
-	"github.com/noresponsehq/go/v8/models/components"
+	noresponse "github.com/noresponsehq/go/v9"
+	"github.com/noresponsehq/go/v9/models/components"
 	"log"
 )
 
@@ -426,7 +426,7 @@ func main() {
 
     res, err := s.Assessments.Create(ctx, "account-acct_7f3a9c", components.AssessmentRequest{
         AccountID: "acct_7f3a9c",
-        Flow: components.FlowPurchase,
+        Flow: components.FlowAccountCreation,
         Identifiers: components.AssessmentRequestIdentifiers{
             Email: noresponse.Pointer("new.user@example.com"),
             Username: noresponse.Pointer("new.user"),
@@ -464,7 +464,7 @@ func main() {
             SessionCreatedAt: noresponse.Pointer("2026-10-14T08:57:00.000Z"),
             AuthTime: noresponse.Pointer("2026-10-14T08:55:00.000Z"),
             AccountCreatedAt: noresponse.Pointer("2026-10-14T08:56:00.000Z"),
-            Verified: true,
+            Verified: false,
             Mfa: &components.AuthContextMfa{
                 Methods: []string{
                     "totp",
@@ -528,7 +528,7 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v8"
+	noresponse "github.com/noresponsehq/go/v9"
 	"log"
 )
 
@@ -557,7 +557,7 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v8"
+	noresponse "github.com/noresponsehq/go/v9"
 	"log"
 )
 
@@ -586,7 +586,7 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v8"
+	noresponse "github.com/noresponsehq/go/v9"
 	"log"
 )
 
@@ -615,7 +615,7 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v8"
+	noresponse "github.com/noresponsehq/go/v9"
 	"log"
 )
 
@@ -644,7 +644,7 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v8"
+	noresponse "github.com/noresponsehq/go/v9"
 	"log"
 )
 
@@ -673,7 +673,7 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v8"
+	noresponse "github.com/noresponsehq/go/v9"
 	"log"
 )
 
@@ -732,7 +732,7 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v8"
+	noresponse "github.com/noresponsehq/go/v9"
 	"log"
 )
 
@@ -761,7 +761,7 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v8"
+	noresponse "github.com/noresponsehq/go/v9"
 	"log"
 )
 
@@ -819,8 +819,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v8"
-	"github.com/noresponsehq/go/v8/models/components"
+	noresponse "github.com/noresponsehq/go/v9"
+	"github.com/noresponsehq/go/v9/models/components"
 	"log"
 )
 
@@ -854,8 +854,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v8"
-	"github.com/noresponsehq/go/v8/models/components"
+	noresponse "github.com/noresponsehq/go/v9"
+	"github.com/noresponsehq/go/v9/models/components"
 	"log"
 )
 
@@ -867,7 +867,7 @@ func main() {
     )
 
     res, err := s.Assessments.RecordOutcome(ctx, "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM", "account-acct_7f3a9c", components.AssessmentOutcomeRequest{
-        Outcome: components.OutcomeAccountTakeover,
+        Outcome: components.OutcomeUnknown,
         ObservedAt: noresponse.Pointer("2026-10-14T09:04:30.000Z"),
         ExternalRef: noresponse.Pointer("case-48213"),
         Notes: noresponse.Pointer("Chargeback filed two days after account creation."),
@@ -889,8 +889,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v8"
-	"github.com/noresponsehq/go/v8/models/components"
+	noresponse "github.com/noresponsehq/go/v9"
+	"github.com/noresponsehq/go/v9/models/components"
 	"log"
 )
 
@@ -952,8 +952,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v8"
-	"github.com/noresponsehq/go/v8/models/components"
+	noresponse "github.com/noresponsehq/go/v9"
+	"github.com/noresponsehq/go/v9/models/components"
 	"log"
 )
 
@@ -996,8 +996,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v8"
-	"github.com/noresponsehq/go/v8/models/components"
+	noresponse "github.com/noresponsehq/go/v9"
+	"github.com/noresponsehq/go/v9/models/components"
 	"log"
 )
 
@@ -1070,8 +1070,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v8"
-	"github.com/noresponsehq/go/v8/models/components"
+	noresponse "github.com/noresponsehq/go/v9"
+	"github.com/noresponsehq/go/v9/models/components"
 	"log"
 )
 
@@ -1086,6 +1086,7 @@ func main() {
         From: "2026-10-19T00:00:00Z",
         To: "2026-10-26T00:00:00Z",
         Bucket: components.BucketWeek,
+        Country: noresponse.Pointer("GB"),
     })
     if err != nil {
         log.Fatal(err)
@@ -1133,8 +1134,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v8"
-	"github.com/noresponsehq/go/v8/models/components"
+	noresponse "github.com/noresponsehq/go/v9"
+	"github.com/noresponsehq/go/v9/models/components"
 	"log"
 )
 
@@ -1150,6 +1151,7 @@ func main() {
         To: "2026-01-02T00:00:00Z",
         AccountID: noresponse.Pointer("acct_7f3a9c"),
         Cursor: noresponse.Pointer("eyJ0IjoxNzY3MjI1NjAwMDAwMDAwLCJpIjoiYXNtX2V4YW1wbGUiLCJlIjoxNzY3MjI5MjAwfQ"),
+        Country: noresponse.Pointer("GB"),
     })
     if err != nil {
         log.Fatal(err)
@@ -1197,7 +1199,7 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v8"
+	noresponse "github.com/noresponsehq/go/v9"
 	"log"
 )
 
@@ -1257,8 +1259,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v8"
-	"github.com/noresponsehq/go/v8/models/components"
+	noresponse "github.com/noresponsehq/go/v9"
+	"github.com/noresponsehq/go/v9/models/components"
 	"log"
 )
 

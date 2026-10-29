@@ -1,0 +1,6 @@
+{
+  "kind": "account",
+  "environment": "test",
+  "account_id": "acct_example",
+  "response_mode": "standard"
+}

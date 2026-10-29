@@ -1,12 +1,10 @@
 # Band
 
-low 0-29, medium 30-59, high 60-84, critical 85-100.
-
 ## Example Usage
 
 ```go
 import (
-	"github.com/noresponsehq/go/v8/models/components"
+	"github.com/noresponsehq/go/v9/models/components"
 )
 
 value := components.BandLow

@@ -1,0 +1,9 @@
+{
+  "endpoint_id": "whe_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+  "environment": "test",
+  "actions": [
+    "key.created"
+  ],
+  "created_at": "2026-10-29T00:00:00Z",
+  "endpoint_state": "verified"
+}

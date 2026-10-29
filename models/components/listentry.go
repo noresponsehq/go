@@ -19,6 +19,8 @@ type ListEntry struct {
 	CreatedAt string  `json:"created_at"`
 	// The external user id of the member who added the entry through the console, or the prefix (nrk_<environment>_<key id>) of the management key that added it.
 	CreatedBy string `json:"created_by"`
+	// Optional expiry. An expired entry stops matching immediately; bounded maintenance removes it and propagates account risk changes.
+	ExpiresAt *string `json:"expires_at,omitzero"`
 }
 
 func (l *ListEntry) GetID() string {
@@ -82,4 +84,11 @@ func (l *ListEntry) GetCreatedBy() string {
 		return ""
 	}
 	return l.CreatedBy
+}
+
+func (l *ListEntry) GetExpiresAt() *string {
+	if l == nil {
+		return nil
+	}
+	return l.ExpiresAt
 }

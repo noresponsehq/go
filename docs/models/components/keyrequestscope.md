@@ -4,7 +4,7 @@
 
 ```go
 import (
-	"github.com/noresponsehq/go/v8/models/components"
+	"github.com/noresponsehq/go/v9/models/components"
 )
 
 value := components.KeyRequestScopeAssess
@@ -13,12 +13,22 @@ value := components.KeyRequestScopeAssess
 
 ## Values
 
-| Name                          | Value                         |
-| ----------------------------- | ----------------------------- |
-| `KeyRequestScopeAssess`       | assess                        |
-| `KeyRequestScopeHistory`      | history                       |
-| `KeyRequestScopeDelete`       | delete                        |
-| `KeyRequestScopeWebhooks`     | webhooks                      |
-| `KeyRequestScopeDetailed`     | detailed                      |
-| `KeyRequestScopeIntegrations` | integrations                  |
-| `KeyRequestScopeManagement`   | management                    |
+| Name                           | Value                          |
+| ------------------------------ | ------------------------------ |
+| `KeyRequestScopeAssess`        | assess                         |
+| `KeyRequestScopeHistory`       | history                        |
+| `KeyRequestScopeDelete`        | delete                         |
+| `KeyRequestScopeWebhooks`      | webhooks                       |
+| `KeyRequestScopeDetailed`      | detailed                       |
+| `KeyRequestScopeIntegrations`  | integrations                   |
+| `KeyRequestScopeManagement`    | management                     |
+| `KeyRequestScopeAudit`         | audit                          |
+| `KeyRequestScopeUsage`         | usage                          |
+| `KeyRequestScopeInvestigate`   | investigate                    |
+| `KeyRequestScopeEvidence`      | evidence                       |
+| `KeyRequestScopeExports`       | exports                        |
+| `KeyRequestScopeAuditManage`   | audit_manage                   |
+| `KeyRequestScopeSettings`      | settings                       |
+| `KeyRequestScopePolicyPublish` | policy_publish                 |
+| `KeyRequestScopeMembers`       | members                        |
+| `KeyRequestScopeMembersManage` | members_manage                 |

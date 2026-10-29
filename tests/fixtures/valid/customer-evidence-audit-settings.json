@@ -1,0 +1,5 @@
+{
+  "environment": "test",
+  "retention_days": 90,
+  "capture": "available_events_only"
+}

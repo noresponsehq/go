@@ -3,13 +3,23 @@ package components
 type KeyScope string
 
 const (
-	KeyScopeAssess       KeyScope = "assess"
-	KeyScopeHistory      KeyScope = "history"
-	KeyScopeDelete       KeyScope = "delete"
-	KeyScopeWebhooks     KeyScope = "webhooks"
-	KeyScopeDetailed     KeyScope = "detailed"
-	KeyScopeIntegrations KeyScope = "integrations"
-	KeyScopeManagement   KeyScope = "management"
+	KeyScopeAssess        KeyScope = "assess"
+	KeyScopeHistory       KeyScope = "history"
+	KeyScopeDelete        KeyScope = "delete"
+	KeyScopeWebhooks      KeyScope = "webhooks"
+	KeyScopeDetailed      KeyScope = "detailed"
+	KeyScopeIntegrations  KeyScope = "integrations"
+	KeyScopeManagement    KeyScope = "management"
+	KeyScopeAudit         KeyScope = "audit"
+	KeyScopeUsage         KeyScope = "usage"
+	KeyScopeInvestigate   KeyScope = "investigate"
+	KeyScopeEvidence      KeyScope = "evidence"
+	KeyScopeExports       KeyScope = "exports"
+	KeyScopeAuditManage   KeyScope = "audit_manage"
+	KeyScopeSettings      KeyScope = "settings"
+	KeyScopePolicyPublish KeyScope = "policy_publish"
+	KeyScopeMembers       KeyScope = "members"
+	KeyScopeMembersManage KeyScope = "members_manage"
 )
 
 func (e KeyScope) ToPointer() *KeyScope {
@@ -20,7 +30,7 @@ func (e KeyScope) ToPointer() *KeyScope {
 func (e *KeyScope) IsExact() bool {
 	if e != nil {
 		switch *e {
-		case "assess", "history", "delete", "webhooks", "detailed", "integrations", "management":
+		case "assess", "history", "delete", "webhooks", "detailed", "integrations", "management", "audit", "usage", "investigate", "evidence", "exports", "audit_manage", "settings", "policy_publish", "members", "members_manage":
 			return true
 		}
 	}
@@ -44,13 +54,24 @@ type Key struct {
 	CreatedAt string    `json:"created_at"`
 	// The external user id of the member who created the key through the console, or the prefix (nrk_<environment>_<key id>) of the management key that created it. Absent for a key NoResponse issued or a rotation made.
 	CreatedBy *string `json:"created_by,omitzero"`
-	// When a rotated key stops authenticating (POST /v1/keys/rotate). Absent for a key with no end.
+	// The earlier of the explicit lifetime and any rotation overlap. Rotation preserves the original lifetime.
 	ExpiresAt *string `json:"expires_at,omitzero"`
 	RevokedAt *string `json:"revoked_at,omitzero"`
 	// The external user id of the member who revoked the key through the console, or the prefix of the management key that revoked it. Absent when the key is not revoked or NoResponse revoked it.
 	RevokedBy *string `json:"revoked_by,omitzero"`
 	// The credential, nrk_<environment>_<key id>_<secret>. Present only in the 201 answer that created the key.
 	Key *string `json:"key,omitzero"`
+	// The optional display name supplied for this API key. Preserved on rotation.
+	Name *string `json:"name,omitzero"`
+	// Optional operational purpose, at most 200 printable characters without leading or trailing whitespace. Do not put secrets or personal data here. Preserved on rotation and included in the creation request fingerprint; omitted for older credentials.
+	Purpose *string  `json:"purpose,omitzero"`
+	Kind    *KeyKind `json:"kind,omitzero"`
+	// The issuing member's external identity for a personal key. Personal ownership is fixed and the key is revoked when that member loses authority. Service keys belong to the workspace and omit this field.
+	OwnerUserID *string `json:"owner_user_id,omitzero"`
+	// Replacement public key identifier, or legacy when the successor predates recorded lineage. This field excludes the secret.
+	RotatedTo *string `json:"rotated_to,omitzero"`
+	// Latest recorded authenticated request observation, updated at most once per minute. Capture is best effort after the response and includes authenticated requests refused by authorization or rate limits. Absence means unknown and does not prove the key was unused. It is independent of diagnostic retention and resets on the replacement key after rotation. This field retains no raw IP or user-agent.
+	LastUsedAt *string `json:"last_used_at,omitzero"`
 }
 
 func (k *Key) GetID() string {
@@ -135,4 +156,46 @@ func (k *Key) GetKey() *string {
 		return nil
 	}
 	return k.Key
+}
+
+func (k *Key) GetName() *string {
+	if k == nil {
+		return nil
+	}
+	return k.Name
+}
+
+func (k *Key) GetPurpose() *string {
+	if k == nil {
+		return nil
+	}
+	return k.Purpose
+}
+
+func (k *Key) GetKind() *KeyKind {
+	if k == nil {
+		return nil
+	}
+	return k.Kind
+}
+
+func (k *Key) GetOwnerUserID() *string {
+	if k == nil {
+		return nil
+	}
+	return k.OwnerUserID
+}
+
+func (k *Key) GetRotatedTo() *string {
+	if k == nil {
+		return nil
+	}
+	return k.RotatedTo
+}
+
+func (k *Key) GetLastUsedAt() *string {
+	if k == nil {
+		return nil
+	}
+	return k.LastUsedAt
 }

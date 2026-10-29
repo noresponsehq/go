@@ -6,7 +6,7 @@ The environment the key belongs to. A live key assesses with live sources; a tes
 
 ```go
 import (
-	"github.com/noresponsehq/go/v8/models/components"
+	"github.com/noresponsehq/go/v9/models/components"
 )
 
 value := components.KeyEnvironmentLive

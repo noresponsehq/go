@@ -1,16 +1,19 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v8/internal/utils"
+	"github.com/noresponsehq/go/v9/internal/utils"
 )
 
-// SettingsRequest - PATCH /v1/workspaces/{workspace_id}/settings/{environment} body. Changes only what it names, in one transaction; a policy change is one new policy_version. Needs the admin or owner role, or an API key with the management scope for its own environment.
+// SettingsRequest - Changes only named settings, atomically. Every successful write advances policy_version and retains an immutable settings snapshot. expected_policy_version optionally guards against stale edits; restore always requires it.
 type SettingsRequest struct {
 	RetentionDays *int64 `json:"retention_days,omitzero"`
 	// Replaces the refused sources; [] refuses none. A change applies to new assessments within a minute.
 	RefusedSources []SourceID `json:"refused_sources,omitzero"`
 	// Use account_creation or its deprecated alias signup, not both.
 	Flows *SettingsRequestFlows `json:"flows,omitzero"`
+	// Compare-and-set guard. A stale version returns 409 policy_version_conflict before any change; every settings write including retention advances the version.
+	ExpectedPolicyVersion *int64  `json:"expected_policy_version,omitzero"`
+	ChangeReason          *string `json:"change_reason,omitzero"`
 }
 
 func (s SettingsRequest) MarshalJSON() ([]byte, error) {
@@ -43,4 +46,18 @@ func (s *SettingsRequest) GetFlows() *SettingsRequestFlows {
 		return nil
 	}
 	return s.Flows
+}
+
+func (s *SettingsRequest) GetExpectedPolicyVersion() *int64 {
+	if s == nil {
+		return nil
+	}
+	return s.ExpectedPolicyVersion
+}
+
+func (s *SettingsRequest) GetChangeReason() *string {
+	if s == nil {
+		return nil
+	}
+	return s.ChangeReason
 }

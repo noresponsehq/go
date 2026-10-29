@@ -1,8 +1,9 @@
 package components
 
-// ListEntryList - GET /v1/workspaces/{workspace_id}/lists/{environment}: every entry of the environment's list, newest first. An environment holds at most 10,000 entries.
+// ListEntryList - Newest first. Without a query, returns every active entry for compatibility. With limit or cursor, returns up to 100 entries and an authenticated workspace/environment-bound cursor. Expired entries are omitted.
 type ListEntryList struct {
-	Items []ListEntry `json:"items"`
+	Items      []ListEntry `json:"items"`
+	NextCursor *string     `json:"next_cursor,omitzero"`
 }
 
 func (l *ListEntryList) GetItems() []ListEntry {
@@ -10,4 +11,11 @@ func (l *ListEntryList) GetItems() []ListEntry {
 		return []ListEntry{}
 	}
 	return l.Items
+}
+
+func (l *ListEntryList) GetNextCursor() *string {
+	if l == nil {
+		return nil
+	}
+	return l.NextCursor
 }

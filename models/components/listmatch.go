@@ -1,24 +1,36 @@
 package components
 
-// ListMatch - The action of the list entry that decided the account.
+import (
+	"encoding/json"
+	"fmt"
+)
+
+// ListMatch - The list action captured at the first answer. Requires revision first. Older answers without captured list state do not match, including none.
 type ListMatch string
 
 const (
-	ListMatchBlock ListMatch = "block"
 	ListMatchAllow ListMatch = "allow"
+	ListMatchBlock ListMatch = "block"
+	ListMatchNone  ListMatch = "none"
 )
 
 func (e ListMatch) ToPointer() *ListMatch {
 	return &e
 }
-
-// IsExact returns true if the value matches a known enum value, false otherwise.
-func (e *ListMatch) IsExact() bool {
-	if e != nil {
-		switch *e {
-		case "block", "allow":
-			return true
-		}
+func (e *ListMatch) UnmarshalJSON(data []byte) error {
+	var v string
+	if err := json.Unmarshal(data, &v); err != nil {
+		return err
 	}
-	return false
+	switch v {
+	case "allow":
+		fallthrough
+	case "block":
+		fallthrough
+	case "none":
+		*e = ListMatch(v)
+		return nil
+	default:
+		return fmt.Errorf("invalid value for ListMatch: %v", v)
+	}
 }

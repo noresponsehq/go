@@ -1,33 +1,24 @@
 package components
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
-// Environment - The environment whose endpoints receive this event: live, or test for the workspace's test environment.
 type Environment string
 
 const (
-	EnvironmentLive Environment = "live"
-	EnvironmentTest Environment = "test"
+	EnvironmentLive      Environment = "live"
+	EnvironmentTest      Environment = "test"
+	EnvironmentWorkspace Environment = "workspace"
 )
 
 func (e Environment) ToPointer() *Environment {
 	return &e
 }
-func (e *Environment) UnmarshalJSON(data []byte) error {
-	var v string
-	if err := json.Unmarshal(data, &v); err != nil {
-		return err
+
+// IsExact returns true if the value matches a known enum value, false otherwise.
+func (e *Environment) IsExact() bool {
+	if e != nil {
+		switch *e {
+		case "live", "test", "workspace":
+			return true
+		}
 	}
-	switch v {
-	case "live":
-		fallthrough
-	case "test":
-		*e = Environment(v)
-		return nil
-	default:
-		return fmt.Errorf("invalid value for Environment: %v", v)
-	}
+	return false
 }

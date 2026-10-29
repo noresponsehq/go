@@ -6,7 +6,7 @@ Machine codes an HTTP 409 answer can carry.
 
 ```go
 import (
-	"github.com/noresponsehq/go/v8/models/components"
+	"github.com/noresponsehq/go/v9/models/components"
 )
 
 value := components.ConflictErrorCodeIdempotencyKeyReused
@@ -34,3 +34,13 @@ custom := components.ConflictErrorCode("custom_value")
 | `ConflictErrorCodeListEntryExists`             | list_entry_exists                              |
 | `ConflictErrorCodeListLimitReached`            | list_limit_reached                             |
 | `ConflictErrorCodeListEntryTooBroad`           | list_entry_too_broad                           |
+| `ConflictErrorCodePolicyVersionConflict`       | policy_version_conflict                        |
+| `ConflictErrorCodeReviewVersionConflict`       | review_version_conflict                        |
+| `ConflictErrorCodeReviewExists`                | review_exists                                  |
+| `ConflictErrorCodeReviewLimitReached`          | review_limit_reached                           |
+| `ConflictErrorCodeExportConflict`              | export_conflict                                |
+| `ConflictErrorCodeEvaluationConflict`          | evaluation_conflict                            |
+| `ConflictErrorCodeEvaluationNoProposal`        | evaluation_no_proposal                         |
+| `ConflictErrorCodeEvaluationLimitReached`      | evaluation_limit_reached                       |
+| `ConflictErrorCodeAlreadyMember`               | already_member                                 |
+| `ConflictErrorCodeMemberLimitReached`          | member_limit_reached                           |

@@ -3,11 +3,11 @@ package noresponse
 import (
 	"context"
 	"fmt"
-	"github.com/noresponsehq/go/v8/internal/config"
-	"github.com/noresponsehq/go/v8/internal/hooks"
-	"github.com/noresponsehq/go/v8/internal/utils"
-	"github.com/noresponsehq/go/v8/models/components"
-	"github.com/noresponsehq/go/v8/retry"
+	"github.com/noresponsehq/go/v9/internal/config"
+	"github.com/noresponsehq/go/v9/internal/hooks"
+	"github.com/noresponsehq/go/v9/internal/utils"
+	"github.com/noresponsehq/go/v9/models/components"
+	"github.com/noresponsehq/go/v9/retry"
 	"net/http"
 	"time"
 )
@@ -52,6 +52,7 @@ type NoResponse struct {
 	Assessments *Assessments
 	// Your accounts, each with one current risk, and their assessment history.
 	Accounts *Accounts
+	// Usage of keys issued to your accounts.
 	KeyUsage *KeyUsage
 	// Your own API keys.
 	Keys *Keys
@@ -59,9 +60,30 @@ type NoResponse struct {
 	Integrations *Integrations
 	// Your webhook endpoints: register, list, rotate signing keys, send test events and delete.
 	WebhookEndpoints *WebhookEndpoints
-	Settings         *Settings
-	Requests         *Requests
-	Lists            *Lists
+	// Scoped workspace membership automation.
+	Members *Members
+	// Durable audit history, retention and delivery.
+	Audit *Audit
+	// Recorded usage for your environment.
+	Usage *Usage
+	// Workspace-bound invitation lifecycle.
+	Invites *Invites
+	// Environment policy, history and previews.
+	Settings *Settings
+	// Retained request diagnostics and operational summaries.
+	Requests *Requests
+	// List entries, previews and durable changes.
+	Lists *Lists
+	// Collaborative review cases, comments and linked subjects.
+	Reviews *Reviews
+	// Durable deletion receipts.
+	Erasures *Erasures
+	// Bounded customer export jobs and encrypted artifacts.
+	Exports *Exports
+	// Frozen policy evaluation evidence and reviewed publication.
+	Evaluations *Evaluations
+	// Retained outcomes, enforcement reports and review populations.
+	Operations *Operations
 
 	sdkConfiguration config.SDKConfiguration
 	hooks            *hooks.Hooks
@@ -138,10 +160,10 @@ func WithTimeout(timeout time.Duration) SDKOption {
 // New creates a new instance of the SDK with the provided options
 func New(opts ...SDKOption) *NoResponse {
 	sdk := &NoResponse{
-		SDKVersion: "8.4.1",
+		SDKVersion: "9.0.0",
 		sdkConfiguration: config.SDKConfiguration{
-			UserAgent:         "noresponse-sdk/go 8.4.1",
-			SDKVersion:        "8.4.1",
+			UserAgent:         "noresponse-sdk/go 9.0.0",
+			SDKVersion:        "9.0.0",
 			GenVersion:        "internal",
 			OpenAPIDocVersion: "1",
 			ServerList:        ServerList,
@@ -172,9 +194,18 @@ func New(opts ...SDKOption) *NoResponse {
 	sdk.Keys = newKeys(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Integrations = newIntegrations(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.WebhookEndpoints = newWebhookEndpoints(sdk, sdk.sdkConfiguration, sdk.hooks)
+	sdk.Members = newMembers(sdk, sdk.sdkConfiguration, sdk.hooks)
+	sdk.Audit = newAudit(sdk, sdk.sdkConfiguration, sdk.hooks)
+	sdk.Usage = newUsage(sdk, sdk.sdkConfiguration, sdk.hooks)
+	sdk.Invites = newInvites(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Settings = newSettings(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Requests = newRequests(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Lists = newLists(sdk, sdk.sdkConfiguration, sdk.hooks)
+	sdk.Reviews = newReviews(sdk, sdk.sdkConfiguration, sdk.hooks)
+	sdk.Erasures = newErasures(sdk, sdk.sdkConfiguration, sdk.hooks)
+	sdk.Exports = newExports(sdk, sdk.sdkConfiguration, sdk.hooks)
+	sdk.Evaluations = newEvaluations(sdk, sdk.sdkConfiguration, sdk.hooks)
+	sdk.Operations = newOperations(sdk, sdk.sdkConfiguration, sdk.hooks)
 
 	return sdk
 }

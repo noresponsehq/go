@@ -6,7 +6,7 @@ An evidence lane: accounts (account presence for email and username), phone, bre
 
 ```go
 import (
-	"github.com/noresponsehq/go/v8/models/components"
+	"github.com/noresponsehq/go/v9/models/components"
 )
 
 value := components.LaneAccounts

@@ -1,14 +1,13 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v8/internal/utils"
+	"github.com/noresponsehq/go/v9/internal/utils"
 )
 
 // Risk - The one risk decision for this event. score is 0 (safe) to 100 (risky), set by the reasons that fired under a hand-set, versioned heuristic policy. Each reason carries its direction and impact band; the policy's weights are not published. Every answer with a recommendation carries it, and the top-level recommendation equals risk.recommendation. It names no source or provider.
 type Risk struct {
 	Score int64 `json:"score"`
-	// low 0-29, medium 30-59, high 60-84, critical 85-100.
-	Band Band `json:"band"`
+	Band  Band  `json:"band"`
 	// The recommended action: allow, step_up or review. Your application applies it.
 	Recommendation Recommendation `json:"recommendation"`
 	// true when the workspace's block threshold is set and score reached it. A provider hook can deny the account creation on it; the provider decides and enforces. It does not change recommendation. It is false while blocking is off, the default, and a body from before the flag existed omits it: read absent as false.

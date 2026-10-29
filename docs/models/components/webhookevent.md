@@ -41,6 +41,12 @@ webhookEvent := components.CreateWebhookEventWebhookEndpointDisabled(components.
 webhookEvent := components.CreateWebhookEventAccountRiskChanged(components.AccountRiskChangedEvent{/* values here */})
 ```
 
+### AuditEventEvent
+
+```go
+webhookEvent := components.CreateWebhookEventAuditEvent(components.AuditEventEvent{/* values here */})
+```
+
 ## Union Discrimination
 
 Use the `Type` field to determine which variant is active, then access the corresponding field:
@@ -59,5 +65,7 @@ switch webhookEvent.Type {
 		// webhookEvent.WebhookEndpointDisabledEvent is populated
 	case components.WebhookEventTypeAccountRiskChanged:
 		// webhookEvent.AccountRiskChangedEvent is populated
+	case components.WebhookEventTypeAuditEvent:
+		// webhookEvent.AuditEventEvent is populated
 }
 ```

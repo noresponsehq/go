@@ -8,7 +8,7 @@ type Settings struct {
 	Environment KeyEnvironment `json:"environment"`
 	// Days an assessment is kept after it is created, 1 to 365 (default 365). Shortening hides older assessments at once.
 	RetentionDays int64 `json:"retention_days"`
-	// How many times this environment's policy has changed; 0 while the defaults apply. A served risk.policy_version ends in +t<policy_version> once it is above 0.
+	// The monotonic settings configuration epoch, including retention changes. Zero while defaults apply. Historical assessments keep their frozen policy version; the active version reaches new assessments within a minute.
 	PolicyVersion int64 `json:"policy_version"`
 	// Who last changed the policy: the member's external user id for a change made through the console, the prefix (nrk_<environment>_<key id>) of the management key that made it, or NoResponse. Absent while the defaults apply.
 	UpdatedBy *string `json:"updated_by,omitzero"`

@@ -13,8 +13,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/noresponsehq/go/v8/models/apierrors"
-	"github.com/noresponsehq/go/v8/models/components"
+	"github.com/noresponsehq/go/v9/models/apierrors"
+	"github.com/noresponsehq/go/v9/models/components"
 )
 
 // Consumer smoke test of the client against a live API.

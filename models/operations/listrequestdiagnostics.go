@@ -1,8 +1,8 @@
 package operations
 
 import (
-	"github.com/noresponsehq/go/v8/internal/utils"
-	"github.com/noresponsehq/go/v8/models/components"
+	"github.com/noresponsehq/go/v9/internal/utils"
+	"github.com/noresponsehq/go/v9/models/components"
 )
 
 type ListRequestDiagnosticsRequest struct {
@@ -20,6 +20,8 @@ type ListRequestDiagnosticsRequest struct {
 	Limit *int64 `default:"50" queryParam:"style=form,explode=true,name=limit"`
 	// Optional filter or paging parameter.
 	Cursor *string `queryParam:"style=form,explode=true,name=cursor"`
+	// Filter by the public authenticated API key identifier; older unattributed rows do not match.
+	APIKeyID *string `queryParam:"style=form,explode=true,name=api_key_id"`
 }
 
 func (l ListRequestDiagnosticsRequest) MarshalJSON() ([]byte, error) {
@@ -82,9 +84,18 @@ func (l *ListRequestDiagnosticsRequest) GetCursor() *string {
 	return l.Cursor
 }
 
+func (l *ListRequestDiagnosticsRequest) GetAPIKeyID() *string {
+	if l == nil {
+		return nil
+	}
+	return l.APIKeyID
+}
+
 type ListRequestDiagnosticsResponse struct {
 	Headers map[string][]string
 	Result  components.RequestDiagnosticPage
+
+	Next func() (*ListRequestDiagnosticsResponse, error)
 }
 
 func (l *ListRequestDiagnosticsResponse) GetHeaders() map[string][]string {

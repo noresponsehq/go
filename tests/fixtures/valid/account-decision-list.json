@@ -1,0 +1,41 @@
+{
+  "account_id": "acct_7f3a9c",
+  "items": [
+    {
+      "account": {
+        "schema_version": "1",
+        "id": "acct_7f3a9c",
+        "risk": {
+          "score": 35,
+          "decision": "step_up",
+          "reasons": [
+            {
+              "code": "proxy_ip",
+              "direction": "raises",
+              "impact": "high",
+              "identifier": "ip"
+            },
+            {
+              "code": "new_email",
+              "direction": "raises",
+              "impact": "low",
+              "identifier": "email"
+            }
+          ]
+        },
+        "decisions_by_flow": {
+          "account_creation": "step_up",
+          "login": "step_up",
+          "purchase": "step_up"
+        },
+        "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+        "updated_at": "2026-10-14T09:00:00.412Z",
+        "risk_version": 3
+      },
+      "assessment_version": 1,
+      "policy_version": "policy-1",
+      "overlay_version": 1,
+      "changed_at": "2026-10-14T09:00:00.412Z"
+    }
+  ]
+}

@@ -14,7 +14,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/noresponsehq/go/v8/models/components"
+	"github.com/noresponsehq/go/v9/models/components"
 )
 
 type signatureVector struct {
@@ -111,6 +111,7 @@ func typedMember(event *components.WebhookEvent) (any, bool) {
 		components.WebhookEventTypeWorkspaceDeleted:        event.WorkspaceDeletedEvent,
 		components.WebhookEventTypeWebhookEndpointDisabled: event.WebhookEndpointDisabledEvent,
 		components.WebhookEventTypeAccountRiskChanged:      event.AccountRiskChangedEvent,
+		components.WebhookEventTypeAuditEvent:              event.AuditEventEvent,
 	}
 	for eventType, member := range members {
 		if eventType != event.Type && !reflect.ValueOf(member).IsNil() {

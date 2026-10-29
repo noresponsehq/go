@@ -1,7 +1,7 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v8/optionalnullable"
+	"github.com/noresponsehq/go/v9/optionalnullable"
 )
 
 // FlowChange - A change to one flow. A field left out keeps the value in force. Thresholds set on login or purchase start from the values in force, account_creation's while it inherits them. After the change, 0 < step_up < review <= 100 and block is off or review <= block <= 100.
@@ -10,8 +10,8 @@ type FlowChange struct {
 	Review *int64 `json:"review,omitzero"`
 	// The score from which the decision is block; null turns blocking off.
 	Block optionalnullable.OptionalNullable[int64] `json:"block,omitzero"`
-	// The depth a request for this flow that names none is served at. Defaults: full for account_creation and purchase, quick for login.
-	DefaultDepth *DefaultDepth `json:"default_depth,omitzero"`
+	// assessments only.
+	DefaultDepth *UsageCountDepth `json:"default_depth,omitzero"`
 	// Login or purchase only: drop the flow's own thresholds so it uses account_creation's again. Not combined with step_up, review or block. Send true; false is refused.
 	InheritsAccountCreation *bool `json:"inherits_account_creation,omitzero"`
 	// Alias of inherits_account_creation, still accepted. Send true; false is refused.
@@ -47,7 +47,7 @@ func (f *FlowChange) GetBlock() optionalnullable.OptionalNullable[int64] {
 	return f.Block
 }
 
-func (f *FlowChange) GetDefaultDepth() *DefaultDepth {
+func (f *FlowChange) GetDefaultDepth() *UsageCountDepth {
 	if f == nil {
 		return nil
 	}

@@ -8,13 +8,13 @@ type AggregateGroup struct {
 	Flow *Flow `json:"flow,omitzero"`
 	// The recommended action: allow, step_up or review. Your application applies it.
 	Recommendation *Recommendation `json:"recommendation,omitzero"`
-	// low 0-29, medium 30-59, high 60-84, critical 85-100.
-	Band *Band `json:"band,omitzero"`
-	// The action of the list entry that decided the account.
-	ListMatch *ListMatch `json:"list_match,omitzero"`
+	Band           *Band           `json:"band,omitzero"`
+	// The list action captured with the first answer. none means no matching entry was found. For retained_first_answers an absent field means the older assessment did not capture list state; this remains a separate group.
+	ListMatch *AggregateGroupListMatch `json:"list_match,omitzero"`
 	// A stable reason code. New codes may appear; ignore any you do not know.
 	Reason *ReasonCode `json:"reason,omitzero"`
-	Impact *Impact     `json:"impact,omitzero"`
+	// The selected reason's served impact band. Requires reason.
+	Impact *Impact `json:"impact,omitzero"`
 	// An evidence lane: accounts (account presence for email and username), phone, breach, domain (the email domain's registration) and ip.
 	Lane    *Lane   `json:"lane,omitzero"`
 	Country *string `json:"country,omitzero"`
@@ -50,7 +50,7 @@ func (a *AggregateGroup) GetBand() *Band {
 	return a.Band
 }
 
-func (a *AggregateGroup) GetListMatch() *ListMatch {
+func (a *AggregateGroup) GetListMatch() *AggregateGroupListMatch {
 	if a == nil {
 		return nil
 	}

@@ -4,7 +4,9 @@ package components
 type RateLimitErrorCode string
 
 const (
-	RateLimitErrorCodeRateLimited RateLimitErrorCode = "rate_limited"
+	RateLimitErrorCodeRateLimited               RateLimitErrorCode = "rate_limited"
+	RateLimitErrorCodeAssessmentBudgetExhausted RateLimitErrorCode = "assessment_budget_exhausted"
+	RateLimitErrorCodeExportLimitReached        RateLimitErrorCode = "export_limit_reached"
 )
 
 func (e RateLimitErrorCode) ToPointer() *RateLimitErrorCode {
@@ -15,7 +17,7 @@ func (e RateLimitErrorCode) ToPointer() *RateLimitErrorCode {
 func (e *RateLimitErrorCode) IsExact() bool {
 	if e != nil {
 		switch *e {
-		case "rate_limited":
+		case "rate_limited", "assessment_budget_exhausted", "export_limit_reached":
 			return true
 		}
 	}

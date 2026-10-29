@@ -1,18 +1,19 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v8/internal/utils"
+	"github.com/noresponsehq/go/v9/internal/utils"
 )
 
 type Exclusion string
 
 const (
-	ExclusionExpiredOrErasedRecords        Exclusion = "expired_or_erased_records"
-	ExclusionSecretsAndCredentialDigests   Exclusion = "secrets_and_credential_digests"
-	ExclusionPrivateSourceAndWorkPayloads  Exclusion = "private_source_and_work_payloads"
-	ExclusionCrossCustomerData             Exclusion = "cross_customer_data"
-	ExclusionLegacyOutcomeNotes            Exclusion = "legacy_outcome_notes"
-	ExclusionUncapturedHistoricalDecisions Exclusion = "uncaptured_historical_decisions"
+	ExclusionExpiredOrErasedRecords                 Exclusion = "expired_or_erased_records"
+	ExclusionSecretsAndCredentialDigests            Exclusion = "secrets_and_credential_digests"
+	ExclusionPrivateSourceAndWorkPayloads           Exclusion = "private_source_and_work_payloads"
+	ExclusionCrossCustomerData                      Exclusion = "cross_customer_data"
+	ExclusionLegacyOutcomeNotes                     Exclusion = "legacy_outcome_notes"
+	ExclusionUncapturedHistoricalDecisions          Exclusion = "uncaptured_historical_decisions"
+	ExclusionInvestigatorReviewsRequireReviewExport Exclusion = "investigator_reviews_require_review_export"
 )
 
 func (e Exclusion) ToPointer() *Exclusion {
@@ -23,7 +24,7 @@ func (e Exclusion) ToPointer() *Exclusion {
 func (e *Exclusion) IsExact() bool {
 	if e != nil {
 		switch *e {
-		case "expired_or_erased_records", "secrets_and_credential_digests", "private_source_and_work_payloads", "cross_customer_data", "legacy_outcome_notes", "uncaptured_historical_decisions":
+		case "expired_or_erased_records", "secrets_and_credential_digests", "private_source_and_work_payloads", "cross_customer_data", "legacy_outcome_notes", "uncaptured_historical_decisions", "investigator_reviews_require_review_export":
 			return true
 		}
 	}

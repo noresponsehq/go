@@ -10,6 +10,8 @@ type ListEntryRequest struct {
 	Action ListEntryAction `json:"action"`
 	// Why the entry exists, for the people who manage the list. It is shown with the entry and decides nothing.
 	Note *string `json:"note,omitzero"`
+	// Optional expiry. An expired entry stops matching immediately; bounded maintenance removes it and propagates account risk changes.
+	ExpiresAt *string `json:"expires_at,omitzero"`
 }
 
 func (l *ListEntryRequest) GetKind() ListEntryKind {
@@ -38,4 +40,11 @@ func (l *ListEntryRequest) GetNote() *string {
 		return nil
 	}
 	return l.Note
+}
+
+func (l *ListEntryRequest) GetExpiresAt() *string {
+	if l == nil {
+		return nil
+	}
+	return l.ExpiresAt
 }

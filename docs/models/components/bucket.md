@@ -6,7 +6,7 @@ The period each count covers, in UTC; a week starts on Monday.
 
 ```go
 import (
-	"github.com/noresponsehq/go/v8/models/components"
+	"github.com/noresponsehq/go/v9/models/components"
 )
 
 value := components.BucketHour

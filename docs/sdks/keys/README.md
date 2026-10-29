@@ -24,8 +24,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v8"
-	"github.com/noresponsehq/go/v8/models/components"
+	noresponse "github.com/noresponsehq/go/v9"
+	"github.com/noresponsehq/go/v9/models/components"
 	"log"
 )
 
@@ -54,8 +54,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v8"
-	"github.com/noresponsehq/go/v8/models/components"
+	noresponse "github.com/noresponsehq/go/v9"
+	"github.com/noresponsehq/go/v9/models/components"
 	"log"
 )
 
@@ -86,8 +86,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v8"
-	"github.com/noresponsehq/go/v8/models/components"
+	noresponse "github.com/noresponsehq/go/v9"
+	"github.com/noresponsehq/go/v9/models/components"
 	"log"
 )
 
@@ -133,43 +133,8 @@ func main() {
 
 ## Create
 
-Creates an API key in the environment of the key that signs the request, with scopes that key holds itself, and returns its secret once in key. Requires the management scope; the new key may hold it too. A scope the signing key lacks answers 403 workspace_forbidden, and the other environment 404 not_found. An environment holds at most 100 keys that authenticate (409 key_limit_reached). created_by is the signing key's prefix. Not idempotent: a retry after a lost answer creates a second key, which you can list and revoke.
+Create an API key in the signing key environment with authority no greater than the issuer holds. Requires management. Optional name, purpose, kind and expiry describe its lifecycle. Send request_id for safe issuance retries: the first successful response returns the secret once; a repeat returns existing metadata without the secret, and changed parameters conflict. Without request_id a retry can create another key. A service credential is independent of its issuer; personal credentials require an authenticated member and retire when that member loses authority.
 
-### Example Usage: key
-
-<!-- UsageSnippet language="go" operationID="createKey" method="post" path="/v1/workspaces/{workspace_id}/keys" example="key" -->
-```go
-package main
-
-import(
-	"context"
-	"os"
-	noresponse "github.com/noresponsehq/go/v8"
-	"github.com/noresponsehq/go/v8/models/components"
-	"log"
-)
-
-func main() {
-    ctx := context.Background()
-
-    s := noresponse.New(
-        noresponse.WithSecurity(os.Getenv("NORESPONSE_API_KEY")),
-    )
-
-    res, err := s.Keys.Create(ctx, "tnt_01JA2Z8K6Q4V7W9XBCDEFGHJKM", components.KeyRequest{
-        Environment: components.KeyEnvironmentLive,
-        Scopes: []components.KeyRequestScope{
-            components.KeyRequestScopeDelete,
-        },
-    })
-    if err != nil {
-        log.Fatal(err)
-    }
-    if res != nil {
-        // handle response
-    }
-}
-```
 ### Example Usage: live
 
 <!-- UsageSnippet language="go" operationID="createKey" method="post" path="/v1/workspaces/{workspace_id}/keys" example="live" -->
@@ -179,8 +144,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v8"
-	"github.com/noresponsehq/go/v8/models/components"
+	noresponse "github.com/noresponsehq/go/v9"
+	"github.com/noresponsehq/go/v9/models/components"
 	"log"
 )
 
@@ -214,8 +179,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v8"
-	"github.com/noresponsehq/go/v8/models/components"
+	noresponse "github.com/noresponsehq/go/v9"
+	"github.com/noresponsehq/go/v9/models/components"
 	"log"
 )
 
@@ -280,7 +245,7 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v8"
+	noresponse "github.com/noresponsehq/go/v9"
 	"log"
 )
 
@@ -338,7 +303,7 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v8"
+	noresponse "github.com/noresponsehq/go/v9"
 	"log"
 )
 

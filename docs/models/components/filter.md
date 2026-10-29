@@ -1,0 +1,12 @@
+# Filter
+
+
+## Fields
+
+| Field                                                               | Type                                                                | Required                                                            | Description                                                         | Example                                                             |
+| ------------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| `Status`                                                            | [*components.ReviewStatus](../../models/components/reviewstatus.md) | :heavy_minus_sign:                                                  | N/A                                                                 |                                                                     |
+| `Priority`                                                          | [*components.Priority](../../models/components/priority.md)         | :heavy_minus_sign:                                                  | N/A                                                                 |                                                                     |
+| `Assignee`                                                          | `*string`                                                           | :heavy_minus_sign:                                                  | N/A                                                                 | usr_customer_admin                                                  |
+| `Unassigned`                                                        | `*bool`                                                             | :heavy_minus_sign:                                                  | N/A                                                                 |                                                                     |
+| `AssigneePrincipalID`                                               | `*string`                                                           | :heavy_minus_sign:                                                  | N/A                                                                 | mem_01JA2Z8K6Q4V7W9XBCDEFGHJKM                                      |

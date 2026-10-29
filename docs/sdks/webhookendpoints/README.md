@@ -13,6 +13,7 @@ Your webhook endpoints: register, list, rotate signing keys, send test events an
 * [SendTestEvent](#sendtestevent) - Send a test event to an endpoint.
 * [ListDeliveries](#listdeliveries) - List an endpoint's delivery attempts.
 * [ReplayDelivery](#replaydelivery) - Send one delivery again.
+* [Aggregate](#aggregate) - Summarise retained webhook attempts and delivery queue
 
 ## List
 
@@ -27,7 +28,7 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v8"
+	noresponse "github.com/noresponsehq/go/v9"
 	"log"
 )
 
@@ -84,8 +85,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v8"
-	"github.com/noresponsehq/go/v8/models/components"
+	noresponse "github.com/noresponsehq/go/v9"
+	"github.com/noresponsehq/go/v9/models/components"
 	"log"
 )
 
@@ -116,8 +117,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v8"
-	"github.com/noresponsehq/go/v8/models/components"
+	noresponse "github.com/noresponsehq/go/v9"
+	"github.com/noresponsehq/go/v9/models/components"
 	"log"
 )
 
@@ -149,8 +150,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v8"
-	"github.com/noresponsehq/go/v8/models/components"
+	noresponse "github.com/noresponsehq/go/v9"
+	"github.com/noresponsehq/go/v9/models/components"
 	"log"
 )
 
@@ -209,7 +210,7 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v8"
+	noresponse "github.com/noresponsehq/go/v9"
 	"log"
 )
 
@@ -267,8 +268,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v8"
-	"github.com/noresponsehq/go/v8/models/components"
+	noresponse "github.com/noresponsehq/go/v9"
+	"github.com/noresponsehq/go/v9/models/components"
 	"log"
 )
 
@@ -297,8 +298,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v8"
-	"github.com/noresponsehq/go/v8/models/components"
+	noresponse "github.com/noresponsehq/go/v9"
+	"github.com/noresponsehq/go/v9/models/components"
 	"log"
 )
 
@@ -356,8 +357,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v8"
-	"github.com/noresponsehq/go/v8/models/components"
+	noresponse "github.com/noresponsehq/go/v9"
+	"github.com/noresponsehq/go/v9/models/components"
 	"log"
 )
 
@@ -388,8 +389,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v8"
-	"github.com/noresponsehq/go/v8/models/components"
+	noresponse "github.com/noresponsehq/go/v9"
+	"github.com/noresponsehq/go/v9/models/components"
 	"log"
 )
 
@@ -449,7 +450,7 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v8"
+	noresponse "github.com/noresponsehq/go/v9"
 	"log"
 )
 
@@ -521,8 +522,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v8"
-	"github.com/noresponsehq/go/v8/models/components"
+	noresponse "github.com/noresponsehq/go/v9"
+	"github.com/noresponsehq/go/v9/models/components"
 	"log"
 )
 
@@ -551,8 +552,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v8"
-	"github.com/noresponsehq/go/v8/models/components"
+	noresponse "github.com/noresponsehq/go/v9"
+	"github.com/noresponsehq/go/v9/models/components"
 	"log"
 )
 
@@ -585,6 +586,69 @@ func main() {
 ### Response
 
 **[*operations.ReplayWebhookDeliveryResponse](../../models/operations/replaywebhookdeliveryresponse.md), error**
+
+### Errors
+
+| Error Type                      | Status Code                     | Content Type                    |
+| ------------------------------- | ------------------------------- | ------------------------------- |
+| apierrors.BadRequestError       | 400                             | application/problem+json        |
+| apierrors.AuthenticationError   | 401                             | application/problem+json        |
+| apierrors.PermissionDeniedError | 403                             | application/problem+json        |
+| apierrors.NotFoundError         | 404                             | application/problem+json        |
+| apierrors.ConflictError         | 409                             | application/problem+json        |
+| apierrors.RateLimitError        | 429                             | application/problem+json        |
+| apierrors.APIStatusError        | 4XX, 5XX                        | \*/\*                           |
+
+## Aggregate
+
+Count retained webhook delivery attempts within thirty days and report current retained queue state.
+
+### Example Usage
+
+<!-- UsageSnippet language="go" operationID="aggregateWebhooks" method="post" path="/v1/webhooks/aggregate" -->
+```go
+package main
+
+import(
+	"context"
+	"os"
+	noresponse "github.com/noresponsehq/go/v9"
+	"github.com/noresponsehq/go/v9/models/components"
+	"log"
+)
+
+func main() {
+    ctx := context.Background()
+
+    s := noresponse.New(
+        noresponse.WithSecurity(os.Getenv("NORESPONSE_API_KEY")),
+    )
+
+    res, err := s.WebhookEndpoints.Aggregate(ctx, components.WebhookAggregateRequest{
+        From: "2026-01-01T00:00:00Z",
+        To: "2026-01-01T00:00:00Z",
+        EndpointID: noresponse.Pointer("whe_01JA2Z8K6Q4V7W9XBCDEFGHJKM"),
+    })
+    if err != nil {
+        log.Fatal(err)
+    }
+    if res != nil {
+        // handle response
+    }
+}
+```
+
+### Parameters
+
+| Parameter                                                                                | Type                                                                                     | Required                                                                                 | Description                                                                              |
+| ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `ctx`                                                                                    | [context.Context](https://pkg.go.dev/context#Context)                                    | :heavy_check_mark:                                                                       | The context to use for the request.                                                      |
+| `request`                                                                                | [components.WebhookAggregateRequest](../../models/components/webhookaggregaterequest.md) | :heavy_check_mark:                                                                       | The request object to use for the request.                                               |
+| `opts`                                                                                   | [][operations.Option](../../models/operations/option.md)                                 | :heavy_minus_sign:                                                                       | The options for this request.                                                            |
+
+### Response
+
+**[*operations.AggregateWebhooksResponse](../../models/operations/aggregatewebhooksresponse.md), error**
 
 ### Errors
 

@@ -1,7 +1,7 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v8/internal/utils"
+	"github.com/noresponsehq/go/v9/internal/utils"
 )
 
 type AssessmentAggregateMetric string
@@ -42,8 +42,10 @@ type AssessmentAggregate struct {
 	// The calling workspace's configured retention period in days. Default 365 (12 months), which is also the maximum: a workspace may only shorten it, to at least 1 day. Each record expires from its own created_at; see assessment expires_at.
 	RetentionDays *int64 `default:"365" json:"retention_days"`
 	// true when more groups had counts than limit allowed.
-	GroupsTruncated bool              `json:"groups_truncated"`
-	Buckets         []AggregateBucket `json:"buckets"`
+	GroupsTruncated bool `json:"groups_truncated"`
+	// Captured in the same database snapshot as the counts. Capture start times describe when counting began, not the earliest creation time counted: an older assessment may first answer later. Older outcomes are not inferred to be absent. Erased detail cannot be returned by drill-down even while its anonymous count remains.
+	Coverage *AssessmentAggregateCoverage `json:"coverage,omitzero"`
+	Buckets  []AggregateBucket            `json:"buckets"`
 }
 
 func (a AssessmentAggregate) MarshalJSON() ([]byte, error) {
@@ -108,6 +110,13 @@ func (a *AssessmentAggregate) GetGroupsTruncated() bool {
 		return false
 	}
 	return a.GroupsTruncated
+}
+
+func (a *AssessmentAggregate) GetCoverage() *AssessmentAggregateCoverage {
+	if a == nil {
+		return nil
+	}
+	return a.Coverage
 }
 
 func (a *AssessmentAggregate) GetBuckets() []AggregateBucket {

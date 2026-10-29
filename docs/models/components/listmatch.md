@@ -1,18 +1,15 @@
 # ListMatch
 
-The action of the list entry that decided the account.
+The list action captured at the first answer. Requires revision first. Older answers without captured list state do not match, including none.
 
 ## Example Usage
 
 ```go
 import (
-	"github.com/noresponsehq/go/v8/models/components"
+	"github.com/noresponsehq/go/v9/models/components"
 )
 
-value := components.ListMatchBlock
-
-// Open enum: custom values can be created with a direct type cast
-custom := components.ListMatch("custom_value")
+value := components.ListMatchAllow
 ```
 
 
@@ -20,5 +17,6 @@ custom := components.ListMatch("custom_value")
 
 | Name             | Value            |
 | ---------------- | ---------------- |
-| `ListMatchBlock` | block            |
 | `ListMatchAllow` | allow            |
+| `ListMatchBlock` | block            |
+| `ListMatchNone`  | none             |

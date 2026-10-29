@@ -1,0 +1,12 @@
+# ReviewComment
+
+
+## Fields
+
+| Field                                                       | Type                                                        | Required                                                    | Description                                                 | Example                                                     |
+| ----------------------------------------------------------- | ----------------------------------------------------------- | ----------------------------------------------------------- | ----------------------------------------------------------- | ----------------------------------------------------------- |
+| `ID`                                                        | `string`                                                    | :heavy_check_mark:                                          | N/A                                                         | rvc_01JA2Z8K6Q4V7W9XBCDEFGHJKM                              |
+| `ReviewVersion`                                             | `int64`                                                     | :heavy_check_mark:                                          | N/A                                                         |                                                             |
+| `Body`                                                      | `string`                                                    | :heavy_check_mark:                                          | N/A                                                         | Reviewed the retained account evidence and customer report. |
+| `CreatedBy`                                                 | `string`                                                    | :heavy_check_mark:                                          | N/A                                                         | usr_customer_admin                                          |
+| `CreatedAt`                                                 | `string`                                                    | :heavy_check_mark:                                          | N/A                                                         | 2026-01-01T00:00:00Z                                        |

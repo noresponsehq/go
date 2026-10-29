@@ -1,7 +1,7 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v8/internal/utils"
+	"github.com/noresponsehq/go/v9/internal/utils"
 )
 
 // AssessmentSearchRequest - Search retained assessments created in [from,to), over at most 366 days. Filters use each assessment decision, rather than the current account decision. Results can change between pages. Keep the assessment version to retrieve the exact decision later. This read does not require an idempotency key.
@@ -25,6 +25,21 @@ type AssessmentSearchRequest struct {
 	Decision *Decision `json:"decision,omitzero"`
 	// Which answer of each assessment the filters describe: latest, the latest stored revision, or first, the first answer, as served when the assessment was first answered (POST /v1/assessments/aggregate counts first answers). A cell of an aggregate drills down to POST /v1/assessments/search with the same filters, revision first and the cell's bucket as from and to.
 	Revision *AnswerRevision `json:"revision,omitzero"`
+	Band     *Band           `json:"band,omitzero"`
+	// A stable reason code. New codes may appear; ignore any you do not know.
+	Reason *ReasonCode `json:"reason,omitzero"`
+	// The selected reason's served impact band. Requires reason.
+	Impact *Impact `json:"impact,omitzero"`
+	// An evidence lane: accounts (account presence for email and username), phone, breach, domain (the email domain's registration) and ip.
+	Lane    *Lane   `json:"lane,omitzero"`
+	Country *string `json:"country,omitzero"`
+	Asn     *int64  `json:"asn,omitzero"`
+	// Inclusive lower score bound. Pending answers without a score do not match.
+	ScoreMin *int64 `json:"score_min,omitzero"`
+	// Inclusive upper score bound, at least score_min when both are supplied.
+	ScoreMax *int64 `json:"score_max,omitzero"`
+	// The list action captured at the first answer. Requires revision first. Older answers without captured list state do not match, including none.
+	ListMatch *ListMatch `json:"list_match,omitzero"`
 }
 
 func (a AssessmentSearchRequest) MarshalJSON() ([]byte, error) {
@@ -113,4 +128,67 @@ func (a *AssessmentSearchRequest) GetRevision() *AnswerRevision {
 		return nil
 	}
 	return a.Revision
+}
+
+func (a *AssessmentSearchRequest) GetBand() *Band {
+	if a == nil {
+		return nil
+	}
+	return a.Band
+}
+
+func (a *AssessmentSearchRequest) GetReason() *ReasonCode {
+	if a == nil {
+		return nil
+	}
+	return a.Reason
+}
+
+func (a *AssessmentSearchRequest) GetImpact() *Impact {
+	if a == nil {
+		return nil
+	}
+	return a.Impact
+}
+
+func (a *AssessmentSearchRequest) GetLane() *Lane {
+	if a == nil {
+		return nil
+	}
+	return a.Lane
+}
+
+func (a *AssessmentSearchRequest) GetCountry() *string {
+	if a == nil {
+		return nil
+	}
+	return a.Country
+}
+
+func (a *AssessmentSearchRequest) GetAsn() *int64 {
+	if a == nil {
+		return nil
+	}
+	return a.Asn
+}
+
+func (a *AssessmentSearchRequest) GetScoreMin() *int64 {
+	if a == nil {
+		return nil
+	}
+	return a.ScoreMin
+}
+
+func (a *AssessmentSearchRequest) GetScoreMax() *int64 {
+	if a == nil {
+		return nil
+	}
+	return a.ScoreMax
+}
+
+func (a *AssessmentSearchRequest) GetListMatch() *ListMatch {
+	if a == nil {
+		return nil
+	}
+	return a.ListMatch
 }

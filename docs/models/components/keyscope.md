@@ -4,7 +4,7 @@
 
 ```go
 import (
-	"github.com/noresponsehq/go/v8/models/components"
+	"github.com/noresponsehq/go/v9/models/components"
 )
 
 value := components.KeyScopeAssess
@@ -16,12 +16,22 @@ custom := components.KeyScope("custom_value")
 
 ## Values
 
-| Name                   | Value                  |
-| ---------------------- | ---------------------- |
-| `KeyScopeAssess`       | assess                 |
-| `KeyScopeHistory`      | history                |
-| `KeyScopeDelete`       | delete                 |
-| `KeyScopeWebhooks`     | webhooks               |
-| `KeyScopeDetailed`     | detailed               |
-| `KeyScopeIntegrations` | integrations           |
-| `KeyScopeManagement`   | management             |
+| Name                    | Value                   |
+| ----------------------- | ----------------------- |
+| `KeyScopeAssess`        | assess                  |
+| `KeyScopeHistory`       | history                 |
+| `KeyScopeDelete`        | delete                  |
+| `KeyScopeWebhooks`      | webhooks                |
+| `KeyScopeDetailed`      | detailed                |
+| `KeyScopeIntegrations`  | integrations            |
+| `KeyScopeManagement`    | management              |
+| `KeyScopeAudit`         | audit                   |
+| `KeyScopeUsage`         | usage                   |
+| `KeyScopeInvestigate`   | investigate             |
+| `KeyScopeEvidence`      | evidence                |
+| `KeyScopeExports`       | exports                 |
+| `KeyScopeAuditManage`   | audit_manage            |
+| `KeyScopeSettings`      | settings                |
+| `KeyScopePolicyPublish` | policy_publish          |
+| `KeyScopeMembers`       | members                 |
+| `KeyScopeMembersManage` | members_manage          |

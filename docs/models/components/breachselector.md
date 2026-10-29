@@ -6,7 +6,7 @@ The submitted email or username whose own search matched the table. A submitted 
 
 ```go
 import (
-	"github.com/noresponsehq/go/v8/models/components"
+	"github.com/noresponsehq/go/v9/models/components"
 )
 
 value := components.BreachSelectorEmail
