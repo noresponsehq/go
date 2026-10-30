@@ -7700,6 +7700,13 @@
           }
         }
       },
+      "AccountType": {
+        "enum": [
+          "personal",
+          "business"
+        ],
+        "description": "personal, or business: an account a company or school manages."
+      },
       "Action": {
         "enum": [
           "allow",
@@ -13533,6 +13540,85 @@
         ],
         "description": "The decision a held assessment takes when hold_seconds pass before its investigation completes, unless the evidence so far gives a stricter one (default review). It is announced as account.risk_changed like any other change, so an expired hold is always announced. A hosted provider hook, which cannot wait, answers a held account by it at once: deny for block, allow otherwise. Kept while the flow is immediate."
       },
+      "OnlineAccount": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "domain",
+          "identifier",
+          "outcome"
+        ],
+        "description": "One online-account search of the signup's email or username, detailed view only. name and domain name the platform searched, not a provider. outcome is the search's signal outcome: found, not_found, or a failure (blocked, unavailable, inconclusive) with its reason; a failure is not reported as not_found. The members after reason are what the platform returned beside an account it found, each absent when it did not say.",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "The platform's name, such as Adobe or GitHub.",
+            "example": "Wix"
+          },
+          "domain": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 253,
+            "pattern": "^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\\.)+[a-z]{2,63}$",
+            "description": "The platform's domain, lower case: the host its logo is fetched for.",
+            "example": "wix.com"
+          },
+          "identifier": {
+            "$ref": "#/components/schemas/Identifier",
+            "description": "The identifier searched."
+          },
+          "outcome": {
+            "$ref": "#/components/schemas/SignalOutcome"
+          },
+          "reason": {
+            "$ref": "#/components/schemas/FailureReason"
+          },
+          "sign_in": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 7,
+            "uniqueItems": true,
+            "items": {
+              "enum": [
+                "password",
+                "google",
+                "facebook",
+                "apple",
+                "microsoft",
+                "sso",
+                "other"
+              ]
+            },
+            "description": "How the account signs in, as the platform reports it, sorted: a password, a Google, Facebook, Apple or Microsoft account, the organisation's single sign-on, or another method."
+          },
+          "email_verified": {
+            "type": "boolean",
+            "description": "Whether the platform says the account's email is verified."
+          },
+          "blocked": {
+            "type": "boolean",
+            "description": "Whether the platform says the account is blocked or suspended."
+          },
+          "account_type": {
+            "$ref": "#/components/schemas/AccountType",
+            "description": "personal, or business: an account a company or school manages."
+          },
+          "has_avatar": {
+            "type": "boolean",
+            "description": "Whether the account has its own profile picture rather than the platform's default. The picture is not returned."
+          },
+          "first_name_prefix": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 32,
+            "description": "The first letters of the account holder's first name, as the platform shows them (Life360 shows two and hides the rest). It is evidence only: it does not change the score or the consistency results.",
+            "example": "Al"
+          }
+        }
+      },
       "OperationalAggregate": {
         "description": "One repeatable-read snapshot of retained request diagnostics or webhook attempts. Capture can have gaps and these counts are not a billing ledger. Unattributed keys include older requests and member requests. Queue state is current retained work, not a delivery success denominator.",
         "type": "object",
@@ -16138,6 +16224,14 @@
             "description": "The identity's dated footprint events, newest first, at most 300: the year and month, what happened (created, last_active, breached), the site, its category, the kind of evidence and the identifier it belongs to. No breach value: dates are coarsened to the month.",
             "items": {
               "$ref": "#/components/schemas/RiskDetailsEvent"
+            }
+          },
+          "accounts": {
+            "type": "array",
+            "maxItems": 64,
+            "description": "Every online-account search of the email or username: the platform, what the search came to and, for an account found, what the platform returned beside it. Found first, then not found, then searches that failed or are still running, each by platform name; at most 64. A failed or running search keeps its own outcome and is not reported as not_found.",
+            "items": {
+              "$ref": "#/components/schemas/OnlineAccount"
             }
           }
         }

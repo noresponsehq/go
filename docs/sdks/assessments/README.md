@@ -43,7 +43,7 @@ func main() {
 
     res, err := s.Assessments.Create(ctx, "account-acct_7f3a9c", components.AssessmentRequest{
         AccountID: "acct_7f3a9c",
-        Flow: components.FlowAccountCreation,
+        Flow: components.FlowLogin,
         Identifiers: components.AssessmentRequestIdentifiers{
             Email: noresponse.Pointer("new.user@example.com"),
             Username: noresponse.Pointer("new.user"),
@@ -129,7 +129,7 @@ func main() {
 
     res, err := s.Assessments.Create(ctx, "account-acct_7f3a9c", components.AssessmentRequest{
         AccountID: "acct_7f3a9c",
-        Flow: components.FlowAccountCreation,
+        Flow: components.FlowLogin,
         Identifiers: components.AssessmentRequestIdentifiers{
             Email: noresponse.Pointer("new.user@example.com"),
             Username: noresponse.Pointer("new.user"),
@@ -258,7 +258,7 @@ func main() {
 
     res, err := s.Assessments.Create(ctx, "account-acct_7f3a9c", components.AssessmentRequest{
         AccountID: "acct_7f3a9c",
-        Flow: components.FlowAccountCreation,
+        Flow: components.FlowLogin,
         Identifiers: components.AssessmentRequestIdentifiers{
             Email: noresponse.Pointer("new.user@example.com"),
             Username: noresponse.Pointer("new.user"),
@@ -426,7 +426,7 @@ func main() {
 
     res, err := s.Assessments.Create(ctx, "account-acct_7f3a9c", components.AssessmentRequest{
         AccountID: "acct_7f3a9c",
-        Flow: components.FlowAccountCreation,
+        Flow: components.FlowLogin,
         Identifiers: components.AssessmentRequestIdentifiers{
             Email: noresponse.Pointer("new.user@example.com"),
             Username: noresponse.Pointer("new.user"),
