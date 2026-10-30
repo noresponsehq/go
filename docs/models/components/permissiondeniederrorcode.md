@@ -22,3 +22,6 @@ custom := components.PermissionDeniedErrorCode("custom_value")
 | --------------------------------------------- | --------------------------------------------- |
 | `PermissionDeniedErrorCodeWorkspaceForbidden` | workspace_forbidden                           |
 | `PermissionDeniedErrorCodeRoleForbidden`      | role_forbidden                                |
+| `PermissionDeniedErrorCodeEmailUnverified`    | email_unverified                              |
+| `PermissionDeniedErrorCodeOnboardingInReview` | onboarding_in_review                          |
+| `PermissionDeniedErrorCodeOnboardingRefused`  | onboarding_refused                            |

@@ -1,0 +1,8 @@
+{
+  "type": "https://docs.noresponse.org/problems/onboarding-refused",
+  "title": "Onboarding refused",
+  "status": 403,
+  "detail": "NoResponse refused live keys for this workspace. Test keys keep working.",
+  "code": "onboarding_refused",
+  "request_id": "0123456789abcdef0123456789abcdef"
+}

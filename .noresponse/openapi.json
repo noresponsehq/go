@@ -993,7 +993,7 @@
             "$ref": "#/components/responses/Unauthorized"
           },
           "403": {
-            "$ref": "#/components/responses/WorkspaceForbidden"
+            "$ref": "#/components/responses/KeyRotationForbidden"
           },
           "404": {
             "$ref": "#/components/responses/NotFound"
@@ -2133,7 +2133,7 @@
             "$ref": "#/components/responses/Unauthorized"
           },
           "403": {
-            "$ref": "#/components/responses/ControlForbidden"
+            "$ref": "#/components/responses/KeyCreationForbidden"
           },
           "404": {
             "$ref": "#/components/responses/WorkspaceNotFound"
@@ -13664,7 +13664,10 @@
         "type": "string",
         "enum": [
           "workspace_forbidden",
-          "role_forbidden"
+          "role_forbidden",
+          "email_unverified",
+          "onboarding_in_review",
+          "onboarding_refused"
         ],
         "description": "Machine codes an HTTP 403 answer can carry."
       },
@@ -24588,6 +24591,62 @@
           "application/json": {
             "schema": {
               "$ref": "#/components/schemas/AccountDirectoryPage"
+            }
+          }
+        }
+      },
+      "KeyCreationForbidden": {
+        "description": "workspace_forbidden: the signing key lacks the management scope, or a scope it would grant. A live key waits for the workspace's onboarding. email_unverified: onboarding made the workspace and its address is not verified yet; open the mailed link. onboarding_in_review: the address is verified but NoResponse's own assessment did not allow it, so NoResponse reviews it first. onboarding_refused: NoResponse refused the workspace live keys. Test keys, and workspaces that onboarding did not make, are not refused this way.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/PermissionDeniedError"
+            }
+          }
+        }
+      },
+      "KeyRotationForbidden": {
+        "description": "workspace_forbidden: the API key may not use this operation: its workspace is not entitled or is suspended. Rotating a live key waits for the workspace's onboarding. email_unverified: onboarding made the workspace and its address is not verified yet; open the mailed link. onboarding_in_review: the address is verified but NoResponse's own assessment did not allow it, so NoResponse reviews it first. onboarding_refused: NoResponse refused the workspace live keys. Test keys, and workspaces that onboarding did not make, are not refused this way.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/PermissionDeniedError"
             }
           }
         }

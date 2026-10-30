@@ -2083,6 +2083,21 @@
       "expect": "valid"
     },
     {
+      "file": "valid/problem-email-unverified.json",
+      "schema": "problem-details.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/problem-onboarding-in-review.json",
+      "schema": "problem-details.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/problem-onboarding-refused.json",
+      "schema": "problem-details.schema.json",
+      "expect": "valid"
+    },
+    {
       "file": "invalid/key-rotation-overlap-too-short.json",
       "schema": "key-rotation-request.schema.json",
       "expect": "invalid",

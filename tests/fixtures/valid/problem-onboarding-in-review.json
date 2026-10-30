@@ -1,0 +1,8 @@
+{
+  "type": "https://docs.noresponse.org/problems/onboarding-in-review",
+  "title": "Onboarding in review",
+  "status": 403,
+  "detail": "NoResponse is reviewing this workspace's onboarding; live keys follow its approval. Test keys work now.",
+  "code": "onboarding_in_review",
+  "request_id": "0123456789abcdef0123456789abcdef"
+}
