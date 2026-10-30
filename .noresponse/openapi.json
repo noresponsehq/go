@@ -16481,7 +16481,7 @@
           "refused_sources": {
             "type": "array",
             "uniqueItems": true,
-            "maxItems": 6,
+            "maxItems": 11,
             "items": {
               "$ref": "#/components/schemas/SourceId"
             },
@@ -16522,7 +16522,7 @@
           "refused_sources": {
             "type": "array",
             "uniqueItems": true,
-            "maxItems": 6,
+            "maxItems": 11,
             "items": {
               "$ref": "#/components/schemas/SourceId"
             },
@@ -16745,9 +16745,14 @@
           "breach",
           "rdap",
           "mx",
-          "ipintel"
+          "ipintel",
+          "adobe",
+          "nvidia",
+          "wix",
+          "life360",
+          "zapier"
         ],
-        "description": "A NoResponse source: github (GitHub accounts), phone (the phone lookup), breach (breach exposure), rdap (the email domain's registration), mx (the email domain's mail servers) or ipintel (IP intelligence)."
+        "description": "A NoResponse source: github (GitHub accounts), phone (the phone lookup), breach (breach exposure), rdap (the email domain's registration), mx (the email domain's mail servers), ipintel (IP intelligence) or an email account source that searches one platform for an account by email address (adobe, nvidia, wix, life360, zapier)."
       },
       "Status": {
         "enum": [

@@ -1,5 +1,15 @@
 # Changelog
 
+## 9.5.3
+
+* `Sdk.Settings.Get()`:  `response.RefusedSources[]` **Changed**
+* `Sdk.Settings.Update()`: 
+  *  `request.Body.RefusedSources[]` **Changed**
+  *  `response.RefusedSources[]` **Changed**
+* `Sdk.Settings.ListHistory()`:  `response.Items[].Settings.RefusedSources[]` **Changed**
+* `Sdk.Settings.Restore()`:  `response.RefusedSources[]` **Changed**
+* `Sdk.Evaluations.Publish()`:  `response.RefusedSources[]` **Changed**
+
 ## 9.5.2
 
 * `Sdk.Accounts.ListLinked()`: **Added**
