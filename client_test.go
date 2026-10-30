@@ -234,3 +234,89 @@ func TestIdentifierSearchRequestsAndMatchEvidence(t *testing.T) {
 		t.Fatalf("identifier value %q, calls %d", identifier.Value, seen)
 	}
 }
+
+func TestCombinedIdentifierSearchRequestsAndWitnesses(t *testing.T) {
+	raw, err := os.ReadFile(filepath.Join("tests", "fixtures", "investigation-responses.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	var examples map[string]json.RawMessage
+	if err := json.Unmarshal(raw, &examples); err != nil {
+		t.Fatal(err)
+	}
+	var revision map[string]any
+	if err := json.Unmarshal(examples["revision"], &revision); err != nil {
+		t.Fatal(err)
+	}
+	expressionJSON := `{"scope":"assessment","expression":{"and":[{"term":{"kind":"phone","value":"+14155552671","match":"canonical"}},{"or":[{"term":{"kind":"email","value":"other@example.com","match":"exact"}},{"term":{"kind":"username","value":"janedoe","match":"canonical","namespace":"customer"}}]}]}}`
+	var expression map[string]any
+	if err := json.Unmarshal([]byte(expressionJSON), &expression); err != nil {
+		t.Fatal(err)
+	}
+	assessmentExpected, _ := json.Marshal(expression)
+	expression["scope"] = "account"
+	accountExpected, _ := json.Marshal(expression)
+	matches := []any{
+		map[string]any{"kind": "phone", "value": "+14155552671", "match_basis": "canonical", "provenance": "submitted", "assessment_id": revision["id"], "term_index": 0},
+		map[string]any{"kind": "username", "value": "JaneDoe", "match_basis": "canonical", "namespace": "customer", "provenance": "submitted", "assessment_id": revision["id"], "term_index": 2},
+	}
+	calls := 0
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		calls++
+		if r.Method != http.MethodPost || r.Header.Get("Authorization") != "Bearer nrk_test_identifier_fixture" {
+			t.Error("incorrect method or credential")
+		}
+		var request map[string]any
+		if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+			t.Error(err)
+		}
+		actual, _ := json.Marshal(request["identifier_expression"])
+		expected := assessmentExpected
+		if r.URL.Path == "/v1/accounts/search" {
+			expected = accountExpected
+		}
+		if string(actual) != string(expected) || request["identifier"] != nil {
+			t.Errorf("expression did not survive: %s", actual)
+		}
+		item := map[string]any{}
+		for key, value := range revision {
+			item[key] = value
+		}
+		item["matched_identifiers"] = matches
+		if r.URL.Path == "/v1/accounts/search" {
+			item = map[string]any{"account_id": "acct_7f3a9c", "latest": revision, "assessments": 2, "matched_identifiers": matches}
+		}
+		page := map[string]any{"schema_version": "1", "total": 1, "total_capped": false, "items": []any{item}}
+		if r.URL.Path == "/v1/assessments/search" {
+			page["retention_days"] = 365
+		}
+		w.Header().Set("Content-Type", "application/json")
+		_ = json.NewEncoder(w).Encode(page)
+	}))
+	defer server.Close()
+	var accountRequest components.AccountDirectorySearchRequest
+	if err := json.Unmarshal([]byte(`{"identifier_expression":`+string(accountExpected)+`}`), &accountRequest); err != nil {
+		t.Fatal(err)
+	}
+	var assessmentRequest components.AssessmentSearchRequest
+	if err := json.Unmarshal([]byte(`{"from":"2026-10-01T00:00:00Z","to":"2026-10-02T00:00:00Z","identifier_expression":`+expressionJSON+`}`), &assessmentRequest); err != nil {
+		t.Fatal(err)
+	}
+	client := NewClient("nrk_test_identifier_fixture", WithServerURL(server.URL))
+	accounts, err := client.Accounts.Search(context.Background(), accountRequest)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assessments, err := client.Assessments.Search(context.Background(), assessmentRequest)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, witnesses := range [][]components.IdentifierTermMatch{accounts.Result.Items[0].MatchedIdentifiers, assessments.Result.Items[0].MatchedIdentifiers} {
+		if len(witnesses) != 2 || witnesses[0].TermIndex != 0 || witnesses[1].TermIndex != 2 || witnesses[1].Value != "JaneDoe" || witnesses[1].AssessmentID != revision["id"] {
+			t.Fatalf("witnesses changed: %#v", witnesses)
+		}
+	}
+	if accounts.Result.Items[0].MatchedIdentifier != nil || assessments.Result.Items[0].MatchedIdentifier != nil || calls != 2 {
+		t.Fatal("combined search mixed singular evidence or omitted a call")
+	}
+}

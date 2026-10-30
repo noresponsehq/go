@@ -2592,7 +2592,7 @@
           "assessments"
         ],
         "summary": "Search assessments across this environment",
-        "description": "Search retained assessments created in [from,to), at most 366 days. identifier directly matches that assessment's submitted email, phone or customer-namespace username using exact, canonical or explicitly selected email mailbox matching. matched_identifier explains the original value and match basis. Legacy email keeps its account-wide mailbox semantics and cannot be combined with identifier. Other filters combine using AND and describe assessment decisions, separate from current account decisions. Each item carries the original submitted identifiers and its first_decision when available. Newest-created order has an assessment-ID tie break. Results are live across pages; each page's total and items use one database snapshot. Totals are exact below 10000 and capped at 10000. Requires history or investigate authority and identifier-read permission for identifier/email filters; detailed mode also requires detailed permission. No Idempotency-Key.",
+        "description": "Search retained assessments created in [from,to), at most 366 days. identifier directly matches that assessment's submitted email, phone or customer-namespace username using exact, canonical or explicitly selected email mailbox matching. matched_identifier explains the original value and match basis. Legacy email keeps its account-wide mailbox semantics and cannot be combined with identifier. Other filters combine using AND and describe assessment decisions, separate from current account decisions. Each item carries the original submitted identifiers and its first_decision when available. Newest-created order has an assessment-ID tie break. Results are live across pages; each page's total and items use one database snapshot. Totals are exact below 10000 and capped at 10000. Requires history or investigate authority and identifier-read permission for identifier, identifier_expression or email filters; detailed mode also requires detailed permission. No Idempotency-Key. identifier_expression combines submitted terms with bounded AND/OR, at most 8 raw terms and 3 group levels. Each node selects exactly one of term, and, or. Groups have 2 to 8 operands. Duplicate normalized terms are idempotent and still count toward the limit. identifier_expression, identifier and email are mutually exclusive. Expression results use matched_identifiers with original submitted witnesses and zero-based depth-first term_index. All satisfied unique terms are returned in first-occurrence order. Cursors bind scope, ordered structure, original values, matching modes and all other filters; changing only page limit is allowed. Expression scope must be assessment: each returned assessment itself satisfies the complete expression. Scope account is rejected with 400 invalid_request; use account search for historical combinations.",
         "requestBody": {
           "required": true,
           "content": {
@@ -6524,7 +6524,7 @@
           "accounts"
         ],
         "summary": "Search distinct accounts by submitted identifier or account ID",
-        "description": "Search distinct accounts observed in retained assessments in this environment. identifier matches an exact, canonical or explicitly selected mailbox form of a submitted email, phone or customer-namespace username. It matches historical retained inputs and returns matched_identifier with the original value and matching assessment. Each row has its newest retained assessment, current account decision when available, retained assessment count, and total distinct-account count. identifier and legacy email are mutually exclusive; account_id and needs_action combine with either using AND. Set needs_action to select accounts with a retained open or in-progress review, or a current review/block account decision without an effective retained account outcome. This filter applies before counting and pagination and adds waiting_for reasons. Current decisions include account list overrides and shared-key scoring and preserve admission holds. Typed identifier search uses stable opaque account order; ordinary and legacy email searches retain newest-seen order. Results are live across pages; each page's items and total share a database snapshot, while current account risk is read separately. Cursors are expiring and bound to scope, operation and filters. Totals are exact below 10000 and capped at 10000. Requires history or investigate authority and identifier-read permission for identifier or email filtering. needs_action additionally requires management scope. Source-discovered associations are not searched and equality is not verified ownership.",
+        "description": "Search distinct accounts observed in retained assessments in this environment. identifier matches an exact, canonical or explicitly selected mailbox form of a submitted email, phone or customer-namespace username. It matches historical retained inputs and returns matched_identifier with the original value and matching assessment. Each row has its newest retained assessment, current account decision when available, retained assessment count, and total distinct-account count. identifier and legacy email are mutually exclusive; account_id and needs_action combine with either using AND. Set needs_action to select accounts with a retained open or in-progress review, or a current review/block account decision without an effective retained account outcome. This filter applies before counting and pagination and adds waiting_for reasons. Current decisions include account list overrides and shared-key scoring and preserve admission holds. Typed identifier search uses stable opaque account order; ordinary and legacy email searches retain newest-seen order. Results are live across pages; each page's items and total share a database snapshot, while current account risk is read separately. Cursors are expiring and bound to scope, operation and filters. Totals are exact below 10000 and capped at 10000. Requires history or investigate authority and identifier-read permission for identifier, identifier_expression or email filtering. needs_action additionally requires management scope. Source-discovered associations are not searched and equality is not verified ownership. identifier_expression combines submitted terms with bounded AND/OR, at most 8 raw terms and 3 group levels. Each node selects exactly one of term, and, or. Groups have 2 to 8 operands. Duplicate normalized terms are idempotent and still count toward the limit. identifier_expression, identifier and email are mutually exclusive. Expression results use matched_identifiers with original submitted witnesses and zero-based depth-first term_index. All satisfied unique terms are returned in first-occurrence order. Cursors bind scope, ordered structure, original values, matching modes and all other filters; changing only page limit is allowed. Required expression scope assessment evaluates the whole expression in one retained submission; scope account allows different retained submissions of the same account to satisfy different terms. Both use stable opaque account ordering and distinct-account counting before pagination.",
         "requestBody": {
           "required": true,
           "content": {
@@ -7018,11 +7018,20 @@
           },
           "matched_identifier": {
             "$ref": "#/components/schemas/IdentifierMatch"
+          },
+          "matched_identifiers": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 8,
+            "items": {
+              "$ref": "#/components/schemas/IdentifierTermMatch"
+            },
+            "description": "Present only for identifier_expression. All satisfied unique terms, ordered by term_index, with original submitted values and retained assessment witnesses. A duplicate normalized term appears once at its first raw leaf index. The legacy single identifier filter instead returns matched_identifier."
           }
         }
       },
       "AccountDirectorySearchRequest": {
-        "description": "Bounded distinct-account search for one authenticated workspace/environment. identifier matches any retained admitted assessment of an account, including historical submitted values. email preserves the legacy canonical-mailbox filter. identifier and email cannot be combined. All other filters combine using AND. Typed identifier search uses stable opaque account order; ordinary and legacy email searches retain newest-seen ordering. Pages are live, not a cross-page snapshot. Requires history or investigate authority and identifier-read permission for identifier or email filtering.",
+        "description": "Bounded distinct-account search for one authenticated workspace/environment. identifier matches any retained admitted assessment of an account, including historical submitted values. email preserves the legacy canonical-mailbox filter. identifier and email cannot be combined. All other filters combine using AND. Typed identifier search uses stable opaque account order; ordinary and legacy email searches retain newest-seen ordering. Pages are live, not a cross-page snapshot. Requires history or investigate authority and identifier-read permission for identifier, identifier_expression or email filtering. identifier_expression explicitly chooses scope assessment (one whole matching submission) or account (terms may match different retained submissions of one account). At most 8 raw terms and 3 group levels. Mutually exclusive with identifier and email. Expression search uses the same stable opaque account order as typed identifier search.",
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -7058,12 +7067,16 @@
             "minLength": 1,
             "maxLength": 1024,
             "pattern": "^[A-Za-z0-9_-]+$",
-            "description": "Opaque, expiring cursor bound to this environment, operation and every filter. Keep the filters unchanged.",
+            "description": "Opaque, expiring cursor bound to workspace, environment, operation and all filters, including expression scope, ordered structure and original term values. Keep grouping, operand order, matching modes and values unchanged; an omitted match is equivalent to exact. The page limit may change.",
             "example": "eyJ0IjoxNzY3MjI1NjAwMDAwMDAwLCJpIjoiYXNtX2V4YW1wbGUiLCJlIjoxNzY3MjI5MjAwfQ"
           },
           "identifier": {
             "$ref": "#/components/schemas/IdentifierSearch",
-            "description": "Match a retained assessment's submitted identifier directly. Mutually exclusive with legacy email. All other supported filters combine using AND."
+            "description": "Match a retained assessment's submitted identifier directly. Mutually exclusive with identifier_expression and legacy email. All other supported filters combine using AND."
+          },
+          "identifier_expression": {
+            "$ref": "#/components/schemas/IdentifierExpression",
+            "description": "Explicit bounded AND/OR combinations. Mutually exclusive with identifier and legacy email. Other supported filters combine using AND."
           }
         },
         "examples": [
@@ -7075,14 +7088,75 @@
               "namespace": "customer"
             },
             "limit": 25
+          },
+          {
+            "identifier_expression": {
+              "scope": "account",
+              "expression": {
+                "and": [
+                  {
+                    "term": {
+                      "kind": "phone",
+                      "value": "+14155552671",
+                      "match": "canonical"
+                    }
+                  },
+                  {
+                    "or": [
+                      {
+                        "term": {
+                          "kind": "email",
+                          "value": "case@example.com",
+                          "match": "exact"
+                        }
+                      },
+                      {
+                        "term": {
+                          "kind": "email",
+                          "value": "other@example.com",
+                          "match": "exact"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "limit": 25
           }
         ],
         "example": {
-          "identifier": {
-            "kind": "username",
-            "value": "janedoe",
-            "match": "canonical",
-            "namespace": "customer"
+          "identifier_expression": {
+            "scope": "account",
+            "expression": {
+              "and": [
+                {
+                  "term": {
+                    "kind": "phone",
+                    "value": "+14155552671",
+                    "match": "canonical"
+                  }
+                },
+                {
+                  "or": [
+                    {
+                      "term": {
+                        "kind": "email",
+                        "value": "case@example.com",
+                        "match": "exact"
+                      }
+                    },
+                    {
+                      "term": {
+                        "kind": "email",
+                        "value": "other@example.com",
+                        "match": "exact"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
           },
           "limit": 25
         }
@@ -8849,6 +8923,15 @@
           },
           "matched_identifier": {
             "$ref": "#/components/schemas/IdentifierMatch"
+          },
+          "matched_identifiers": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 8,
+            "items": {
+              "$ref": "#/components/schemas/IdentifierTermMatch"
+            },
+            "description": "Present only for identifier_expression. All satisfied unique terms, ordered by term_index, with original submitted values and retained assessment witnesses. A duplicate normalized term appears once at its first raw leaf index. The legacy single identifier filter instead returns matched_identifier."
           }
         }
       },
@@ -8903,7 +8986,7 @@
         }
       },
       "AssessmentSearchRequest": {
-        "description": "Search retained assessments created in [from,to), at most 366 days. identifier matches the submitted value of each returned assessment directly. The legacy email filter keeps its account-wide mailbox semantics and cannot be combined with identifier. Other filters combine using AND and describe assessment decisions, separate from current account decisions. Results use newest-created order with an assessment-ID tie break and are live, not a snapshot across pages. Requires history or investigate authority; identifier/email filtering also requires identifier-read permission. Detailed response mode additionally requires detailed permission. No Idempotency-Key.",
+        "description": "Search retained assessments created in [from,to), at most 366 days. identifier matches the submitted value of each returned assessment directly. The legacy email filter keeps its account-wide mailbox semantics and cannot be combined with identifier. Other filters combine using AND and describe assessment decisions, separate from current account decisions. Results use newest-created order with an assessment-ID tie break and are live, not a snapshot across pages. Requires history or investigate authority; identifier, identifier_expression and email filtering also require identifier-read permission. Detailed response mode additionally requires detailed permission. No Idempotency-Key. identifier_expression requires scope assessment and matches the complete expression within each returned submission; account scope returns 400 invalid_request. At most 8 raw terms and 3 group levels. Mutually exclusive with identifier and email.",
         "type": "object",
         "additionalProperties": false,
         "required": [
@@ -8955,7 +9038,7 @@
             "minLength": 1,
             "maxLength": 1024,
             "pattern": "^[A-Za-z0-9_-]+$",
-            "description": "Opaque, expiring cursor bound to this environment, operation and every filter. Keep the filters unchanged.",
+            "description": "Opaque, expiring cursor bound to workspace, environment, operation and all filters, including expression scope, ordered structure and original term values. Keep grouping, operand order, matching modes and values unchanged; an omitted match is equivalent to exact. The page limit may change.",
             "example": "eyJ0IjoxNzY3MjI1NjAwMDAwMDAwLCJpIjoiYXNtX2V4YW1wbGUiLCJlIjoxNzY3MjI5MjAwfQ"
           },
           "response_mode": {
@@ -9017,7 +9100,11 @@
           },
           "identifier": {
             "$ref": "#/components/schemas/IdentifierSearch",
-            "description": "Match a retained assessment's submitted identifier directly. Mutually exclusive with legacy email. All other supported filters combine using AND."
+            "description": "Match a retained assessment's submitted identifier directly. Mutually exclusive with identifier_expression and legacy email. All other supported filters combine using AND."
+          },
+          "identifier_expression": {
+            "$ref": "#/components/schemas/IdentifierExpression",
+            "description": "Explicit bounded AND/OR combinations. Mutually exclusive with identifier and legacy email. Other supported filters combine using AND."
           }
         },
         "examples": [
@@ -9031,16 +9118,79 @@
               "namespace": "customer"
             },
             "limit": 20
+          },
+          {
+            "from": "2026-10-01T00:00:00Z",
+            "to": "2026-10-02T00:00:00Z",
+            "identifier_expression": {
+              "scope": "assessment",
+              "expression": {
+                "and": [
+                  {
+                    "term": {
+                      "kind": "phone",
+                      "value": "+14155552671",
+                      "match": "canonical"
+                    }
+                  },
+                  {
+                    "or": [
+                      {
+                        "term": {
+                          "kind": "email",
+                          "value": "case@example.com",
+                          "match": "exact"
+                        }
+                      },
+                      {
+                        "term": {
+                          "kind": "email",
+                          "value": "other@example.com",
+                          "match": "exact"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "limit": 20
           }
         ],
         "example": {
           "from": "2026-10-01T00:00:00Z",
           "to": "2026-10-02T00:00:00Z",
-          "identifier": {
-            "kind": "username",
-            "value": "janedoe",
-            "match": "canonical",
-            "namespace": "customer"
+          "identifier_expression": {
+            "scope": "assessment",
+            "expression": {
+              "and": [
+                {
+                  "term": {
+                    "kind": "phone",
+                    "value": "+14155552671",
+                    "match": "canonical"
+                  }
+                },
+                {
+                  "or": [
+                    {
+                      "term": {
+                        "kind": "email",
+                        "value": "case@example.com",
+                        "match": "exact"
+                      }
+                    },
+                    {
+                      "term": {
+                        "kind": "email",
+                        "value": "other@example.com",
+                        "match": "exact"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
           },
           "limit": 20
         }
@@ -11273,6 +11423,241 @@
           "username"
         ]
       },
+      "IdentifierExpression": {
+        "description": "A bounded AND/OR expression over submitted identifiers. Required scope assessment means the entire expression must match one retained assessment. Scope account permits each term to match a different retained assessment of the same account and is accepted only by account search. Exactly one of term, and or or is allowed at every node. Groups contain 2 to 8 operands, with at most 3 nested group levels and 8 raw term occurrences over the entire expression. A root term is allowed. Duplicate terms with the same kind, match rule, namespace and normalized comparison are idempotent, but count toward the raw limit. Match rules default to exact and preserve the existing identifier contract. Only retained submitted identifiers can satisfy a term. Unknown fields, unsupported scopes and malformed or oversized expressions return 400 invalid_request.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "scope",
+          "expression"
+        ],
+        "properties": {
+          "scope": {
+            "$ref": "#/components/schemas/Scope",
+            "description": "assessment requires one submission to satisfy the complete expression. account permits witnesses across retained submissions of one account and is supported only by POST /v1/accounts/search. No default: select scope explicitly."
+          },
+          "expression": {
+            "$ref": "#/components/schemas/IdentifierExpressionNode"
+          }
+        },
+        "examples": [
+          {
+            "scope": "assessment",
+            "expression": {
+              "and": [
+                {
+                  "term": {
+                    "kind": "phone",
+                    "value": "+14155552671",
+                    "match": "canonical"
+                  }
+                },
+                {
+                  "or": [
+                    {
+                      "term": {
+                        "kind": "email",
+                        "value": "case@example.com",
+                        "match": "exact"
+                      }
+                    },
+                    {
+                      "term": {
+                        "kind": "email",
+                        "value": "other@example.com",
+                        "match": "exact"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ],
+        "example": {
+          "scope": "assessment",
+          "expression": {
+            "and": [
+              {
+                "term": {
+                  "kind": "phone",
+                  "value": "+14155552671",
+                  "match": "canonical"
+                }
+              },
+              {
+                "or": [
+                  {
+                    "term": {
+                      "kind": "email",
+                      "value": "case@example.com",
+                      "match": "exact"
+                    }
+                  },
+                  {
+                    "term": {
+                      "kind": "email",
+                      "value": "other@example.com",
+                      "match": "exact"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "IdentifierExpressionLeaf": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "term": {
+            "$ref": "#/components/schemas/IdentifierSearch"
+          }
+        },
+        "required": [
+          "term"
+        ],
+        "examples": [
+          {
+            "term": {
+              "kind": "email",
+              "value": "case@example.com",
+              "match": "exact"
+            }
+          }
+        ],
+        "example": {
+          "term": {
+            "kind": "email",
+            "value": "case@example.com",
+            "match": "exact"
+          }
+        }
+      },
+      "IdentifierExpressionNode": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "term": {
+            "$ref": "#/components/schemas/IdentifierSearch"
+          },
+          "and": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 8,
+            "items": {
+              "$ref": "#/components/schemas/IdentifierExpressionNodeLevelTwo"
+            }
+          },
+          "or": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 8,
+            "items": {
+              "$ref": "#/components/schemas/IdentifierExpressionNodeLevelTwo"
+            }
+          }
+        },
+        "examples": [
+          {
+            "term": {
+              "kind": "email",
+              "value": "case@example.com",
+              "match": "exact"
+            }
+          }
+        ],
+        "example": {
+          "term": {
+            "kind": "email",
+            "value": "case@example.com",
+            "match": "exact"
+          }
+        }
+      },
+      "IdentifierExpressionNodeLevelOne": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "term": {
+            "$ref": "#/components/schemas/IdentifierSearch"
+          },
+          "and": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 8,
+            "items": {
+              "$ref": "#/components/schemas/IdentifierExpressionLeaf"
+            }
+          },
+          "or": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 8,
+            "items": {
+              "$ref": "#/components/schemas/IdentifierExpressionLeaf"
+            }
+          }
+        },
+        "examples": [
+          {
+            "term": {
+              "kind": "email",
+              "value": "case@example.com",
+              "match": "exact"
+            }
+          }
+        ],
+        "example": {
+          "term": {
+            "kind": "email",
+            "value": "case@example.com",
+            "match": "exact"
+          }
+        }
+      },
+      "IdentifierExpressionNodeLevelTwo": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "term": {
+            "$ref": "#/components/schemas/IdentifierSearch"
+          },
+          "and": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 8,
+            "items": {
+              "$ref": "#/components/schemas/IdentifierExpressionNodeLevelOne"
+            }
+          },
+          "or": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 8,
+            "items": {
+              "$ref": "#/components/schemas/IdentifierExpressionNodeLevelOne"
+            }
+          }
+        },
+        "examples": [
+          {
+            "term": {
+              "kind": "email",
+              "value": "case@example.com",
+              "match": "exact"
+            }
+          }
+        ],
+        "example": {
+          "term": {
+            "kind": "email",
+            "value": "case@example.com",
+            "match": "exact"
+          }
+        }
+      },
       "IdentifierKind": {
         "enum": [
           "email",
@@ -11402,6 +11787,73 @@
           "phone",
           "username"
         ]
+      },
+      "IdentifierTermMatch": {
+        "description": "One satisfied unique term in an identifier expression. term_index is the zero-based depth-first raw leaf position of its first occurrence. Duplicate normalized terms produce one witness. All satisfied unique terms are returned, ordered by term_index, including satisfied terms in an OR branch that was not needed. value preserves the original submitted value in assessment_id. In assessment scope all witnesses belong to the same matching assessment; account search chooses the newest such assessment. In account scope each term uses its newest retained matching assessment, so witnesses may have different assessment IDs. This evidence does not assert ownership or equality between accounts.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "kind",
+          "value",
+          "match_basis",
+          "provenance",
+          "assessment_id",
+          "term_index"
+        ],
+        "properties": {
+          "kind": {
+            "$ref": "#/components/schemas/IdentifierSearchKind"
+          },
+          "value": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 254,
+            "example": "Jane.Doe+case@EXAMPLE.COM"
+          },
+          "match_basis": {
+            "$ref": "#/components/schemas/Match"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/Provenance",
+            "description": "Customer-submitted input. It does not mean the customer or NoResponse verified ownership."
+          },
+          "namespace": {
+            "$ref": "#/components/schemas/Namespace",
+            "description": "Present only for username. A source platform handle is not a customer-namespace username."
+          },
+          "assessment_id": {
+            "type": "string",
+            "pattern": "^asm_[0-9A-HJKMNP-TV-Z]{26}$",
+            "description": "Opaque, server-assigned assessment id: 'asm_' and a 26-character Crockford base32 ULID. Unique within the workspace; another workspace's assessment id answers 404.",
+            "example": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          },
+          "term_index": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 7,
+            "description": "Zero-based depth-first position of the first occurrence of this normalized term in the submitted expression."
+          }
+        },
+        "examples": [
+          {
+            "kind": "username",
+            "value": "JaneDoe",
+            "match_basis": "canonical",
+            "namespace": "customer",
+            "provenance": "submitted",
+            "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+            "term_index": 0
+          }
+        ],
+        "example": {
+          "kind": "username",
+          "value": "JaneDoe",
+          "match_basis": "canonical",
+          "namespace": "customer",
+          "provenance": "submitted",
+          "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+          "term_index": 0
+        }
       },
       "Impact": {
         "enum": [
@@ -15704,6 +16156,14 @@
           "billing"
         ],
         "description": "A built-in capability set. Specialist roles are independent; effective access is returned by GET /v1/workspaces/{workspace_id}/capabilities."
+      },
+      "Scope": {
+        "type": "string",
+        "enum": [
+          "assessment",
+          "account"
+        ],
+        "description": "assessment requires one submission to satisfy the complete expression. account permits witnesses across retained submissions of one account and is supported only by POST /v1/accounts/search. No default: select scope explicitly."
       },
       "SentIdentifiers": {
         "type": "object",

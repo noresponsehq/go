@@ -4,7 +4,7 @@ import (
 	"github.com/noresponsehq/go/v9/internal/utils"
 )
 
-// AssessmentSearchRequest - Search retained assessments created in [from,to), at most 366 days. identifier matches the submitted value of each returned assessment directly. The legacy email filter keeps its account-wide mailbox semantics and cannot be combined with identifier. Other filters combine using AND and describe assessment decisions, separate from current account decisions. Results use newest-created order with an assessment-ID tie break and are live, not a snapshot across pages. Requires history or investigate authority; identifier/email filtering also requires identifier-read permission. Detailed response mode additionally requires detailed permission. No Idempotency-Key.
+// AssessmentSearchRequest - Search retained assessments created in [from,to), at most 366 days. identifier matches the submitted value of each returned assessment directly. The legacy email filter keeps its account-wide mailbox semantics and cannot be combined with identifier. Other filters combine using AND and describe assessment decisions, separate from current account decisions. Results use newest-created order with an assessment-ID tie break and are live, not a snapshot across pages. Requires history or investigate authority; identifier, identifier_expression and email filtering also require identifier-read permission. Detailed response mode additionally requires detailed permission. No Idempotency-Key. identifier_expression requires scope assessment and matches the complete expression within each returned submission; account scope returns 400 invalid_request. At most 8 raw terms and 3 group levels. Mutually exclusive with identifier and email.
 type AssessmentSearchRequest struct {
 	From string `json:"from"`
 	To   string `json:"to"`
@@ -19,7 +19,7 @@ type AssessmentSearchRequest struct {
 	// The recommended action: allow, step_up or review. Your application applies it.
 	Recommendation *Recommendation `json:"recommendation,omitzero"`
 	Limit          *int64          `default:"20" json:"limit"`
-	// Opaque, expiring cursor bound to this environment, operation and every filter. Keep the filters unchanged.
+	// Opaque, expiring cursor bound to workspace, environment, operation and all filters, including expression scope, ordered structure and original term values. Keep grouping, operand order, matching modes and values unchanged; an omitted match is equivalent to exact. The page limit may change.
 	Cursor *string `json:"cursor,omitzero"`
 	// standard returns the consolidated risk response; detailed adds merged provider-neutral facts when the key has detailed scope. There is no raw mode.
 	ResponseMode *ResponseMode `json:"response_mode,omitzero"`
@@ -46,6 +46,8 @@ type AssessmentSearchRequest struct {
 	Changed *bool `json:"changed,omitzero"`
 	// One customer-submitted identifier. Defaults to exact comparison of the original submitted value. canonical uses the supported identifier normalisation without an ownership claim: email preserves local-part case, NFC-normalises it and lowercases the domain without removing dots or tags; phone uses international E.164 without extensions or an inferred region; username uses NFC and Unicode case folding within the customer namespace. mailbox is email-only and explicitly selects existing list rules: case-insensitive, remove +tag, and ignore local-part dots at gmail.com and googlemail.com; googlemail.com maps to gmail.com. Username requires namespace customer. Email and phone forbid namespace. Source-discovered identifiers and platform handles are not searched. Unsupported kinds, namespaces, modes and invalid values return 400. Search equality does not establish verified ownership or merge accounts.
 	Identifier *IdentifierSearch `json:"identifier,omitzero"`
+	// A bounded AND/OR expression over submitted identifiers. Required scope assessment means the entire expression must match one retained assessment. Scope account permits each term to match a different retained assessment of the same account and is accepted only by account search. Exactly one of term, and or or is allowed at every node. Groups contain 2 to 8 operands, with at most 3 nested group levels and 8 raw term occurrences over the entire expression. A root term is allowed. Duplicate terms with the same kind, match rule, namespace and normalized comparison are idempotent, but count toward the raw limit. Match rules default to exact and preserve the existing identifier contract. Only retained submitted identifiers can satisfy a term. Unknown fields, unsupported scopes and malformed or oversized expressions return 400 invalid_request.
+	IdentifierExpression *IdentifierExpression `json:"identifier_expression,omitzero"`
 }
 
 func (a AssessmentSearchRequest) MarshalJSON() ([]byte, error) {
@@ -218,4 +220,11 @@ func (a *AssessmentSearchRequest) GetIdentifier() *IdentifierSearch {
 		return nil
 	}
 	return a.Identifier
+}
+
+func (a *AssessmentSearchRequest) GetIdentifierExpression() *IdentifierExpression {
+	if a == nil {
+		return nil
+	}
+	return a.IdentifierExpression
 }
