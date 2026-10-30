@@ -1,5 +1,9 @@
 # Changelog
 
+## 9.5.2
+
+* `Sdk.Accounts.ListLinked()`: **Added**
+
 ## 9.5.1
 
 * `Sdk.Assessments.Create()`:  `error.Code` **Changed**

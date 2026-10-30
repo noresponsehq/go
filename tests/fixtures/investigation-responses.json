@@ -876,5 +876,34 @@
         "count": 0
       }
     ]
+  },
+  "linked": {
+    "schema_version": "1",
+    "account_id": "acct_8412",
+    "items": [
+      {
+        "account_id": "acct_91b2d4",
+        "shared_identifiers": [
+          {
+            "kind": "email",
+            "match_basis": "mailbox",
+            "provenance": "submitted",
+            "account": {
+              "value": "jane.doe@gmail.com",
+              "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+              "submitted_at": "2026-10-14T09:00:00.412Z"
+            },
+            "linked_account": {
+              "value": "janedoe+2@gmail.com",
+              "assessment_id": "asm_01JA3B1C2D3E4F5G6H7J8K9M0N",
+              "submitted_at": "2026-10-20T17:42:10.006Z"
+            }
+          }
+        ]
+      }
+    ],
+    "total": 1,
+    "total_capped": false,
+    "next_cursor": "next_fixture"
   }
 }
