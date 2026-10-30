@@ -1,5 +1,33 @@
 # Changelog
 
+## 9.5.5
+
+* `Sdk.Assessments.Create()`:  `response.Account.Risk.Reasons[].Code` **Changed**
+* `Sdk.Assessments.Get()`:  `response.Account.Risk.Reasons[].Code` **Changed**
+* `Sdk.Assessments.Query()`:  `response.Items[].Risk.Reasons[].Code` **Changed**
+* `Sdk.Assessments.Aggregate()`: 
+  *  `request.Request.Reason` **Changed**
+  *  `response.Buckets[].Groups[].Reason` **Changed**
+* `Sdk.Assessments.Search()`: 
+  *  `request.Request.Reason` **Changed**
+  *  `response.Items[].Detail.Risk.Reasons[].Code` **Changed**
+* `Sdk.Assessments.RetrieveVersion()`:  `response.Detail.Risk.Reasons[].Code` **Changed**
+* `Sdk.Accounts.ListChanged()`:  `response.Items[].Risk.Reasons[].Code` **Changed**
+* `Sdk.Accounts.Get()`:  `response.Risk.Reasons[].Code` **Changed**
+* `Sdk.Accounts.ListAssessments()`:  `response.Items[].Risk.Reasons[].Code` **Changed**
+* `Sdk.Accounts.RetrieveDecision()`:  `response.Account.Risk.Reasons[].Code` **Changed**
+* `Sdk.Accounts.Export()`:  `response.Assessments[].Detail.Risk.Reasons[].Code` **Changed**
+* `Sdk.Accounts.ListDecisions()`:  `response.Items[].Account.Risk.Reasons[].Code` **Changed**
+* `Sdk.Accounts.Search()`:  `response.Items[].Latest.Detail.Risk.Reasons[].Code` **Changed**
+* `Sdk.Settings.Get()`:  `response.RefusedSources[].Enum(google)` **Added**
+* `Sdk.Settings.Update()`: 
+  *  `request.Body.RefusedSources[].Enum(google)` **Added**
+  *  `response.RefusedSources[].Enum(google)` **Added**
+* `Sdk.Settings.ListHistory()`:  `response.Items[].Settings.RefusedSources[].Enum(google)` **Added**
+* `Sdk.Settings.Restore()`:  `response.RefusedSources[].Enum(google)` **Added**
+* `Sdk.Requests.List()`:  `response.Items[].Decision.Account.Risk.Reasons[].Code` **Changed**
+* `Sdk.Evaluations.Publish()`:  `response.RefusedSources[].Enum(google)` **Added**
+
 ## 9.5.4
 
 * `Sdk.Assessments.Create()`:  `response.Detail.Risk.Details.Accounts` **Added**

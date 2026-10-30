@@ -160,10 +160,10 @@ func WithTimeout(timeout time.Duration) SDKOption {
 // New creates a new instance of the SDK with the provided options
 func New(opts ...SDKOption) *NoResponse {
 	sdk := &NoResponse{
-		SDKVersion: "9.5.4",
+		SDKVersion: "9.5.5",
 		sdkConfiguration: config.SDKConfiguration{
-			UserAgent:         "noresponse-sdk/go 9.5.4",
-			SDKVersion:        "9.5.4",
+			UserAgent:         "noresponse-sdk/go 9.5.5",
+			SDKVersion:        "9.5.5",
 			GenVersion:        "internal",
 			OpenAPIDocVersion: "1",
 			ServerList:        ServerList,

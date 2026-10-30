@@ -62,6 +62,14 @@ custom := components.ReasonCode("custom_value")
 | `ReasonCodeYoungEmailDomain`           | young_email_domain                     |
 | `ReasonCodeEmailDomainNoMx`            | email_domain_no_mx                     |
 | `ReasonCodeEmailDomainNonexistent`     | email_domain_nonexistent               |
+| `ReasonCodeGoogleAccountMissing`       | google_account_missing                 |
+| `ReasonCodeGoogleEmptyAccount`         | google_empty_account                   |
+| `ReasonCodeGoogleActiveProfile`        | google_active_profile                  |
+| `ReasonCodeGoogleAgedAccount`          | google_aged_account                    |
+| `ReasonCodeGoogleNameMatch`            | google_name_match                      |
+| `ReasonCodeGoogleNameMismatch`         | google_name_mismatch                   |
+| `ReasonCodeGoogleCountryMatch`         | google_country_match                   |
+| `ReasonCodeGoogleCountryMismatch`      | google_country_mismatch                |
 | `ReasonCodeForumSanctioned`            | forum_sanctioned                       |
 | `ReasonCodePriorPaymentAbuse`          | prior_payment_abuse                    |
 | `ReasonCodeIPHistoryMatch`             | ip_history_match                       |
