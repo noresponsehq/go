@@ -1,5 +1,10 @@
 # Changelog
 
+## 10.0.5
+
+* `Sdk.Assessments.Search()`: 
+  *  `request.Request.Origin` **Added**
+
 ## 10.0.4
 
 * `Sdk.Assessments.Create()`:  `response.Account.Risk.Reasons[].Code` **Changed**

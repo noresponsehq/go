@@ -16,6 +16,8 @@ type AssessmentSearchRequest struct {
 	Flow *Flow `json:"flow,omitzero"`
 	// Processing state, separate from evidence coverage. complete: final; nothing is still running, but unsupported, failed or unanswered lanes remain in incomplete_sources. partial: a recommendation exists and evidence is incomplete; assessment_url identifies continuing work when present. pending: no recommendation yet; poll or wait for the webhook. Finished processing does not mean all sources answered.
 	Status *Status `json:"status,omitzero"`
+	// api (the default) searches the assessments your integration sent. lookup searches the assessments your team ran by hand on the console's Lookup page. The API sets an assessment's origin from the credential that sent it. A lookup is not in any other list, count, webhook event or account.
+	Origin *Origin `json:"origin,omitzero"`
 	// The recommended action: allow, step_up or review. Your application applies it.
 	Recommendation *Recommendation `json:"recommendation,omitzero"`
 	Limit          *int64          `default:"20" json:"limit"`
@@ -101,6 +103,13 @@ func (a *AssessmentSearchRequest) GetStatus() *Status {
 		return nil
 	}
 	return a.Status
+}
+
+func (a *AssessmentSearchRequest) GetOrigin() *Origin {
+	if a == nil {
+		return nil
+	}
+	return a.Origin
 }
 
 func (a *AssessmentSearchRequest) GetRecommendation() *Recommendation {
