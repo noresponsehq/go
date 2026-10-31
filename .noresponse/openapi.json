@@ -10257,7 +10257,7 @@
           },
           "country": {
             "$ref": "#/components/schemas/Country",
-            "description": "IP country, phone country, breach countries and policy_context.region together."
+            "description": "IP country, phone country, breach countries and policy_context.region together. When the breach records give a country, the timezone and locale countries count too. The IP country of a proxy or hosting network does not count."
           }
         }
       },
@@ -10335,7 +10335,7 @@
           "mismatch",
           "unknown"
         ],
-        "description": "IP country, phone country, breach countries and policy_context.region together."
+        "description": "IP country, phone country, breach countries and policy_context.region together. When the breach records give a country, the timezone and locale countries count too. The IP country of a proxy or hosting network does not count."
       },
       "Coverage": {
         "type": "object",
@@ -15204,7 +15204,9 @@
           "breach_shared_ip",
           "nationality_mismatch",
           "minor_identity",
-          "reported_account_abuse"
+          "reported_account_abuse",
+          "breach_city_match",
+          "breach_city_mismatch"
         ],
         "description": "A stable reason code. New codes may appear; ignore any you do not know."
       },

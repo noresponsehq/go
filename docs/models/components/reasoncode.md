@@ -79,3 +79,5 @@ custom := components.ReasonCode("custom_value")
 | `ReasonCodeNationalityMismatch`        | nationality_mismatch                   |
 | `ReasonCodeMinorIdentity`              | minor_identity                         |
 | `ReasonCodeReportedAccountAbuse`       | reported_account_abuse                 |
+| `ReasonCodeBreachCityMatch`            | breach_city_match                      |
+| `ReasonCodeBreachCityMismatch`         | breach_city_mismatch                   |

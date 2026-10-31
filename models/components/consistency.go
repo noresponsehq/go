@@ -12,7 +12,7 @@ type Consistency struct {
 	Phone *ConsistencyValue `json:"phone,omitzero"`
 	// How a submitted identifier agrees with what the evidence holds for the other identifiers. unknown is a definite 'cannot tell' (for example a truncated or too-common breach result); absent means the comparison was not made.
 	IP *ConsistencyValue `json:"ip,omitzero"`
-	// IP country, phone country, breach countries and policy_context.region together.
+	// IP country, phone country, breach countries and policy_context.region together. When the breach records give a country, the timezone and locale countries count too. The IP country of a proxy or hosting network does not count.
 	Country *Country `json:"country,omitzero"`
 }
 

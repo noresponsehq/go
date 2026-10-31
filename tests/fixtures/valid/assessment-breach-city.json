@@ -1,0 +1,66 @@
+{
+  "schema_version": "1",
+  "assessment_id": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+  "account_id": "acct_7f3a9c",
+  "request_id": "req-2026-10-14-0001",
+  "policy_version": "heuristic-2026-10.1",
+  "policy_basis": "heuristic_unvalidated",
+  "assessment_version": 1,
+  "created_at": "2026-10-14T09:00:00.000Z",
+  "updated_at": "2026-10-14T09:00:00.412Z",
+  "expires_at": "2027-10-14T09:00:00.000Z",
+  "timing": {
+    "deadline_ms": 300,
+    "elapsed_ms": 287
+  },
+  "status": "complete",
+  "recommendation": "allow",
+  "confidence": "medium",
+  "risk": {
+    "score": 0,
+    "band": "low",
+    "recommendation": "allow",
+    "block": false,
+    "confidence": "medium",
+    "policy_version": "risk-2026-10.21",
+    "policy_basis": "heuristic_unvalidated",
+    "reasons": [
+      {
+        "code": "breach_city_match",
+        "direction": "lowers",
+        "impact": "low",
+        "identifier": "ip"
+      },
+      {
+        "code": "breach_city_mismatch",
+        "direction": "neutral",
+        "impact": "none",
+        "identifier": "ip"
+      }
+    ],
+    "summary": {
+      "consistency": {
+        "name": "unknown",
+        "phone": "unknown",
+        "ip": "unknown",
+        "country": "consistent"
+      }
+    },
+    "coverage": {
+      "answered": 1,
+      "failed": 0,
+      "pending": 0
+    }
+  },
+  "signals": [
+    {
+      "type": "breach_exposure",
+      "identifier": "email",
+      "outcome": "found",
+      "source_id": "breach-fixture",
+      "last_checked_at": "2026-10-14T09:00:00.210Z",
+      "freshness": "fresh"
+    }
+  ],
+  "incomplete_sources": []
+}
