@@ -4,6 +4,7 @@
     {
       "event_id": "evt_01JA2ZD3K4M5N6P7Q8R9S0T1V2",
       "event_type": "assessment.updated",
+      "assessment_id": "asm_01JA2ZD3K4M5N6P7Q8R9S0T1V3",
       "attempt": 1,
       "replay": true,
       "status": "delivered",

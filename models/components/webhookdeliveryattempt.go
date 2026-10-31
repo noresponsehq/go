@@ -5,6 +5,10 @@ type WebhookDeliveryAttempt struct {
 	EventID string `json:"event_id"`
 	// The event's type, as its body's type: assessment.updated, endpoint.verification, account.deleted, workspace.deleted, webhook_endpoint.disabled, account.risk_changed, audit.event, or a type added later.
 	EventType string `json:"event_type"`
+	// The assessment an assessment.updated event reported, while that assessment is held. Absent on every other event, on a test event and on a notice that the assessment was erased or expired.
+	AssessmentID *string `json:"assessment_id,omitzero"`
+	// The account an account.risk_changed event reported. Absent on every other event.
+	AccountID *string `json:"account_id,omitzero"`
 	// Which attempt of this delivery this was: 1 for the first send, up to 9 with retries. A replay counts its own attempts from 1.
 	Attempt int64 `json:"attempt"`
 	// true for an attempt of a replay you asked for.
@@ -33,6 +37,20 @@ func (w *WebhookDeliveryAttempt) GetEventType() string {
 		return ""
 	}
 	return w.EventType
+}
+
+func (w *WebhookDeliveryAttempt) GetAssessmentID() *string {
+	if w == nil {
+		return nil
+	}
+	return w.AssessmentID
+}
+
+func (w *WebhookDeliveryAttempt) GetAccountID() *string {
+	if w == nil {
+		return nil
+	}
+	return w.AccountID
 }
 
 func (w *WebhookDeliveryAttempt) GetAttempt() int64 {

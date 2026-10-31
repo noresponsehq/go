@@ -12,7 +12,9 @@ type AccountDirectorySearchRequest struct {
 	AccountID *string `json:"account_id,omitzero"`
 	// Assessments of every account that one of its retained admitted assessments sent this mailbox as identifiers.email, matched as lists match an email entry: case-insensitive, a +tag removed and, at gmail.com and googlemail.com, the dots of the local part ignored. Only assessments stored since email list matching began carry the mailbox. An address that is not a valid mailbox is refused with 400.
 	Email *string `json:"email,omitzero"`
-	Limit *int64  `default:"25" json:"limit"`
+	// Every account that one of its retained admitted assessments sent an email of this domain or its subdomains, matched as lists match an email_domain entry and with the same identifier-read permission as email. A value that is not a registrable domain is refused with 400. Mutually exclusive with email, identifier and identifier_expression.
+	EmailDomain *string `json:"email_domain,omitzero"`
+	Limit       *int64  `default:"25" json:"limit"`
 	// Opaque, expiring cursor bound to workspace, environment, operation and all filters, including expression scope, ordered structure and original term values. Keep grouping, operand order, matching modes and values unchanged; an omitted match is equivalent to exact. The page limit may change.
 	Cursor *string `json:"cursor,omitzero"`
 	// One customer-submitted identifier. Defaults to exact comparison of the original submitted value. canonical uses the supported identifier normalisation without an ownership claim: email preserves local-part case, NFC-normalises it and lowercases the domain without removing dots or tags; phone uses international E.164 without extensions or an inferred region; username uses NFC and Unicode case folding within the customer namespace. mailbox is email-only and explicitly selects existing list rules: case-insensitive, remove +tag, and ignore local-part dots at gmail.com and googlemail.com; googlemail.com maps to gmail.com. Username requires namespace customer. Email and phone forbid namespace. Source-discovered identifiers and platform handles are not searched. Unsupported kinds, namespaces, modes and invalid values return 400. Search equality does not establish verified ownership or merge accounts.
@@ -51,6 +53,13 @@ func (a *AccountDirectorySearchRequest) GetEmail() *string {
 		return nil
 	}
 	return a.Email
+}
+
+func (a *AccountDirectorySearchRequest) GetEmailDomain() *string {
+	if a == nil {
+		return nil
+	}
+	return a.EmailDomain
 }
 
 func (a *AccountDirectorySearchRequest) GetLimit() *int64 {

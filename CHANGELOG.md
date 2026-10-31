@@ -1,5 +1,11 @@
 # Changelog
 
+## 10.0.7
+
+* `Sdk.Accounts.Search()`: 
+  *  `request.Request.EmailDomain` **Added**
+* `Sdk.WebhookEndpoints.ListDeliveries()`:  `response.Items[]` **Changed**
+
 ## 10.0.6
 
 * `Sdk.Assessments.Create()`:  `error.Code.Enum(ownerInvitePending)` **Added**

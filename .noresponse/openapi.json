@@ -7184,6 +7184,14 @@
             "description": "Assessments of every account that one of its retained admitted assessments sent this mailbox as identifiers.email, matched as lists match an email entry: case-insensitive, a +tag removed and, at gmail.com and googlemail.com, the dots of the local part ignored. Only assessments stored since email list matching began carry the mailbox. An address that is not a valid mailbox is refused with 400.",
             "example": "new.user@example.com"
           },
+          "email_domain": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 253,
+            "pattern": "^[^\\s\\x00-\\x1f\\x7f@]+$",
+            "description": "Every account that one of its retained admitted assessments sent an email of this domain or its subdomains, matched as lists match an email_domain entry and with the same identifier-read permission as email. A value that is not a registrable domain is refused with 400. Mutually exclusive with email, identifier and identifier_expression.",
+            "example": "example.com"
+          },
           "limit": {
             "type": "integer",
             "minimum": 1,
@@ -17278,6 +17286,20 @@
             "description": "The event's type, as its body's type: assessment.updated, endpoint.verification, account.deleted, workspace.deleted, webhook_endpoint.disabled, account.risk_changed, audit.event, or a type added later.",
             "example": "assessment.updated"
           },
+          "assessment_id": {
+            "type": "string",
+            "pattern": "^asm_[0-9A-HJKMNP-TV-Z]{26}$",
+            "description": "The assessment an assessment.updated event reported, while that assessment is held. Absent on every other event, on a test event and on a notice that the assessment was erased or expired.",
+            "example": "asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          },
+          "account_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:|-]{0,127}$",
+            "description": "The account an account.risk_changed event reported. Absent on every other event.",
+            "example": "user_8412"
+          },
           "attempt": {
             "type": "integer",
             "minimum": 1,
@@ -21953,6 +21975,7 @@
                     {
                       "event_id": "evt_01JA2ZD3K4M5N6P7Q8R9S0T1V2",
                       "event_type": "assessment.updated",
+                      "assessment_id": "asm_01JA2ZD3K4M5N6P7Q8R9S0T1V3",
                       "attempt": 1,
                       "replay": true,
                       "status": "delivered",

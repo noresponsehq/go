@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: 25ddae46-795d-45f5-b455-3f48c41d440e
 management:
-  docChecksum: 35ec75948c5993b219d2fd98056fc91d
+  docChecksum: a0e0d0cd1063c5d6007d02718ad1ee52
   docVersion: "1"
   speakeasyVersion: internal
   generationVersion: internal
-  releaseVersion: 10.0.6
-  configChecksum: 4da36033667e219c66789cc18541e20f
+  releaseVersion: 10.0.7
+  configChecksum: f3b83a8613b48d37496b1e1fc4c2f253
 features:
   go:
     additionalDependencies: 0.1.0
@@ -81,7 +81,7 @@ trackedFiles:
   docs/models/components/accountdirectorypageitem.md:
     last_write_checksum: sha1:435b85f905f7d1d5f4d54d3b3ae5879870506724
   docs/models/components/accountdirectorysearchrequest.md:
-    last_write_checksum: sha1:3c4de3f4dcaf0aa8e79b2532d627d1588bdf5f39
+    last_write_checksum: sha1:11f1c8f52d7d3a0835b4fecc568c41f42dbaf533
   docs/models/components/accountenforcementlist.md:
     last_write_checksum: sha1:c77cca57329c81167db5479b6bbb69b1366f8153
   docs/models/components/accountexport.md:
@@ -767,7 +767,7 @@ trackedFiles:
   docs/models/components/webhookaggregaterequest.md:
     last_write_checksum: sha1:c6012c855e80da14414b87bb7a733cce9212936b
   docs/models/components/webhookdeliveryattempt.md:
-    last_write_checksum: sha1:ab993e677d9e646dda457ac5c15cbe05d050da66
+    last_write_checksum: sha1:b7a85f7551422a6b8264afcd09d9acfdd8019c14
   docs/models/components/webhookdeliveryattemptstatus.md:
     last_write_checksum: sha1:85b9623eb276cc3ddf255f722cd5baf35bda40f6
   docs/models/components/webhookdeliverylist.md:
@@ -1331,7 +1331,7 @@ trackedFiles:
   models/components/accountdirectorypageitem.go:
     last_write_checksum: sha1:6d1af67bdd917a24682bc6bb3b489246c812d61b
   models/components/accountdirectorysearchrequest.go:
-    last_write_checksum: sha1:f179787c5a192353ace59d2f2915813da3cc48ee
+    last_write_checksum: sha1:cefdd527962ca72db3271de97d3d2a013231919f
   models/components/accountenforcementlist.go:
     last_write_checksum: sha1:ae1a19c4163e89ee596996b5d71769f12dfd44b7
   models/components/accountexport.go:
@@ -1957,7 +1957,7 @@ trackedFiles:
   models/components/webhookaggregaterequest.go:
     last_write_checksum: sha1:73f8f3d8a654e1a90afd4475746bca20fbd375cf
   models/components/webhookdeliveryattempt.go:
-    last_write_checksum: sha1:f874dea360f8a3dbed2c0313abd652fc2a01aa30
+    last_write_checksum: sha1:bb27bad384c8dea8af398eefde7b8e97dc6a14e6
   models/components/webhookdeliveryattemptstatus.go:
     last_write_checksum: sha1:d0bd8ca8e0701e73c42ab0a36b3f5d12acbded75
   models/components/webhookdeliverylist.go:
@@ -2207,7 +2207,7 @@ trackedFiles:
   models/operations/updatesettings.go:
     last_write_checksum: sha1:9350e2f7449c85f08cb7e28d8a1daa4727492bfe
   noresponse.go:
-    last_write_checksum: sha1:3acf15abd3b2fa056bb73a76431fe8db4fe841d8
+    last_write_checksum: sha1:d713669f1818238073845b1a35b289a6e1444d13
   operations.go:
     last_write_checksum: sha1:394a05ae140c85250837e355d3a4312a14b6e4e2
   optionalnullable/optionalnullable.go:
@@ -3225,7 +3225,7 @@ examples:
           limit: 20
       responses:
         "200":
-          application/json: {"endpoint_id": "whe_01JA2ZD0E1F2G3H4J5K6M7N8P9", "items": [{"event_id": "evt_01JA2ZD3K4M5N6P7Q8R9S0T1V2", "event_type": "assessment.updated", "attempt": 1, "replay": true, "status": "delivered", "response_code": 200, "latency_ms": 184, "attempted_at": "2026-10-22T10:15:02.118Z"}, {"event_id": "evt_01JA2ZD3K4M5N6P7Q8R9S0T1V2", "event_type": "assessment.updated", "attempt": 2, "replay": false, "status": "failed", "response_code": 500, "failure": "non_2xx", "latency_ms": 96, "attempted_at": "2026-10-22T09:00:31.402Z"}, {"event_id": "evt_01JA2ZD3K4M5N6P7Q8R9S0T1V2", "event_type": "assessment.updated", "attempt": 1, "replay": false, "status": "failed", "failure": "timeout", "latency_ms": 5000, "attempted_at": "2026-10-22T09:00:00.951Z"}], "next_cursor": "AQAAAABpG1CXAAYqJ2gK4cQAx1dJ2Hk3Q6CjhYbJ9xU8Pz0qRkL1n3VbW2c"}
+          application/json: {"endpoint_id": "whe_01JA2ZD0E1F2G3H4J5K6M7N8P9", "items": [{"event_id": "evt_01JA2ZD3K4M5N6P7Q8R9S0T1V2", "event_type": "assessment.updated", "assessment_id": "asm_01JA2ZD3K4M5N6P7Q8R9S0T1V3", "attempt": 1, "replay": true, "status": "delivered", "response_code": 200, "latency_ms": 184, "attempted_at": "2026-10-22T10:15:02.118Z"}, {"event_id": "evt_01JA2ZD3K4M5N6P7Q8R9S0T1V2", "event_type": "assessment.updated", "attempt": 2, "replay": false, "status": "failed", "response_code": 500, "failure": "non_2xx", "latency_ms": 96, "attempted_at": "2026-10-22T09:00:31.402Z"}, {"event_id": "evt_01JA2ZD3K4M5N6P7Q8R9S0T1V2", "event_type": "assessment.updated", "attempt": 1, "replay": false, "status": "failed", "failure": "timeout", "latency_ms": 5000, "attempted_at": "2026-10-22T09:00:00.951Z"}], "next_cursor": "AQAAAABpG1CXAAYqJ2gK4cQAx1dJ2Hk3Q6CjhYbJ9xU8Pz0qRkL1n3VbW2c"}
   replayWebhookDelivery:
     empty:
       parameters:
