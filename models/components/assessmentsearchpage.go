@@ -1,7 +1,7 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v9/internal/utils"
+	"github.com/noresponsehq/go/v10/internal/utils"
 )
 
 // AssessmentSearchPage - A bounded page of latest assessment revisions, newest creation first, with how many assessments match the filters. Each item is the revision found and its first answer's decision; no current account risk is attached.

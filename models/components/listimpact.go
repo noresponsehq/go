@@ -1,7 +1,7 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v9/internal/utils"
+	"github.com/noresponsehq/go/v10/internal/utils"
 )
 
 // ListImpact - List override changes among the newest 5000 matching accounts. These counts describe override inputs. Customer enforcement and eventual outcomes remain separate. The response reports whether the matching population was truncated.

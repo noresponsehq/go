@@ -1,7 +1,7 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v9/internal/utils"
+	"github.com/noresponsehq/go/v10/internal/utils"
 )
 
 // Publication - Immutable publication provenance remains in policy history after evaluation evidence expires. SHA-256 values identify the frozen manifest, evaluator semantic input, cohort, and canonical result separately.

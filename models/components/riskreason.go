@@ -1,7 +1,7 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v9/internal/utils"
+	"github.com/noresponsehq/go/v10/internal/utils"
 )
 
 // RiskReason - One reason that fired. direction is whether it raises or lowers the score, or is neutral (informational, it moves nothing). impact is a coarse band of how much it moves the score: none for a neutral reason, otherwise low, medium or high.

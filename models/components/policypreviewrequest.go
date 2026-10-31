@@ -1,7 +1,7 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v9/internal/utils"
+	"github.com/noresponsehq/go/v10/internal/utils"
 )
 
 // PolicyPreviewRequest - Side-effect-free threshold preview for at most 31 days. Retained first answers are evaluated at their exact frozen scores using the production threshold and hold rules. Changes to admission, source selection, depth or retention are not simulated.

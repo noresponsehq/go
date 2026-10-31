@@ -2,7 +2,7 @@ package apierrors
 
 import (
 	"encoding/json"
-	"github.com/noresponsehq/go/v9/models/components"
+	"github.com/noresponsehq/go/v10/models/components"
 )
 
 // BadRequestError - HTTP 400 problem document.

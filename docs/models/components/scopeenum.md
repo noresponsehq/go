@@ -6,7 +6,7 @@ assessment requires one submission to satisfy the complete expression. account p
 
 ```go
 import (
-	"github.com/noresponsehq/go/v9/models/components"
+	"github.com/noresponsehq/go/v10/models/components"
 )
 
 value := components.ScopeEnumAssessment

@@ -6,7 +6,7 @@ delivered when the endpoint answered 2xx; failed otherwise, with failure naming 
 
 ```go
 import (
-	"github.com/noresponsehq/go/v9/models/components"
+	"github.com/noresponsehq/go/v10/models/components"
 )
 
 value := components.WebhookDeliveryAttemptStatusDelivered

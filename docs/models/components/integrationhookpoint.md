@@ -6,7 +6,7 @@ pre_registration runs before the user exists; post_login runs after a successful
 
 ```go
 import (
-	"github.com/noresponsehq/go/v9/models/components"
+	"github.com/noresponsehq/go/v10/models/components"
 )
 
 value := components.IntegrationHookPointPreRegistration

@@ -6,7 +6,7 @@ The event an assessment is made for: account_creation (a user creates an account
 
 ```go
 import (
-	"github.com/noresponsehq/go/v9/models/components"
+	"github.com/noresponsehq/go/v10/models/components"
 )
 
 value := components.FlowAccountCreation

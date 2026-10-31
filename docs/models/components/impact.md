@@ -6,7 +6,7 @@ The selected reason's served impact band. Requires reason.
 
 ```go
 import (
-	"github.com/noresponsehq/go/v9/models/components"
+	"github.com/noresponsehq/go/v10/models/components"
 )
 
 value := components.ImpactNone

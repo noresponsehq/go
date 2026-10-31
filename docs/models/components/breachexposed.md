@@ -6,7 +6,7 @@ The kind of data a breach table held beside the identifier. password means a pla
 
 ```go
 import (
-	"github.com/noresponsehq/go/v9/models/components"
+	"github.com/noresponsehq/go/v10/models/components"
 )
 
 value := components.BreachExposedEmail

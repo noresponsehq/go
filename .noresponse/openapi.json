@@ -2652,7 +2652,7 @@
             "$ref": "#/components/responses/NotFound"
           },
           "409": {
-            "$ref": "#/components/responses/IdempotencyConflict"
+            "$ref": "#/components/responses/AggregateErasedData"
           },
           "429": {
             "$ref": "#/components/responses/RateLimited"
@@ -3980,7 +3980,7 @@
           "reviews"
         ],
         "summary": "List retained account reviews.",
-        "description": "List retained investigation reviews using filters and an authenticated cursor. Optional account_id selects one exact account in this environment before pagination. All filters are bound into the cursor.",
+        "description": "List retained investigation reviews using filters and an authenticated cursor. Use reviews.query to filter by account_id in a JSON body. All filters are bound into the cursor.",
         "parameters": [
           {
             "$ref": "#/components/parameters/WorkspaceId"
@@ -4045,18 +4045,6 @@
               "pattern": "^mem_[0-7][0-9A-HJKMNP-TV-Z]{25}$"
             },
             "description": "Filter by immutable member ID. Mutually exclusive with assignee and unassigned=true."
-          },
-          {
-            "name": "account_id",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 128,
-              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:|-]{0,127}$",
-              "description": "Your own opaque identifier for the account being checked, scoped to your workspace. Use an id you mint, with no direct identifier (email, phone, name or national id) in it. '|' is accepted so an Auth0 user id such as 'auth0|64abc' passes unchanged; '@', '+', '$' and whitespace are refused by the pattern, as is an exact-shape JWT; a hex digest such as a SHA-256 is allowed, because hashing an internal id is a common pseudonymous scheme. A value such as '07700900123' or 'jane.doe.gmail.com' cannot be told apart from an opaque id. It travels in bodies, and in a URL only as the path segment of GET /v1/accounts/{account_id}, its /assessments and its /linked_accounts. An assessment requested by a provider hook at pre_registration, which has no account yet, carries the server-issued account_id pre: followed by its assessment_id."
-            },
-            "description": "Only reviews of this exact account in the authenticated workspace and environment. Applied before pagination and bound into the cursor."
           }
         ],
         "responses": {
@@ -6632,6 +6620,64 @@
           },
           "404": {
             "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/IdempotencyConflict"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/v1/workspaces/{workspace_id}/reviews/{environment}/query": {
+      "post": {
+        "operationId": "queryReviews",
+        "x-noresponse-group": "reviews",
+        "x-noresponse-name-override": "query",
+        "tags": [
+          "reviews"
+        ],
+        "summary": "Query retained reviews without identifiers in URLs.",
+        "description": "Query retained investigation reviews using a JSON body, including an exact account_id filter. All filters are bound into the cursor.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/WorkspaceId"
+          },
+          {
+            "$ref": "#/components/parameters/Environment"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewQueryRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ListReviewsResponse200"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidAuditEventsRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ControlForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/WorkspaceNotFound"
           },
           "409": {
             "$ref": "#/components/responses/IdempotencyConflict"
@@ -10160,7 +10206,8 @@
           "evaluation_no_proposal",
           "evaluation_limit_reached",
           "already_member",
-          "member_limit_reached"
+          "member_limit_reached",
+          "aggregate_erased_data"
         ],
         "description": "Machine codes an HTTP 409 answer can carry."
       },
@@ -15624,6 +15671,53 @@
             "type": "string",
             "minLength": 1,
             "example": "eyJ0IjoxNzY3MjI1NjAwMDAwMDAwLCJpIjoiYXNtX2V4YW1wbGUiLCJlIjoxNzY3MjI5MjAwfQ"
+          }
+        }
+      },
+      "ReviewQueryRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [],
+        "properties": {
+          "account_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:|-]{0,127}$",
+            "description": "Only reviews of this exact account in the authenticated workspace and environment. Applied before pagination.",
+            "example": "acct_7f3a9c"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ReviewStatus"
+          },
+          "priority": {
+            "$ref": "#/components/schemas/Priority"
+          },
+          "assignee": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256,
+            "pattern": "^[!-~]+$",
+            "example": "usr_customer_admin"
+          },
+          "unassigned": {
+            "type": "boolean"
+          },
+          "assignee_principal_id": {
+            "type": "string",
+            "pattern": "^mem_[0-7][0-9A-HJKMNP-TV-Z]{25}$",
+            "example": "mem_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100,
+            "default": 50
+          },
+          "cursor": {
+            "type": "string",
+            "minLength": 1,
+            "example": "eyJvIjoyMH0"
           }
         }
       },
@@ -25037,6 +25131,32 @@
           "application/json": {
             "schema": {
               "$ref": "#/components/schemas/LinkedAccountPage"
+            }
+          }
+        }
+      },
+      "AggregateErasedData": {
+        "description": "The first-answer window includes erased contributions. Use retained_first_answers for an eligible retained window.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            }
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            }
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/ConflictError"
             }
           }
         }

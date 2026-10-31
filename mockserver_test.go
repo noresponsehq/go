@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/noresponsehq/go/v9/models/components"
+	"github.com/noresponsehq/go/v10/models/components"
 )
 
 // Smoke test of the client against the mock server.

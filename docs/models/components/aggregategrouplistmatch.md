@@ -6,7 +6,7 @@ The list action captured with the first answer. none means no matching entry was
 
 ```go
 import (
-	"github.com/noresponsehq/go/v9/models/components"
+	"github.com/noresponsehq/go/v10/models/components"
 )
 
 value := components.AggregateGroupListMatchBlock

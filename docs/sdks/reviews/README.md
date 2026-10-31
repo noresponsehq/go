@@ -22,10 +22,11 @@ Collaborative review cases, comments and linked subjects.
 * [ListSubjects](#listsubjects) - List retained subjects linked to a review.
 * [AddSubject](#addsubject) - Link retained tenant-local evidence to an investigation.
 * [DeleteSubject](#deletesubject) - Remove a linked subject using the current review version.
+* [Query](#query) - Query retained reviews without identifiers in URLs.
 
 ## List
 
-List retained investigation reviews using filters and an authenticated cursor. Optional account_id selects one exact account in this environment before pagination. All filters are bound into the cursor.
+List retained investigation reviews using filters and an authenticated cursor. Use reviews.query to filter by account_id in a JSON body. All filters are bound into the cursor.
 
 ### Example Usage
 
@@ -36,9 +37,9 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v9"
-	"github.com/noresponsehq/go/v9/models/components"
-	"github.com/noresponsehq/go/v9/models/operations"
+	noresponse "github.com/noresponsehq/go/v10"
+	"github.com/noresponsehq/go/v10/models/components"
+	"github.com/noresponsehq/go/v10/models/operations"
 	"log"
 )
 
@@ -111,8 +112,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v9"
-	"github.com/noresponsehq/go/v9/models/components"
+	noresponse "github.com/noresponsehq/go/v10"
+	"github.com/noresponsehq/go/v10/models/components"
 	"log"
 )
 
@@ -174,8 +175,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v9"
-	"github.com/noresponsehq/go/v9/models/components"
+	noresponse "github.com/noresponsehq/go/v10"
+	"github.com/noresponsehq/go/v10/models/components"
 	"log"
 )
 
@@ -235,9 +236,9 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v9"
-	"github.com/noresponsehq/go/v9/models/components"
-	"github.com/noresponsehq/go/v9/optionalnullable"
+	noresponse "github.com/noresponsehq/go/v10"
+	"github.com/noresponsehq/go/v10/models/components"
+	"github.com/noresponsehq/go/v10/optionalnullable"
 	"log"
 )
 
@@ -300,8 +301,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v9"
-	"github.com/noresponsehq/go/v9/models/components"
+	noresponse "github.com/noresponsehq/go/v10"
+	"github.com/noresponsehq/go/v10/models/components"
 	"log"
 )
 
@@ -366,8 +367,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v9"
-	"github.com/noresponsehq/go/v9/models/components"
+	noresponse "github.com/noresponsehq/go/v10"
+	"github.com/noresponsehq/go/v10/models/components"
 	"log"
 )
 
@@ -441,8 +442,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v9"
-	"github.com/noresponsehq/go/v9/models/components"
+	noresponse "github.com/noresponsehq/go/v10"
+	"github.com/noresponsehq/go/v10/models/components"
 	"log"
 )
 
@@ -505,8 +506,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v9"
-	"github.com/noresponsehq/go/v9/models/components"
+	noresponse "github.com/noresponsehq/go/v10"
+	"github.com/noresponsehq/go/v10/models/components"
 	"log"
 )
 
@@ -568,8 +569,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v9"
-	"github.com/noresponsehq/go/v9/models/components"
+	noresponse "github.com/noresponsehq/go/v10"
+	"github.com/noresponsehq/go/v10/models/components"
 	"log"
 )
 
@@ -628,8 +629,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v9"
-	"github.com/noresponsehq/go/v9/models/components"
+	noresponse "github.com/noresponsehq/go/v10"
+	"github.com/noresponsehq/go/v10/models/components"
 	"log"
 )
 
@@ -696,8 +697,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v9"
-	"github.com/noresponsehq/go/v9/models/components"
+	noresponse "github.com/noresponsehq/go/v10"
+	"github.com/noresponsehq/go/v10/models/components"
 	"log"
 )
 
@@ -765,8 +766,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v9"
-	"github.com/noresponsehq/go/v9/models/components"
+	noresponse "github.com/noresponsehq/go/v10"
+	"github.com/noresponsehq/go/v10/models/components"
 	"log"
 )
 
@@ -829,8 +830,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v9"
-	"github.com/noresponsehq/go/v9/models/components"
+	noresponse "github.com/noresponsehq/go/v10"
+	"github.com/noresponsehq/go/v10/models/components"
 	"log"
 )
 
@@ -890,8 +891,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v9"
-	"github.com/noresponsehq/go/v9/models/components"
+	noresponse "github.com/noresponsehq/go/v10"
+	"github.com/noresponsehq/go/v10/models/components"
 	"log"
 )
 
@@ -951,8 +952,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v9"
-	"github.com/noresponsehq/go/v9/models/components"
+	noresponse "github.com/noresponsehq/go/v10"
+	"github.com/noresponsehq/go/v10/models/components"
 	"log"
 )
 
@@ -1019,8 +1020,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v9"
-	"github.com/noresponsehq/go/v9/models/components"
+	noresponse "github.com/noresponsehq/go/v10"
+	"github.com/noresponsehq/go/v10/models/components"
 	"log"
 )
 
@@ -1058,6 +1059,72 @@ func main() {
 ### Response
 
 **[*operations.DeleteReviewSubjectResponse](../../models/operations/deletereviewsubjectresponse.md), error**
+
+### Errors
+
+| Error Type                      | Status Code                     | Content Type                    |
+| ------------------------------- | ------------------------------- | ------------------------------- |
+| apierrors.BadRequestError       | 400                             | application/problem+json        |
+| apierrors.AuthenticationError   | 401                             | application/problem+json        |
+| apierrors.PermissionDeniedError | 403                             | application/problem+json        |
+| apierrors.NotFoundError         | 404                             | application/problem+json        |
+| apierrors.ConflictError         | 409                             | application/problem+json        |
+| apierrors.RateLimitError        | 429                             | application/problem+json        |
+| apierrors.APIStatusError        | 4XX, 5XX                        | \*/\*                           |
+
+## Query
+
+Query retained investigation reviews using a JSON body, including an exact account_id filter. All filters are bound into the cursor.
+
+### Example Usage
+
+<!-- UsageSnippet language="go" operationID="queryReviews" method="post" path="/v1/workspaces/{workspace_id}/reviews/{environment}/query" -->
+```go
+package main
+
+import(
+	"context"
+	"os"
+	noresponse "github.com/noresponsehq/go/v10"
+	"github.com/noresponsehq/go/v10/models/components"
+	"log"
+)
+
+func main() {
+    ctx := context.Background()
+
+    s := noresponse.New(
+        noresponse.WithSecurity(os.Getenv("NORESPONSE_API_KEY")),
+    )
+
+    res, err := s.Reviews.Query(ctx, "tnt_01JA2Z8K6Q4V7W9XBCDEFGHJKM", components.KeyEnvironmentLive, components.ReviewQueryRequest{
+        AccountID: noresponse.Pointer("acct_7f3a9c"),
+        Assignee: noresponse.Pointer("usr_customer_admin"),
+        AssigneePrincipalID: noresponse.Pointer("mem_01JA2Z8K6Q4V7W9XBCDEFGHJKM"),
+        Cursor: noresponse.Pointer("eyJvIjoyMH0"),
+    })
+    if err != nil {
+        log.Fatal(err)
+    }
+    if res != nil {
+        // handle response
+    }
+}
+```
+
+### Parameters
+
+| Parameter                                                                                                                                                              | Type                                                                                                                                                                   | Required                                                                                                                                                               | Description                                                                                                                                                            | Example                                                                                                                                                                |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ctx`                                                                                                                                                                  | [context.Context](https://pkg.go.dev/context#Context)                                                                                                                  | :heavy_check_mark:                                                                                                                                                     | The context to use for the request.                                                                                                                                    |                                                                                                                                                                        |
+| `workspaceID`                                                                                                                                                          | `string`                                                                                                                                                               | :heavy_check_mark:                                                                                                                                                     | Your workspace id, as each key lists it in workspace_id. Another workspace, a malformed id and a test environment's id answer 404.                                     | tnt_01JA2Z8K6Q4V7W9XBCDEFGHJKM                                                                                                                                         |
+| `environment`                                                                                                                                                          | [components.KeyEnvironment](../../models/components/keyenvironment.md)                                                                                                 | :heavy_check_mark:                                                                                                                                                     | The environment: live or test. Each has its own settings. Any other value answers 400. An API key reads and changes only its own environment's; the other answers 404. |                                                                                                                                                                        |
+| `body`                                                                                                                                                                 | [components.ReviewQueryRequest](../../models/components/reviewqueryrequest.md)                                                                                         | :heavy_check_mark:                                                                                                                                                     | N/A                                                                                                                                                                    |                                                                                                                                                                        |
+| `opts`                                                                                                                                                                 | [][operations.Option](../../models/operations/option.md)                                                                                                               | :heavy_minus_sign:                                                                                                                                                     | The options for this request.                                                                                                                                          |                                                                                                                                                                        |
+
+### Response
+
+**[*operations.QueryReviewsResponse](../../models/operations/queryreviewsresponse.md), error**
 
 ### Errors
 

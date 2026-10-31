@@ -6,7 +6,7 @@ A built-in capability set. Specialist roles are independent; effective access is
 
 ```go
 import (
-	"github.com/noresponsehq/go/v9/models/components"
+	"github.com/noresponsehq/go/v10/models/components"
 )
 
 value := components.RoleOwner

@@ -6,7 +6,7 @@ Machine codes an HTTP 404 answer can carry.
 
 ```go
 import (
-	"github.com/noresponsehq/go/v9/models/components"
+	"github.com/noresponsehq/go/v10/models/components"
 )
 
 value := components.NotFoundErrorCodeNotFound

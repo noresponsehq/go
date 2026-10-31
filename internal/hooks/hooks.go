@@ -3,7 +3,7 @@ package hooks
 import (
 	"context"
 	"errors"
-	"github.com/noresponsehq/go/v9/internal/config"
+	"github.com/noresponsehq/go/v10/internal/config"
 	"net/http"
 )
 

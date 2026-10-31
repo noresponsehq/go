@@ -8,8 +8,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/noresponsehq/go/v9/optionalnullable"
-	"github.com/noresponsehq/go/v9/types"
+	"github.com/noresponsehq/go/v10/optionalnullable"
+	"github.com/noresponsehq/go/v10/types"
 )
 
 func populateForm(paramName string, explode bool, objType reflect.Type, objValue reflect.Value, delimiter string, defaultValue *string, allowEmptyValue map[string]struct{}, getFieldName func(reflect.StructField) string) url.Values {
