@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: 25ddae46-795d-45f5-b455-3f48c41d440e
 management:
-  docChecksum: a0e0d0cd1063c5d6007d02718ad1ee52
+  docChecksum: 623be4e65c19c53c8176883467622963
   docVersion: "1"
   speakeasyVersion: internal
   generationVersion: internal
-  releaseVersion: 10.0.7
-  configChecksum: f3b83a8613b48d37496b1e1fc4c2f253
+  releaseVersion: 10.0.8
+  configChecksum: ec5e5d741a425c3f5a04803f765ad9f0
 features:
   go:
     additionalDependencies: 0.1.0
@@ -197,7 +197,7 @@ trackedFiles:
   docs/models/components/attributeagreement.md:
     last_write_checksum: sha1:5f3e2a825e2256809f6909fac0b1c8f028249ba7
   docs/models/components/auditevent.md:
-    last_write_checksum: sha1:be918411fb2882a5fea90c1f38bc0a393fe6c2c9
+    last_write_checksum: sha1:90cedce904cf5009ed46f04652179a9574a9ba52
   docs/models/components/auditeventevent.md:
     last_write_checksum: sha1:503d2dcd0efa25fa0257bbeb2aa432b6bb6e13ed
   docs/models/components/auditeventlist.md:
@@ -1437,7 +1437,7 @@ trackedFiles:
   models/components/attributeagreement.go:
     last_write_checksum: sha1:ba8051651684ee95498bd50a84faf48cf17a043a
   models/components/auditevent.go:
-    last_write_checksum: sha1:5ebc7a709f9fabe38afe1318293793af8bcbc763
+    last_write_checksum: sha1:74305b915ab27417322b634bdfeec2bdfb98dd89
   models/components/auditeventevent.go:
     last_write_checksum: sha1:f49df08d6c91f732d253793561f407359752b527
   models/components/auditeventlist.go:
@@ -2207,7 +2207,7 @@ trackedFiles:
   models/operations/updatesettings.go:
     last_write_checksum: sha1:9350e2f7449c85f08cb7e28d8a1daa4727492bfe
   noresponse.go:
-    last_write_checksum: sha1:d713669f1818238073845b1a35b289a6e1444d13
+    last_write_checksum: sha1:b77df47acdfc96c41f3f8a7325d6b3c5cb5ecf62
   operations.go:
     last_write_checksum: sha1:394a05ae140c85250837e355d3a4312a14b6e4e2
   optionalnullable/optionalnullable.go:
