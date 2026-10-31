@@ -147,6 +147,14 @@ type EnforcementOptions struct {
 	Flows map[components.Flow]FlowPolicy
 	// Webhook options for ConstructEvent.
 	Webhook []WebhookOption
+	// WithAccountLock serializes enforcement of one account across your
+	// workers. Hold an exclusive lock on accountID, call enforce, store the
+	// result's RiskVersion and any state change, release the lock, and return
+	// any error. Inside the lock the handler reads the account's risk and your
+	// state again, so a stale event or listed account cannot undo a newer
+	// decision. Without it, overlapping calls can act on an old decision after
+	// a newer one.
+	WithAccountLock func(ctx context.Context, accountID string, enforce func(context.Context) (*EnforcementResult, error)) error
 }
 
 // EnforcementSkip says why nothing was done.
@@ -216,19 +224,43 @@ func HandleRiskChange(ctx context.Context, client *NoResponse, payload []byte, h
 	if event.Type != components.WebhookEventTypeAccountRiskChanged || changed == nil || (changed.Test != nil && *changed.Test) {
 		return &EnforcementResult{Event: event, Skipped: SkipNotActionable}, nil
 	}
-	response, err := client.Accounts.Get(ctx, changed.Data.Account.ID)
-	if err != nil {
-		var gone *apierrors.NotFoundError
-		if errors.As(err, &gone) {
-			return &EnforcementResult{Event: event, Skipped: SkipAccountGone}, nil
-		}
-		return nil, err
-	}
-	result, err := EnforceAccount(ctx, client, response.Result, opts)
+	result, err := underAccountLock(ctx, client, changed.Data.Account.ID, opts)
 	if result != nil {
 		result.Event = event
 	}
 	return result, err
+}
+
+// underAccountLock reads the account's current risk and enforces it, inside
+// WithAccountLock when you gave one.
+func underAccountLock(ctx context.Context, client *NoResponse, accountID string, opts *EnforcementOptions) (*EnforcementResult, error) {
+	enforce := func(ctx context.Context) (*EnforcementResult, error) {
+		response, err := client.Accounts.Get(ctx, accountID)
+		if err != nil {
+			var gone *apierrors.NotFoundError
+			if errors.As(err, &gone) {
+				return &EnforcementResult{Skipped: SkipAccountGone}, nil
+			}
+			return nil, err
+		}
+		return enforceAsRead(ctx, client, response.Result, opts)
+	}
+	if opts.WithAccountLock == nil {
+		return enforce(ctx)
+	}
+	var result *EnforcementResult
+	err := opts.WithAccountLock(ctx, accountID, func(ctx context.Context) (*EnforcementResult, error) {
+		var err error
+		result, err = enforce(ctx)
+		return result, err
+	})
+	if err != nil {
+		return result, err
+	}
+	if result == nil {
+		return nil, errors.New("noresponse: WithAccountLock returned without running enforce")
+	}
+	return result, nil
 }
 
 func decisionFor(account components.Account, flow components.Flow) components.AccountDecision {
@@ -242,12 +274,21 @@ func decisionFor(account components.Account, flow components.Flow) components.Ac
 	}
 }
 
-// EnforceAccount enforces one account as read: the account a handler
-// fetched, or one from Accounts.ListChanged with unenforced when catching up.
+// EnforceAccount enforces one account: the account a handler fetched, or one
+// from Accounts.ListChanged with unenforced when catching up. With
+// WithAccountLock the account is read again inside the lock; without it the
+// account is enforced as given.
 func EnforceAccount(ctx context.Context, client *NoResponse, account components.Account, opts *EnforcementOptions) (*EnforcementResult, error) {
 	if opts == nil || opts.Provider == nil || opts.GetAccountState == nil {
 		return nil, errors.New("noresponse: EnforceAccount needs Provider and GetAccountState")
 	}
+	if opts.WithAccountLock != nil {
+		return underAccountLock(ctx, client, account.ID, opts)
+	}
+	return enforceAsRead(ctx, client, account, opts)
+}
+
+func enforceAsRead(ctx context.Context, client *NoResponse, account components.Account, opts *EnforcementOptions) (*EnforcementResult, error) {
 	answer, err := opts.GetAccountState(ctx, account)
 	if err != nil {
 		return nil, err

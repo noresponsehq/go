@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: 25ddae46-795d-45f5-b455-3f48c41d440e
 management:
-  docChecksum: d97a96d6a0b0234052b87c6f0316c5d7
+  docChecksum: 2711543f74f21f22421b4d192589f0de
   docVersion: "1"
   speakeasyVersion: internal
   generationVersion: internal
-  releaseVersion: 10.0.0
-  configChecksum: ac2d55c925285acfd24348c28bf1d930
+  releaseVersion: 10.0.1
+  configChecksum: b243d026a21b37952ac19c86e6a97c70
 features:
   go:
     additionalDependencies: 0.1.0
@@ -1205,7 +1205,7 @@ trackedFiles:
   docs/sdks/evaluations/README.md:
     last_write_checksum: sha1:a3a88289666f90c81da32557d23c3bd33e023e0c
   docs/sdks/exports/README.md:
-    last_write_checksum: sha1:f073c0dd7e4012c9b97cdb48581738bf91850a1e
+    last_write_checksum: sha1:72ef2a6a68edba8170bd80e57f12b39a17a64c6b
   docs/sdks/integrations/README.md:
     last_write_checksum: sha1:a916feedf1e35cad170d57047ff8ce78d6a6da0f
   docs/sdks/invites/README.md:
@@ -1215,7 +1215,7 @@ trackedFiles:
   docs/sdks/keyusage/README.md:
     last_write_checksum: sha1:a4b56e85abbfdd595fcae96c8a5dda3eb2a037a4
   docs/sdks/lists/README.md:
-    last_write_checksum: sha1:32d24503a7d98c33a62f33ef8ff5d3fe79a0794c
+    last_write_checksum: sha1:1dd52109a387a947b19f677163c9c3a32befb92a
   docs/sdks/members/README.md:
     last_write_checksum: sha1:814bf2f1dbef7c8ef1e6268aca138dd3b5f53db4
   docs/sdks/operations/README.md:
@@ -1235,7 +1235,7 @@ trackedFiles:
   evaluations.go:
     last_write_checksum: sha1:89d1abd7af41efe287543803bf0491cc83c53539
   exports.go:
-    last_write_checksum: sha1:01e1e59be6aab714a5821369aa6a443d1b1b3989
+    last_write_checksum: sha1:a35f24dfe0c444cb19eef977f70c1c555813d8bd
   go.mod:
     last_write_checksum: sha1:832960090bb37489c3ea4bc5ce2314586ea6507b
   integrations.go:
@@ -1277,7 +1277,7 @@ trackedFiles:
   keyusage.go:
     last_write_checksum: sha1:b93090458975b2943dd4bc3090181e37a466c674
   lists.go:
-    last_write_checksum: sha1:5829c1783b0bd17bf041e35876f201cc2f696df6
+    last_write_checksum: sha1:e4a804404b6230cfcffa7af20cb1d616ec0cd0f2
   members.go:
     last_write_checksum: sha1:2db9411dc08f42a1c39aca04dfabcc669267252b
   models/apierrors/apistatuserror.go:
@@ -2191,7 +2191,7 @@ trackedFiles:
   models/operations/updatesettings.go:
     last_write_checksum: sha1:9350e2f7449c85f08cb7e28d8a1daa4727492bfe
   noresponse.go:
-    last_write_checksum: sha1:ca20dd76f24e9374dc23c7f34df72511f1a798c7
+    last_write_checksum: sha1:11e1aec59a004a721fdeee218a1aa6c67bc260ba
   operations.go:
     last_write_checksum: sha1:394a05ae140c85250837e355d3a4312a14b6e4e2
   optionalnullable/optionalnullable.go:

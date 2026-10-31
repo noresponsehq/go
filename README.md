@@ -221,6 +221,8 @@ Deliveries arrive at least once and unordered. Deduplicate on the `NR-Webhook-Id
 
 ### Late results
 
+Deliveries can overlap. Give `WithAccountLock` a lock on the account that all your workers share. Store the result's risk version inside it. Without the lock, an old decision can undo a newer one. [Overlapping deliveries](https://docs.noresponse.org/guides/late-results#overlapping-deliveries) says what the lock must do.
+
 A later decision reaches you as `account.risk_changed`. The event only wakes your handler: `HandleRiskChange` verifies it with `ConstructEvent`, reads the account's current risk with `Accounts.Get` (the event's own decision is ignored), asks your `GetAccountState` where the account is in your flow, and acts through your identity provider:
 
 ```go

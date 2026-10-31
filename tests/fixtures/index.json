@@ -3787,6 +3787,33 @@
       "why": "NOR-468 null resets rate and burst together"
     },
     {
+      "file": "valid/source-access.json",
+      "schema": "source-access.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/source-access-list.json",
+      "schema": "source-access-list.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/source-access-request.json",
+      "schema": "source-access-request.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "invalid/source-access-request-empty.json",
+      "schema": "source-access-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "anyOf",
+          ""
+        ]
+      ],
+      "why": "NOR-750 a credential adds something to a request"
+    },
+    {
       "file": "valid/assessment-aggregate-request.json",
       "schema": "assessment-aggregate-request.schema.json",
       "expect": "valid"

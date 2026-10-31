@@ -349,3 +349,115 @@ func TestIdentityProviderNeedsItsCredentials(t *testing.T) {
 		}
 	}
 }
+
+func lateVectorNamed(t *testing.T, vectors lateVectors, name string) lateVector {
+	t.Helper()
+	for _, vector := range vectors.Cases {
+		if vector.Name == name {
+			return vector
+		}
+	}
+	t.Fatalf("no vector %s", name)
+	return lateVector{}
+}
+
+func TestWithAccountLockCoversTheReadTheProviderChangeAndTheRecord(t *testing.T) {
+	vectors := loadLateVectors(t)
+	vector := lateVectorNamed(t, vectors, "workos_restricted_allow_reinstates_when_opted_in")
+	tr := &transcript{t: t, exchanges: vector.Exchanges}
+	client := NewClient(vectors.APIKey, WithServerURL(vectors.APIBaseURL), WithClient(tr))
+	provider, err := IdentityProvider(vector.Provider, IdentityProviderOptions{Token: vectors.ProviderToken, HTTPClient: tr})
+	if err != nil {
+		t.Fatal(err)
+	}
+	var seen []int
+	result, err := HandleRiskChange(context.Background(), client, vector.Event, vectors.sign(vector.Event), vectors.secrets(), &EnforcementOptions{
+		Provider: provider,
+		Flows:    map[components.Flow]FlowPolicy{components.FlowLogin: {Reinstate: true}},
+		Webhook:  []WebhookOption{vectors.clock()},
+		GetAccountState: func(context.Context, components.Account) (*AccountStateAnswer, error) {
+			return &AccountStateAnswer{State: components.EnforcementStateRestricted, UserID: vector.State.UserID}, nil
+		},
+		WithAccountLock: func(ctx context.Context, _ string, enforce func(context.Context) (*EnforcementResult, error)) error {
+			seen = append(seen, tr.next)
+			_, err := enforce(ctx)
+			seen = append(seen, tr.next)
+			return err
+		},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	tr.done()
+	if !reflect.DeepEqual(seen, []int{0, len(vector.Exchanges)}) {
+		t.Fatalf("requests served at lock entry and exit: %v", seen)
+	}
+	if len(result.Enforcements) != 1 || result.Enforcements[0].Action != components.EnforcementActionUnrestrict {
+		t.Fatalf("enforcements %+v", result.Enforcements)
+	}
+	if result.Event == nil {
+		t.Fatal("the result lost its event")
+	}
+}
+
+func TestUnderWithAccountLockEnforceAccountActsOnTheCurrentRisk(t *testing.T) {
+	vectors := loadLateVectors(t)
+	vector := lateVectorNamed(t, vectors, "restricted_account_records_none")
+	var body map[string]any
+	if err := json.Unmarshal(vector.Exchanges[0].Response.Body, &body); err != nil {
+		t.Fatal(err)
+	}
+	body["risk_version"] = 1
+	body["decisions_by_flow"].(map[string]any)["login"] = "allow"
+	stale := vector.Exchanges[0]
+	var err error
+	if stale.Response.Body, err = json.Marshal(body); err != nil {
+		t.Fatal(err)
+	}
+	tr := &transcript{t: t, exchanges: append([]lateExchange{stale}, vector.Exchanges...)}
+	client := NewClient(vectors.APIKey, WithServerURL(vectors.APIBaseURL), WithClient(tr))
+	read, err := client.Accounts.Get(context.Background(), body["id"].(string))
+	if err != nil {
+		t.Fatal(err)
+	}
+	provider, err := IdentityProvider(vector.Provider, IdentityProviderOptions{Token: vectors.ProviderToken, HTTPClient: tr})
+	if err != nil {
+		t.Fatal(err)
+	}
+	result, err := EnforceAccount(context.Background(), client, read.Result, &EnforcementOptions{
+		Provider: provider,
+		Flows:    map[components.Flow]FlowPolicy{components.FlowLogin: {Reinstate: true}},
+		GetAccountState: func(context.Context, components.Account) (*AccountStateAnswer, error) {
+			return &AccountStateAnswer{State: components.EnforcementStateRestricted}, nil
+		},
+		WithAccountLock: func(ctx context.Context, _ string, enforce func(context.Context) (*EnforcementResult, error)) error {
+			_, err := enforce(ctx)
+			return err
+		},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	tr.done()
+	if len(result.Enforcements) != 1 || result.Enforcements[0].Action != components.EnforcementActionNone {
+		t.Fatalf("enforcements %+v", result.Enforcements)
+	}
+}
+
+func TestWithAccountLockThatDoesNotRunEnforceFails(t *testing.T) {
+	_, err := EnforceAccount(context.Background(), &NoResponse{}, components.Account{ID: "acct_7f3a9c"}, &EnforcementOptions{
+		Provider:        customNoop{},
+		GetAccountState: func(context.Context, components.Account) (*AccountStateAnswer, error) { return nil, nil },
+		WithAccountLock: func(context.Context, string, func(context.Context) (*EnforcementResult, error)) error { return nil },
+	})
+	if err == nil || !strings.Contains(err.Error(), "without running enforce") {
+		t.Fatalf("got %v", err)
+	}
+}
+
+type customNoop struct{}
+
+func (customNoop) Name() components.EnforcementProvider { return components.EnforcementProviderCustom }
+func (customNoop) Run(context.Context, components.EnforcementAction, string) ([]components.EnforcementAction, error) {
+	return nil, nil
+}

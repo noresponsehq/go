@@ -1145,7 +1145,7 @@ func (s *Lists) Delete(ctx context.Context, workspaceID string, environment comp
 }
 
 // Preview a list override change without side effects.
-// Preview canonical list matches and current override effects with settings or management. The result states its bounded coverage and changes no list entries.
+// Preview canonical list matches and current override effects with settings or management, plus legacy history, or investigate with evidence or detailed. The result states its bounded coverage and changes no list entries.
 func (s *Lists) Preview(ctx context.Context, workspaceID string, environment components.KeyEnvironment, body components.ListPreviewRequest, opts ...operations.Option) (*operations.PreviewListResponse, error) {
 	request := operations.PreviewListRequest{
 		WorkspaceID: workspaceID,
