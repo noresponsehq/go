@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: 25ddae46-795d-45f5-b455-3f48c41d440e
 management:
-  docChecksum: 5c9c3249b882e60e6533f7c05e0858b1
+  docChecksum: 4d4129b3e43f1a3101530a9659ca3b0b
   docVersion: "1"
   speakeasyVersion: internal
   generationVersion: internal
-  releaseVersion: 10.0.2
-  configChecksum: 6fb07babf8f52ba87efd1eff7ee896cd
+  releaseVersion: 10.0.3
+  configChecksum: 372b2be7fba8aed9fb01e11df77952b4
 features:
   go:
     additionalDependencies: 0.1.0
@@ -231,7 +231,9 @@ trackedFiles:
   docs/models/components/band.md:
     last_write_checksum: sha1:87e908496fb67425ecd301ba05badd5dbd8ec4de
   docs/models/components/breach.md:
-    last_write_checksum: sha1:479e6ef25ebae6d14b650de2047b55acacaf7d19
+    last_write_checksum: sha1:a182d5e4a9f4c00ab716c7eee7980a671d843811
+  docs/models/components/breachconduct.md:
+    last_write_checksum: sha1:ddea966da3da0d048789001f1366947d56b79e02
   docs/models/components/breachexposed.md:
     last_write_checksum: sha1:c3d8e609ba09e33251b6505775d8ad81103bd48a
   docs/models/components/breachkind.md:
@@ -1467,7 +1469,9 @@ trackedFiles:
   models/components/band.go:
     last_write_checksum: sha1:cf8d21c906ff7128cc1074115eb067988885502c
   models/components/breach.go:
-    last_write_checksum: sha1:cb129722f6abae22b500b7e78de4647bf318ebcb
+    last_write_checksum: sha1:a8ffa9521829cdea4b954437bd0bfdc95c6a234b
+  models/components/breachconduct.go:
+    last_write_checksum: sha1:3d4932b34af909299428b7ebbcd73f8984349648
   models/components/breachexposed.go:
     last_write_checksum: sha1:4003c9fc417870c54a1b68d14a8eee96da669784
   models/components/breachkind.go:
@@ -2199,7 +2203,7 @@ trackedFiles:
   models/operations/updatesettings.go:
     last_write_checksum: sha1:9350e2f7449c85f08cb7e28d8a1daa4727492bfe
   noresponse.go:
-    last_write_checksum: sha1:7101da2ed1d2ef55d5dc7699a78b5841628794a9
+    last_write_checksum: sha1:6ae6539c4d071839732a5dfabbab62c00c98ca07
   operations.go:
     last_write_checksum: sha1:394a05ae140c85250837e355d3a4312a14b6e4e2
   optionalnullable/optionalnullable.go:

@@ -20,6 +20,8 @@ type Breach struct {
 	// The submitted email or username whose own search matched the table. A submitted full name is searched as well, and what it finds feeds the identity's reasons rather than this list.
 	MatchedOn BreachSelector  `json:"matched_on"`
 	Exposed   []BreachExposed `json:"exposed,omitzero"`
+	// What this table's rows record against the matched email or username: the tables behind the forum_sanctioned and prior_payment_abuse reasons. Absent when the rows record none, for a table matched on an IP address, and from an answer stored before it was recorded.
+	Conduct []BreachConduct `json:"conduct,omitzero"`
 }
 
 func (b Breach) MarshalJSON() ([]byte, error) {
@@ -87,4 +89,11 @@ func (b *Breach) GetExposed() []BreachExposed {
 		return nil
 	}
 	return b.Exposed
+}
+
+func (b *Breach) GetConduct() []BreachConduct {
+	if b == nil {
+		return nil
+	}
+	return b.Conduct
 }

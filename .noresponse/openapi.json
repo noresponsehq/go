@@ -10058,8 +10058,26 @@
             "items": {
               "$ref": "#/components/schemas/BreachExposed"
             }
+          },
+          "conduct": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 3,
+            "uniqueItems": true,
+            "items": {
+              "$ref": "#/components/schemas/BreachConduct"
+            },
+            "description": "What this table's rows record against the matched email or username: the tables behind the forum_sanctioned and prior_payment_abuse reasons. Absent when the rows record none, for a table matched on an IP address, and from an answer stored before it was recorded."
           }
         }
+      },
+      "BreachConduct": {
+        "enum": [
+          "chargeback",
+          "declined_payment",
+          "forum_sanction"
+        ],
+        "description": "What a breach table's rows record against the identifier: chargeback, one or more chargebacks; declined_payment, one or more declined payments; forum_sanction, a forum ban, warning or infraction. A category and not a value: the schema has no member for one."
       },
       "BreachExposed": {
         "enum": [
