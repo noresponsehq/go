@@ -44,4 +44,5 @@ custom := components.ConflictErrorCode("custom_value")
 | `ConflictErrorCodeEvaluationLimitReached`      | evaluation_limit_reached                       |
 | `ConflictErrorCodeAlreadyMember`               | already_member                                 |
 | `ConflictErrorCodeMemberLimitReached`          | member_limit_reached                           |
+| `ConflictErrorCodeOwnerInvitePending`          | owner_invite_pending                           |
 | `ConflictErrorCodeAggregateErasedData`         | aggregate_erased_data                          |

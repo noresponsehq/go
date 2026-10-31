@@ -10239,6 +10239,7 @@
           "evaluation_limit_reached",
           "already_member",
           "member_limit_reached",
+          "owner_invite_pending",
           "aggregate_erased_data"
         ],
         "description": "Machine codes an HTTP 409 answer can carry."
@@ -25089,7 +25090,7 @@
         }
       },
       "TeamConflict": {
-        "description": "already_member: the external user is already active. member_limit_reached: the workspace has 100 active members or 50 pending invites. API team credentials cannot act on owners; such targets answer 404 rather than last_owner.",
+        "description": "already_member: the external user is already active. member_limit_reached: the workspace has 100 active members or 50 pending invites. owner_invite_pending: the external user holds a pending owner invite, which an owner must withdraw first. API team credentials cannot act on owners; such targets answer 404 rather than last_owner.",
         "headers": {
           "Cache-Control": {
             "schema": {
