@@ -14,6 +14,10 @@ type Risk struct {
 	Block *bool `json:"block,omitzero"`
 	// The block threshold this answer used: block is true exactly when score is at least this value. Absent while blocking is off. NoResponse sets it per workspace on request, at or above the review threshold.
 	BlockThreshold *int64 `json:"block_threshold,omitzero"`
+	// The score at which this answer's flow starts to recommend step_up. Absent from an answer stored before it was recorded.
+	StepUpThreshold *int64 `json:"step_up_threshold,omitzero"`
+	// The score at which this answer's flow starts to recommend review. An answer nothing answered recommends review below it, with confidence unavailable. Absent from an answer stored before it was recorded.
+	ReviewThreshold *int64 `json:"review_threshold,omitzero"`
 	// How much of the planned evidence answered; it says nothing about risk.
 	Confidence RiskConfidence `json:"confidence"`
 	// Version of the hand-authored heuristic policy that produced the recommendation, for example 'risk-2026-10.7'. A workspace threshold override adds a +t<N> suffix, e.g. 'risk-2026-10.7+t3'.
@@ -75,6 +79,20 @@ func (r *Risk) GetBlockThreshold() *int64 {
 		return nil
 	}
 	return r.BlockThreshold
+}
+
+func (r *Risk) GetStepUpThreshold() *int64 {
+	if r == nil {
+		return nil
+	}
+	return r.StepUpThreshold
+}
+
+func (r *Risk) GetReviewThreshold() *int64 {
+	if r == nil {
+		return nil
+	}
+	return r.ReviewThreshold
 }
 
 func (r *Risk) GetConfidence() RiskConfidence {

@@ -9386,6 +9386,15 @@
         ],
         "description": "Provider or OIDC assurance level, when the customer has mapped one."
       },
+      "Attribute": {
+        "enum": [
+          "birth_date",
+          "gender",
+          "nationality",
+          "name_gender"
+        ],
+        "description": "name_gender is the records' gender against the submitted first name's usual one."
+      },
       "AttributeAgreement": {
         "type": "object",
         "additionalProperties": false,
@@ -16219,6 +16228,18 @@
             "maximum": 100,
             "description": "The block threshold this answer used: block is true exactly when score is at least this value. Absent while blocking is off. NoResponse sets it per workspace on request, at or above the review threshold."
           },
+          "step_up_threshold": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100,
+            "description": "The score at which this answer's flow starts to recommend step_up. Absent from an answer stored before it was recorded."
+          },
+          "review_threshold": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100,
+            "description": "The score at which this answer's flow starts to recommend review. An answer nothing answered recommends review below it, with confidence unavailable. Absent from an answer stored before it was recorded."
+          },
           "confidence": {
             "$ref": "#/components/schemas/RiskConfidence",
             "description": "How much of the planned evidence answered; it says nothing about risk."
@@ -16335,6 +16356,46 @@
             "items": {
               "$ref": "#/components/schemas/OnlineAccount"
             }
+          },
+          "attribute_conflicts": {
+            "type": "array",
+            "maxItems": 4,
+            "description": "What an identity_attribute_conflict reason weighed: each attribute the records disagree on and the sites reporting it. Absent when the reason did not fire, and on an answer stored before conflicts were recorded. No value is served.",
+            "items": {
+              "$ref": "#/components/schemas/RiskDetailsAttributeConflict"
+            }
+          }
+        }
+      },
+      "RiskDetailsAttributeConflict": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "attribute"
+        ],
+        "properties": {
+          "attribute": {
+            "$ref": "#/components/schemas/Attribute",
+            "description": "name_gender is the records' gender against the submitted first name's usual one."
+          },
+          "sites": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 32,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 253,
+              "pattern": "^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\\.)+[a-z]{2,63}$",
+              "example": "forum.example.com"
+            },
+            "description": "The domains of the breached sites whose tables report the attribute, newest breach first, at most 32. Absent when none of the tables has a site."
+          },
+          "unsited": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "How many of the tables reporting the attribute have no site, such as a credential list or a stealer log. Absent when none."
           }
         }
       },

@@ -15,6 +15,8 @@ type RiskDetails struct {
 	Events []RiskDetailsEvent `json:"events,omitzero"`
 	// Every online-account search of the email or username: the platform, what the search came to and, for an account found, what the platform returned beside it. Found first, then not found, then searches that failed or are still running, each by platform name; at most 64. A failed or running search keeps its own outcome and is not reported as not_found.
 	Accounts []OnlineAccount `json:"accounts,omitzero"`
+	// What an identity_attribute_conflict reason weighed: each attribute the records disagree on and the sites reporting it. Absent when the reason did not fire, and on an answer stored before conflicts were recorded. No value is served.
+	AttributeConflicts []RiskDetailsAttributeConflict `json:"attribute_conflicts,omitzero"`
 }
 
 func (r RiskDetails) MarshalJSON() ([]byte, error) {
@@ -61,4 +63,11 @@ func (r *RiskDetails) GetAccounts() []OnlineAccount {
 		return nil
 	}
 	return r.Accounts
+}
+
+func (r *RiskDetails) GetAttributeConflicts() []RiskDetailsAttributeConflict {
+	if r == nil {
+		return nil
+	}
+	return r.AttributeConflicts
 }

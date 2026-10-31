@@ -81,7 +81,7 @@ func main() {
             SessionCreatedAt: noresponse.Pointer("2026-10-14T08:57:00.000Z"),
             AuthTime: noresponse.Pointer("2026-10-14T08:55:00.000Z"),
             AccountCreatedAt: noresponse.Pointer("2026-10-14T08:56:00.000Z"),
-            Verified: false,
+            Verified: true,
             Mfa: &components.AuthContextMfa{
                 Methods: []string{
                     "totp",
@@ -167,7 +167,7 @@ func main() {
             SessionCreatedAt: noresponse.Pointer("2026-10-14T08:57:00.000Z"),
             AuthTime: noresponse.Pointer("2026-10-14T08:55:00.000Z"),
             AccountCreatedAt: noresponse.Pointer("2026-10-14T08:56:00.000Z"),
-            Verified: false,
+            Verified: true,
             Mfa: &components.AuthContextMfa{
                 Methods: []string{
                     "totp",
@@ -296,7 +296,7 @@ func main() {
             SessionCreatedAt: noresponse.Pointer("2026-10-14T08:57:00.000Z"),
             AuthTime: noresponse.Pointer("2026-10-14T08:55:00.000Z"),
             AccountCreatedAt: noresponse.Pointer("2026-10-14T08:56:00.000Z"),
-            Verified: false,
+            Verified: true,
             Mfa: &components.AuthContextMfa{
                 Methods: []string{
                     "totp",
@@ -464,7 +464,7 @@ func main() {
             SessionCreatedAt: noresponse.Pointer("2026-10-14T08:57:00.000Z"),
             AuthTime: noresponse.Pointer("2026-10-14T08:55:00.000Z"),
             AccountCreatedAt: noresponse.Pointer("2026-10-14T08:56:00.000Z"),
-            Verified: false,
+            Verified: true,
             Mfa: &components.AuthContextMfa{
                 Methods: []string{
                     "totp",
