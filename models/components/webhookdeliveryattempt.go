@@ -3,7 +3,7 @@ package components
 type WebhookDeliveryAttempt struct {
 	// The event id the receiver saw as NR-Webhook-Id and as the body's id. Replay it with POST /v1/webhooks/{endpoint_id}/deliveries/{event_id}/replay.
 	EventID string `json:"event_id"`
-	// The event's type, as its body's type: assessment.updated, endpoint.verification, account.deleted, workspace.deleted, webhook_endpoint.disabled, account.risk_changed, audit.event, or a type added later.
+	// The event's type, as its body's type: assessment.updated, endpoint.verification, account.deleted, workspace.deleted, webhook_endpoint.disabled, account.risk_changed, audit.event, screening.completed, attendee.flagged, attendee.decided, or a type added later.
 	EventType string `json:"event_type"`
 	// The assessment an assessment.updated event reported, while that assessment is held. Absent on every other event, on a test event and on a notice that the assessment was erased or expired.
 	AssessmentID *string `json:"assessment_id,omitzero"`

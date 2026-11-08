@@ -184,6 +184,24 @@
       "expect": "valid"
     },
     {
+      "file": "valid/webhook-screening-completed.json",
+      "schema": "webhook-event.schema.json",
+      "expect": "valid",
+      "why": "NOR-793 a screening's counts by band, no footprint and partial coverage"
+    },
+    {
+      "file": "valid/webhook-attendee-flagged.json",
+      "schema": "webhook-event.schema.json",
+      "expect": "valid",
+      "why": "NOR-793 an attendee's highest band, never what was posted"
+    },
+    {
+      "file": "valid/webhook-attendee-decided.json",
+      "schema": "webhook-event.schema.json",
+      "expect": "valid",
+      "why": "NOR-793 a reviewer's decision without its note"
+    },
+    {
       "file": "valid/webhook-endpoint-verification.json",
       "schema": "webhook-event.schema.json",
       "expect": "valid"
@@ -2602,6 +2620,30 @@
         ]
       ],
       "why": "NOR-143 a workspace has a live and a test environment only"
+    },
+    {
+      "file": "invalid/webhook-attendee-flagged-post-text.json",
+      "schema": "webhook-event.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "additionalProperties",
+          "/data"
+        ]
+      ],
+      "why": "NOR-793 attendee.flagged never carries what the attendee posted"
+    },
+    {
+      "file": "invalid/webhook-screening-completed-cancelled.json",
+      "schema": "webhook-event.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "enum",
+          "/data/status"
+        ]
+      ],
+      "why": "NOR-793 a cancelled screening sends no screening.completed"
     },
     {
       "file": "invalid/webhook-endpoint-disabled-url.json",

@@ -112,6 +112,9 @@ func typedMember(event *components.WebhookEvent) (any, bool) {
 		components.WebhookEventTypeWebhookEndpointDisabled: event.WebhookEndpointDisabledEvent,
 		components.WebhookEventTypeAccountRiskChanged:      event.AccountRiskChangedEvent,
 		components.WebhookEventTypeAuditEvent:              event.AuditEventEvent,
+		components.WebhookEventTypeScreeningCompleted:      event.ScreeningCompletedEvent,
+		components.WebhookEventTypeAttendeeFlagged:         event.AttendeeFlaggedEvent,
+		components.WebhookEventTypeAttendeeDecided:         event.AttendeeDecidedEvent,
 	}
 	for eventType, member := range members {
 		if eventType != event.Type && !reflect.ValueOf(member).IsNil() {

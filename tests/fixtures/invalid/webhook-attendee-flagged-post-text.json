@@ -1,0 +1,14 @@
+{
+  "id": "evt_01JA2ZE5N6P7Q8R9S0T1VWXYZ8",
+  "type": "attendee.flagged",
+  "created_at": "2026-11-20T07:41:09.000Z",
+  "data": {
+    "event_id": "evn_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+    "attendee_id": "att_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+    "screening_id": "scn_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+    "highest_band": "high",
+    "match_state": "confirmed",
+    "flagged_at": "2026-11-20T07:41:09.000Z",
+    "post_text": "see you at the venue"
+  }
+}

@@ -10432,12 +10432,187 @@
         },
         "description": "Adds or updates 1 to 500 attendees. A row naming an existing attendee of the event (the same external_id, else the same email, else the same phone) updates it."
       },
+      "AttendeeDecided": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "event_id",
+          "attendee_id",
+          "review_id",
+          "decision",
+          "decided_by",
+          "decided_at"
+        ],
+        "description": "A reviewer recorded a decision on an attendee. The decision's note stays in the API. Sent once per recorded review; an attendee's latest review is its decision, so order by decided_at.",
+        "properties": {
+          "event_id": {
+            "type": "string",
+            "pattern": "^evn_[0-7][0-9A-HJKMNP-TV-Z]{25}$",
+            "description": "The attendee's event.",
+            "example": "evn_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          },
+          "attendee_id": {
+            "type": "string",
+            "pattern": "^att_[0-7][0-9A-HJKMNP-TV-Z]{25}$",
+            "description": "The attendee decided on.",
+            "example": "att_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          },
+          "review_id": {
+            "type": "string",
+            "pattern": "^arv_[0-7][0-9A-HJKMNP-TV-Z]{25}$",
+            "description": "The recorded review.",
+            "example": "arv_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          },
+          "decision": {
+            "$ref": "#/components/schemas/AttendeeDecision",
+            "description": "cleared: no further action. watch: screen again with the next screening. escalated: act on it; the next screening screens them again too."
+          },
+          "decided_by": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256,
+            "description": "Who decided: the member's external user id, or the API key's label, as the attendee's decided_by.",
+            "example": "email:2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae"
+          },
+          "decided_at": {
+            "type": "string",
+            "description": "When the decision was recorded; equal to the event's created_at.",
+            "example": "2026-11-20T09:03:27.000Z"
+          }
+        }
+      },
+      "AttendeeDecidedEvent": {
+        "type": "object",
+        "description": "The attendee.decided event.",
+        "required": [
+          "id",
+          "type",
+          "created_at",
+          "data"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^evt_[0-9A-HJKMNP-TV-Z]{26}$",
+            "description": "The event id, equal to the NR-Webhook-Id header and across redeliveries and every endpoint the event fans out to.",
+            "example": "evt_01JA2ZB4N5P6Q7R8S9T0VWXYZ1"
+          },
+          "created_at": {
+            "type": "string",
+            "description": "When the event was created. Equal across redeliveries; the signing timestamp header is per delivery.",
+            "example": "2026-10-14T09:00:02.000Z"
+          },
+          "type": {
+            "type": "string",
+            "const": "attendee.decided",
+            "description": "Always attendee.decided."
+          },
+          "test": {
+            "type": "boolean",
+            "description": "Present, and true, only on an event sent by POST /v1/webhooks/{endpoint_id}/test: its data is a fixed example assessment, not one of the workspace's, so a receiver acknowledges it and applies nothing. Real events have no test member."
+          },
+          "data": {
+            "$ref": "#/components/schemas/AttendeeDecided"
+          }
+        }
+      },
       "AttendeeDecision": {
         "enum": [
           "cleared",
           "watch",
           "escalated"
         ]
+      },
+      "AttendeeFlagged": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "event_id",
+          "attendee_id",
+          "screening_id",
+          "highest_band",
+          "match_state",
+          "flagged_at"
+        ],
+        "description": "A screening recorded a finding on an attendee. It says which attendee and how severe, not what they posted, who they are or why: GET the attendee report for the findings. Sent once per screening that flags the attendee, so a re-screen of someone on watch announces them again.",
+        "properties": {
+          "event_id": {
+            "type": "string",
+            "pattern": "^evn_[0-7][0-9A-HJKMNP-TV-Z]{25}$",
+            "description": "The attendee's event.",
+            "example": "evn_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          },
+          "attendee_id": {
+            "type": "string",
+            "pattern": "^att_[0-7][0-9A-HJKMNP-TV-Z]{25}$",
+            "description": "The flagged attendee.",
+            "example": "att_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          },
+          "screening_id": {
+            "type": "string",
+            "pattern": "^scn_[0-7][0-9A-HJKMNP-TV-Z]{25}$",
+            "description": "The screening that flagged them.",
+            "example": "scn_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          },
+          "highest_band": {
+            "$ref": "#/components/schemas/HighestBand",
+            "description": "The band of the attendee's most severe finding."
+          },
+          "match_state": {
+            "$ref": "#/components/schemas/AttendeeFlaggedMatchState",
+            "description": "How sure the screening is that the accounts it read are the attendee's. A finding on a possible match is at most moderate, on a probable match at most high."
+          },
+          "flagged_at": {
+            "type": "string",
+            "description": "When the screening recorded the finding; equal to the event's created_at.",
+            "example": "2026-11-20T07:41:09.000Z"
+          }
+        }
+      },
+      "AttendeeFlaggedEvent": {
+        "type": "object",
+        "description": "The attendee.flagged event.",
+        "required": [
+          "id",
+          "type",
+          "created_at",
+          "data"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^evt_[0-9A-HJKMNP-TV-Z]{26}$",
+            "description": "The event id, equal to the NR-Webhook-Id header and across redeliveries and every endpoint the event fans out to.",
+            "example": "evt_01JA2ZB4N5P6Q7R8S9T0VWXYZ1"
+          },
+          "created_at": {
+            "type": "string",
+            "description": "When the event was created. Equal across redeliveries; the signing timestamp header is per delivery.",
+            "example": "2026-10-14T09:00:02.000Z"
+          },
+          "type": {
+            "type": "string",
+            "const": "attendee.flagged",
+            "description": "Always attendee.flagged."
+          },
+          "test": {
+            "type": "boolean",
+            "description": "Present, and true, only on an event sent by POST /v1/webhooks/{endpoint_id}/test: its data is a fixed example assessment, not one of the workspace's, so a receiver acknowledges it and applies nothing. Real events have no test member."
+          },
+          "data": {
+            "$ref": "#/components/schemas/AttendeeFlagged"
+          }
+        }
+      },
+      "AttendeeFlaggedMatchState": {
+        "enum": [
+          "confirmed",
+          "probable",
+          "possible",
+          "none_found",
+          "inaccessible"
+        ],
+        "description": "How sure the screening is that the accounts it read are the attendee's. A finding on a possible match is at most moderate, on a probable match at most high."
       },
       "AttendeeIdentity": {
         "type": "object",
@@ -18392,6 +18567,159 @@
         "properties": {},
         "description": "An empty object."
       },
+      "ScreeningCompleted": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "screening_id",
+          "event_id",
+          "status",
+          "attendees_total",
+          "attendees_screened",
+          "attendees_flagged",
+          "by_band",
+          "no_footprint",
+          "partial_coverage",
+          "finished_at"
+        ],
+        "description": "A screening of an event finished. It counts only the attendees this screening set out to reach, not who they are: read the roster with GET /v1/workspaces/{workspace_id}/events/{environment}/{event_id}/attendees, filtered by band, to act on them. attendees_screened + partial_coverage = attendees_total, attendees_flagged is the sum of by_band, and no_footprint counts screened attendees with no flag whose accounts were not found. A cancelled screening sends no event.",
+        "properties": {
+          "screening_id": {
+            "type": "string",
+            "pattern": "^scn_[0-7][0-9A-HJKMNP-TV-Z]{25}$",
+            "description": "The screening that finished.",
+            "example": "scn_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          },
+          "event_id": {
+            "type": "string",
+            "pattern": "^evn_[0-7][0-9A-HJKMNP-TV-Z]{25}$",
+            "description": "The event it screened.",
+            "example": "evn_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ScreeningCompletedStatus",
+            "description": "completed reached every attendee; partial left some not fully covered (partial_coverage); failed covered nobody."
+          },
+          "error_code": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Why a partial or failed screening stopped before reaching everyone, as the screening resource says: expired, worker_attempts_exhausted, attempts_exhausted or screening_unavailable.",
+            "example": "expired"
+          },
+          "attendees_total": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Every attendee the screening set out to reach: those no screening had reached and those on watch or escalated."
+          },
+          "attendees_screened": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Attendees the screening covered, flagged or not."
+          },
+          "attendees_flagged": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Screened attendees with a finding: the sum of by_band."
+          },
+          "by_band": {
+            "$ref": "#/components/schemas/ScreeningCompletedByBand",
+            "description": "Screened attendees by the band of their most severe finding."
+          },
+          "no_footprint": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Screened attendees with no finding whose accounts were not found (match_state none_found). A clean result for someone with no visible accounts is not the same as a clean result for someone whose accounts were read."
+          },
+          "partial_coverage": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Attendees the screening did not fully cover. Read each one's coverage on its attendee."
+          },
+          "finished_at": {
+            "type": "string",
+            "description": "When the screening finished; equal to the event's created_at.",
+            "example": "2026-11-20T08:12:44.000Z"
+          }
+        }
+      },
+      "ScreeningCompletedByBand": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "critical",
+          "high",
+          "moderate",
+          "low",
+          "info"
+        ],
+        "description": "Screened attendees by the band of their most severe finding.",
+        "properties": {
+          "critical": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "high": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "moderate": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "low": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "info": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      },
+      "ScreeningCompletedEvent": {
+        "type": "object",
+        "description": "The screening.completed event.",
+        "required": [
+          "id",
+          "type",
+          "created_at",
+          "data"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^evt_[0-9A-HJKMNP-TV-Z]{26}$",
+            "description": "The event id, equal to the NR-Webhook-Id header and across redeliveries and every endpoint the event fans out to.",
+            "example": "evt_01JA2ZB4N5P6Q7R8S9T0VWXYZ1"
+          },
+          "created_at": {
+            "type": "string",
+            "description": "When the event was created. Equal across redeliveries; the signing timestamp header is per delivery.",
+            "example": "2026-10-14T09:00:02.000Z"
+          },
+          "type": {
+            "type": "string",
+            "const": "screening.completed",
+            "description": "Always screening.completed."
+          },
+          "test": {
+            "type": "boolean",
+            "description": "Present, and true, only on an event sent by POST /v1/webhooks/{endpoint_id}/test: its data is a fixed example assessment, not one of the workspace's, so a receiver acknowledges it and applies nothing. Real events have no test member."
+          },
+          "data": {
+            "$ref": "#/components/schemas/ScreeningCompleted"
+          }
+        }
+      },
+      "ScreeningCompletedStatus": {
+        "enum": [
+          "completed",
+          "partial",
+          "failed"
+        ],
+        "description": "completed reached every attendee; partial left some not fully covered (partial_coverage); failed covered nobody."
+      },
       "ScreeningDepth": {
         "enum": [
           "standard"
@@ -19083,7 +19411,7 @@
           },
           "event_type": {
             "type": "string",
-            "description": "The event's type, as its body's type: assessment.updated, endpoint.verification, account.deleted, workspace.deleted, webhook_endpoint.disabled, account.risk_changed, audit.event, or a type added later.",
+            "description": "The event's type, as its body's type: assessment.updated, endpoint.verification, account.deleted, workspace.deleted, webhook_endpoint.disabled, account.risk_changed, audit.event, screening.completed, attendee.flagged, attendee.decided, or a type added later.",
             "example": "assessment.updated"
           },
           "assessment_id": {
@@ -19395,6 +19723,15 @@
           },
           {
             "$ref": "#/components/schemas/AuditEventEvent"
+          },
+          {
+            "$ref": "#/components/schemas/ScreeningCompletedEvent"
+          },
+          {
+            "$ref": "#/components/schemas/AttendeeFlaggedEvent"
+          },
+          {
+            "$ref": "#/components/schemas/AttendeeDecidedEvent"
           }
         ],
         "discriminator": {
@@ -19406,7 +19743,10 @@
             "workspace.deleted": "#/components/schemas/WorkspaceDeletedEvent",
             "webhook_endpoint.disabled": "#/components/schemas/WebhookEndpointDisabledEvent",
             "account.risk_changed": "#/components/schemas/AccountRiskChangedEvent",
-            "audit.event": "#/components/schemas/AuditEventEvent"
+            "audit.event": "#/components/schemas/AuditEventEvent",
+            "screening.completed": "#/components/schemas/ScreeningCompletedEvent",
+            "attendee.flagged": "#/components/schemas/AttendeeFlaggedEvent",
+            "attendee.decided": "#/components/schemas/AttendeeDecidedEvent"
           }
         }
       },
@@ -19473,7 +19813,7 @@
           },
           "event_type": {
             "type": "string",
-            "description": "The event's type, as its body's type: assessment.updated, endpoint.verification, account.deleted, workspace.deleted, webhook_endpoint.disabled, account.risk_changed, audit.event, or a type added later.",
+            "description": "The event's type, as its body's type: assessment.updated, endpoint.verification, account.deleted, workspace.deleted, webhook_endpoint.disabled, account.risk_changed, audit.event, screening.completed, attendee.flagged, attendee.decided, or a type added later.",
             "example": "assessment.updated"
           }
         }
@@ -28156,6 +28496,131 @@
                         "role": "admin"
                       },
                       "created_at": "2026-10-23T09:10:00.000Z"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Accepted. Any 2xx within 5 seconds acknowledges the delivery; the body is ignored. A receiver that has already processed this id still answers 2xx."
+          }
+        }
+      }
+    },
+    "screening.completed": {
+      "post": {
+        "operationId": "screeningCompleted",
+        "summary": "A screening of an event finished.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebhookEvent"
+              },
+              "examples": {
+                "completed": {
+                  "value": {
+                    "id": "evt_01JA2ZE5N6P7Q8R9S0T1VWXYZ7",
+                    "type": "screening.completed",
+                    "created_at": "2026-11-20T08:12:44.000Z",
+                    "data": {
+                      "screening_id": "scn_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+                      "event_id": "evn_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+                      "status": "partial",
+                      "error_code": "expired",
+                      "attendees_total": 412,
+                      "attendees_screened": 409,
+                      "attendees_flagged": 7,
+                      "by_band": {
+                        "critical": 1,
+                        "high": 2,
+                        "moderate": 1,
+                        "low": 2,
+                        "info": 1
+                      },
+                      "no_footprint": 58,
+                      "partial_coverage": 3,
+                      "finished_at": "2026-11-20T08:12:44.000Z"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Accepted. Any 2xx within 5 seconds acknowledges the delivery; the body is ignored. A receiver that has already processed this id still answers 2xx."
+          }
+        }
+      }
+    },
+    "attendee.flagged": {
+      "post": {
+        "operationId": "attendeeFlagged",
+        "summary": "A screening flagged an attendee.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebhookEvent"
+              },
+              "examples": {
+                "flagged": {
+                  "value": {
+                    "id": "evt_01JA2ZE5N6P7Q8R9S0T1VWXYZ8",
+                    "type": "attendee.flagged",
+                    "created_at": "2026-11-20T07:41:09.000Z",
+                    "data": {
+                      "event_id": "evn_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+                      "attendee_id": "att_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+                      "screening_id": "scn_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+                      "highest_band": "high",
+                      "match_state": "confirmed",
+                      "flagged_at": "2026-11-20T07:41:09.000Z"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Accepted. Any 2xx within 5 seconds acknowledges the delivery; the body is ignored. A receiver that has already processed this id still answers 2xx."
+          }
+        }
+      }
+    },
+    "attendee.decided": {
+      "post": {
+        "operationId": "attendeeDecided",
+        "summary": "A reviewer decided on an attendee.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebhookEvent"
+              },
+              "examples": {
+                "decided": {
+                  "value": {
+                    "id": "evt_01JA2ZE5N6P7Q8R9S0T1VWXYZ9",
+                    "type": "attendee.decided",
+                    "created_at": "2026-11-20T09:03:27.000Z",
+                    "data": {
+                      "event_id": "evn_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+                      "attendee_id": "att_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+                      "review_id": "arv_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+                      "decision": "escalated",
+                      "decided_by": "email:2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae",
+                      "decided_at": "2026-11-20T09:03:27.000Z"
                     }
                   }
                 }

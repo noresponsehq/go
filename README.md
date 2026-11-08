@@ -208,6 +208,13 @@ http.HandleFunc("/webhooks/noresponse", func(w http.ResponseWriter, r *http.Requ
 		// The workspace is deleted: the last event this endpoint receives. Delete what you hold for Data.Environment.
 	case components.WebhookEventTypeWebhookEndpointDisabled:
 		// Data.EndpointID failed for 72 hours and is disabled: fix it and verify it again.
+	case components.WebhookEventTypeScreeningCompleted:
+		// A screening of an event finished: event.ScreeningCompletedEvent.Data counts attendees by band,
+		// no footprint and partial coverage. It names no attendee: list the roster filtered by band.
+	case components.WebhookEventTypeAttendeeFlagged:
+		// A screening flagged an attendee: event.AttendeeFlaggedEvent.Data has its highest band, never what was posted.
+	case components.WebhookEventTypeAttendeeDecided:
+		// A reviewer marked the attendee cleared, watch or escalated; keep the latest decided_at per attendee.
 	case components.WebhookEventTypeAssessmentUpdated:
 		if expired := event.AssessmentUpdatedEvent.Data.AssessmentExpired; expired != nil {
 			// Delete what you hold for expired.AssessmentID.

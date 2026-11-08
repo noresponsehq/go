@@ -47,6 +47,24 @@ webhookEvent := components.CreateWebhookEventAccountRiskChanged(components.Accou
 webhookEvent := components.CreateWebhookEventAuditEvent(components.AuditEventEvent{/* values here */})
 ```
 
+### ScreeningCompletedEvent
+
+```go
+webhookEvent := components.CreateWebhookEventScreeningCompleted(components.ScreeningCompletedEvent{/* values here */})
+```
+
+### AttendeeFlaggedEvent
+
+```go
+webhookEvent := components.CreateWebhookEventAttendeeFlagged(components.AttendeeFlaggedEvent{/* values here */})
+```
+
+### AttendeeDecidedEvent
+
+```go
+webhookEvent := components.CreateWebhookEventAttendeeDecided(components.AttendeeDecidedEvent{/* values here */})
+```
+
 ## Union Discrimination
 
 Use the `Type` field to determine which variant is active, then access the corresponding field:
@@ -67,5 +85,11 @@ switch webhookEvent.Type {
 		// webhookEvent.AccountRiskChangedEvent is populated
 	case components.WebhookEventTypeAuditEvent:
 		// webhookEvent.AuditEventEvent is populated
+	case components.WebhookEventTypeScreeningCompleted:
+		// webhookEvent.ScreeningCompletedEvent is populated
+	case components.WebhookEventTypeAttendeeFlagged:
+		// webhookEvent.AttendeeFlaggedEvent is populated
+	case components.WebhookEventTypeAttendeeDecided:
+		// webhookEvent.AttendeeDecidedEvent is populated
 }
 ```

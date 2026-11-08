@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: 25ddae46-795d-45f5-b455-3f48c41d440e
 management:
-  docChecksum: 11d0a111ca8c272ff873c996b3fe9a0e
+  docChecksum: 1e1ac373fb4baeb425c33419201ca757
   docVersion: "1"
   speakeasyVersion: internal
   generationVersion: internal
-  releaseVersion: 10.0.11
-  configChecksum: 5561ef9d3990b6994eeb4d644f424659
+  releaseVersion: 10.0.12
+  configChecksum: 407fe7d5994ce0b92095aa0e95cc631c
 features:
   go:
     additionalDependencies: 0.1.0
@@ -204,8 +204,18 @@ trackedFiles:
     last_write_checksum: sha1:84922fab4322156a7213d48f16d8520ceca92f00
   docs/models/components/attendeecoverage.md:
     last_write_checksum: sha1:bb0c9453370e42306ed55893d76fca72f666c805
+  docs/models/components/attendeedecided.md:
+    last_write_checksum: sha1:1a60228ba35afc9af9aa0d422575c6327e70763f
+  docs/models/components/attendeedecidedevent.md:
+    last_write_checksum: sha1:cc9987652d012d2ae53ba3e5db24d170597e1153
   docs/models/components/attendeedecision.md:
     last_write_checksum: sha1:f2317e968f9f1c92511a524300453440cd80a45d
+  docs/models/components/attendeeflagged.md:
+    last_write_checksum: sha1:d26a3de23d83486a3a80b9669abd899467d9841a
+  docs/models/components/attendeeflaggedevent.md:
+    last_write_checksum: sha1:264252249d3e9ed7ce74e5bdb48149aba5286196
+  docs/models/components/attendeeflaggedmatchstate.md:
+    last_write_checksum: sha1:1e0b9387f3900a5569d92c2c15f2e503035d1417
   docs/models/components/attendeeidentity.md:
     last_write_checksum: sha1:0ecf3688bdd7adea9e2edf1668a6c41bd425995c
   docs/models/components/attendeelist.md:
@@ -764,6 +774,14 @@ trackedFiles:
     last_write_checksum: sha1:ef086a8941dd44ff2ef27b49469288ecdad371e6
   docs/models/components/screeningcancelrequest.md:
     last_write_checksum: sha1:66fda3147bd094c3b222f3c3f21ad64cb3a47c80
+  docs/models/components/screeningcompleted.md:
+    last_write_checksum: sha1:28eb57ff573bf519e7212e393bfa973b9d53e0c1
+  docs/models/components/screeningcompletedbyband.md:
+    last_write_checksum: sha1:63c3db2413e99d23a606eb1b65303bd6c2eb0d7d
+  docs/models/components/screeningcompletedevent.md:
+    last_write_checksum: sha1:86a0453e965dd3e6c5c514b0de521394a33caccc
+  docs/models/components/screeningcompletedstatus.md:
+    last_write_checksum: sha1:24e4a0b1f45125b34ef7dbbb9a8ceff36c6fc510
   docs/models/components/screeningdepth.md:
     last_write_checksum: sha1:f0217f1c8ed572c51efacd408f550537c2de6188
   docs/models/components/screeninglist.md:
@@ -833,7 +851,7 @@ trackedFiles:
   docs/models/components/webhookaggregaterequest.md:
     last_write_checksum: sha1:c6012c855e80da14414b87bb7a733cce9212936b
   docs/models/components/webhookdeliveryattempt.md:
-    last_write_checksum: sha1:b7a85f7551422a6b8264afcd09d9acfdd8019c14
+    last_write_checksum: sha1:f524abbb4f88b85211c8c53991c6f5c5f4d02db1
   docs/models/components/webhookdeliveryattemptstatus.md:
     last_write_checksum: sha1:85b9623eb276cc3ddf255f722cd5baf35bda40f6
   docs/models/components/webhookdeliverylist.md:
@@ -853,13 +871,13 @@ trackedFiles:
   docs/models/components/webhookendpointstate.md:
     last_write_checksum: sha1:b2ddc90ed058cb376e6e3c416d839670541e31cc
   docs/models/components/webhookevent.md:
-    last_write_checksum: sha1:df2795ddc92d7297c544f487d0e90f4ec8b86a81
+    last_write_checksum: sha1:8747571db16033ce505caebf108aa8f7c6b0c67b
   docs/models/components/webhookkeyrotation.md:
     last_write_checksum: sha1:b90dc387f378601f5f2a65431b3317351911aa4b
   docs/models/components/webhookkeyrotationrequest.md:
     last_write_checksum: sha1:9daf33b4d44abed8a71b970893c464fd6238b56f
   docs/models/components/webhookreplay.md:
-    last_write_checksum: sha1:cdb975cfbf0cf6619298af2cb909eb73560e4795
+    last_write_checksum: sha1:7aadaf6a9fc142d9d13aaaaa4de590baa2f9ab8a
   docs/models/components/webhookreplayrequest.md:
     last_write_checksum: sha1:97bbe30c0e5e3a903301bba0428af795c5a81d6d
   docs/models/components/webhooktest.md:
@@ -1564,8 +1582,18 @@ trackedFiles:
     last_write_checksum: sha1:b2784327ee618b314a87a1f60d90dfc2fd6d6be7
   models/components/attendeebatchrequest.go:
     last_write_checksum: sha1:d791fda973c245f461b52db725d9ea894cef2230
+  models/components/attendeedecided.go:
+    last_write_checksum: sha1:af2d8cdc75a7989ee3279e113d855638be537413
+  models/components/attendeedecidedevent.go:
+    last_write_checksum: sha1:b2c47ad67e6275fb932e7861c8a346db7f643f0e
   models/components/attendeedecision.go:
     last_write_checksum: sha1:aa28d90149618b900cdf1a27559c00e56cc40c40
+  models/components/attendeeflagged.go:
+    last_write_checksum: sha1:51ac6e4466d9f4337e7fc010cb864a54f3394df8
+  models/components/attendeeflaggedevent.go:
+    last_write_checksum: sha1:10fe7cd18f429549e798646e1f5910c56361b659
+  models/components/attendeeflaggedmatchstate.go:
+    last_write_checksum: sha1:de2eb75a236df2b634351c95daedfa2f902ad8f8
   models/components/attendeeidentity.go:
     last_write_checksum: sha1:b5f9091949e3e1b554ff9ae085438417a19ca05e
   models/components/attendeelist.go:
@@ -2082,6 +2110,14 @@ trackedFiles:
     last_write_checksum: sha1:35ec6362a35ae919818f46e9532f8797fb54c0a3
   models/components/screeningcancelrequest.go:
     last_write_checksum: sha1:a2c9b591adbf19bcd1146db081f669e31b0237be
+  models/components/screeningcompleted.go:
+    last_write_checksum: sha1:6520d3c6cc11ee1188375e2a903c07f5d7d6cdc1
+  models/components/screeningcompletedbyband.go:
+    last_write_checksum: sha1:4d166f63421c68c6565e2c73914411129b3d7df8
+  models/components/screeningcompletedevent.go:
+    last_write_checksum: sha1:14ab21278f47600b80d7e9764e2d775b601ec387
+  models/components/screeningcompletedstatus.go:
+    last_write_checksum: sha1:d7ec1d7795ecfe1629563e310dcacc0d122f227b
   models/components/screeningdepth.go:
     last_write_checksum: sha1:2fe3ed1f036eb7eedc0fcfafe5000f29224c2950
   models/components/screeninglist.go:
@@ -2135,7 +2171,7 @@ trackedFiles:
   models/components/webhookaggregaterequest.go:
     last_write_checksum: sha1:73f8f3d8a654e1a90afd4475746bca20fbd375cf
   models/components/webhookdeliveryattempt.go:
-    last_write_checksum: sha1:bb27bad384c8dea8af398eefde7b8e97dc6a14e6
+    last_write_checksum: sha1:6b4e776cc1955789c0182a6efae77ba481c10851
   models/components/webhookdeliveryattemptstatus.go:
     last_write_checksum: sha1:d0bd8ca8e0701e73c42ab0a36b3f5d12acbded75
   models/components/webhookdeliverylist.go:
@@ -2155,13 +2191,13 @@ trackedFiles:
   models/components/webhookendpointstate.go:
     last_write_checksum: sha1:0dc8f23c8de8698aa8515418c04ceb26331917ef
   models/components/webhookevent.go:
-    last_write_checksum: sha1:e677f1a473a38f972826512d718dfac22d560afb
+    last_write_checksum: sha1:5f03fa62f6194751a99032d9b5567dff56875681
   models/components/webhookkeyrotation.go:
     last_write_checksum: sha1:7fd1350abc7bfe7c7738d2aeed1d7cddc01ddd8e
   models/components/webhookkeyrotationrequest.go:
     last_write_checksum: sha1:69a44e3bc34981b1607ea4d0ce1d3d6b3579cbae
   models/components/webhookreplay.go:
-    last_write_checksum: sha1:194a04f061a0dbaa4a1fd2c7520e7a2f20a026dd
+    last_write_checksum: sha1:3d2c045c5cb2b014489c621df8c658f1083472ff
   models/components/webhookreplayrequest.go:
     last_write_checksum: sha1:f731a5ecab9b48d174264ec74de0a80b384db264
   models/components/webhooktest.go:
@@ -2411,7 +2447,7 @@ trackedFiles:
   models/operations/updatesettings.go:
     last_write_checksum: sha1:9350e2f7449c85f08cb7e28d8a1daa4727492bfe
   noresponse.go:
-    last_write_checksum: sha1:d9697d7c7642f73b5d4fd698386db2d78ea45a15
+    last_write_checksum: sha1:d6807577d1098f85647ec85b2476d6220dbf5181
   operations.go:
     last_write_checksum: sha1:394a05ae140c85250837e355d3a4312a14b6e4e2
   optionalnullable/optionalnullable.go:
