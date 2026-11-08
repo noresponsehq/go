@@ -25,6 +25,7 @@ const (
 	KeyRequestScopePolicyPublish KeyRequestScope = "policy_publish"
 	KeyRequestScopeMembers       KeyRequestScope = "members"
 	KeyRequestScopeMembersManage KeyRequestScope = "members_manage"
+	KeyRequestScopeEvents        KeyRequestScope = "events"
 )
 
 func (e KeyRequestScope) ToPointer() *KeyRequestScope {
@@ -69,6 +70,8 @@ func (e *KeyRequestScope) UnmarshalJSON(data []byte) error {
 	case "members":
 		fallthrough
 	case "members_manage":
+		fallthrough
+	case "events":
 		*e = KeyRequestScope(v)
 		return nil
 	default:

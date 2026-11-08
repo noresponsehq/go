@@ -32,3 +32,4 @@ value := components.KeyRequestScopeAssess
 | `KeyRequestScopePolicyPublish` | policy_publish                 |
 | `KeyRequestScopeMembers`       | members                        |
 | `KeyRequestScopeMembersManage` | members_manage                 |
+| `KeyRequestScopeEvents`        | events                         |

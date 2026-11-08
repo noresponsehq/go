@@ -35,3 +35,4 @@ custom := components.KeyScope("custom_value")
 | `KeyScopePolicyPublish` | policy_publish          |
 | `KeyScopeMembers`       | members                 |
 | `KeyScopeMembersManage` | members_manage          |
+| `KeyScopeEvents`        | events                  |

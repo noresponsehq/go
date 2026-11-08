@@ -108,6 +108,10 @@
     {
       "name": "erasures",
       "description": "Durable deletion receipts."
+    },
+    {
+      "name": "events",
+      "description": "Events, attendee lists, screenings and reviewer decisions."
     }
   ],
   "paths": {
@@ -6692,6 +6696,813 @@
           }
         ]
       }
+    },
+    "/v1/workspaces/{workspace_id}/events/{environment}": {
+      "get": {
+        "operationId": "listEvents",
+        "x-noresponse-group": "events",
+        "x-noresponse-name-override": "list",
+        "tags": [
+          "events"
+        ],
+        "summary": "List an environment's events.",
+        "description": "List this environment's events, newest first. Pass next_before back as before for the next page. Requires the events scope.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/WorkspaceId"
+          },
+          {
+            "$ref": "#/components/parameters/Environment"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "At most this many items.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          },
+          {
+            "name": "before",
+            "in": "query",
+            "description": "Read events older than this one.",
+            "schema": {
+              "type": "string",
+              "pattern": "^evn_[0-7][0-9A-HJKMNP-TV-Z]{25}$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/EventsListed"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidControlRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ControlForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/WorkspaceNotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/IdempotencyConflict"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "createEvent",
+        "x-noresponse-group": "events",
+        "x-noresponse-name-override": "create",
+        "tags": [
+          "events"
+        ],
+        "summary": "Create an event to screen.",
+        "description": "Create an event to screen: its name, start, venue, host, the principals it protects and the sensitive topics posts are read against. An environment holds at most 1000 events.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/WorkspaceId"
+          },
+          {
+            "$ref": "#/components/parameters/Environment"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EventRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/EventCreated"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidEventRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ControlForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/WorkspaceNotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/EventConflict"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ],
+        "x-noresponse-retries": {
+          "strategy": "none"
+        }
+      }
+    },
+    "/v1/workspaces/{workspace_id}/events/{environment}/{event_id}": {
+      "get": {
+        "operationId": "getEvent",
+        "x-noresponse-group": "events",
+        "x-noresponse-name-override": "get",
+        "tags": [
+          "events"
+        ],
+        "summary": "Read an event.",
+        "description": "Read an event and how many attendees it holds.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/WorkspaceId"
+          },
+          {
+            "$ref": "#/components/parameters/Environment"
+          },
+          {
+            "$ref": "#/components/parameters/EventResourceId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/EventFound"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidControlRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ControlForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/WorkspaceNotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/IdempotencyConflict"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      },
+      "patch": {
+        "operationId": "updateEvent",
+        "x-noresponse-group": "events",
+        "x-noresponse-name-override": "update",
+        "tags": [
+          "events"
+        ],
+        "summary": "Change an event.",
+        "description": "Change the fields you name. Send expected_version to apply the change only to that version.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/WorkspaceId"
+          },
+          {
+            "$ref": "#/components/parameters/Environment"
+          },
+          {
+            "$ref": "#/components/parameters/EventResourceId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EventUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/EventUpdated"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidEventRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ControlForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/WorkspaceNotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/EventConflict"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "deleteEvent",
+        "x-noresponse-group": "events",
+        "x-noresponse-name-override": "delete",
+        "tags": [
+          "events"
+        ],
+        "summary": "Erase an event.",
+        "description": "Erase an event with its attendees, their decisions and its screenings, and stop any screening still running.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/WorkspaceId"
+          },
+          {
+            "$ref": "#/components/parameters/Environment"
+          },
+          {
+            "$ref": "#/components/parameters/EventResourceId"
+          }
+        ],
+        "responses": {
+          "204": {
+            "$ref": "#/components/responses/EventDeleted"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidControlRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ControlForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/WorkspaceNotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/IdempotencyConflict"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/v1/workspaces/{workspace_id}/events/{environment}/{event_id}/attendees": {
+      "get": {
+        "operationId": "listAttendees",
+        "x-noresponse-group": "events",
+        "x-noresponse-name-override": "listAttendees",
+        "tags": [
+          "events"
+        ],
+        "summary": "List an event's attendees.",
+        "description": "Read an event's roster in upload order, with each attendee's match state, highest finding band and decision. Filter by band or decision; pass next_after back as after.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/WorkspaceId"
+          },
+          {
+            "$ref": "#/components/parameters/Environment"
+          },
+          {
+            "$ref": "#/components/parameters/EventResourceId"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "At most this many attendees.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 500,
+              "default": 100
+            }
+          },
+          {
+            "name": "after",
+            "in": "query",
+            "description": "Read attendees after this one.",
+            "schema": {
+              "type": "string",
+              "pattern": "^att_[0-7][0-9A-HJKMNP-TV-Z]{25}$"
+            }
+          },
+          {
+            "name": "band",
+            "in": "query",
+            "description": "Only attendees whose highest finding has this band; none for attendees with no finding.",
+            "schema": {
+              "$ref": "#/components/schemas/listAttendeesBand"
+            }
+          },
+          {
+            "name": "decision",
+            "in": "query",
+            "description": "Only attendees with this decision; undecided for none yet.",
+            "schema": {
+              "$ref": "#/components/schemas/listAttendeesDecision"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/AttendeesListed"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidControlRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ControlForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/WorkspaceNotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/IdempotencyConflict"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "addAttendees",
+        "x-noresponse-group": "events",
+        "x-noresponse-name-override": "addAttendees",
+        "tags": [
+          "events"
+        ],
+        "summary": "Add or update a batch of attendees.",
+        "description": "Add or update 1 to 500 attendees with an Idempotency-Key. A row with the same external_id, else email, else phone as an existing attendee updates it. Identities are stored encrypted.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/WorkspaceId"
+          },
+          {
+            "$ref": "#/components/parameters/Environment"
+          },
+          {
+            "$ref": "#/components/parameters/EventResourceId"
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AttendeeBatchRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/AttendeeBatchRecorded"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidEventRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ControlForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/WorkspaceNotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/EventConflict"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/v1/workspaces/{workspace_id}/events/{environment}/{event_id}/attendees/{attendee_id}": {
+      "get": {
+        "operationId": "getAttendee",
+        "x-noresponse-group": "events",
+        "x-noresponse-name-override": "getAttendee",
+        "tags": [
+          "events"
+        ],
+        "summary": "Read an attendee's report.",
+        "description": "Read an attendee's report: matched profiles, findings with their evidence and every recorded decision.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/WorkspaceId"
+          },
+          {
+            "$ref": "#/components/parameters/Environment"
+          },
+          {
+            "$ref": "#/components/parameters/EventResourceId"
+          },
+          {
+            "$ref": "#/components/parameters/AttendeeId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/AttendeeReportFound"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidControlRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ControlForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/WorkspaceNotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/IdempotencyConflict"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/v1/workspaces/{workspace_id}/events/{environment}/{event_id}/attendees/{attendee_id}/review": {
+      "post": {
+        "operationId": "reviewAttendee",
+        "x-noresponse-group": "events",
+        "x-noresponse-name-override": "reviewAttendee",
+        "tags": [
+          "events"
+        ],
+        "summary": "Record a decision on an attendee.",
+        "description": "Record a cleared, watch or escalated decision with a note. The latest decision is the attendee's; the next screening refreshes everyone on watch or escalated.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/WorkspaceId"
+          },
+          {
+            "$ref": "#/components/parameters/Environment"
+          },
+          {
+            "$ref": "#/components/parameters/EventResourceId"
+          },
+          {
+            "$ref": "#/components/parameters/AttendeeId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AttendeeReviewRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/AttendeeDecided"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidEventRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ControlForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/WorkspaceNotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/EventConflict"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ],
+        "x-noresponse-retries": {
+          "strategy": "none"
+        }
+      }
+    },
+    "/v1/workspaces/{workspace_id}/events/{environment}/{event_id}/screenings": {
+      "get": {
+        "operationId": "listScreenings",
+        "x-noresponse-group": "events",
+        "x-noresponse-name-override": "listScreenings",
+        "tags": [
+          "events"
+        ],
+        "summary": "List an event's screenings.",
+        "description": "List an event's screenings, newest first.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/WorkspaceId"
+          },
+          {
+            "$ref": "#/components/parameters/Environment"
+          },
+          {
+            "$ref": "#/components/parameters/EventResourceId"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "At most this many items.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          },
+          {
+            "name": "before",
+            "in": "query",
+            "description": "Read screenings older than this one.",
+            "schema": {
+              "type": "string",
+              "pattern": "^scn_[0-7][0-9A-HJKMNP-TV-Z]{25}$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ScreeningsListed"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidControlRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ControlForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/WorkspaceNotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/IdempotencyConflict"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "startScreening",
+        "x-noresponse-group": "events",
+        "x-noresponse-name-override": "startScreening",
+        "tags": [
+          "events"
+        ],
+        "summary": "Start a screening.",
+        "description": "Start a screening of new attendees and everyone on watch or escalated, with an Idempotency-Key. It finishes completed, partial or failed minutes to hours later; poll it. The test environment screens with stand-ins that find no accounts.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/WorkspaceId"
+          },
+          {
+            "$ref": "#/components/parameters/Environment"
+          },
+          {
+            "$ref": "#/components/parameters/EventResourceId"
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ScreeningRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "$ref": "#/components/responses/ScreeningAccepted"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidEventRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ControlForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/WorkspaceNotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/EventConflict"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/v1/workspaces/{workspace_id}/events/{environment}/{event_id}/screenings/{screening_id}": {
+      "get": {
+        "operationId": "getScreening",
+        "x-noresponse-group": "events",
+        "x-noresponse-name-override": "getScreening",
+        "tags": [
+          "events"
+        ],
+        "summary": "Read a screening.",
+        "description": "Read a screening's status and progress.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/WorkspaceId"
+          },
+          {
+            "$ref": "#/components/parameters/Environment"
+          },
+          {
+            "$ref": "#/components/parameters/EventResourceId"
+          },
+          {
+            "$ref": "#/components/parameters/ScreeningId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ScreeningFound"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidControlRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ControlForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/WorkspaceNotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/IdempotencyConflict"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/v1/workspaces/{workspace_id}/events/{environment}/{event_id}/screenings/{screening_id}/cancel": {
+      "post": {
+        "operationId": "cancelScreening",
+        "x-noresponse-group": "events",
+        "x-noresponse-name-override": "cancelScreening",
+        "tags": [
+          "events"
+        ],
+        "summary": "Cancel a screening.",
+        "description": "Stop a queued or running screening. Attendees already screened keep their results.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/WorkspaceId"
+          },
+          {
+            "$ref": "#/components/parameters/Environment"
+          },
+          {
+            "$ref": "#/components/parameters/EventResourceId"
+          },
+          {
+            "$ref": "#/components/parameters/ScreeningId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ScreeningCancelRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ScreeningCancelled"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidEventRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ControlForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/WorkspaceNotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/IdempotencyConflict"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -9399,6 +10210,416 @@
         ],
         "description": "Provider or OIDC assurance level, when the customer has mapped one."
       },
+      "Attendee": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "event_id",
+          "name",
+          "match_state",
+          "highest_band",
+          "decision",
+          "coverage",
+          "created_at",
+          "updated_at"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^att_[0-7][0-9A-HJKMNP-TV-Z]{25}$",
+            "example": "att_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          },
+          "event_id": {
+            "type": "string",
+            "pattern": "^evn_[0-7][0-9A-HJKMNP-TV-Z]{25}$",
+            "example": "evn_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          },
+          "external_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "description": "Your own id for the attendee, unique within the event. A later row with the same external id updates this attendee.",
+            "example": "ticket-1042"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "description": "The attendee's full name.",
+            "example": "Jordan Example"
+          },
+          "email": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 254,
+            "pattern": "^[^@\\s]+@[^@\\s]+$",
+            "description": "The attendee's email.",
+            "example": "jordan@company-example.com"
+          },
+          "phone": {
+            "type": "string",
+            "pattern": "^\\+[1-9][0-9]{6,14}$",
+            "description": "The attendee's phone in E.164 form.",
+            "example": "+14155550100"
+          },
+          "company": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "description": "Where the attendee works.",
+            "example": "Example Ltd"
+          },
+          "city": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "description": "Where the attendee lives.",
+            "example": "Melbourne"
+          },
+          "handles": {
+            "type": "array",
+            "maxItems": 20,
+            "items": {
+              "$ref": "#/components/schemas/Handle"
+            },
+            "description": "Accounts the attendee is known to hold, at most 20."
+          },
+          "match_state": {
+            "$ref": "#/components/schemas/MatchState",
+            "description": "How sure the latest screening is that it found the attendee's accounts. unscreened until a screening reaches the attendee."
+          },
+          "highest_band": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/HighestBand"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The most severe finding's band, or null when nothing was flagged."
+          },
+          "decision": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AttendeeDecision"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The latest reviewer decision, or null before any."
+          },
+          "decision_note": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000,
+            "example": "Known to the venue team."
+          },
+          "decided_by": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256,
+            "example": "user_2abc"
+          },
+          "decided_at": {
+            "type": "string",
+            "example": "2026-01-01T00:00:00Z"
+          },
+          "coverage": {
+            "type": "object",
+            "description": "What the latest screening read, per platform."
+          },
+          "last_screening_id": {
+            "type": "string",
+            "pattern": "^scn_[0-7][0-9A-HJKMNP-TV-Z]{25}$",
+            "example": "scn_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          },
+          "screened_at": {
+            "type": "string",
+            "example": "2026-01-01T00:00:00Z"
+          },
+          "created_at": {
+            "type": "string",
+            "example": "2026-01-01T00:00:00Z"
+          },
+          "updated_at": {
+            "type": "string",
+            "example": "2026-01-01T00:00:00Z"
+          }
+        },
+        "description": "An attendee and where their screening and review stand."
+      },
+      "AttendeeBatch": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "created",
+          "updated",
+          "items"
+        ],
+        "properties": {
+          "created": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 500
+          },
+          "updated": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 500
+          },
+          "items": {
+            "type": "array",
+            "maxItems": 500,
+            "items": {
+              "$ref": "#/components/schemas/AttendeeBatchItem"
+            }
+          }
+        },
+        "description": "What the batch did, row by row."
+      },
+      "AttendeeBatchItem": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "index",
+          "id",
+          "outcome"
+        ],
+        "properties": {
+          "index": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 499,
+            "description": "The row's position in the request."
+          },
+          "id": {
+            "type": "string",
+            "pattern": "^att_[0-7][0-9A-HJKMNP-TV-Z]{25}$",
+            "example": "att_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          },
+          "outcome": {
+            "$ref": "#/components/schemas/AttendeeBatchItemOutcome",
+            "description": "unchanged: the row matched an attendee with the same details."
+          }
+        }
+      },
+      "AttendeeBatchItemOutcome": {
+        "enum": [
+          "created",
+          "updated",
+          "unchanged"
+        ],
+        "description": "unchanged: the row matched an attendee with the same details."
+      },
+      "AttendeeBatchRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "attendees"
+        ],
+        "properties": {
+          "attendees": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 500,
+            "items": {
+              "$ref": "#/components/schemas/AttendeeIdentity"
+            }
+          }
+        },
+        "description": "Adds or updates 1 to 500 attendees. A row naming an existing attendee of the event (the same external_id, else the same email, else the same phone) updates it."
+      },
+      "AttendeeDecision": {
+        "enum": [
+          "cleared",
+          "watch",
+          "escalated"
+        ]
+      },
+      "AttendeeIdentity": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "external_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "description": "Your own id for the attendee, unique within the event. A later row with the same external id updates this attendee.",
+            "example": "ticket-1042"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "description": "The attendee's full name.",
+            "example": "Jordan Example"
+          },
+          "email": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 254,
+            "pattern": "^[^@\\s]+@[^@\\s]+$",
+            "description": "The attendee's email.",
+            "example": "jordan@company-example.com"
+          },
+          "phone": {
+            "type": "string",
+            "pattern": "^\\+[1-9][0-9]{6,14}$",
+            "description": "The attendee's phone in E.164 form.",
+            "example": "+14155550100"
+          },
+          "company": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "description": "Where the attendee works.",
+            "example": "Example Ltd"
+          },
+          "city": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "description": "Where the attendee lives.",
+            "example": "Melbourne"
+          },
+          "handles": {
+            "type": "array",
+            "maxItems": 20,
+            "items": {
+              "$ref": "#/components/schemas/Handle"
+            },
+            "description": "Accounts the attendee is known to hold, at most 20."
+          }
+        },
+        "description": "What you know about an attendee. Stored encrypted under the workspace's key."
+      },
+      "AttendeeList": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "items"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "maxItems": 500,
+            "items": {
+              "$ref": "#/components/schemas/Attendee"
+            }
+          },
+          "next_after": {
+            "type": "string",
+            "pattern": "^att_[0-7][0-9A-HJKMNP-TV-Z]{25}$",
+            "description": "Pass as after to read the next page.",
+            "example": "att_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          }
+        },
+        "description": "Attendees in upload order."
+      },
+      "AttendeeReport": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "attendee",
+          "profiles",
+          "findings",
+          "reviews"
+        ],
+        "properties": {
+          "attendee": {
+            "$ref": "#/components/schemas/Attendee"
+          },
+          "profiles": {
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+              "type": "object"
+            },
+            "description": "The accounts the screening matched, with how each was matched."
+          },
+          "findings": {
+            "type": "array",
+            "maxItems": 500,
+            "items": {
+              "type": "object"
+            },
+            "description": "What the screening flagged, with its evidence."
+          },
+          "reviews": {
+            "type": "array",
+            "maxItems": 1000,
+            "items": {
+              "$ref": "#/components/schemas/AttendeeReview"
+            },
+            "description": "Every recorded decision, oldest first."
+          }
+        },
+        "description": "Everything known about one attendee."
+      },
+      "AttendeeReview": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "decision",
+          "created_by",
+          "created_at"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^arv_[0-7][0-9A-HJKMNP-TV-Z]{25}$",
+            "example": "arv_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          },
+          "decision": {
+            "$ref": "#/components/schemas/AttendeeDecision"
+          },
+          "note": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000,
+            "example": "Known to the venue team."
+          },
+          "created_by": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256,
+            "example": "user_2abc"
+          },
+          "created_at": {
+            "type": "string",
+            "example": "2026-01-01T00:00:00Z"
+          }
+        },
+        "description": "One recorded decision."
+      },
+      "AttendeeReviewRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "decision"
+        ],
+        "properties": {
+          "decision": {
+            "$ref": "#/components/schemas/AttendeeDecision",
+            "description": "cleared, watch or escalated."
+          },
+          "note": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 2000,
+            "description": "Why, for the venue team and later reviewers.",
+            "example": "Known to the venue team."
+          }
+        },
+        "description": "Records a decision on an attendee."
+      },
       "Attribute": {
         "enum": [
           "birth_date",
@@ -10248,7 +11469,10 @@
           "already_member",
           "member_limit_reached",
           "owner_invite_pending",
-          "aggregate_erased_data"
+          "aggregate_erased_data",
+          "event_conflict",
+          "event_limit_reached",
+          "screening_unavailable"
         ],
         "description": "Machine codes an HTTP 409 answer can carry."
       },
@@ -11193,6 +12417,269 @@
           "completed"
         ]
       },
+      "Event": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "environment",
+          "name",
+          "starts_at",
+          "ends_at",
+          "principals",
+          "topics",
+          "attendees",
+          "version",
+          "purge_after",
+          "created_by",
+          "created_at",
+          "updated_at"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^evn_[0-7][0-9A-HJKMNP-TV-Z]{25}$",
+            "example": "evn_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          },
+          "environment": {
+            "$ref": "#/components/schemas/AuditSettingsEnvironment"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "description": "The event's name.",
+            "example": "Annual shareholder meeting"
+          },
+          "starts_at": {
+            "type": "string",
+            "description": "When the event starts.",
+            "example": "2026-01-01T00:00:00Z"
+          },
+          "ends_at": {
+            "type": "string",
+            "description": "When the event ends, at or after its start; the start when omitted.",
+            "example": "2026-01-02T00:00:00Z"
+          },
+          "venue": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 300,
+            "description": "Where the event is held.",
+            "example": "Example Convention Centre"
+          },
+          "host": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 200,
+            "description": "The organisation hosting the event.",
+            "example": "Example Holdings"
+          },
+          "principals": {
+            "type": "array",
+            "maxItems": 20,
+            "items": {
+              "$ref": "#/components/schemas/Principal"
+            },
+            "description": "The people the event protects."
+          },
+          "topics": {
+            "type": "array",
+            "maxItems": 50,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100,
+              "example": "executive pay"
+            },
+            "description": "Sensitive topics."
+          },
+          "attendees": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 20000,
+            "description": "How many attendees the event holds."
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483647,
+            "description": "Goes up by one with every change."
+          },
+          "purge_after": {
+            "type": "string",
+            "description": "When raw collected items and unmatched candidate profiles are purged: 30 days after the event ends.",
+            "example": "2026-02-01T00:00:00Z"
+          },
+          "created_by": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256,
+            "description": "The member or key label that created the event.",
+            "example": "user_2abc"
+          },
+          "created_at": {
+            "type": "string",
+            "example": "2026-01-01T00:00:00Z"
+          },
+          "updated_at": {
+            "type": "string",
+            "example": "2026-01-01T00:00:00Z"
+          }
+        },
+        "description": "An event and its screening context."
+      },
+      "EventList": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "items"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+              "$ref": "#/components/schemas/Event"
+            }
+          },
+          "next_before": {
+            "type": "string",
+            "pattern": "^evn_[0-7][0-9A-HJKMNP-TV-Z]{25}$",
+            "description": "Pass as before to read the next, older page.",
+            "example": "evn_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          }
+        },
+        "description": "Events, newest first."
+      },
+      "EventRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "starts_at"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "description": "The event's name.",
+            "example": "Annual shareholder meeting"
+          },
+          "starts_at": {
+            "type": "string",
+            "description": "When the event starts.",
+            "example": "2026-01-01T00:00:00Z"
+          },
+          "ends_at": {
+            "type": "string",
+            "description": "When the event ends, at or after its start; the start when omitted.",
+            "example": "2026-01-02T00:00:00Z"
+          },
+          "venue": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 300,
+            "description": "Where the event is held.",
+            "example": "Example Convention Centre"
+          },
+          "host": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 200,
+            "description": "The organisation hosting the event.",
+            "example": "Example Holdings"
+          },
+          "principals": {
+            "type": "array",
+            "maxItems": 20,
+            "items": {
+              "$ref": "#/components/schemas/Principal"
+            },
+            "description": "The people the event protects, at most 20."
+          },
+          "topics": {
+            "type": "array",
+            "maxItems": 50,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100,
+              "example": "executive pay"
+            },
+            "description": "Sensitive topics the screening reads posts against, at most 50."
+          }
+        },
+        "description": "Creates an event."
+      },
+      "EventUpdate": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "description": "The event's name.",
+            "example": "Annual shareholder meeting"
+          },
+          "starts_at": {
+            "type": "string",
+            "description": "When the event starts.",
+            "example": "2026-01-01T00:00:00Z"
+          },
+          "ends_at": {
+            "type": "string",
+            "description": "When the event ends, at or after its start; the start when omitted.",
+            "example": "2026-01-02T00:00:00Z"
+          },
+          "venue": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 300,
+            "description": "Where the event is held.",
+            "example": "Example Convention Centre"
+          },
+          "host": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 200,
+            "description": "The organisation hosting the event.",
+            "example": "Example Holdings"
+          },
+          "principals": {
+            "type": "array",
+            "maxItems": 20,
+            "items": {
+              "$ref": "#/components/schemas/Principal"
+            },
+            "description": "The people the event protects, at most 20."
+          },
+          "topics": {
+            "type": "array",
+            "maxItems": 50,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100,
+              "example": "executive pay"
+            },
+            "description": "Sensitive topics the screening reads posts against, at most 50."
+          },
+          "expected_version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483647,
+            "description": "When present, the change applies only if the event is still at this version (409 event_conflict otherwise)."
+          }
+        },
+        "description": "Changes the fields it names; at least one besides expected_version."
+      },
       "Export": {
         "type": "object",
         "additionalProperties": false,
@@ -11581,6 +13068,50 @@
           "review",
           "block",
           "held"
+        ]
+      },
+      "Handle": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "platform",
+          "handle"
+        ],
+        "properties": {
+          "platform": {
+            "$ref": "#/components/schemas/HandlePlatform"
+          },
+          "handle": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "description": "The account's handle, without a leading @.",
+            "example": "jordan_example"
+          }
+        },
+        "description": "An account the attendee is known to hold."
+      },
+      "HandlePlatform": {
+        "enum": [
+          "instagram",
+          "x",
+          "bluesky",
+          "youtube",
+          "tiktok",
+          "facebook",
+          "threads",
+          "reddit",
+          "telegram",
+          "linkedin"
+        ]
+      },
+      "HighestBand": {
+        "enum": [
+          "critical",
+          "high",
+          "moderate",
+          "low",
+          "info"
         ]
       },
       "HookPoint": {
@@ -12499,7 +14030,7 @@
           "scopes": {
             "type": "array",
             "minItems": 1,
-            "maxItems": 17,
+            "maxItems": 18,
             "uniqueItems": true,
             "items": {
               "enum": [
@@ -12519,7 +14050,8 @@
                 "settings",
                 "policy_publish",
                 "members",
-                "members_manage"
+                "members_manage",
+                "events"
               ]
             },
             "description": "The key's scopes, each at most once."
@@ -12669,7 +14201,7 @@
           "scopes": {
             "type": "array",
             "minItems": 1,
-            "maxItems": 17,
+            "maxItems": 18,
             "uniqueItems": true,
             "items": {
               "enum": [
@@ -12689,7 +14221,8 @@
                 "settings",
                 "policy_publish",
                 "members",
-                "members_manage"
+                "members_manage",
+                "events"
               ]
             },
             "description": "The key's scopes, each at most once."
@@ -13413,6 +14946,17 @@
           "mailbox"
         ],
         "description": "exact compares the original submitted value; canonical uses identifier-specific normalisation; mailbox explicitly selects the email alias rules used by lists."
+      },
+      "MatchState": {
+        "enum": [
+          "unscreened",
+          "confirmed",
+          "probable",
+          "possible",
+          "none_found",
+          "inaccessible"
+        ],
+        "description": "How sure the latest screening is that it found the attendee's accounts. unscreened until a screening reaches the attendee."
       },
       "Member": {
         "description": "One member of a workspace: an external user id holding one role. A removed member loses every permission at once.",
@@ -14979,6 +16523,35 @@
           "retained_first_answers"
         ],
         "description": "first_answers uses anonymous counters that can include erased detail. retained_first_answers computes exact intersections over retained first answers within 31 days. Requests exceeding the 100000-record work budget are refused."
+      },
+      "Principal": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "description": "The principal's name.",
+            "example": "Alex Principal"
+          },
+          "aliases": {
+            "type": "array",
+            "maxItems": 10,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200,
+              "example": "Alex P"
+            },
+            "description": "Other names the principal goes by, at most 10."
+          }
+        },
+        "description": "A person the event protects."
       },
       "Priority": {
         "enum": [
@@ -16685,6 +18258,200 @@
         ],
         "description": "assessment requires one submission to satisfy the complete expression. account permits witnesses across retained submissions of one account and is supported only by POST /v1/accounts/search. No default: select scope explicitly."
       },
+      "Screening": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "event_id",
+          "environment",
+          "status",
+          "depth",
+          "platforms",
+          "requested_by",
+          "created_at",
+          "expires_at",
+          "attendees_total",
+          "attendees_done",
+          "attendees_flagged",
+          "attendees_failed"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^scn_[0-7][0-9A-HJKMNP-TV-Z]{25}$",
+            "example": "scn_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          },
+          "event_id": {
+            "type": "string",
+            "pattern": "^evn_[0-7][0-9A-HJKMNP-TV-Z]{25}$",
+            "example": "evn_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          },
+          "environment": {
+            "$ref": "#/components/schemas/AuditSettingsEnvironment"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ScreeningStatus",
+            "description": "partial finished with some attendees not covered; attendees_failed counts them."
+          },
+          "depth": {
+            "$ref": "#/components/schemas/ScreeningDepth"
+          },
+          "platforms": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 10,
+            "uniqueItems": true,
+            "items": {
+              "enum": [
+                "instagram",
+                "x",
+                "bluesky",
+                "youtube",
+                "tiktok",
+                "facebook",
+                "threads",
+                "reddit",
+                "telegram",
+                "linkedin"
+              ]
+            }
+          },
+          "requested_by": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256,
+            "example": "user_2abc"
+          },
+          "created_at": {
+            "type": "string",
+            "example": "2026-01-01T00:00:00Z"
+          },
+          "started_at": {
+            "type": "string",
+            "example": "2026-01-01T00:00:00Z"
+          },
+          "finished_at": {
+            "type": "string",
+            "example": "2026-01-02T00:00:00Z"
+          },
+          "expires_at": {
+            "type": "string",
+            "description": "A screening still running then fails with error_code expired.",
+            "example": "2026-01-02T00:00:00Z"
+          },
+          "attendees_total": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 20000,
+            "description": "Attendees selected when the screening started."
+          },
+          "attendees_done": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 20000,
+            "description": "Attendees screened so far, failed ones included."
+          },
+          "attendees_flagged": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 20000
+          },
+          "attendees_failed": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 20000
+          },
+          "error_code": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Why a failed or cancelled screening stopped.",
+            "example": "user_cancelled"
+          }
+        },
+        "description": "A screening and its progress."
+      },
+      "ScreeningCancelRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {},
+        "description": "An empty object."
+      },
+      "ScreeningDepth": {
+        "enum": [
+          "standard"
+        ]
+      },
+      "ScreeningList": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "items"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+              "$ref": "#/components/schemas/Screening"
+            }
+          },
+          "next_before": {
+            "type": "string",
+            "pattern": "^scn_[0-7][0-9A-HJKMNP-TV-Z]{25}$",
+            "description": "Pass as before to read the next, older page.",
+            "example": "scn_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          }
+        },
+        "description": "Screenings, newest first."
+      },
+      "ScreeningRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "depth",
+          "platforms"
+        ],
+        "properties": {
+          "depth": {
+            "$ref": "#/components/schemas/ScreeningDepth",
+            "description": "standard reads the bio and the last 100 posts of each profile."
+          },
+          "platforms": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 10,
+            "uniqueItems": true,
+            "items": {
+              "enum": [
+                "instagram",
+                "x",
+                "bluesky",
+                "youtube",
+                "tiktok",
+                "facebook",
+                "threads",
+                "reddit",
+                "telegram",
+                "linkedin"
+              ]
+            }
+          }
+        },
+        "description": "Screens the event's attendees no screening has reached and everyone on watch or escalated."
+      },
+      "ScreeningStatus": {
+        "enum": [
+          "queued",
+          "running",
+          "completed",
+          "partial",
+          "failed",
+          "cancelled"
+        ],
+        "description": "partial finished with some attendees not covered; attendees_failed counts them."
+      },
       "SentIdentifiers": {
         "type": "object",
         "additionalProperties": false,
@@ -17914,6 +19681,24 @@
         },
         "description": "Read a past [from,to) interval of at most 31 days. The complete retained populations must fit a combined 100000-row budget and a 1500ms SQL statement budget. No pagination or sampled totals; choose a shorter interval after a row-budget refusal."
       },
+      "listAttendeesBand": {
+        "enum": [
+          "critical",
+          "high",
+          "moderate",
+          "low",
+          "info",
+          "none"
+        ]
+      },
+      "listAttendeesDecision": {
+        "enum": [
+          "cleared",
+          "watch",
+          "escalated",
+          "undecided"
+        ]
+      },
       "AccountRiskReason": {
         "type": "object",
         "additionalProperties": false,
@@ -18109,6 +19894,36 @@
           "type": "string",
           "pattern": "^rvs_[0-7][0-9A-HJKMNP-TV-Z]{25}$",
           "example": "rvs_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+        }
+      },
+      "EventResourceId": {
+        "name": "event_id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^evn_[0-7][0-9A-HJKMNP-TV-Z]{25}$",
+          "example": "evn_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+        }
+      },
+      "AttendeeId": {
+        "name": "attendee_id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^att_[0-7][0-9A-HJKMNP-TV-Z]{25}$",
+          "example": "att_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+        }
+      },
+      "ScreeningId": {
+        "name": "screening_id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^scn_[0-7][0-9A-HJKMNP-TV-Z]{25}$",
+          "example": "scn_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
         }
       }
     },
@@ -25268,6 +27083,460 @@
               "pattern": "^[0-9a-f]{32}$",
               "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
             }
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/ConflictError"
+            }
+          }
+        }
+      },
+      "EventsListed": {
+        "description": "Events, newest first. Follow next_before for another page.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/EventList"
+            }
+          }
+        }
+      },
+      "EventCreated": {
+        "description": "The event is created.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          },
+          "Location": {
+            "description": "The event's URI.",
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "example": "/v1/assessments/asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Event"
+            }
+          }
+        }
+      },
+      "EventFound": {
+        "description": "The event.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Event"
+            }
+          }
+        }
+      },
+      "EventUpdated": {
+        "description": "The event after the change.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Event"
+            }
+          }
+        }
+      },
+      "EventDeleted": {
+        "description": "The event and everything under it are erased, and its screenings stopped.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        }
+      },
+      "AttendeesListed": {
+        "description": "Attendees in upload order. Follow next_after for another page.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/AttendeeList"
+            }
+          }
+        }
+      },
+      "AttendeeBatchRecorded": {
+        "description": "What the batch did to each row.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          },
+          "Idempotent-Replayed": {
+            "description": "Present and true when this answer replays an earlier request with the same Idempotency-Key and body.",
+            "schema": {
+              "type": "string",
+              "const": "true"
+            }
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/AttendeeBatch"
+            }
+          }
+        }
+      },
+      "AttendeeReportFound": {
+        "description": "The attendee, their matched profiles, findings and every recorded decision.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/AttendeeReport"
+            }
+          }
+        }
+      },
+      "AttendeeDecided": {
+        "description": "The attendee with the decision recorded.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Attendee"
+            }
+          }
+        }
+      },
+      "ScreeningsListed": {
+        "description": "Screenings, newest first. Follow next_before for another page.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ScreeningList"
+            }
+          }
+        }
+      },
+      "ScreeningAccepted": {
+        "description": "The screening is queued. Poll Location after Retry-After; it finishes minutes to hours later.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          },
+          "Location": {
+            "description": "The screening's URI.",
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "example": "/v1/assessments/asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+            },
+            "required": true
+          },
+          "Retry-After": {
+            "description": "Whole seconds to wait before polling.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,3}$",
+              "example": "2"
+            },
+            "required": true
+          },
+          "Idempotent-Replayed": {
+            "description": "Present and true when this answer replays an earlier request with the same Idempotency-Key and body.",
+            "schema": {
+              "type": "string",
+              "const": "true"
+            }
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Screening"
+            }
+          }
+        }
+      },
+      "ScreeningFound": {
+        "description": "The screening and its progress.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Screening"
+            }
+          }
+        }
+      },
+      "ScreeningCancelled": {
+        "description": "The screening, cancelled, or as it finished when it already had.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Screening"
+            }
+          }
+        }
+      },
+      "InvalidEventRequest": {
+        "description": "The body or query is invalid, or Idempotency-Key is missing, repeated or malformed.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/BadRequestError"
+            }
+          }
+        }
+      },
+      "EventConflict": {
+        "description": "The event or screening's state does not allow the change, a bound is reached, the Idempotency-Key was used for another body, or the environment cannot screen yet.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
           }
         },
         "content": {

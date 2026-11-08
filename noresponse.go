@@ -84,6 +84,8 @@ type NoResponse struct {
 	Evaluations *Evaluations
 	// Retained outcomes, enforcement reports and review populations.
 	Operations *Operations
+	// Events, attendee lists, screenings and reviewer decisions.
+	Events *Events
 
 	sdkConfiguration config.SDKConfiguration
 	hooks            *hooks.Hooks
@@ -160,10 +162,10 @@ func WithTimeout(timeout time.Duration) SDKOption {
 // New creates a new instance of the SDK with the provided options
 func New(opts ...SDKOption) *NoResponse {
 	sdk := &NoResponse{
-		SDKVersion: "10.0.9",
+		SDKVersion: "10.0.10",
 		sdkConfiguration: config.SDKConfiguration{
-			UserAgent:         "noresponse-sdk/go 10.0.9",
-			SDKVersion:        "10.0.9",
+			UserAgent:         "noresponse-sdk/go 10.0.10",
+			SDKVersion:        "10.0.10",
 			GenVersion:        "internal",
 			OpenAPIDocVersion: "1",
 			ServerList:        ServerList,
@@ -206,6 +208,7 @@ func New(opts ...SDKOption) *NoResponse {
 	sdk.Exports = newExports(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Evaluations = newEvaluations(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Operations = newOperations(sdk, sdk.sdkConfiguration, sdk.hooks)
+	sdk.Events = newEvents(sdk, sdk.sdkConfiguration, sdk.hooks)
 
 	return sdk
 }

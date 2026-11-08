@@ -1,0 +1,14 @@
+# AttendeeReview
+
+One recorded decision.
+
+
+## Fields
+
+| Field                                                                      | Type                                                                       | Required                                                                   | Description                                                                | Example                                                                    |
+| -------------------------------------------------------------------------- | -------------------------------------------------------------------------- | -------------------------------------------------------------------------- | -------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| `ID`                                                                       | `string`                                                                   | :heavy_check_mark:                                                         | N/A                                                                        | arv_01JA2Z8K6Q4V7W9XBCDEFGHJKM                                             |
+| `Decision`                                                                 | [components.AttendeeDecision](../../models/components/attendeedecision.md) | :heavy_check_mark:                                                         | N/A                                                                        |                                                                            |
+| `Note`                                                                     | `*string`                                                                  | :heavy_minus_sign:                                                         | N/A                                                                        | Known to the venue team.                                                   |
+| `CreatedBy`                                                                | `string`                                                                   | :heavy_check_mark:                                                         | N/A                                                                        | user_2abc                                                                  |
+| `CreatedAt`                                                                | `string`                                                                   | :heavy_check_mark:                                                         | N/A                                                                        | 2026-01-01T00:00:00Z                                                       |

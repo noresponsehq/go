@@ -30,6 +30,9 @@ const (
 	ConflictErrorCodeMemberLimitReached          ConflictErrorCode = "member_limit_reached"
 	ConflictErrorCodeOwnerInvitePending          ConflictErrorCode = "owner_invite_pending"
 	ConflictErrorCodeAggregateErasedData         ConflictErrorCode = "aggregate_erased_data"
+	ConflictErrorCodeEventConflict               ConflictErrorCode = "event_conflict"
+	ConflictErrorCodeEventLimitReached           ConflictErrorCode = "event_limit_reached"
+	ConflictErrorCodeScreeningUnavailable        ConflictErrorCode = "screening_unavailable"
 )
 
 func (e ConflictErrorCode) ToPointer() *ConflictErrorCode {
@@ -40,7 +43,7 @@ func (e ConflictErrorCode) ToPointer() *ConflictErrorCode {
 func (e *ConflictErrorCode) IsExact() bool {
 	if e != nil {
 		switch *e {
-		case "idempotency_key_reused", "key_rotation_in_progress", "webhook_endpoint_limit_reached", "webhook_endpoint_unverified", "too_many_integrations", "risk_version_ahead", "key_limit_reached", "self_revocation", "outcome_conflict", "credential_conflict", "binding_conflict", "list_entry_exists", "list_limit_reached", "list_entry_too_broad", "policy_version_conflict", "review_version_conflict", "review_exists", "review_limit_reached", "export_conflict", "evaluation_conflict", "evaluation_no_proposal", "evaluation_limit_reached", "already_member", "member_limit_reached", "owner_invite_pending", "aggregate_erased_data":
+		case "idempotency_key_reused", "key_rotation_in_progress", "webhook_endpoint_limit_reached", "webhook_endpoint_unverified", "too_many_integrations", "risk_version_ahead", "key_limit_reached", "self_revocation", "outcome_conflict", "credential_conflict", "binding_conflict", "list_entry_exists", "list_limit_reached", "list_entry_too_broad", "policy_version_conflict", "review_version_conflict", "review_exists", "review_limit_reached", "export_conflict", "evaluation_conflict", "evaluation_no_proposal", "evaluation_limit_reached", "already_member", "member_limit_reached", "owner_invite_pending", "aggregate_erased_data", "event_conflict", "event_limit_reached", "screening_unavailable":
 			return true
 		}
 	}

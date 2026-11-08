@@ -46,3 +46,6 @@ custom := components.ConflictErrorCode("custom_value")
 | `ConflictErrorCodeMemberLimitReached`          | member_limit_reached                           |
 | `ConflictErrorCodeOwnerInvitePending`          | owner_invite_pending                           |
 | `ConflictErrorCodeAggregateErasedData`         | aggregate_erased_data                          |
+| `ConflictErrorCodeEventConflict`               | event_conflict                                 |
+| `ConflictErrorCodeEventLimitReached`           | event_limit_reached                            |
+| `ConflictErrorCodeScreeningUnavailable`        | screening_unavailable                          |
