@@ -25197,7 +25197,7 @@
         }
       },
       "KeyRotationForbidden": {
-        "description": "workspace_forbidden: the API key may not use this operation: its workspace is not entitled or is suspended. Rotating a live key waits for the workspace's onboarding. email_unverified: onboarding made the workspace and its address is not verified yet; open the mailed link. onboarding_in_review: the address is verified but NoResponse's own assessment did not allow it, so NoResponse reviews it first. onboarding_refused: NoResponse refused the workspace live keys. Test keys, and workspaces that onboarding did not make, are not refused this way.",
+        "description": "workspace_forbidden: the API key may not use this operation: it lacks the management scope, or its workspace is not entitled or is suspended. Rotating a live key waits for the workspace's onboarding. email_unverified: onboarding made the workspace and its address is not verified yet; open the mailed link. onboarding_in_review: the address is verified but NoResponse's own assessment did not allow it, so NoResponse reviews it first. onboarding_refused: NoResponse refused the workspace live keys. Test keys, and workspaces that onboarding did not make, are not refused this way.",
         "headers": {
           "Cache-Control": {
             "schema": {

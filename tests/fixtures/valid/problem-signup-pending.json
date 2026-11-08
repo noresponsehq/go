@@ -1,0 +1,8 @@
+{
+  "type": "https://docs.noresponse.org/problems/signup-pending",
+  "title": "Signup pending",
+  "status": 409,
+  "detail": "This address already has a workspace waiting for its verification link or for review. Open the link, or start again once it has expired.",
+  "code": "signup_pending",
+  "request_id": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+}

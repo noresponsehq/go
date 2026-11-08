@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: 25ddae46-795d-45f5-b455-3f48c41d440e
 management:
-  docChecksum: 623be4e65c19c53c8176883467622963
+  docChecksum: 663b174e697e559cb11e3d70d00c0b42
   docVersion: "1"
   speakeasyVersion: internal
   generationVersion: internal
-  releaseVersion: 10.0.8
-  configChecksum: ec5e5d741a425c3f5a04803f765ad9f0
+  releaseVersion: 10.0.9
+  configChecksum: 9ba7504df0e90eb10db5c86523e05ee4
 features:
   go:
     additionalDependencies: 0.1.0
@@ -2207,7 +2207,7 @@ trackedFiles:
   models/operations/updatesettings.go:
     last_write_checksum: sha1:9350e2f7449c85f08cb7e28d8a1daa4727492bfe
   noresponse.go:
-    last_write_checksum: sha1:b77df47acdfc96c41f3f8a7325d6b3c5cb5ecf62
+    last_write_checksum: sha1:9fd7a096d343cf3c97d380fbd8150022927dbc76
   operations.go:
     last_write_checksum: sha1:394a05ae140c85250837e355d3a4312a14b6e4e2
   optionalnullable/optionalnullable.go:
