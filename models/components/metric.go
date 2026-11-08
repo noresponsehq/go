@@ -1,12 +1,13 @@
 package components
 
-// Metric - assessments: assessments admitted. webhook_deliveries: events sent to endpoints, one per event per endpoint. key_usage_events: key-usage events accepted.
+// Metric - assessments: assessments admitted. webhook_deliveries: events sent to endpoints, one per event per endpoint. key_usage_events: key-usage events accepted. screenings: attendees a screening recorded a final result for, one per attendee per screening; a failed attendee counts nothing.
 type Metric string
 
 const (
 	MetricAssessments       Metric = "assessments"
 	MetricWebhookDeliveries Metric = "webhook_deliveries"
 	MetricKeyUsageEvents    Metric = "key_usage_events"
+	MetricScreenings        Metric = "screenings"
 )
 
 func (e Metric) ToPointer() *Metric {
@@ -17,7 +18,7 @@ func (e Metric) ToPointer() *Metric {
 func (e *Metric) IsExact() bool {
 	if e != nil {
 		switch *e {
-		case "assessments", "webhook_deliveries", "key_usage_events":
+		case "assessments", "webhook_deliveries", "key_usage_events", "screenings":
 			return true
 		}
 	}

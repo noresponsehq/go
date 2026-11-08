@@ -1941,7 +1941,7 @@
           "usage"
         ],
         "summary": "Read a workspace's usage.",
-        "description": "Read daily usage units for the environments you can access. These counts are unpriced. With live access it also returns the daily console lookup cap: used, limit and resets_at.",
+        "description": "Read daily usage units, screenings included, for the environments you can access. These counts are unpriced. With live access it also returns the daily console lookup cap: used, limit and resets_at.",
         "parameters": [
           {
             "$ref": "#/components/parameters/WorkspaceId"
@@ -2341,7 +2341,7 @@
           "settings"
         ],
         "summary": "Read an environment's settings.",
-        "description": "Read this environment retention, source selection and effective flow policies. A flow without its own thresholds inherits account_creation. Requires settings or management. Another environment answers404. Read-only and safe to retry.",
+        "description": "Read this environment retention, source selection, daily screening cap and effective flow policies. A flow without its own thresholds inherits account_creation. Requires settings or management. Another environment answers404. Read-only and safe to retry.",
         "parameters": [
           {
             "$ref": "#/components/parameters/WorkspaceId"
@@ -2387,7 +2387,7 @@
           "settings"
         ],
         "summary": "Change an environment's settings.",
-        "description": "Change named retention, source or flow settings in one transaction. Requires settings or management; changes to active policy also require policy_publish, which legacy management includes. Use expected_policy_version to reject concurrent changes and record a change_reason. Each accepted change creates a fresh version and an atomic audit event. Retention-only edits do not require policy publication authority. Flow thresholds preserve their declared ordering and bounds.",
+        "description": "Change named retention, screening cap, source or flow settings in one transaction. Requires settings or management; changes to active policy also require policy_publish, which legacy management includes. Use expected_policy_version to reject concurrent changes and record a change_reason. Each accepted change creates a fresh version and an atomic audit event. Retention and screening cap edits do not require policy publication authority. Flow thresholds preserve their declared ordering and bounds.",
         "parameters": [
           {
             "$ref": "#/components/parameters/WorkspaceId"
@@ -7331,7 +7331,7 @@
           "events"
         ],
         "summary": "Start a screening.",
-        "description": "Start a screening of new attendees and everyone on watch or escalated, with an Idempotency-Key. It finishes completed, partial or failed minutes to hours later; poll it. The test environment screens with stand-ins that find no accounts.",
+        "description": "Start a screening of new attendees and everyone on watch or escalated, with an Idempotency-Key. It finishes completed, partial or failed minutes to hours later; poll it. The answer carries estimated_spend; a screening whose estimate exceeds what the daily screening cap has left answers 409 screening_cap_exceeded. The test environment screens with stand-ins that find no accounts.",
         "parameters": [
           {
             "$ref": "#/components/parameters/WorkspaceId"
@@ -11472,6 +11472,7 @@
           "aggregate_erased_data",
           "event_conflict",
           "event_limit_reached",
+          "screening_cap_exceeded",
           "screening_unavailable"
         ],
         "description": "Machine codes an HTTP 409 answer can carry."
@@ -15127,9 +15128,10 @@
         "enum": [
           "assessments",
           "webhook_deliveries",
-          "key_usage_events"
+          "key_usage_events",
+          "screenings"
         ],
-        "description": "assessments: assessments admitted. webhook_deliveries: events sent to endpoints, one per event per endpoint. key_usage_events: key-usage events accepted."
+        "description": "assessments: assessments admitted. webhook_deliveries: events sent to endpoints, one per event per endpoint. key_usage_events: key-usage events accepted. screenings: attendees a screening recorded a final result for, one per attendee per screening; a failed attendee counts nothing."
       },
       "Namespace": {
         "type": "string",
@@ -18274,7 +18276,9 @@
           "attendees_total",
           "attendees_done",
           "attendees_flagged",
-          "attendees_failed"
+          "attendees_failed",
+          "estimated_spend",
+          "spent"
         ],
         "properties": {
           "id": {
@@ -18361,6 +18365,16 @@
             "type": "integer",
             "minimum": 0,
             "maximum": 20000
+          },
+          "estimated_spend": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "What the screening was estimated to cost when it started, in minor units of USD (cents): its attendees at its depth and platforms. Until the screening finishes, what it has not yet spent counts against the environment's screening_daily_cap."
+          },
+          "spent": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "What the attendees it has screened recorded, in minor units of USD. Each counts toward the UTC day it was recorded on; a failed attendee records nothing."
           },
           "error_code": {
             "type": "string",
@@ -18495,7 +18509,7 @@
         }
       },
       "Settings": {
-        "description": "One environment's settings: how long its assessments are kept, and for each flow the risk thresholds that decide it and the depth a request that names none is served at, and the sources it refuses. Live and test each have their own. A flow without thresholds of its own uses account_creation's (inherits_account_creation). Every change is recorded in the audit log as settings.updated, with who made it.",
+        "description": "One environment's settings: how long its assessments are kept, and for each flow the risk thresholds that decide it and the depth a request that names none is served at, the sources it refuses, and the daily cap on screening spend. Live and test each have their own. A flow without thresholds of its own uses account_creation's (inherits_account_creation). Every change is recorded in the audit log as settings.updated, with who made it.",
         "type": "object",
         "additionalProperties": false,
         "required": [
@@ -18504,7 +18518,8 @@
           "retention_days",
           "policy_version",
           "flows",
-          "refused_sources"
+          "refused_sources",
+          "screening_daily_cap"
         ],
         "properties": {
           "workspace_id": {
@@ -18551,6 +18566,15 @@
               "$ref": "#/components/schemas/SourceId"
             },
             "description": "The sources this environment refuses, sorted; empty, the default, refuses none. An assessment leaves a refused source out: its coverage is missing (an identifier with no other source lists coverage-unavailable as unavailable) rather than not_found, and a stored result of a refused source is not reused."
+          },
+          "screening_daily_cap": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 100000000,
+            "description": "The most the environment's screenings may spend in one UTC day, in minor units of USD (cents), 0 to 100000000; null is no cap. Default 50000. A screening whose estimated_spend exceeds the cap less the day's recorded spend and what open screenings may still spend answers 409 screening_cap_exceeded."
           }
         }
       },
@@ -18592,6 +18616,15 @@
               "$ref": "#/components/schemas/SourceId"
             },
             "description": "Replaces the refused sources; [] refuses none. A change applies to new assessments within a minute."
+          },
+          "screening_daily_cap": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 100000000,
+            "description": "Replaces the daily screening cap, in minor units of USD; null removes the cap. Needs settings.write only, like retention_days."
           },
           "flows": {
             "$ref": "#/components/schemas/SettingsRequestFlows",
@@ -18871,7 +18904,7 @@
         "description": "Where the context was derived: backend (also when the request named no transport), browser, or provider_hook for a hosted provider hook."
       },
       "Usage": {
-        "description": "Body of the 200 answer to GET /v1/workspaces/{workspace_id}/usage: what the workspace's environments were metered for on each UTC day from from through to. Each billable unit is counted once, where it becomes final: an assessment when it is admitted (by flow and depth), a webhook delivery once per event per endpoint (retries and replays add nothing), and a key-usage event once when the ingest accepts it. A count does not change when the assessment, account or workspace is later deleted. A day, environment or metric with nothing counted has no item. No prices or billing. console_lookups is the one limit: the live environment's daily cap on console lookups, as spent today.",
+        "description": "Body of the 200 answer to GET /v1/workspaces/{workspace_id}/usage: what the workspace's environments were metered for on each UTC day from from through to. Each billable unit is counted once, where it becomes final: an assessment when it is admitted (by flow and depth), a webhook delivery once per event per endpoint (retries and replays add nothing), a key-usage event once when the ingest accepts it, and a screened attendee once per screening when its result is recorded. A count does not change when the assessment, account or workspace is later deleted. A day, environment or metric with nothing counted has no item. No prices or billing; screening spend is in each screening's spent. console_lookups is the one limit: the live environment's daily cap on console lookups, as spent today.",
         "type": "object",
         "additionalProperties": false,
         "required": [
@@ -18899,7 +18932,7 @@
           },
           "items": {
             "type": "array",
-            "maxItems": 5856,
+            "maxItems": 6588,
             "description": "Ordered by environment (live first), then day, metric, flow and depth.",
             "items": {
               "$ref": "#/components/schemas/UsageCount"
@@ -18930,7 +18963,7 @@
           },
           "metric": {
             "$ref": "#/components/schemas/Metric",
-            "description": "assessments: assessments admitted. webhook_deliveries: events sent to endpoints, one per event per endpoint. key_usage_events: key-usage events accepted."
+            "description": "assessments: assessments admitted. webhook_deliveries: events sent to endpoints, one per event per endpoint. key_usage_events: key-usage events accepted. screenings: attendees a screening recorded a final result for, one per attendee per screening; a failed attendee counts nothing."
           },
           "flow": {
             "$ref": "#/components/schemas/UsageCountFlow",
@@ -23456,6 +23489,12 @@
                       "count": 2330
                     },
                     {
+                      "environment": "live",
+                      "day": "2026-10-23",
+                      "metric": "screenings",
+                      "count": 240
+                    },
+                    {
                       "environment": "test",
                       "day": "2026-10-23",
                       "metric": "assessments",
@@ -24205,7 +24244,8 @@
                       "on_expiry": "review"
                     }
                   },
-                  "refused_sources": []
+                  "refused_sources": [],
+                  "screening_daily_cap": 50000
                 }
               }
             }
@@ -24279,7 +24319,8 @@
                   },
                   "refused_sources": [
                     "phone"
-                  ]
+                  ],
+                  "screening_daily_cap": null
                 }
               }
             }
@@ -27520,7 +27561,7 @@
         }
       },
       "EventConflict": {
-        "description": "The event or screening's state does not allow the change, a bound is reached, the Idempotency-Key was used for another body, or the environment cannot screen yet.",
+        "description": "The event or screening's state does not allow the change, a bound is reached, the Idempotency-Key was used for another body, the environment cannot screen yet, or the screening's estimate exceeds what the daily screening cap has left.",
         "headers": {
           "Cache-Control": {
             "schema": {

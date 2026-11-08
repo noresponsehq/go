@@ -3577,6 +3577,16 @@
       "expect": "valid"
     },
     {
+      "file": "valid/settings-request-screening-cap.json",
+      "schema": "settings-request.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/settings-request-no-screening-cap.json",
+      "schema": "settings-request.schema.json",
+      "expect": "valid"
+    },
+    {
       "file": "valid/settings-request-signup.json",
       "schema": "settings-request.schema.json",
       "expect": "valid"
@@ -3698,6 +3708,30 @@
         ]
       ],
       "why": "NOR-727 console_lookups always says when the cap resets"
+    },
+    {
+      "file": "invalid/usage-screenings-with-depth.json",
+      "schema": "usage.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "not",
+          "/items/0"
+        ]
+      ],
+      "why": "NOR-794 a screening unit carries no assessment flow or depth"
+    },
+    {
+      "file": "invalid/settings-request-negative-screening-cap.json",
+      "schema": "settings-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "minimum",
+          "/screening_daily_cap"
+        ]
+      ],
+      "why": "NOR-794 the daily screening cap is 0 or more, or null for no cap"
     },
     {
       "file": "invalid/usage-delivery-with-flow.json",

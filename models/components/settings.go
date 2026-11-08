@@ -1,6 +1,6 @@
 package components
 
-// Settings - One environment's settings: how long its assessments are kept, and for each flow the risk thresholds that decide it and the depth a request that names none is served at, and the sources it refuses. Live and test each have their own. A flow without thresholds of its own uses account_creation's (inherits_account_creation). Every change is recorded in the audit log as settings.updated, with who made it.
+// Settings - One environment's settings: how long its assessments are kept, and for each flow the risk thresholds that decide it and the depth a request that names none is served at, the sources it refuses, and the daily cap on screening spend. Live and test each have their own. A flow without thresholds of its own uses account_creation's (inherits_account_creation). Every change is recorded in the audit log as settings.updated, with who made it.
 type Settings struct {
 	// The workspace id, which is also its live environment's workspace id; the test environment's is the same id with :test appended. A workspace created through the API is tnt_ and a 26-character ULID.
 	WorkspaceID string `json:"workspace_id"`
@@ -17,6 +17,8 @@ type Settings struct {
 	Flows     SettingsFlows `json:"flows"`
 	// The sources this environment refuses, sorted; empty, the default, refuses none. An assessment leaves a refused source out: its coverage is missing (an identifier with no other source lists coverage-unavailable as unavailable) rather than not_found, and a stored result of a refused source is not reused.
 	RefusedSources []SourceID `json:"refused_sources"`
+	// The most the environment's screenings may spend in one UTC day, in minor units of USD (cents), 0 to 100000000; null is no cap. Default 50000. A screening whose estimated_spend exceeds the cap less the day's recorded spend and what open screenings may still spend answers 409 screening_cap_exceeded.
+	ScreeningDailyCap *int64 `json:"screening_daily_cap"`
 }
 
 func (s *Settings) GetWorkspaceID() string {
@@ -73,4 +75,11 @@ func (s *Settings) GetRefusedSources() []SourceID {
 		return []SourceID{}
 	}
 	return s.RefusedSources
+}
+
+func (s *Settings) GetScreeningDailyCap() *int64 {
+	if s == nil {
+		return nil
+	}
+	return s.ScreeningDailyCap
 }

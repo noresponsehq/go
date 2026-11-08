@@ -2,6 +2,7 @@ package components
 
 import (
 	"github.com/noresponsehq/go/v10/internal/utils"
+	"github.com/noresponsehq/go/v10/optionalnullable"
 )
 
 // SettingsRequest - Changes only named settings, atomically. Every successful write advances policy_version and retains an immutable settings snapshot. expected_policy_version optionally guards against stale edits; restore always requires it.
@@ -9,6 +10,8 @@ type SettingsRequest struct {
 	RetentionDays *int64 `json:"retention_days,omitzero"`
 	// Replaces the refused sources; [] refuses none. A change applies to new assessments within a minute.
 	RefusedSources []SourceID `json:"refused_sources,omitzero"`
+	// Replaces the daily screening cap, in minor units of USD; null removes the cap. Needs settings.write only, like retention_days.
+	ScreeningDailyCap optionalnullable.OptionalNullable[int64] `json:"screening_daily_cap,omitzero"`
 	// Use account_creation or its deprecated alias signup, not both.
 	Flows *SettingsRequestFlows `json:"flows,omitzero"`
 	// Compare-and-set guard. A stale version returns 409 policy_version_conflict before any change; every settings write including retention advances the version.
@@ -39,6 +42,13 @@ func (s *SettingsRequest) GetRefusedSources() []SourceID {
 		return nil
 	}
 	return s.RefusedSources
+}
+
+func (s *SettingsRequest) GetScreeningDailyCap() optionalnullable.OptionalNullable[int64] {
+	if s == nil {
+		return nil
+	}
+	return s.ScreeningDailyCap
 }
 
 func (s *SettingsRequest) GetFlows() *SettingsRequestFlows {

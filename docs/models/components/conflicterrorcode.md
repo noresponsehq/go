@@ -48,4 +48,5 @@ custom := components.ConflictErrorCode("custom_value")
 | `ConflictErrorCodeAggregateErasedData`         | aggregate_erased_data                          |
 | `ConflictErrorCodeEventConflict`               | event_conflict                                 |
 | `ConflictErrorCodeEventLimitReached`           | event_limit_reached                            |
+| `ConflictErrorCodeScreeningCapExceeded`        | screening_cap_exceeded                         |
 | `ConflictErrorCodeScreeningUnavailable`        | screening_unavailable                          |

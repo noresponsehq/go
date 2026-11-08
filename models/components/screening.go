@@ -51,6 +51,10 @@ type Screening struct {
 	AttendeesDone    int64 `json:"attendees_done"`
 	AttendeesFlagged int64 `json:"attendees_flagged"`
 	AttendeesFailed  int64 `json:"attendees_failed"`
+	// What the screening was estimated to cost when it started, in minor units of USD (cents): its attendees at its depth and platforms. Until the screening finishes, what it has not yet spent counts against the environment's screening_daily_cap.
+	EstimatedSpend int64 `json:"estimated_spend"`
+	// What the attendees it has screened recorded, in minor units of USD. Each counts toward the UTC day it was recorded on; a failed attendee records nothing.
+	Spent int64 `json:"spent"`
 	// Why a failed or cancelled screening stopped.
 	ErrorCode *string `json:"error_code,omitzero"`
 }
@@ -158,6 +162,20 @@ func (s *Screening) GetAttendeesFailed() int64 {
 		return 0
 	}
 	return s.AttendeesFailed
+}
+
+func (s *Screening) GetEstimatedSpend() int64 {
+	if s == nil {
+		return 0
+	}
+	return s.EstimatedSpend
+}
+
+func (s *Screening) GetSpent() int64 {
+	if s == nil {
+		return 0
+	}
+	return s.Spent
 }
 
 func (s *Screening) GetErrorCode() *string {
