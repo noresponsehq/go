@@ -2465,7 +2465,7 @@ func (s *Events) AddAttendees(ctx context.Context, workspaceID string, environme
 }
 
 // GetAttendee - Read an attendee's report.
-// Read an attendee's report: matched profiles, findings with their evidence and every recorded decision.
+// Read an attendee's report: matched profiles, findings with their evidence, every recorded decision, and the other events where the same email or phone appears.
 func (s *Events) GetAttendee(ctx context.Context, workspaceID string, environment components.KeyEnvironment, eventID string, attendeeID string, opts ...operations.Option) (*operations.GetAttendeeResponse, error) {
 	request := operations.GetAttendeeRequest{
 		WorkspaceID: workspaceID,

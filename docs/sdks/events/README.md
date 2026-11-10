@@ -506,7 +506,7 @@ func main() {
 
 ## GetAttendee
 
-Read an attendee's report: matched profiles, findings with their evidence and every recorded decision.
+Read an attendee's report: matched profiles, findings with their evidence, every recorded decision, and the other events where the same email or phone appears.
 
 ### Example Usage
 

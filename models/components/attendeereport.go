@@ -1,6 +1,6 @@
 package components
 
-// AttendeeReport - Everything known about one attendee.
+// AttendeeReport - Everything known about one attendee, and where else in the environment they appear.
 type AttendeeReport struct {
 	// An attendee and where their screening and review stand.
 	Attendee Attendee `json:"attendee"`
@@ -14,6 +14,8 @@ type AttendeeReport struct {
 	Media []ScreeningMedia `json:"media"`
 	// Every recorded decision, oldest first.
 	Reviews []AttendeeReview `json:"reviews"`
+	// Where else in the environment the attendee appears, read live from those events: deleting one removes it here.
+	OtherEvents OtherEvents `json:"other_events"`
 }
 
 func (a *AttendeeReport) GetAttendee() Attendee {
@@ -56,4 +58,11 @@ func (a *AttendeeReport) GetReviews() []AttendeeReview {
 		return []AttendeeReview{}
 	}
 	return a.Reviews
+}
+
+func (a *AttendeeReport) GetOtherEvents() OtherEvents {
+	if a == nil {
+		return OtherEvents{}
+	}
+	return a.OtherEvents
 }

@@ -7149,7 +7149,7 @@
           "events"
         ],
         "summary": "Read an attendee's report.",
-        "description": "Read an attendee's report: matched profiles, findings with their evidence and every recorded decision.",
+        "description": "Read an attendee's report: matched profiles, findings with their evidence, every recorded decision, and the other events where the same email or phone appears.",
         "parameters": [
           {
             "$ref": "#/components/parameters/WorkspaceId"
@@ -10735,7 +10735,8 @@
           "findings",
           "posts",
           "media",
-          "reviews"
+          "reviews",
+          "other_events"
         ],
         "properties": {
           "attendee": {
@@ -10780,9 +10781,13 @@
               "$ref": "#/components/schemas/AttendeeReview"
             },
             "description": "Every recorded decision, oldest first."
+          },
+          "other_events": {
+            "$ref": "#/components/schemas/OtherEvents",
+            "description": "The other events of this environment where an attendee with the same email or phone appears, newest event first. History only: nothing in it changes this attendee's screening, band, match state or decision."
           }
         },
-        "description": "Everything known about one attendee."
+        "description": "Everything known about one attendee, and where else in the environment they appear."
       },
       "AttendeeReview": {
         "type": "object",
@@ -15754,6 +15759,120 @@
           "lookup"
         ],
         "description": "api (the default) searches the assessments your integration sent. lookup searches the assessments your team ran by hand on the console's Lookup page. The API sets an assessment's origin from the credential that sent it. A lookup is not in any other list, count, webhook event or account."
+      },
+      "OtherEvent": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "event_id",
+          "event_name",
+          "event_starts_at",
+          "attendee_id",
+          "matched_on",
+          "match_state",
+          "highest_band",
+          "decision"
+        ],
+        "properties": {
+          "event_id": {
+            "type": "string",
+            "pattern": "^evn_[0-7][0-9A-HJKMNP-TV-Z]{25}$",
+            "example": "evn_01J9Y3C2M4N6P8Q0RSTVWXYZAB"
+          },
+          "event_name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "example": "Spring gala"
+          },
+          "event_starts_at": {
+            "type": "string",
+            "example": "2025-09-01T09:00:00Z"
+          },
+          "attendee_id": {
+            "type": "string",
+            "pattern": "^att_[0-7][0-9A-HJKMNP-TV-Z]{25}$",
+            "description": "The attendee on that event's list.",
+            "example": "att_01J9Y3C2M4N6P8Q0RSTVWXYZAB"
+          },
+          "matched_on": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 3,
+            "uniqueItems": true,
+            "items": {
+              "enum": [
+                "email",
+                "phone",
+                "external_id"
+              ]
+            },
+            "description": "Which identifiers match, in this order. external_id appears only beside email or phone: the same external id alone is not a match, since ticket numbers may be reused across events."
+          },
+          "match_state": {
+            "$ref": "#/components/schemas/MatchState",
+            "description": "That attendee's match state at that event."
+          },
+          "highest_band": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/HighestBand"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "That attendee's most severe band at that event, or null."
+          },
+          "decision": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AttendeeDecision"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The latest reviewer decision at that event, or null before any."
+          },
+          "decided_by": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256,
+            "description": "Who made that decision.",
+            "example": "user_2abc"
+          },
+          "decided_at": {
+            "type": "string",
+            "description": "When that decision was made.",
+            "example": "2025-09-01T12:00:00Z"
+          }
+        },
+        "description": "An attendee of another event in the same environment who shares an email or phone with this one, as that event recorded them."
+      },
+      "OtherEvents": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "total",
+          "items"
+        ],
+        "properties": {
+          "total": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "How many attendees of other events match, of which items lists the 20 most recent."
+          },
+          "items": {
+            "type": "array",
+            "maxItems": 20,
+            "items": {
+              "$ref": "#/components/schemas/OtherEvent"
+            },
+            "description": "The 20 attendees of the most recent other events, newest event first."
+          }
+        },
+        "description": "Where else in the environment the attendee appears, read live from those events: deleting one removes it here."
       },
       "Outcome": {
         "enum": [
