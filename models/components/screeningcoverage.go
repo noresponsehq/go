@@ -1,5 +1,9 @@
 package components
 
+import (
+	"github.com/noresponsehq/go/v10/internal/utils"
+)
+
 // ScreeningCoverage - The denominator of a screening: accounts found, how many could be read, items read and the period they span, so a clean result is distinct from a person nobody could see.
 type ScreeningCoverage struct {
 	AccountsFound      int64 `json:"accounts_found"`
@@ -12,6 +16,19 @@ type ScreeningCoverage struct {
 	// The newest item read on any platform.
 	PeriodTo  *string                     `json:"period_to,omitzero"`
 	Platforms []ScreeningPlatformCoverage `json:"platforms"`
+	// Requested platforms where the attendee gave the screening nothing to look up, such as no handle for a platform that reads supplied handles only. Nothing looked and nothing failed: such a platform is not in platforms, is not none_found and does not make the attendee partial.
+	NotSearched []HandlePlatform `json:"not_searched,omitzero"`
+}
+
+func (s ScreeningCoverage) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(s, "", false)
+}
+
+func (s *ScreeningCoverage) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (s *ScreeningCoverage) GetAccountsFound() int64 {
@@ -61,4 +78,11 @@ func (s *ScreeningCoverage) GetPlatforms() []ScreeningPlatformCoverage {
 		return []ScreeningPlatformCoverage{}
 	}
 	return s.Platforms
+}
+
+func (s *ScreeningCoverage) GetNotSearched() []HandlePlatform {
+	if s == nil {
+		return nil
+	}
+	return s.NotSearched
 }

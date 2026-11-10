@@ -18984,6 +18984,15 @@
             "items": {
               "$ref": "#/components/schemas/ScreeningPlatformCoverage"
             }
+          },
+          "not_searched": {
+            "type": "array",
+            "maxItems": 11,
+            "uniqueItems": true,
+            "items": {
+              "$ref": "#/components/schemas/HandlePlatform"
+            },
+            "description": "Requested platforms where the attendee gave the screening nothing to look up, such as no handle for a platform that reads supplied handles only. Nothing looked and nothing failed: such a platform is not in platforms, is not none_found and does not make the attendee partial."
           }
         },
         "description": "The denominator of a screening: accounts found, how many could be read, items read and the period they span, so a clean result is distinct from a person nobody could see."

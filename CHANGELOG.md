@@ -1,5 +1,11 @@
 # Changelog
 
+## 10.0.17
+
+* `Sdk.Events.ListAttendees()`:  `response.Items[].Coverage.NotSearched` **Added**
+* `Sdk.Events.GetAttendee()`:  `response.Attendee.Coverage.NotSearched` **Added**
+* `Sdk.Events.ReviewAttendee()`:  `response.Coverage.NotSearched` **Added**
+
 ## 10.0.16
 
 * `Sdk.Events.GetAttendee()`:  `response.OtherEvents` **Added**
