@@ -20,6 +20,8 @@ type AttendeeIdentity struct {
 	City *string `json:"city,omitzero"`
 	// Accounts the attendee is known to hold, at most 20.
 	Handles []Handle `json:"handles,omitzero"`
+	// The attendee's role at the event: guest (a ticket holder), crew, vendor or press. Leave it out when you do not know it: an attendee without one has no role, not guest. A later row naming the same attendee replaces it, and a change of role alone keeps the attendee's screening results.
+	Role *AttendeeRole `json:"role,omitzero"`
 }
 
 func (a AttendeeIdentity) MarshalJSON() ([]byte, error) {
@@ -80,4 +82,11 @@ func (a *AttendeeIdentity) GetHandles() []Handle {
 		return nil
 	}
 	return a.Handles
+}
+
+func (a *AttendeeIdentity) GetRole() *AttendeeRole {
+	if a == nil {
+		return nil
+	}
+	return a.Role
 }

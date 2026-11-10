@@ -22,6 +22,8 @@ type Attendee struct {
 	City *string `json:"city,omitzero"`
 	// Accounts the attendee is known to hold, at most 20.
 	Handles []Handle `json:"handles,omitzero"`
+	// The attendee's role at the event: guest (a ticket holder), crew, vendor or press. Leave it out when you do not know it: an attendee without one has no role, not guest. A later row naming the same attendee replaces it, and a change of role alone keeps the attendee's screening results.
+	Role *AttendeeRole `json:"role,omitzero"`
 	// How sure the latest screening is that it found the attendee's accounts. unscreened until a screening reaches the attendee.
 	MatchState MatchState `json:"match_state"`
 	// The most severe finding's band, or null when nothing was flagged.
@@ -113,6 +115,13 @@ func (a *Attendee) GetHandles() []Handle {
 		return nil
 	}
 	return a.Handles
+}
+
+func (a *Attendee) GetRole() *AttendeeRole {
+	if a == nil {
+		return nil
+	}
+	return a.Role
 }
 
 func (a *Attendee) GetMatchState() MatchState {

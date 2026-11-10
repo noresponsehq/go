@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: 25ddae46-795d-45f5-b455-3f48c41d440e
 management:
-  docChecksum: e0a6fd7480c939b73a9bf4bb431aa830
+  docChecksum: 72792067a8ee94c2a7ac593c2bd4decc
   docVersion: "1"
   speakeasyVersion: internal
   generationVersion: internal
-  releaseVersion: 10.0.13
-  configChecksum: da742b8b14ed6da0580b99c1856a89df
+  releaseVersion: 10.0.14
+  configChecksum: 248a4a3295eb02c56c2b366e843a8979
 features:
   go:
     additionalDependencies: 0.1.0
@@ -195,7 +195,7 @@ trackedFiles:
   docs/models/components/assurancelevel.md:
     last_write_checksum: sha1:70054932b7f5be53d88d67c6d1e1da21364ae950
   docs/models/components/attendee.md:
-    last_write_checksum: sha1:02c7df8d1ef20168caac598fddaeb49246f84ff2
+    last_write_checksum: sha1:17c8d1ba8e819c05694c625bbedd605b835bf205
   docs/models/components/attendeebatch.md:
     last_write_checksum: sha1:b5b4e78f270d1fbc1af0bfcd4d13ed0a59fd4b43
   docs/models/components/attendeebatchitem.md:
@@ -217,7 +217,7 @@ trackedFiles:
   docs/models/components/attendeeflaggedmatchstate.md:
     last_write_checksum: sha1:1e0b9387f3900a5569d92c2c15f2e503035d1417
   docs/models/components/attendeeidentity.md:
-    last_write_checksum: sha1:0ecf3688bdd7adea9e2edf1668a6c41bd425995c
+    last_write_checksum: sha1:6a6858adeb683fba2eb60bc1c6229a8f095832d0
   docs/models/components/attendeelist.md:
     last_write_checksum: sha1:b15b48a5a0ecc6d83b28c21e0dfb406c1a2690ee
   docs/models/components/attendeereport.md:
@@ -226,6 +226,8 @@ trackedFiles:
     last_write_checksum: sha1:52624b19ac5b67ebe0368251dce26bd20425a569
   docs/models/components/attendeereviewrequest.md:
     last_write_checksum: sha1:51d480c58b2754f6467acc36685f7489613186cd
+  docs/models/components/attendeerole.md:
+    last_write_checksum: sha1:7610ef65893166da7c743f7c24ccabb322c70403
   docs/models/components/attribute.md:
     last_write_checksum: sha1:186a59dddf05c508679f867a9e9b4879ede8d043
   docs/models/components/attributeagreement.md:
@@ -522,6 +524,8 @@ trackedFiles:
     last_write_checksum: sha1:c57661855ca4c0a6751f5e01e460dc171742bfe1
   docs/models/components/listattendeesdecision.md:
     last_write_checksum: sha1:e609315d1036034faa05b4fe23a82e53efcc71a3
+  docs/models/components/listattendeesrole.md:
+    last_write_checksum: sha1:fb4c3b02cc98fca2d44319234292a5b33ca722f3
   docs/models/components/listbulkrequest.md:
     last_write_checksum: sha1:b411702eea91ebd78217dd708a104f1227a1d4fc
   docs/models/components/listchange.md:
@@ -1147,7 +1151,7 @@ trackedFiles:
   docs/models/operations/listaccountsresponse.md:
     last_write_checksum: sha1:ada6dc816dc1f2133c4d2eb7b5fe06bc820bff97
   docs/models/operations/listattendeesrequest.md:
-    last_write_checksum: sha1:3dad58995ec05d4d23a4f7110f021bb4a5dcc840
+    last_write_checksum: sha1:d4e2776bf30148cda9f4ebd5cebdf206294ca175
   docs/models/operations/listattendeesresponse.md:
     last_write_checksum: sha1:9bbc88d87f150352f868ab9138041c33045bb683
   docs/models/operations/listauditeventsrequest.md:
@@ -1601,7 +1605,7 @@ trackedFiles:
   models/components/assurancelevel.go:
     last_write_checksum: sha1:2fe8cfc9e9d301133cbba7d513079733e8122ced
   models/components/attendee.go:
-    last_write_checksum: sha1:b1bd6bc8ed31101a97e1fe4041686bc7fddcdbdf
+    last_write_checksum: sha1:62416e38f9df9146214bdcc8904821cc9c21ec93
   models/components/attendeebatch.go:
     last_write_checksum: sha1:80392b5c7d4ddf508e5ad9cd599088a8bbec7725
   models/components/attendeebatchitem.go:
@@ -1623,7 +1627,7 @@ trackedFiles:
   models/components/attendeeflaggedmatchstate.go:
     last_write_checksum: sha1:de2eb75a236df2b634351c95daedfa2f902ad8f8
   models/components/attendeeidentity.go:
-    last_write_checksum: sha1:b5f9091949e3e1b554ff9ae085438417a19ca05e
+    last_write_checksum: sha1:a75415d1ed483054a4b91c2a8e4112b5c9e00b92
   models/components/attendeelist.go:
     last_write_checksum: sha1:3b547b9cf0e38553a3ec37046457cf4cb2efb7af
   models/components/attendeereport.go:
@@ -1632,6 +1636,8 @@ trackedFiles:
     last_write_checksum: sha1:8939dd4c44e31899ce9b2d87184a1970e9eb6b8e
   models/components/attendeereviewrequest.go:
     last_write_checksum: sha1:5512a39d5cdb1cbfff88fbbd44026a83a72b425f
+  models/components/attendeerole.go:
+    last_write_checksum: sha1:a9d2b7592441482cac50e808717176debd9c3763
   models/components/attribute.go:
     last_write_checksum: sha1:aba49e78cc4214a9e0a309e87eaff22f059c61bd
   models/components/attributeagreement.go:
@@ -1908,6 +1914,8 @@ trackedFiles:
     last_write_checksum: sha1:5a0a1c9aecdee4a9944f7cadd6e5ead831bab747
   models/components/listattendeesdecision.go:
     last_write_checksum: sha1:6658cb85a1d1cee1eea6283fda2df3ff525f5f09
+  models/components/listattendeesrole.go:
+    last_write_checksum: sha1:1b12a60e274f324d68eaa5f0948e907af5cc592c
   models/components/listbulkrequest.go:
     last_write_checksum: sha1:d32441476864faed1f226b5de74f782666660dfa
   models/components/listchange.go:
@@ -2393,7 +2401,7 @@ trackedFiles:
   models/operations/listaccounts.go:
     last_write_checksum: sha1:3726e4f2ab113ce810b248ddf45a04f3618233dc
   models/operations/listattendees.go:
-    last_write_checksum: sha1:4ee5bac1930cbccb3ac321f50eb6fcb02c99a2eb
+    last_write_checksum: sha1:20abd70419ec49937885399607512e37e3a6601e
   models/operations/listauditevents.go:
     last_write_checksum: sha1:c3dea6362778a93927a5d566fb121d987d854dc3
   models/operations/listauditstreams.go:
@@ -2509,7 +2517,7 @@ trackedFiles:
   models/operations/updatesettings.go:
     last_write_checksum: sha1:9350e2f7449c85f08cb7e28d8a1daa4727492bfe
   noresponse.go:
-    last_write_checksum: sha1:75292b69220eed382891271e199b2d596a393c25
+    last_write_checksum: sha1:ab3a0bf8e1b5c0269df5280bf23e7642dc76526a
   operations.go:
     last_write_checksum: sha1:394a05ae140c85250837e355d3a4312a14b6e4e2
   optionalnullable/optionalnullable.go:

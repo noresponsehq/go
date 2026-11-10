@@ -7038,6 +7038,14 @@
             "schema": {
               "$ref": "#/components/schemas/listAttendeesDecision"
             }
+          },
+          {
+            "name": "role",
+            "in": "query",
+            "description": "Only attendees with this role; unstated for attendees whose role was not given.",
+            "schema": {
+              "$ref": "#/components/schemas/listAttendeesRole"
+            }
           }
         ],
         "responses": {
@@ -10294,6 +10302,10 @@
             },
             "description": "Accounts the attendee is known to hold, at most 20."
           },
+          "role": {
+            "$ref": "#/components/schemas/AttendeeRole",
+            "description": "The attendee's role at the event: guest (a ticket holder), crew, vendor or press. Leave it out when you do not know it: an attendee without one has no role, not guest. A later row naming the same attendee replaces it, and a change of role alone keeps the attendee's screening results."
+          },
           "match_state": {
             "$ref": "#/components/schemas/MatchState",
             "description": "How sure the latest screening is that it found the attendee's accounts. unscreened until a screening reaches the attendee."
@@ -10683,6 +10695,10 @@
               "$ref": "#/components/schemas/Handle"
             },
             "description": "Accounts the attendee is known to hold, at most 20."
+          },
+          "role": {
+            "$ref": "#/components/schemas/AttendeeRole",
+            "description": "The attendee's role at the event: guest (a ticket holder), crew, vendor or press. Leave it out when you do not know it: an attendee without one has no role, not guest. A later row naming the same attendee replaces it, and a change of role alone keeps the attendee's screening results."
           }
         },
         "description": "What you know about an attendee. Stored encrypted under the workspace's key."
@@ -10825,6 +10841,15 @@
           }
         },
         "description": "Records a decision on an attendee."
+      },
+      "AttendeeRole": {
+        "enum": [
+          "guest",
+          "crew",
+          "vendor",
+          "press"
+        ],
+        "description": "The attendee's role at the event: guest (a ticket holder), crew, vendor or press. Leave it out when you do not know it: an attendee without one has no role, not guest. A later row naming the same attendee replaces it, and a change of role alone keeps the attendee's screening results."
       },
       "Attribute": {
         "enum": [
@@ -20649,6 +20674,15 @@
           "watch",
           "escalated",
           "undecided"
+        ]
+      },
+      "listAttendeesRole": {
+        "enum": [
+          "guest",
+          "crew",
+          "vendor",
+          "press",
+          "unstated"
         ]
       },
       "AccountRiskReason": {

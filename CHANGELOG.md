@@ -1,5 +1,15 @@
 # Changelog
 
+## 10.0.14
+
+* `Sdk.Events.ListAttendees()`: 
+  *  `request.Request.Role` **Added**
+  *  `response.Items[].Role` **Added**
+* `Sdk.Events.AddAttendees()`: 
+  *  `request.Request.Body.Attendees[].Role` **Added**
+* `Sdk.Events.GetAttendee()`:  `response.Attendee.Role` **Added**
+* `Sdk.Events.ReviewAttendee()`:  `response.Role` **Added**
+
 ## 10.0.13
 
 * `Sdk.Events.ListAttendees()`:  `response.Items[]` **Changed**

@@ -19,6 +19,8 @@ type ListAttendeesRequest struct {
 	Band *components.ListAttendeesBand `queryParam:"style=form,explode=true,name=band"`
 	// Only attendees with this decision; undecided for none yet.
 	Decision *components.ListAttendeesDecision `queryParam:"style=form,explode=true,name=decision"`
+	// Only attendees with this role; unstated for attendees whose role was not given.
+	Role *components.ListAttendeesRole `queryParam:"style=form,explode=true,name=role"`
 }
 
 func (l ListAttendeesRequest) MarshalJSON() ([]byte, error) {
@@ -79,6 +81,13 @@ func (l *ListAttendeesRequest) GetDecision() *components.ListAttendeesDecision {
 		return nil
 	}
 	return l.Decision
+}
+
+func (l *ListAttendeesRequest) GetRole() *components.ListAttendeesRole {
+	if l == nil {
+		return nil
+	}
+	return l.Role
 }
 
 type ListAttendeesResponse struct {
