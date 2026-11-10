@@ -1,5 +1,9 @@
 package components
 
+import (
+	"github.com/noresponsehq/go/v10/internal/utils"
+)
+
 // ScreeningFinding - Something the analyser flagged. band is capped by the strongest match among the profiles of its evidence: possible at most moderate, probable at most high. capped_from is the band the analyser gave when the cap lowered it.
 type ScreeningFinding struct {
 	ID string `json:"id"`
@@ -15,12 +19,25 @@ type ScreeningFinding struct {
 	Quote *string `json:"quote,omitzero"`
 	// The posts and media that support the finding.
 	Evidence []string `json:"evidence"`
+	// What the analyser saw in each image among evidence that the finding rests on. Unlike quote, an observation cannot be checked against the record: judge it against the image at the media item's permalink.
+	MediaObservations []ScreeningMediaObservation `json:"media_observations,omitzero"`
 	// The resolver, collector or analyser that produced a record, by its catalogue name.
 	Analyser string `json:"analyser"`
 	Model    string `json:"model"`
 	// What the analysis cost, in US cents.
 	SpendMinor int64  `json:"spend_minor"`
 	CreatedAt  string `json:"created_at"`
+}
+
+func (s ScreeningFinding) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(s, "", false)
+}
+
+func (s *ScreeningFinding) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (s *ScreeningFinding) GetID() string {
@@ -77,6 +94,13 @@ func (s *ScreeningFinding) GetEvidence() []string {
 		return []string{}
 	}
 	return s.Evidence
+}
+
+func (s *ScreeningFinding) GetMediaObservations() []ScreeningMediaObservation {
+	if s == nil {
+		return nil
+	}
+	return s.MediaObservations
 }
 
 func (s *ScreeningFinding) GetAnalyser() string {

@@ -11,6 +11,8 @@ type ScreeningCoverage struct {
 	ItemsRead          int64 `json:"items_read"`
 	// Items read that the analyser could not analyse. Above zero, the attendee is partial: a finding may be missing from them.
 	ItemsNotAnalysed *int64 `json:"items_not_analysed,omitzero"`
+	// items_not_analysed split by reason, each reason once with at least one item.
+	NotAnalysedByReason []ScreeningNotAnalysedCount `json:"not_analysed_by_reason,omitzero"`
 	// The oldest item read on any platform.
 	PeriodFrom *string `json:"period_from,omitzero"`
 	// The newest item read on any platform.
@@ -57,6 +59,13 @@ func (s *ScreeningCoverage) GetItemsNotAnalysed() *int64 {
 		return nil
 	}
 	return s.ItemsNotAnalysed
+}
+
+func (s *ScreeningCoverage) GetNotAnalysedByReason() []ScreeningNotAnalysedCount {
+	if s == nil {
+		return nil
+	}
+	return s.NotAnalysedByReason
 }
 
 func (s *ScreeningCoverage) GetPeriodFrom() *string {

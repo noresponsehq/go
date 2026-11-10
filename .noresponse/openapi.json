@@ -18972,6 +18972,14 @@
             "maximum": 1000000,
             "description": "Items read that the analyser could not analyse. Above zero, the attendee is partial: a finding may be missing from them."
           },
+          "not_analysed_by_reason": {
+            "type": "array",
+            "maxItems": 8,
+            "items": {
+              "$ref": "#/components/schemas/ScreeningNotAnalysedCount"
+            },
+            "description": "items_not_analysed split by reason, each reason once with at least one item."
+          },
           "period_from": {
             "type": "string",
             "description": "The oldest item read on any platform.",
@@ -19065,6 +19073,14 @@
               "example": "itm_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
             },
             "description": "The posts and media that support the finding."
+          },
+          "media_observations": {
+            "type": "array",
+            "maxItems": 50,
+            "items": {
+              "$ref": "#/components/schemas/ScreeningMediaObservation"
+            },
+            "description": "What the analyser saw in each image among evidence that the finding rests on. Unlike quote, an observation cannot be checked against the record: judge it against the image at the media item's permalink."
           },
           "analyser": {
             "type": "string",
@@ -19337,6 +19353,69 @@
           }
         },
         "description": "One image or video a collector read, with the post that carried it."
+      },
+      "ScreeningMediaObservation": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "media_id",
+          "description"
+        ],
+        "properties": {
+          "media_id": {
+            "type": "string",
+            "pattern": "^itm_[0-7][0-9A-HJKMNP-TV-Z]{25}$",
+            "description": "The image, one of the finding's evidence.",
+            "example": "itm_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          },
+          "description": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000,
+            "description": "What the analyser saw in the image that supports the finding.",
+            "example": "A handwritten sign held up outside the venue."
+          },
+          "read_text": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000,
+            "description": "Words the analyser read in the image, as it read them. They come from the image's pixels, not from a post's text, so they are not a quote and were not checked against the record.",
+            "example": "SEE YOU ON THE 1ST"
+          }
+        },
+        "description": "What an analyser saw in one image that a finding rests on."
+      },
+      "ScreeningNotAnalysedCount": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "reason",
+          "items"
+        ],
+        "properties": {
+          "reason": {
+            "$ref": "#/components/schemas/ScreeningNotAnalysedReason"
+          },
+          "items": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000000
+          }
+        },
+        "description": "How many items read were not analysed for one reason."
+      },
+      "ScreeningNotAnalysedReason": {
+        "enum": [
+          "video",
+          "image_unavailable",
+          "image_unsupported",
+          "image_limit",
+          "refused",
+          "unfinished",
+          "unverified",
+          "unspecified"
+        ],
+        "description": "Why an item read was not analysed. video: a video, whose caption alone is read. image_unavailable: the image could not be fetched from the platform. image_unsupported: not a JPEG, PNG, GIF or WebP image, or too large to send. image_limit: past the most images one attendee's analysis reads. refused: the model declined to read it. unfinished: the model cut its batch short or answered outside the schema, or the request was rejected. unverified: a finding cited it with words it does not contain or an image it did not describe. unspecified: the analyser gave no reason."
       },
       "ScreeningPlatformCoverage": {
         "type": "object",
