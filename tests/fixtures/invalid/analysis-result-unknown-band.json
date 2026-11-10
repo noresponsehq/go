@@ -1,0 +1,16 @@
+{
+  "request_id": "anr_01JC8Y2M4N6P8Q0R2S4T6V8W01",
+  "findings": [
+    {
+      "category": "movement_exposure",
+      "band": "severe",
+      "confidence": 0.8,
+      "rationale": "The post reports where the principal leaves the hotel and when, which exposes their movements before the event.",
+      "evidence": [
+        "itm_01JC8Y2M4N6P8Q0R2S4T6V8W01"
+      ],
+      "model": "example-model-1"
+    }
+  ],
+  "spend_minor": 2
+}

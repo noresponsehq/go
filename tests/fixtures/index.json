@@ -4092,6 +4092,43 @@
       "file": "valid/customer-evidence-customer-export-action-request.json",
       "schema": "customer-export-action-request.schema.json",
       "expect": "valid"
+    },
+    {
+      "file": "valid/analysis-request.json",
+      "schema": "screening-records.schema.json#/$defs/analysis_request",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/analysis-result.json",
+      "schema": "screening-records.schema.json#/$defs/analysis_result",
+      "expect": "valid"
+    },
+    {
+      "file": "invalid/analysis-result-unknown-band.json",
+      "schema": "screening-records.schema.json#/$defs/analysis_result",
+      "expect": "invalid",
+      "errors": [
+        [
+          "enum",
+          "/findings/0/band"
+        ]
+      ],
+      "why": "NOR-787 a finding's band is one of the five bands"
+    },
+    {
+      "file": "valid/screening-catalogue-entry.json",
+      "schema": "screening-catalogue.schema.json#/$defs/entry",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/screening-catalogue-list.json",
+      "schema": "screening-catalogue.schema.json#/$defs/entry_list",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/screening-catalogue-request.json",
+      "schema": "screening-catalogue.schema.json#/$defs/entry_request",
+      "expect": "valid"
     }
   ]
 }

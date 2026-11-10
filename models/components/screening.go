@@ -1,48 +1,18 @@
 package components
 
-type ScreeningPlatform string
-
-const (
-	ScreeningPlatformInstagram ScreeningPlatform = "instagram"
-	ScreeningPlatformX         ScreeningPlatform = "x"
-	ScreeningPlatformBluesky   ScreeningPlatform = "bluesky"
-	ScreeningPlatformYoutube   ScreeningPlatform = "youtube"
-	ScreeningPlatformTiktok    ScreeningPlatform = "tiktok"
-	ScreeningPlatformFacebook  ScreeningPlatform = "facebook"
-	ScreeningPlatformThreads   ScreeningPlatform = "threads"
-	ScreeningPlatformReddit    ScreeningPlatform = "reddit"
-	ScreeningPlatformTelegram  ScreeningPlatform = "telegram"
-	ScreeningPlatformLinkedin  ScreeningPlatform = "linkedin"
-)
-
-func (e ScreeningPlatform) ToPointer() *ScreeningPlatform {
-	return &e
-}
-
-// IsExact returns true if the value matches a known enum value, false otherwise.
-func (e *ScreeningPlatform) IsExact() bool {
-	if e != nil {
-		switch *e {
-		case "instagram", "x", "bluesky", "youtube", "tiktok", "facebook", "threads", "reddit", "telegram", "linkedin":
-			return true
-		}
-	}
-	return false
-}
-
 // Screening - A screening and its progress.
 type Screening struct {
 	ID          string                   `json:"id"`
 	EventID     string                   `json:"event_id"`
 	Environment AuditSettingsEnvironment `json:"environment"`
-	// partial finished with some attendees not covered; attendees_failed counts them.
-	Status      ScreeningStatus     `json:"status"`
-	Depth       ScreeningDepth      `json:"depth"`
-	Platforms   []ScreeningPlatform `json:"platforms"`
-	RequestedBy string              `json:"requested_by"`
-	CreatedAt   string              `json:"created_at"`
-	StartedAt   *string             `json:"started_at,omitzero"`
-	FinishedAt  *string             `json:"finished_at,omitzero"`
+	// partial finished with some attendees or platforms not covered; attendees_failed and attendees_partial count them.
+	Status      ScreeningStatus  `json:"status"`
+	Depth       ScreeningDepth   `json:"depth"`
+	Platforms   []HandlePlatform `json:"platforms"`
+	RequestedBy string           `json:"requested_by"`
+	CreatedAt   string           `json:"created_at"`
+	StartedAt   *string          `json:"started_at,omitzero"`
+	FinishedAt  *string          `json:"finished_at,omitzero"`
 	// A screening still running then fails with error_code expired.
 	ExpiresAt string `json:"expires_at"`
 	// Attendees selected when the screening started.
@@ -51,10 +21,14 @@ type Screening struct {
 	AttendeesDone    int64 `json:"attendees_done"`
 	AttendeesFlagged int64 `json:"attendees_flagged"`
 	AttendeesFailed  int64 `json:"attendees_failed"`
+	// Attendees screened with some requested platform not covered; their coverage names which.
+	AttendeesPartial int64 `json:"attendees_partial"`
 	// What the screening was estimated to cost when it started, in minor units of USD (cents): its attendees at its depth and platforms. Until the screening finishes, what it has not yet spent counts against the environment's screening_daily_cap.
 	EstimatedSpend int64 `json:"estimated_spend"`
 	// What the attendees it has screened recorded, in minor units of USD. Each counts toward the UTC day it was recorded on; a failed attendee records nothing.
 	Spent int64 `json:"spent"`
+	// What screening cost, in US cents, in total and per implementation.
+	Spend ScreeningSpend `json:"spend"`
 	// Why a failed or cancelled screening stopped.
 	ErrorCode *string `json:"error_code,omitzero"`
 }
@@ -94,9 +68,9 @@ func (s *Screening) GetDepth() ScreeningDepth {
 	return s.Depth
 }
 
-func (s *Screening) GetPlatforms() []ScreeningPlatform {
+func (s *Screening) GetPlatforms() []HandlePlatform {
 	if s == nil {
-		return []ScreeningPlatform{}
+		return []HandlePlatform{}
 	}
 	return s.Platforms
 }
@@ -164,6 +138,13 @@ func (s *Screening) GetAttendeesFailed() int64 {
 	return s.AttendeesFailed
 }
 
+func (s *Screening) GetAttendeesPartial() int64 {
+	if s == nil {
+		return 0
+	}
+	return s.AttendeesPartial
+}
+
 func (s *Screening) GetEstimatedSpend() int64 {
 	if s == nil {
 		return 0
@@ -176,6 +157,13 @@ func (s *Screening) GetSpent() int64 {
 		return 0
 	}
 	return s.Spent
+}
+
+func (s *Screening) GetSpend() ScreeningSpend {
+	if s == nil {
+		return ScreeningSpend{}
+	}
+	return s.Spend
 }
 
 func (s *Screening) GetErrorCode() *string {

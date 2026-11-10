@@ -7331,7 +7331,7 @@
           "events"
         ],
         "summary": "Start a screening.",
-        "description": "Start a screening of new attendees and everyone on watch or escalated, with an Idempotency-Key. It finishes completed, partial or failed minutes to hours later; poll it. The answer carries estimated_spend; a screening whose estimate exceeds what the daily screening cap has left answers 409 screening_cap_exceeded. The test environment screens with stand-ins that find no accounts.",
+        "description": "Start a screening of new attendees and everyone on watch or escalated, with an Idempotency-Key. It finishes completed, partial or failed minutes to hours later; poll it. The answer carries estimated_spend; a screening whose estimate exceeds what the daily screening cap has left answers 409 screening_cap_exceeded. The test environment screens with the synthetic connector, which makes up deterministic profiles, posts and findings.",
         "parameters": [
           {
             "$ref": "#/components/parameters/WorkspaceId"
@@ -7514,6 +7514,14 @@
       }
     },
     "schemas": {
+      "Access": {
+        "enum": [
+          "public",
+          "private",
+          "locked"
+        ],
+        "description": "public profiles were read; a private or locked one exists but could not be read."
+      },
       "Account": {
         "description": "Body of the 200 answer to GET /v1/accounts/{account_id}: the one current risk of one of the calling workspace's accounts. It is the risk of the account's latest assessment that has a decision (status complete or partial), by created_at and then assessment_id, scored exactly as GET /v1/assessments/{assessment_id} scores that assessment, plus the account's own reason shared_api_key when a key issued to the account was used from many IP addresses or countries (POST /v1/key_usage/batches). Its assessments are the account's history (GET /v1/accounts/{account_id}/assessments).",
         "type": "object",
@@ -10222,7 +10230,8 @@
           "decision",
           "coverage",
           "created_at",
-          "updated_at"
+          "updated_at",
+          "spend"
         ],
         "properties": {
           "id": {
@@ -10328,8 +10337,8 @@
             "example": "2026-01-01T00:00:00Z"
           },
           "coverage": {
-            "type": "object",
-            "description": "What the latest screening read, per platform."
+            "$ref": "#/components/schemas/ScreeningCoverage",
+            "description": "What the latest screening read: accounts found, accessible, items read, the period covered and each platform's status. Zero, with no platforms, until a screening reaches the attendee."
           },
           "last_screening_id": {
             "type": "string",
@@ -10347,6 +10356,10 @@
           "updated_at": {
             "type": "string",
             "example": "2026-01-01T00:00:00Z"
+          },
+          "spend": {
+            "$ref": "#/components/schemas/ScreeningSpend",
+            "description": "What the latest screening of the attendee cost."
           }
         },
         "description": "An attendee and where their screening and review stand."
@@ -10704,6 +10717,8 @@
           "attendee",
           "profiles",
           "findings",
+          "posts",
+          "media",
           "reviews"
         ],
         "properties": {
@@ -10714,17 +10729,33 @@
             "type": "array",
             "maxItems": 100,
             "items": {
-              "type": "object"
+              "$ref": "#/components/schemas/ScreeningProfile"
             },
-            "description": "The accounts the screening matched, with how each was matched."
+            "description": "The accounts the latest screening matched, with how each was matched."
           },
           "findings": {
             "type": "array",
             "maxItems": 500,
             "items": {
-              "type": "object"
+              "$ref": "#/components/schemas/ScreeningFinding"
             },
-            "description": "What the screening flagged, with its evidence."
+            "description": "What the latest screening flagged, most severe first, each citing its evidence."
+          },
+          "posts": {
+            "type": "array",
+            "maxItems": 5000,
+            "items": {
+              "$ref": "#/components/schemas/ScreeningPost"
+            },
+            "description": "The posts the findings cite."
+          },
+          "media": {
+            "type": "array",
+            "maxItems": 5000,
+            "items": {
+              "$ref": "#/components/schemas/ScreeningMedia"
+            },
+            "description": "The images and videos the findings cite."
           },
           "reviews": {
             "type": "array",
@@ -13002,6 +13033,31 @@
           }
         }
       },
+      "FindingBand": {
+        "enum": [
+          "critical",
+          "high",
+          "moderate",
+          "low",
+          "info"
+        ],
+        "description": "How severe a finding is, most severe first."
+      },
+      "FindingCategory": {
+        "enum": [
+          "direct_threat",
+          "harm_intent",
+          "fixation",
+          "grievance",
+          "security_research",
+          "weapons",
+          "disruption",
+          "violent_extremism",
+          "harassment",
+          "movement_exposure"
+        ],
+        "description": "What a finding is about: a direct threat to the principal or the event, intent to harm without a named target, fixation on the principal, a grievance against the host, research into the venue, route or security, weapons tied to any of these, disruption or protest planning toward this event, violent extremist content or identification, prior harassment or stalking of staff or principals, or posting the principal's addresses or movements."
+      },
       "Flow": {
         "enum": [
           "account_creation",
@@ -13278,8 +13334,10 @@
           "threads",
           "reddit",
           "telegram",
-          "linkedin"
-        ]
+          "linkedin",
+          "synthetic"
+        ],
+        "description": "A platform a screening can cover. synthetic is the deterministic connector's own platform, for exercising the product end to end with no network."
       },
       "HighestBand": {
         "enum": [
@@ -15134,6 +15192,12 @@
         ],
         "description": "How sure the latest screening is that it found the attendee's accounts. unscreened until a screening reaches the attendee."
       },
+      "MediaType": {
+        "enum": [
+          "image",
+          "video"
+        ]
+      },
       "Member": {
         "description": "One member of a workspace: an external user id holding one role. A removed member loses every permission at once.",
         "type": "object",
@@ -16814,6 +16878,14 @@
           }
         }
       },
+      "ProfileMatchState": {
+        "enum": [
+          "confirmed",
+          "probable",
+          "possible"
+        ],
+        "description": "How sure the screening is that a profile is the attendee's, from its evidence: confirmed is two or more hard identifiers (email, phone, a supplied handle, or a fact an existing source returned), probable is one identifier beyond the name, possible is the name alone."
+      },
       "Provenance": {
         "type": "string",
         "enum": [
@@ -18452,8 +18524,10 @@
           "attendees_done",
           "attendees_flagged",
           "attendees_failed",
+          "attendees_partial",
           "estimated_spend",
-          "spent"
+          "spent",
+          "spend"
         ],
         "properties": {
           "id": {
@@ -18471,7 +18545,7 @@
           },
           "status": {
             "$ref": "#/components/schemas/ScreeningStatus",
-            "description": "partial finished with some attendees not covered; attendees_failed counts them."
+            "description": "partial finished with some attendees or platforms not covered; attendees_failed and attendees_partial count them."
           },
           "depth": {
             "$ref": "#/components/schemas/ScreeningDepth"
@@ -18479,21 +18553,10 @@
           "platforms": {
             "type": "array",
             "minItems": 1,
-            "maxItems": 10,
+            "maxItems": 11,
             "uniqueItems": true,
             "items": {
-              "enum": [
-                "instagram",
-                "x",
-                "bluesky",
-                "youtube",
-                "tiktok",
-                "facebook",
-                "threads",
-                "reddit",
-                "telegram",
-                "linkedin"
-              ]
+              "$ref": "#/components/schemas/HandlePlatform"
             }
           },
           "requested_by": {
@@ -18541,6 +18604,12 @@
             "minimum": 0,
             "maximum": 20000
           },
+          "attendees_partial": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 20000,
+            "description": "Attendees screened with some requested platform not covered; their coverage names which."
+          },
           "estimated_spend": {
             "type": "integer",
             "minimum": 0,
@@ -18550,6 +18619,10 @@
             "type": "integer",
             "minimum": 0,
             "description": "What the attendees it has screened recorded, in minor units of USD. Each counts toward the UTC day it was recorded on; a failed attendee records nothing."
+          },
+          "spend": {
+            "$ref": "#/components/schemas/ScreeningSpend",
+            "description": "What every pass of the screening cost, by implementation: the attendees spent records, and also the attendees that failed and the passes retried, which record nothing toward spent."
           },
           "error_code": {
             "type": "string",
@@ -18720,10 +18793,133 @@
         ],
         "description": "completed reached every attendee; partial left some not fully covered (partial_coverage); failed covered nobody."
       },
+      "ScreeningCoverage": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "accounts_found",
+          "accounts_accessible",
+          "items_read",
+          "platforms"
+        ],
+        "properties": {
+          "accounts_found": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "accounts_accessible": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "items_read": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000000
+          },
+          "period_from": {
+            "type": "string",
+            "description": "The oldest item read on any platform.",
+            "example": "2026-01-01T00:00:00Z"
+          },
+          "period_to": {
+            "type": "string",
+            "description": "The newest item read on any platform.",
+            "example": "2026-01-02T00:00:00Z"
+          },
+          "platforms": {
+            "type": "array",
+            "maxItems": 11,
+            "items": {
+              "$ref": "#/components/schemas/ScreeningPlatformCoverage"
+            }
+          }
+        },
+        "description": "The denominator of a screening: accounts found, how many could be read, items read and the period they span, so a clean result is distinct from a person nobody could see."
+      },
       "ScreeningDepth": {
         "enum": [
           "standard"
         ]
+      },
+      "ScreeningFinding": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "category",
+          "band",
+          "confidence",
+          "rationale",
+          "evidence",
+          "analyser",
+          "model",
+          "spend_minor",
+          "created_at"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^fnd_[0-7][0-9A-HJKMNP-TV-Z]{25}$",
+            "example": "fnd_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          },
+          "category": {
+            "$ref": "#/components/schemas/FindingCategory"
+          },
+          "band": {
+            "$ref": "#/components/schemas/FindingBand"
+          },
+          "capped_from": {
+            "$ref": "#/components/schemas/FindingBand"
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "rationale": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4000,
+            "example": "The post reports when the principal leaves the hotel."
+          },
+          "evidence": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 50,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^itm_[0-7][0-9A-HJKMNP-TV-Z]{25}$",
+              "example": "itm_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+            },
+            "description": "The posts and media that support the finding."
+          },
+          "analyser": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]{0,31}$",
+            "description": "The resolver, collector or analyser that produced a record, by its catalogue name.",
+            "example": "synthetic"
+          },
+          "model": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "example": "synthetic-1"
+          },
+          "spend_minor": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000000000,
+            "description": "What the analysis cost, in US cents."
+          },
+          "created_at": {
+            "type": "string",
+            "example": "2026-01-01T00:00:00Z"
+          }
+        },
+        "description": "Something the analyser flagged. band is capped by the strongest match among the profiles of its evidence: possible at most moderate, probable at most high. capped_from is the band the analyser gave when the cap lowered it."
       },
       "ScreeningList": {
         "type": "object",
@@ -18748,6 +18944,343 @@
         },
         "description": "Screenings, newest first."
       },
+      "ScreeningMatch": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "state",
+          "evidence"
+        ],
+        "properties": {
+          "state": {
+            "$ref": "#/components/schemas/ProfileMatchState"
+          },
+          "evidence": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 20,
+            "items": {
+              "$ref": "#/components/schemas/ScreeningMatchEvidence"
+            }
+          }
+        },
+        "description": "How a profile was matched to the attendee: the state its evidence earns, and the evidence."
+      },
+      "ScreeningMatchEvidence": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "kind",
+          "resolver"
+        ],
+        "properties": {
+          "kind": {
+            "$ref": "#/components/schemas/ScreeningMatchEvidenceKind",
+            "description": "What matched. email, phone, supplied_handle and source_fact are hard identifiers; company, city and school are soft."
+          },
+          "detail": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "description": "Where the match was seen, such as the profile field that carried it.",
+            "example": "the email on the attendee row"
+          },
+          "resolver": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]{0,31}$",
+            "description": "The resolver, collector or analyser that produced a record, by its catalogue name.",
+            "example": "synthetic"
+          }
+        },
+        "description": "One identifier that ties a profile to the attendee."
+      },
+      "ScreeningMatchEvidenceKind": {
+        "enum": [
+          "email",
+          "phone",
+          "supplied_handle",
+          "source_fact",
+          "name",
+          "company",
+          "city",
+          "school"
+        ],
+        "description": "What matched. email, phone, supplied_handle and source_fact are hard identifiers; company, city and school are soft."
+      },
+      "ScreeningMedia": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "kind",
+          "profile_id",
+          "permalink",
+          "posted_at",
+          "media_type",
+          "media_url"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^itm_[0-7][0-9A-HJKMNP-TV-Z]{25}$",
+            "example": "itm_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          },
+          "kind": {
+            "const": "media"
+          },
+          "post_id": {
+            "type": "string",
+            "pattern": "^itm_[0-7][0-9A-HJKMNP-TV-Z]{25}$",
+            "example": "itm_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          },
+          "media_type": {
+            "$ref": "#/components/schemas/MediaType"
+          },
+          "media_url": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 2048,
+            "pattern": "^https://[^\\s]+$",
+            "description": "Where the platform serves the image or video.",
+            "example": "https://synthetic.invalid/media/jordanexample42/p1.jpg"
+          },
+          "text": {
+            "type": "string",
+            "maxLength": 4000,
+            "description": "The caption or alt text.",
+            "example": "A photo"
+          },
+          "profile_id": {
+            "type": "string",
+            "pattern": "^prf_[0-7][0-9A-HJKMNP-TV-Z]{25}$",
+            "example": "prf_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          },
+          "permalink": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 2048,
+            "pattern": "^https://[^\\s]+$",
+            "example": "https://synthetic.invalid/synthetic/jordanexample42/p1"
+          },
+          "posted_at": {
+            "type": "string",
+            "example": "2026-01-01T00:00:00Z"
+          },
+          "screenshot_sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$",
+            "description": "SHA-256 of the screenshot taken of a flagged item.",
+            "example": "9c56cc51b374c3ba189210d5b6d4bf57790d351c96c47c02190ecf1e430635ab"
+          },
+          "captured_at": {
+            "type": "string",
+            "description": "When the screenshot was taken.",
+            "example": "2026-01-01T00:00:00Z"
+          }
+        },
+        "description": "One image or video a collector read, with the post that carried it."
+      },
+      "ScreeningPlatformCoverage": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "platform",
+          "status",
+          "accounts_found",
+          "items_read"
+        ],
+        "properties": {
+          "platform": {
+            "$ref": "#/components/schemas/HandlePlatform"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ScreeningPlatformCoverageStatus",
+            "description": "covered read at least one profile; none_found looked and found no account; inaccessible found accounts that are private or locked; failed could not finish looking; unavailable has no resolver or collector enabled."
+          },
+          "accounts_found": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "items_read": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000
+          }
+        },
+        "description": "What a screening read on one platform."
+      },
+      "ScreeningPlatformCoverageStatus": {
+        "enum": [
+          "covered",
+          "none_found",
+          "inaccessible",
+          "failed",
+          "unavailable"
+        ],
+        "description": "covered read at least one profile; none_found looked and found no account; inaccessible found accounts that are private or locked; failed could not finish looking; unavailable has no resolver or collector enabled."
+      },
+      "ScreeningPost": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "kind",
+          "profile_id",
+          "permalink",
+          "posted_at",
+          "text"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^itm_[0-7][0-9A-HJKMNP-TV-Z]{25}$",
+            "example": "itm_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          },
+          "kind": {
+            "const": "post"
+          },
+          "text": {
+            "type": "string",
+            "maxLength": 10000,
+            "example": "Great coffee this morning before the commute."
+          },
+          "reply_to": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 2048,
+            "pattern": "^https://[^\\s]+$",
+            "example": "https://synthetic.invalid/synthetic/jordanexample42/p0"
+          },
+          "profile_id": {
+            "type": "string",
+            "pattern": "^prf_[0-7][0-9A-HJKMNP-TV-Z]{25}$",
+            "example": "prf_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          },
+          "permalink": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 2048,
+            "pattern": "^https://[^\\s]+$",
+            "example": "https://synthetic.invalid/synthetic/jordanexample42/p1"
+          },
+          "posted_at": {
+            "type": "string",
+            "example": "2026-01-01T00:00:00Z"
+          },
+          "screenshot_sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$",
+            "description": "SHA-256 of the screenshot taken of a flagged item.",
+            "example": "9c56cc51b374c3ba189210d5b6d4bf57790d351c96c47c02190ecf1e430635ab"
+          },
+          "captured_at": {
+            "type": "string",
+            "description": "When the screenshot was taken.",
+            "example": "2026-01-01T00:00:00Z"
+          }
+        },
+        "description": "One post a collector read, with its permalink and time."
+      },
+      "ScreeningProfile": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "platform",
+          "handle",
+          "url",
+          "access",
+          "match",
+          "collector",
+          "items_read",
+          "collected_at"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^prf_[0-7][0-9A-HJKMNP-TV-Z]{25}$",
+            "example": "prf_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          },
+          "platform": {
+            "$ref": "#/components/schemas/HandlePlatform"
+          },
+          "handle": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "example": "jordanexample42"
+          },
+          "url": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 2048,
+            "pattern": "^https://[^\\s]+$",
+            "example": "https://synthetic.invalid/synthetic/jordanexample42"
+          },
+          "display_name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "example": "Jordan Example"
+          },
+          "bio": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4000,
+            "example": "Engineer at Example Ltd in Melbourne."
+          },
+          "avatar_url": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 2048,
+            "pattern": "^https://[^\\s]+$",
+            "example": "https://synthetic.invalid/avatar/3f9a1c22d4e5b6a7.png"
+          },
+          "followers": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 10000000000
+          },
+          "account_created_at": {
+            "type": "string",
+            "example": "2019-01-01T00:00:00Z"
+          },
+          "access": {
+            "$ref": "#/components/schemas/Access",
+            "description": "public profiles were read; a private or locked one exists but could not be read."
+          },
+          "match": {
+            "$ref": "#/components/schemas/ScreeningMatch"
+          },
+          "collector": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]{0,31}$",
+            "description": "The resolver, collector or analyser that produced a record, by its catalogue name.",
+            "example": "synthetic"
+          },
+          "items_read": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000
+          },
+          "period_from": {
+            "type": "string",
+            "description": "The oldest item read.",
+            "example": "2026-01-01T00:00:00Z"
+          },
+          "period_to": {
+            "type": "string",
+            "description": "The newest item read.",
+            "example": "2026-01-02T00:00:00Z"
+          },
+          "collected_at": {
+            "type": "string",
+            "example": "2026-01-02T00:00:00Z"
+          }
+        },
+        "description": "An account the screening matched to the attendee, how it was matched, and how much of it was read."
+      },
       "ScreeningRequest": {
         "type": "object",
         "additionalProperties": false,
@@ -18763,25 +19296,71 @@
           "platforms": {
             "type": "array",
             "minItems": 1,
-            "maxItems": 10,
+            "maxItems": 11,
             "uniqueItems": true,
             "items": {
-              "enum": [
-                "instagram",
-                "x",
-                "bluesky",
-                "youtube",
-                "tiktok",
-                "facebook",
-                "threads",
-                "reddit",
-                "telegram",
-                "linkedin"
-              ]
+              "$ref": "#/components/schemas/HandlePlatform"
             }
           }
         },
         "description": "Screens the event's attendees no screening has reached and everyone on watch or escalated."
+      },
+      "ScreeningSpend": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "total_minor",
+          "by_implementation"
+        ],
+        "properties": {
+          "total_minor": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000000000,
+            "description": "The total, in US cents."
+          },
+          "by_implementation": {
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+              "$ref": "#/components/schemas/ScreeningSpendLine"
+            }
+          }
+        },
+        "description": "What screening cost, in US cents, in total and per implementation."
+      },
+      "ScreeningSpendLine": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "implementation",
+          "role",
+          "spend_minor"
+        ],
+        "properties": {
+          "implementation": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]{0,31}$",
+            "description": "The resolver, collector or analyser that produced a record, by its catalogue name.",
+            "example": "synthetic"
+          },
+          "role": {
+            "$ref": "#/components/schemas/ScreeningSpendLineRole"
+          },
+          "spend_minor": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000000000
+          }
+        },
+        "description": "What one implementation cost."
+      },
+      "ScreeningSpendLineRole": {
+        "enum": [
+          "resolver",
+          "collector",
+          "analyser"
+        ]
       },
       "ScreeningStatus": {
         "enum": [
@@ -18792,7 +19371,7 @@
           "failed",
           "cancelled"
         ],
-        "description": "partial finished with some attendees not covered; attendees_failed counts them."
+        "description": "partial finished with some attendees or platforms not covered; attendees_failed and attendees_partial count them."
       },
       "SentIdentifiers": {
         "type": "object",

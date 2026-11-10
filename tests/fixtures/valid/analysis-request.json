@@ -1,0 +1,95 @@
+{
+  "request_id": "anr_01JC8Y2M4N6P8Q0R2S4T6V8W01",
+  "attendee_id": "att_01JC8Y2M4N6P8Q0R2S4T6V8W01",
+  "depth": "standard",
+  "event": {
+    "name": "Annual shareholder meeting",
+    "starts_at": "2026-12-01T09:00:00Z",
+    "ends_at": "2026-12-01T17:00:00Z",
+    "venue": "Example Convention Centre",
+    "host": "Example Holdings",
+    "principals": [
+      {
+        "name": "Alex Principal",
+        "aliases": [
+          "Alex P"
+        ]
+      }
+    ],
+    "topics": [
+      "executive pay"
+    ]
+  },
+  "profiles": [
+    {
+      "id": "prf_01JC8Y2M4N6P8Q0R2S4T6V8W01",
+      "platform": "synthetic",
+      "handle": "alexattendee42",
+      "url": "https://synthetic.invalid/synthetic/alexattendee42",
+      "display_name": "Alex Attendee",
+      "bio": "Engineer at Example Corp in Melbourne. Views my own.",
+      "avatar_url": "https://synthetic.invalid/avatar/3f9a1c22d4e5b6a7.png",
+      "followers": 1834,
+      "account_created_at": "2019-04-01T00:00:00Z",
+      "access": "public",
+      "match": {
+        "state": "confirmed",
+        "evidence": [
+          {
+            "kind": "name",
+            "detail": "the profile's display name",
+            "resolver": "synthetic"
+          },
+          {
+            "kind": "email",
+            "detail": "the email on the attendee row",
+            "resolver": "synthetic"
+          },
+          {
+            "kind": "source_fact",
+            "detail": "an account an assessment source found for that email",
+            "resolver": "synthetic"
+          }
+        ]
+      },
+      "collector": "synthetic",
+      "items_read": 3,
+      "period_from": "2026-02-14T08:30:00Z",
+      "period_to": "2026-10-30T19:05:00Z",
+      "collected_at": "2026-11-08T10:00:00Z"
+    }
+  ],
+  "posts": [
+    {
+      "id": "itm_01JC8Y2M4N6P8Q0R2S4T6V8W01",
+      "kind": "post",
+      "profile_id": "prf_01JC8Y2M4N6P8Q0R2S4T6V8W01",
+      "permalink": "https://synthetic.invalid/synthetic/alexattendee42/p0",
+      "posted_at": "2026-10-30T19:05:00Z",
+      "text": "Spotted Alex Principal leaving the hotel, they always take the side exit at seven.",
+      "screenshot_sha256": "9c56cc51b374c3ba189210d5b6d4bf57790d351c96c47c02190ecf1e430635ab",
+      "captured_at": "2026-11-08T00:00:00Z"
+    },
+    {
+      "id": "itm_01JC8Y2M4N6P8Q0R2S4T6V8W02",
+      "kind": "post",
+      "profile_id": "prf_01JC8Y2M4N6P8Q0R2S4T6V8W01",
+      "permalink": "https://synthetic.invalid/synthetic/alexattendee42/p1",
+      "posted_at": "2026-02-14T08:30:00Z",
+      "text": "Great coffee this morning before the commute."
+    }
+  ],
+  "media": [
+    {
+      "id": "itm_01JC8Y2M4N6P8Q0R2S4T6V8W03",
+      "kind": "media",
+      "profile_id": "prf_01JC8Y2M4N6P8Q0R2S4T6V8W01",
+      "post_id": "itm_01JC8Y2M4N6P8Q0R2S4T6V8W02",
+      "permalink": "https://synthetic.invalid/synthetic/alexattendee42/p1",
+      "posted_at": "2026-02-14T08:30:00Z",
+      "media_type": "image",
+      "media_url": "https://synthetic.invalid/media/alexattendee42/p1.jpg",
+      "text": "A photo"
+    }
+  ]
+}

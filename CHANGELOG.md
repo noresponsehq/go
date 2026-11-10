@@ -1,5 +1,19 @@
 # Changelog
 
+## 10.0.13
+
+* `Sdk.Events.ListAttendees()`:  `response.Items[]` **Changed**
+* `Sdk.Events.AddAttendees()`: 
+  *  `request.Request.Body.Attendees[].Handles[].Platform.Enum(synthetic)` **Added**
+* `Sdk.Events.GetAttendee()`:  `response` **Changed**
+* `Sdk.Events.ReviewAttendee()`:  `response` **Changed**
+* `Sdk.Events.ListScreenings()`:  `response.Items[]` **Changed**
+* `Sdk.Events.StartScreening()`: 
+  *  `request.Request.Body.Platforms[].Enum(synthetic)` **Added**
+  *  `response` **Changed**
+* `Sdk.Events.GetScreening()`:  `response` **Changed**
+* `Sdk.Events.CancelScreening()`:  `response` **Changed**
+
 ## 10.0.12
 
 No changes detected.

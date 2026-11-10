@@ -4,10 +4,6 @@ import (
 	"github.com/noresponsehq/go/v10/internal/utils"
 )
 
-// AttendeeCoverage - What the latest screening read, per platform.
-type AttendeeCoverage struct {
-}
-
 // Attendee - An attendee and where their screening and review stand.
 type Attendee struct {
 	ID      string `json:"id"`
@@ -35,12 +31,14 @@ type Attendee struct {
 	DecisionNote *string           `json:"decision_note,omitzero"`
 	DecidedBy    *string           `json:"decided_by,omitzero"`
 	DecidedAt    *string           `json:"decided_at,omitzero"`
-	// What the latest screening read, per platform.
-	Coverage        AttendeeCoverage `json:"coverage"`
-	LastScreeningID *string          `json:"last_screening_id,omitzero"`
-	ScreenedAt      *string          `json:"screened_at,omitzero"`
-	CreatedAt       string           `json:"created_at"`
-	UpdatedAt       string           `json:"updated_at"`
+	// The denominator of a screening: accounts found, how many could be read, items read and the period they span, so a clean result is distinct from a person nobody could see.
+	Coverage        ScreeningCoverage `json:"coverage"`
+	LastScreeningID *string           `json:"last_screening_id,omitzero"`
+	ScreenedAt      *string           `json:"screened_at,omitzero"`
+	CreatedAt       string            `json:"created_at"`
+	UpdatedAt       string            `json:"updated_at"`
+	// What screening cost, in US cents, in total and per implementation.
+	Spend ScreeningSpend `json:"spend"`
 }
 
 func (a Attendee) MarshalJSON() ([]byte, error) {
@@ -159,9 +157,9 @@ func (a *Attendee) GetDecidedAt() *string {
 	return a.DecidedAt
 }
 
-func (a *Attendee) GetCoverage() AttendeeCoverage {
+func (a *Attendee) GetCoverage() ScreeningCoverage {
 	if a == nil {
-		return AttendeeCoverage{}
+		return ScreeningCoverage{}
 	}
 	return a.Coverage
 }
@@ -192,4 +190,11 @@ func (a *Attendee) GetUpdatedAt() string {
 		return ""
 	}
 	return a.UpdatedAt
+}
+
+func (a *Attendee) GetSpend() ScreeningSpend {
+	if a == nil {
+		return ScreeningSpend{}
+	}
+	return a.Spend
 }
