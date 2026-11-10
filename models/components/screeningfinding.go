@@ -11,6 +11,8 @@ type ScreeningFinding struct {
 	CappedFrom *FindingBand `json:"capped_from,omitzero"`
 	Confidence float64      `json:"confidence"`
 	Rationale  string       `json:"rationale"`
+	// The exact words of the first evidence item that the finding rests on, as the analyser quoted them.
+	Quote *string `json:"quote,omitzero"`
 	// The posts and media that support the finding.
 	Evidence []string `json:"evidence"`
 	// The resolver, collector or analyser that produced a record, by its catalogue name.
@@ -61,6 +63,13 @@ func (s *ScreeningFinding) GetRationale() string {
 		return ""
 	}
 	return s.Rationale
+}
+
+func (s *ScreeningFinding) GetQuote() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Quote
 }
 
 func (s *ScreeningFinding) GetEvidence() []string {

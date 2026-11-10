@@ -18843,6 +18843,12 @@
             "minimum": 0,
             "maximum": 1000000
           },
+          "items_not_analysed": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000000,
+            "description": "Items read that the analyser could not analyse. Above zero, the attendee is partial: a finding may be missing from them."
+          },
           "period_from": {
             "type": "string",
             "description": "The oldest item read on any platform.",
@@ -18908,6 +18914,13 @@
             "minLength": 1,
             "maxLength": 4000,
             "example": "The post reports when the principal leaves the hotel."
+          },
+          "quote": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000,
+            "description": "The exact words of the first evidence item that the finding rests on, as the analyser quoted them.",
+            "example": "Spotted Jordan Lee leaving the hotel, they always take the side exit at seven."
           },
           "evidence": {
             "type": "array",

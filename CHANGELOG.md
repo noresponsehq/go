@@ -1,5 +1,11 @@
 # Changelog
 
+## 10.0.15
+
+* `Sdk.Events.ListAttendees()`:  `response.Items[].Coverage.ItemsNotAnalysed` **Added**
+* `Sdk.Events.GetAttendee()`:  `response` **Changed**
+* `Sdk.Events.ReviewAttendee()`:  `response.Coverage.ItemsNotAnalysed` **Added**
+
 ## 10.0.14
 
 * `Sdk.Events.ListAttendees()`: 
