@@ -10308,7 +10308,11 @@
           },
           "match_state": {
             "$ref": "#/components/schemas/MatchState",
-            "description": "How sure the latest screening is that it found the attendee's accounts. unscreened until a screening reaches the attendee."
+            "description": "How sure the latest screening is that it found the attendee's accounts. unscreened until a screening reaches the attendee, and after one that had no profile to check (no_profile_to_check)."
+          },
+          "no_profile_to_check": {
+            "type": "boolean",
+            "description": "true when the latest screening reached the attendee but the list gave nothing to look up on any requested platform, such as no handle for a platform that reads supplied handles only: nobody looked for a profile. match_state stays unscreened, every platform is in coverage.not_searched, and the attendee is neither none_found nor failed and does not make the screening partial. Its lookups are on its report. Left out otherwise."
           },
           "highest_band": {
             "anyOf": [
@@ -15224,7 +15228,7 @@
           "none_found",
           "inaccessible"
         ],
-        "description": "How sure the latest screening is that it found the attendee's accounts. unscreened until a screening reaches the attendee."
+        "description": "How sure the latest screening is that it found the attendee's accounts. unscreened until a screening reaches the attendee, and after one that had no profile to check (no_profile_to_check)."
       },
       "MediaType": {
         "enum": [
@@ -15404,7 +15408,7 @@
           "key_usage_events",
           "screenings"
         ],
-        "description": "assessments: assessments admitted. webhook_deliveries: events sent to endpoints, one per event per endpoint. key_usage_events: key-usage events accepted. screenings: attendees a screening recorded a final result for, one per attendee per screening; a failed attendee counts nothing."
+        "description": "assessments: assessments admitted. webhook_deliveries: events sent to endpoints, one per event per endpoint. key_usage_events: key-usage events accepted. screenings: attendees a screening recorded a final result for, one per attendee per screening; a failed attendee counts only when its lookups were kept."
       },
       "Namespace": {
         "type": "string",
@@ -15816,6 +15820,10 @@
           "match_state": {
             "$ref": "#/components/schemas/MatchState",
             "description": "That attendee's match state at that event."
+          },
+          "no_profile_to_check": {
+            "type": "boolean",
+            "description": "true when that attendee's latest screening had no profile to check (see the attendee's no_profile_to_check). Left out otherwise."
           },
           "highest_band": {
             "anyOf": [
@@ -18803,7 +18811,7 @@
           "partial_coverage",
           "finished_at"
         ],
-        "description": "A screening of an event finished. It counts only the attendees this screening set out to reach, not who they are: read the roster with GET /v1/workspaces/{workspace_id}/events/{environment}/{event_id}/attendees, filtered by band, to act on them. attendees_screened + partial_coverage = attendees_total, attendees_flagged is the sum of by_band, and no_footprint counts screened attendees with no flag whose accounts were not found. A cancelled screening sends no event.",
+        "description": "A screening of an event finished. It counts only the attendees this screening set out to reach, not who they are: read the roster with GET /v1/workspaces/{workspace_id}/events/{environment}/{event_id}/attendees, filtered by band, to act on them. attendees_screened + partial_coverage = attendees_total, attendees_flagged is the sum of by_band, no_footprint counts screened attendees with no flag whose accounts were not found, and no_profile_to_check those the screening had nothing to look up for on any requested platform. A cancelled screening sends no event.",
         "properties": {
           "screening_id": {
             "type": "string",
@@ -18851,6 +18859,11 @@
             "type": "integer",
             "minimum": 0,
             "description": "Screened attendees with no finding whose accounts were not found (match_state none_found). A clean result for someone with no visible accounts is not the same as a clean result for someone whose accounts were read."
+          },
+          "no_profile_to_check": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Screened attendees with no profile to check: the list gave nothing to look up on any requested platform, such as no handle, so nobody looked for a profile (no_profile_to_check on the attendee). Not in no_footprint, and not partial: nothing failed. Their lookups are on their reports."
           },
           "partial_coverage": {
             "type": "integer",
@@ -20207,7 +20220,7 @@
           },
           "metric": {
             "$ref": "#/components/schemas/Metric",
-            "description": "assessments: assessments admitted. webhook_deliveries: events sent to endpoints, one per event per endpoint. key_usage_events: key-usage events accepted. screenings: attendees a screening recorded a final result for, one per attendee per screening; a failed attendee counts nothing."
+            "description": "assessments: assessments admitted. webhook_deliveries: events sent to endpoints, one per event per endpoint. key_usage_events: key-usage events accepted. screenings: attendees a screening recorded a final result for, one per attendee per screening; a failed attendee counts only when its lookups were kept."
           },
           "flow": {
             "$ref": "#/components/schemas/UsageCountFlow",

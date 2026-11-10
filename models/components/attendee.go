@@ -24,8 +24,10 @@ type Attendee struct {
 	Handles []Handle `json:"handles,omitzero"`
 	// The attendee's role at the event: guest (a ticket holder), crew, vendor or press. Leave it out when you do not know it: an attendee without one has no role, not guest. A later row naming the same attendee replaces it, and a change of role alone keeps the attendee's screening results.
 	Role *AttendeeRole `json:"role,omitzero"`
-	// How sure the latest screening is that it found the attendee's accounts. unscreened until a screening reaches the attendee.
+	// How sure the latest screening is that it found the attendee's accounts. unscreened until a screening reaches the attendee, and after one that had no profile to check (no_profile_to_check).
 	MatchState MatchState `json:"match_state"`
+	// true when the latest screening reached the attendee but the list gave nothing to look up on any requested platform, such as no handle for a platform that reads supplied handles only: nobody looked for a profile. match_state stays unscreened, every platform is in coverage.not_searched, and the attendee is neither none_found nor failed and does not make the screening partial. Its lookups are on its report. Left out otherwise.
+	NoProfileToCheck *bool `json:"no_profile_to_check,omitzero"`
 	// The most severe finding's band, or null when nothing was flagged.
 	HighestBand *HighestBand `json:"highest_band"`
 	// The latest reviewer decision, or null before any.
@@ -129,6 +131,13 @@ func (a *Attendee) GetMatchState() MatchState {
 		return MatchState("")
 	}
 	return a.MatchState
+}
+
+func (a *Attendee) GetNoProfileToCheck() *bool {
+	if a == nil {
+		return nil
+	}
+	return a.NoProfileToCheck
 }
 
 func (a *Attendee) GetHighestBand() *HighestBand {

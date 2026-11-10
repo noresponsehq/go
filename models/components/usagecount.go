@@ -3,7 +3,7 @@ package components
 type UsageCount struct {
 	Environment AuditSettingsEnvironment `json:"environment"`
 	Day         string                   `json:"day"`
-	// assessments: assessments admitted. webhook_deliveries: events sent to endpoints, one per event per endpoint. key_usage_events: key-usage events accepted. screenings: attendees a screening recorded a final result for, one per attendee per screening; a failed attendee counts nothing.
+	// assessments: assessments admitted. webhook_deliveries: events sent to endpoints, one per event per endpoint. key_usage_events: key-usage events accepted. screenings: attendees a screening recorded a final result for, one per attendee per screening; a failed attendee counts only when its lookups were kept.
 	Metric Metric `json:"metric"`
 	// assessments only.
 	Flow *UsageCountFlow `json:"flow,omitzero"`

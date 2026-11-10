@@ -32,8 +32,10 @@ type OtherEvent struct {
 	AttendeeID string `json:"attendee_id"`
 	// Which identifiers match, in this order. external_id appears only beside email or phone: the same external id alone is not a match, since ticket numbers may be reused across events.
 	MatchedOn []MatchedOn `json:"matched_on"`
-	// How sure the latest screening is that it found the attendee's accounts. unscreened until a screening reaches the attendee.
+	// How sure the latest screening is that it found the attendee's accounts. unscreened until a screening reaches the attendee, and after one that had no profile to check (no_profile_to_check).
 	MatchState MatchState `json:"match_state"`
+	// true when that attendee's latest screening had no profile to check (see the attendee's no_profile_to_check). Left out otherwise.
+	NoProfileToCheck *bool `json:"no_profile_to_check,omitzero"`
 	// That attendee's most severe band at that event, or null.
 	HighestBand *HighestBand `json:"highest_band"`
 	// The latest reviewer decision at that event, or null before any.
@@ -84,6 +86,13 @@ func (o *OtherEvent) GetMatchState() MatchState {
 		return MatchState("")
 	}
 	return o.MatchState
+}
+
+func (o *OtherEvent) GetNoProfileToCheck() *bool {
+	if o == nil {
+		return nil
+	}
+	return o.NoProfileToCheck
 }
 
 func (o *OtherEvent) GetHighestBand() *HighestBand {

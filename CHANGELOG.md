@@ -1,5 +1,11 @@
 # Changelog
 
+## 10.0.21
+
+* `Sdk.Events.ListAttendees()`:  `response.Items[].NoProfileToCheck` **Added**
+* `Sdk.Events.GetAttendee()`:  `response` **Changed**
+* `Sdk.Events.ReviewAttendee()`:  `response.NoProfileToCheck` **Added**
+
 ## 10.0.20
 
 * `Sdk.Events.ListAttendees()`:  `response.Items[].Coverage.NotAnalysedByReason` **Added**

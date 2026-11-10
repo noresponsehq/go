@@ -4,7 +4,7 @@ import (
 	"github.com/noresponsehq/go/v10/internal/utils"
 )
 
-// ScreeningCompleted - A screening of an event finished. It counts only the attendees this screening set out to reach, not who they are: read the roster with GET /v1/workspaces/{workspace_id}/events/{environment}/{event_id}/attendees, filtered by band, to act on them. attendees_screened + partial_coverage = attendees_total, attendees_flagged is the sum of by_band, and no_footprint counts screened attendees with no flag whose accounts were not found. A cancelled screening sends no event.
+// ScreeningCompleted - A screening of an event finished. It counts only the attendees this screening set out to reach, not who they are: read the roster with GET /v1/workspaces/{workspace_id}/events/{environment}/{event_id}/attendees, filtered by band, to act on them. attendees_screened + partial_coverage = attendees_total, attendees_flagged is the sum of by_band, no_footprint counts screened attendees with no flag whose accounts were not found, and no_profile_to_check those the screening had nothing to look up for on any requested platform. A cancelled screening sends no event.
 type ScreeningCompleted struct {
 	// The screening that finished.
 	ScreeningID string `json:"screening_id"`
@@ -24,6 +24,8 @@ type ScreeningCompleted struct {
 	ByBand ScreeningCompletedByBand `json:"by_band"`
 	// Screened attendees with no finding whose accounts were not found (match_state none_found). A clean result for someone with no visible accounts is not the same as a clean result for someone whose accounts were read.
 	NoFootprint int64 `json:"no_footprint"`
+	// Screened attendees with no profile to check: the list gave nothing to look up on any requested platform, such as no handle, so nobody looked for a profile (no_profile_to_check on the attendee). Not in no_footprint, and not partial: nothing failed. Their lookups are on their reports.
+	NoProfileToCheck *int64 `json:"no_profile_to_check,omitzero"`
 	// Attendees the screening did not fully cover. Read each one's coverage on its attendee.
 	PartialCoverage int64 `json:"partial_coverage"`
 	// When the screening finished; equal to the event's created_at.
@@ -102,6 +104,13 @@ func (s *ScreeningCompleted) GetNoFootprint() int64 {
 		return 0
 	}
 	return s.NoFootprint
+}
+
+func (s *ScreeningCompleted) GetNoProfileToCheck() *int64 {
+	if s == nil {
+		return nil
+	}
+	return s.NoProfileToCheck
 }
 
 func (s *ScreeningCompleted) GetPartialCoverage() int64 {
