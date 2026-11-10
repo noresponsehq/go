@@ -17032,7 +17032,7 @@
           "probable",
           "possible"
         ],
-        "description": "How sure the screening is that a profile is the attendee's, from its evidence: confirmed is two or more hard identifiers (email, phone, a supplied handle, or a fact an existing source returned), probable is one identifier beyond the name, possible is the name alone."
+        "description": "How sure the screening is that a profile is the attendee's, from its evidence: confirmed is a handle on the attendee row, or two or more hard identifiers (email, phone, a supplied handle, or a fact an existing source returned); probable is one identifier beyond the name; possible is the name alone."
       },
       "Provenance": {
         "type": "string",
@@ -19234,7 +19234,7 @@
         "properties": {
           "kind": {
             "$ref": "#/components/schemas/ScreeningMatchEvidenceKind",
-            "description": "What matched. email, phone, supplied_handle and source_fact are hard identifiers; company, city and school are soft."
+            "description": "What matched. email, phone, supplied_handle and source_fact are hard identifiers; company, city and school are soft. supplied_handle is a handle on the attendee row; source_fact is an account a profile found by the attendee's lookups lists."
           },
           "detail": {
             "type": "string",
@@ -19263,7 +19263,7 @@
           "city",
           "school"
         ],
-        "description": "What matched. email, phone, supplied_handle and source_fact are hard identifiers; company, city and school are soft."
+        "description": "What matched. email, phone, supplied_handle and source_fact are hard identifiers; company, city and school are soft. supplied_handle is a handle on the attendee row; source_fact is an account a profile found by the attendee's lookups lists."
       },
       "ScreeningMedia": {
         "type": "object",

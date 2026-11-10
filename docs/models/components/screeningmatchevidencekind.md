@@ -1,6 +1,6 @@
 # ScreeningMatchEvidenceKind
 
-What matched. email, phone, supplied_handle and source_fact are hard identifiers; company, city and school are soft.
+What matched. email, phone, supplied_handle and source_fact are hard identifiers; company, city and school are soft. supplied_handle is a handle on the attendee row; source_fact is an account a profile found by the attendee's lookups lists.
 
 ## Example Usage
 

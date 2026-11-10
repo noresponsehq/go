@@ -1,5 +1,9 @@
 # Changelog
 
+## 10.0.19
+
+No changes detected.
+
 ## 10.0.18
 
 * `Sdk.Events.GetAttendee()`:  `response.Lookup` **Added**
