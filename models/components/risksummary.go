@@ -4,7 +4,7 @@ import (
 	"github.com/noresponsehq/go/v10/internal/utils"
 )
 
-// RiskSummary - A few typed facts per identifier. Every fact is optional: absent means the evidence did not answer and makes no claim, while false or 0 is a definite answer. Lanes that do not exist yet leave their members absent.
+// RiskSummary - A few typed facts per identifier: an assessment's risk.summary, and an event screening attendee's lookup summary. Every fact is optional: absent means the evidence did not answer and makes no claim, while false or 0 is a definite answer.
 type RiskSummary struct {
 	Phone    *RiskSummaryPhone    `json:"phone,omitzero"`
 	Email    *RiskSummaryEmail    `json:"email,omitzero"`

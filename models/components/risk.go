@@ -27,11 +27,11 @@ type Risk struct {
 	policyBasis string `const:"heuristic_unvalidated" json:"policy_basis"`
 	// Every reason that fired: risk-raising reasons first, then neutral, then risk-lowering, each strongest impact band first and then by code. The policy's numeric weights are kept private, so a reason carries only its direction and impact band.
 	Reasons []RiskReason `json:"reasons"`
-	// A few typed facts per identifier. Every fact is optional: absent means the evidence did not answer and makes no claim, while false or 0 is a definite answer. Lanes that do not exist yet leave their members absent.
+	// A few typed facts per identifier: an assessment's risk.summary, and an event screening attendee's lookup summary. Every fact is optional: absent means the evidence did not answer and makes no claim, while false or 0 is a definite answer.
 	Summary *RiskSummary `json:"summary,omitzero"`
 	// Counts of planned source-identifier pairs by evidence outcome, deduplicated across signals and incomplete entries. These counts do not measure identity agreement or prove that processing is still running. A lane that was not searched is not an answered source.
 	Coverage RiskCoverage `json:"coverage"`
-	// Detailed view only (response_mode=detailed, which needs the detailed scope); a standard answer leaves it out. Merged observations without provider, source, origin, raw breach record, value or score.
+	// Merged observations behind the summary, served only to a caller who may read evidence: no provider, source, origin, raw breach record or score.
 	Details *RiskDetails `json:"details,omitzero"`
 }
 

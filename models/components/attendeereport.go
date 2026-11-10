@@ -1,5 +1,9 @@
 package components
 
+import (
+	"github.com/noresponsehq/go/v10/internal/utils"
+)
+
 // AttendeeReport - Everything known about one attendee, and where else in the environment they appear.
 type AttendeeReport struct {
 	// An attendee and where their screening and review stand.
@@ -14,8 +18,21 @@ type AttendeeReport struct {
 	Media []ScreeningMedia `json:"media"`
 	// Every recorded decision, oldest first.
 	Reviews []AttendeeReview `json:"reviews"`
+	// What the signup check's lookups found for an attendee: account presence for the email, phone and usernames (the attendee's handles), the phone lookup, the email domain's registration and the breach search. Context and coverage for the reviewer, not a finding: nothing here sets a band or a match state.
+	Lookup *ScreeningLookup `json:"lookup,omitzero"`
 	// Where else in the environment the attendee appears, read live from those events: deleting one removes it here.
 	OtherEvents OtherEvents `json:"other_events"`
+}
+
+func (a AttendeeReport) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(a, "", false)
+}
+
+func (a *AttendeeReport) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &a, "", false, nil); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (a *AttendeeReport) GetAttendee() Attendee {
@@ -58,6 +75,13 @@ func (a *AttendeeReport) GetReviews() []AttendeeReview {
 		return []AttendeeReview{}
 	}
 	return a.Reviews
+}
+
+func (a *AttendeeReport) GetLookup() *ScreeningLookup {
+	if a == nil {
+		return nil
+	}
+	return a.Lookup
 }
 
 func (a *AttendeeReport) GetOtherEvents() OtherEvents {

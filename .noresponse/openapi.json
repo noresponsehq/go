@@ -10782,6 +10782,10 @@
             },
             "description": "Every recorded decision, oldest first."
           },
+          "lookup": {
+            "$ref": "#/components/schemas/ScreeningLookup",
+            "description": "What the latest screening's lookups found. Absent until a screening that ran lookups reaches the attendee."
+          },
           "other_events": {
             "$ref": "#/components/schemas/OtherEvents",
             "description": "The other events of this environment where an attendee with the same email or phone appears, newest event first. History only: nothing in it changes this attendee's screening, band, match state or decision."
@@ -18323,7 +18327,7 @@
       "RiskDetails": {
         "type": "object",
         "additionalProperties": false,
-        "description": "Detailed view only (response_mode=detailed, which needs the detailed scope); a standard answer leaves it out. Merged observations without provider, source, origin, raw breach record, value or score.",
+        "description": "Merged observations behind the summary, served only to a caller who may read evidence: no provider, source, origin, raw breach record or score.",
         "properties": {
           "phone_names": {
             "type": "array",
@@ -18570,7 +18574,7 @@
             "$ref": "#/components/schemas/Footprint"
           }
         },
-        "description": "A few typed facts per identifier. Every fact is optional: absent means the evidence did not answer and makes no claim, while false or 0 is a definite answer. Lanes that do not exist yet leave their members absent."
+        "description": "A few typed facts per identifier: an assessment's risk.summary, and an event screening attendee's lookup summary. Every fact is optional: absent means the evidence did not answer and makes no claim, while false or 0 is a definite answer."
       },
       "RiskSummaryEmail": {
         "type": "object",
@@ -19109,6 +19113,94 @@
           }
         },
         "description": "Screenings, newest first."
+      },
+      "ScreeningLookup": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "checks",
+          "looked_at"
+        ],
+        "properties": {
+          "checks": {
+            "type": "array",
+            "maxItems": 12,
+            "items": {
+              "$ref": "#/components/schemas/ScreeningLookupCheck"
+            },
+            "description": "Each lane each identifier was looked up in, identifiers in the order email, phone, username and lanes in the order accounts, phone, breach, domain. Every lane the attendee's identifiers are looked up in is listed: one that no source answered, or that no source could be asked in, is not_covered. Empty when the attendee has no email, phone or handle to look up."
+          },
+          "summary": {
+            "$ref": "#/components/schemas/RiskSummary",
+            "description": "The typed facts per identifier, as an assessment's risk.summary: accounts found, the breach summary, phone facts and the identity's footprint. Absent when nothing answered with one."
+          },
+          "details": {
+            "$ref": "#/components/schemas/RiskDetails",
+            "description": "The merged observations, as an assessment's risk.details: every account search, breach tables and names, phone names and dated events. Served only to a caller who may read evidence: a member with evidence.read, or a key with the detailed or evidence scope."
+          },
+          "looked_at": {
+            "type": "string",
+            "description": "When the lookups ran.",
+            "example": "2026-01-01T00:00:00Z"
+          }
+        },
+        "description": "What the signup check's lookups found for an attendee: account presence for the email, phone and usernames (the attendee's handles), the phone lookup, the email domain's registration and the breach search. Context and coverage for the reviewer, not a finding: nothing here sets a band or a match state."
+      },
+      "ScreeningLookupCheck": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "identifier",
+          "lane",
+          "status",
+          "sources",
+          "answered",
+          "found"
+        ],
+        "properties": {
+          "identifier": {
+            "$ref": "#/components/schemas/IdentifierSearchKind"
+          },
+          "lane": {
+            "$ref": "#/components/schemas/Lane"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ScreeningLookupCheckStatus",
+            "description": "found: a source found the identifier. not_found: every source answered and none found it. partial: the sources that answered found nothing and the others did not answer. not_covered: no source answered. A lookup that failed reads partial or not_covered, not not_found."
+          },
+          "sources": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 256,
+            "description": "Sources asked: none when no source could be, as when the source is stopped or your workspace refuses it."
+          },
+          "answered": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 256,
+            "description": "Sources that gave a definite answer."
+          },
+          "found": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 256,
+            "description": "Sources that found the identifier."
+          },
+          "reason": {
+            "$ref": "#/components/schemas/FailureReason",
+            "description": "Why a source did not answer, or none could be asked: the lane's most specific failure, or insufficient_evidence when every source that did not answer could not tell (inconclusive). A lane with a reason reads partial or not_covered."
+          }
+        },
+        "description": "What came of one lane of the lookups for one identifier."
+      },
+      "ScreeningLookupCheckStatus": {
+        "enum": [
+          "found",
+          "not_found",
+          "partial",
+          "not_covered"
+        ],
+        "description": "found: a source found the identifier. not_found: every source answered and none found it. partial: the sources that answered found nothing and the others did not answer. not_covered: no source answered. A lookup that failed reads partial or not_covered, not not_found."
       },
       "ScreeningMatch": {
         "type": "object",
