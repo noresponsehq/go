@@ -1,5 +1,9 @@
 # Changelog
 
+## 12.0.7
+
+* `Sdk.Groups.GetPerson()`:  `response.Posts[]` **Changed**
+
 ## 12.0.6
 
 * `Sdk.Groups.GetPerson()`:  `response.Profiles[].Record.Fields[].Role` **Changed**

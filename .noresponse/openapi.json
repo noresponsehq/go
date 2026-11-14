@@ -17132,6 +17132,49 @@
         ],
         "description": "first_answers uses anonymous counters that can include erased detail. retained_first_answers computes exact intersections over retained first answers within 31 days. Requests exceeding the 100000-record work budget are refused."
       },
+      "PostPlace": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "example": "Example Harbour"
+          },
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "description": "The platform's own id of the place.",
+            "example": "212988663"
+          },
+          "address": {
+            "type": "string",
+            "maxLength": 400,
+            "example": "2 Wharf Road"
+          },
+          "city": {
+            "type": "string",
+            "maxLength": 200,
+            "example": "Melbourne"
+          },
+          "latitude": {
+            "type": "number",
+            "minimum": -90,
+            "maximum": 90
+          },
+          "longitude": {
+            "type": "number",
+            "minimum": -180,
+            "maximum": 180
+          }
+        },
+        "description": "A place a post names, as the platform shows it."
+      },
       "PostsStopped": {
         "enum": [
           "platform_limit",
@@ -20326,6 +20369,36 @@
             "pattern": "^https://[^\\s]+$",
             "description": "The permalink of the post this one quotes. text holds the person's own words alone.",
             "example": "https://synthetic.invalid/synthetic/caseyexample7/p3"
+          },
+          "place": {
+            "$ref": "#/components/schemas/PostPlace",
+            "description": "Where the post says it was made."
+          },
+          "tagged": {
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100,
+              "example": "caseyexample7"
+            },
+            "description": "The handles of the accounts the post tags, on its own platform."
+          },
+          "likes": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "How many likes the platform shows for the post."
+          },
+          "comments": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "How many comments the platform shows for the post."
+          },
+          "views": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "How many views or plays the platform shows for the post."
           },
           "profile_id": {
             "type": "string",

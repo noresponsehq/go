@@ -14,10 +14,20 @@ type ScreeningPost struct {
 	// The permalink of the post this one reposts. text then holds that post's author's words, not the person's.
 	RepostOf *string `json:"repost_of,omitzero"`
 	// The permalink of the post this one quotes. text holds the person's own words alone.
-	QuoteOf   *string `json:"quote_of,omitzero"`
-	ProfileID string  `json:"profile_id"`
-	Permalink string  `json:"permalink"`
-	PostedAt  string  `json:"posted_at"`
+	QuoteOf *string `json:"quote_of,omitzero"`
+	// A place a post names, as the platform shows it.
+	Place *PostPlace `json:"place,omitzero"`
+	// The handles of the accounts the post tags, on its own platform.
+	Tagged []string `json:"tagged,omitzero"`
+	// How many likes the platform shows for the post.
+	Likes *int64 `json:"likes,omitzero"`
+	// How many comments the platform shows for the post.
+	Comments *int64 `json:"comments,omitzero"`
+	// How many views or plays the platform shows for the post.
+	Views     *int64 `json:"views,omitzero"`
+	ProfileID string `json:"profile_id"`
+	Permalink string `json:"permalink"`
+	PostedAt  string `json:"posted_at"`
 	// SHA-256 of the screenshot taken of a flagged item.
 	ScreenshotSha256 *string `json:"screenshot_sha256,omitzero"`
 	// When the screenshot was taken.
@@ -72,6 +82,41 @@ func (s *ScreeningPost) GetQuoteOf() *string {
 		return nil
 	}
 	return s.QuoteOf
+}
+
+func (s *ScreeningPost) GetPlace() *PostPlace {
+	if s == nil {
+		return nil
+	}
+	return s.Place
+}
+
+func (s *ScreeningPost) GetTagged() []string {
+	if s == nil {
+		return nil
+	}
+	return s.Tagged
+}
+
+func (s *ScreeningPost) GetLikes() *int64 {
+	if s == nil {
+		return nil
+	}
+	return s.Likes
+}
+
+func (s *ScreeningPost) GetComments() *int64 {
+	if s == nil {
+		return nil
+	}
+	return s.Comments
+}
+
+func (s *ScreeningPost) GetViews() *int64 {
+	if s == nil {
+		return nil
+	}
+	return s.Views
 }
 
 func (s *ScreeningPost) GetProfileID() string {
