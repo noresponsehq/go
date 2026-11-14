@@ -54,7 +54,7 @@ func (s *Audit) List(ctx context.Context, request operations.ListAuditEventsRequ
 	} else {
 		baseURL = *o.ServerURL
 	}
-	opURL, err := utils.GenerateURL(ctx, baseURL, "/v1/workspaces/{workspace_id}/audit_events", request, nil)
+	opURL, err := utils.GenerateURL(ctx, baseURL, "/v1/workspaces/{workspace_id}/audit", request, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}
@@ -458,7 +458,7 @@ func (s *Audit) GetRetention(ctx context.Context, workspaceID string, environmen
 	} else {
 		baseURL = *o.ServerURL
 	}
-	opURL, err := utils.GenerateURL(ctx, baseURL, "/v1/workspaces/{workspace_id}/audit_settings/{environment}", request, nil)
+	opURL, err := utils.GenerateURL(ctx, baseURL, "/v1/workspaces/{workspace_id}/retention/{environment}", request, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}
@@ -814,7 +814,7 @@ func (s *Audit) UpdateRetention(ctx context.Context, workspaceID string, environ
 	} else {
 		baseURL = *o.ServerURL
 	}
-	opURL, err := utils.GenerateURL(ctx, baseURL, "/v1/workspaces/{workspace_id}/audit_settings/{environment}", request, nil)
+	opURL, err := utils.GenerateURL(ctx, baseURL, "/v1/workspaces/{workspace_id}/retention/{environment}", request, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}
@@ -1176,7 +1176,7 @@ func (s *Audit) ListStreams(ctx context.Context, workspaceID string, environment
 	} else {
 		baseURL = *o.ServerURL
 	}
-	opURL, err := utils.GenerateURL(ctx, baseURL, "/v1/workspaces/{workspace_id}/audit_streams/{environment}", request, nil)
+	opURL, err := utils.GenerateURL(ctx, baseURL, "/v1/workspaces/{workspace_id}/streams/{environment}", request, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}
@@ -1532,7 +1532,7 @@ func (s *Audit) ConfigureStream(ctx context.Context, workspaceID string, environ
 	} else {
 		baseURL = *o.ServerURL
 	}
-	opURL, err := utils.GenerateURL(ctx, baseURL, "/v1/workspaces/{workspace_id}/audit_streams/{environment}", request, nil)
+	opURL, err := utils.GenerateURL(ctx, baseURL, "/v1/workspaces/{workspace_id}/streams/{environment}", request, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}
@@ -1895,7 +1895,7 @@ func (s *Audit) RemoveStream(ctx context.Context, workspaceID string, environmen
 	} else {
 		baseURL = *o.ServerURL
 	}
-	opURL, err := utils.GenerateURL(ctx, baseURL, "/v1/workspaces/{workspace_id}/audit_streams/{environment}/{endpoint_id}", request, nil)
+	opURL, err := utils.GenerateURL(ctx, baseURL, "/v1/workspaces/{workspace_id}/streams/{environment}/{endpoint_id}", request, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}
@@ -2251,7 +2251,7 @@ func (s *Audit) ReplayStream(ctx context.Context, workspaceID string, environmen
 	} else {
 		baseURL = *o.ServerURL
 	}
-	opURL, err := utils.GenerateURL(ctx, baseURL, "/v1/workspaces/{workspace_id}/audit_streams/{environment}/{endpoint_id}/replay", request, nil)
+	opURL, err := utils.GenerateURL(ctx, baseURL, "/v1/workspaces/{workspace_id}/streams/{environment}/{endpoint_id}/replay", request, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}

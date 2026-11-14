@@ -1537,7 +1537,7 @@ func (s *Accounts) ListLinked(ctx context.Context, accountID string, limit *int6
 	} else {
 		baseURL = *o.ServerURL
 	}
-	opURL, err := utils.GenerateURL(ctx, baseURL, "/v1/accounts/{account_id}/linked_accounts", request, nil)
+	opURL, err := utils.GenerateURL(ctx, baseURL, "/v1/accounts/{account_id}/links", request, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}

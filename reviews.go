@@ -2757,7 +2757,7 @@ func (s *Reviews) ListViews(ctx context.Context, workspaceID string, environment
 	} else {
 		baseURL = *o.ServerURL
 	}
-	opURL, err := utils.GenerateURL(ctx, baseURL, "/v1/workspaces/{workspace_id}/review_views/{environment}", request, nil)
+	opURL, err := utils.GenerateURL(ctx, baseURL, "/v1/workspaces/{workspace_id}/views/{environment}", request, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}
@@ -3112,7 +3112,7 @@ func (s *Reviews) CreateView(ctx context.Context, workspaceID string, environmen
 	} else {
 		baseURL = *o.ServerURL
 	}
-	opURL, err := utils.GenerateURL(ctx, baseURL, "/v1/workspaces/{workspace_id}/review_views/{environment}", request, nil)
+	opURL, err := utils.GenerateURL(ctx, baseURL, "/v1/workspaces/{workspace_id}/views/{environment}", request, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}
@@ -3405,7 +3405,7 @@ func (s *Reviews) UpdateView(ctx context.Context, workspaceID string, environmen
 	} else {
 		baseURL = *o.ServerURL
 	}
-	opURL, err := utils.GenerateURL(ctx, baseURL, "/v1/workspaces/{workspace_id}/review_views/{environment}/{view_id}", request, nil)
+	opURL, err := utils.GenerateURL(ctx, baseURL, "/v1/workspaces/{workspace_id}/views/{environment}/{view_id}", request, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}
@@ -3699,7 +3699,7 @@ func (s *Reviews) DeleteView(ctx context.Context, workspaceID string, environmen
 	} else {
 		baseURL = *o.ServerURL
 	}
-	opURL, err := utils.GenerateURL(ctx, baseURL, "/v1/workspaces/{workspace_id}/review_views/{environment}/{view_id}", request, nil)
+	opURL, err := utils.GenerateURL(ctx, baseURL, "/v1/workspaces/{workspace_id}/views/{environment}/{view_id}", request, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}

@@ -57,7 +57,7 @@ func (s *KeyUsage) Record(ctx context.Context, idempotencyKey string, body compo
 	} else {
 		baseURL = *o.ServerURL
 	}
-	opURL, err := url.JoinPath(baseURL, "/v1/key_usage/batches")
+	opURL, err := url.JoinPath(baseURL, "/v1/keys/usage")
 	if err != nil {
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}

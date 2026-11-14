@@ -1,6 +1,6 @@
 package components
 
-// AuditEventList - GET /v1/workspaces/{workspace_id}/audit_events: one page of the workspace's audit log, both environments, newest first. Events are kept for as long as the workspace exists and are deleted with it. next_cursor is present only when another page exists.
+// AuditEventList - GET /v1/workspaces/{workspace_id}/audit: one page of the workspace's audit log, both environments, newest first. Events are kept for as long as the workspace exists and are deleted with it. next_cursor is present only when another page exists.
 type AuditEventList struct {
 	// The workspace id, which is also its live environment's workspace id; the test environment's is the same id with :test appended. A workspace created through the API is tnt_ and a 26-character ULID.
 	WorkspaceID string       `json:"workspace_id"`

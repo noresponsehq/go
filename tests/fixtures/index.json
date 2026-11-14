@@ -4165,6 +4165,35 @@
       "expect": "valid"
     },
     {
+      "file": "valid/connector_request_control.json",
+      "schema": "connectors.schema.json#/$defs/connector_request",
+      "expect": "valid"
+    },
+    {
+      "file": "invalid/connector_request_control_run_false.json",
+      "schema": "connectors.schema.json#/$defs/connector_request",
+      "expect": "invalid",
+      "errors": [
+        [
+          "const",
+          "/control/run"
+        ]
+      ],
+      "why": "NOR-839 a run is asked for or left out: there is no run to cancel"
+    },
+    {
+      "file": "invalid/connector_control_identifier.json",
+      "schema": "connectors.schema.json#/$defs/connector",
+      "expect": "invalid",
+      "errors": [
+        [
+          "additionalProperties",
+          "/control"
+        ]
+      ],
+      "why": "NOR-839 no answer carries a control's identifier"
+    },
+    {
       "file": "valid/admin.json",
       "schema": "admin.schema.json",
       "expect": "valid"

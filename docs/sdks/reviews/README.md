@@ -562,7 +562,7 @@ List private and shared saved review filters visible to you.
 
 ### Example Usage
 
-<!-- UsageSnippet language="go" operationID="listReviewViews" method="get" path="/v1/workspaces/{workspace_id}/review_views/{environment}" -->
+<!-- UsageSnippet language="go" operationID="listReviewViews" method="get" path="/v1/workspaces/{workspace_id}/views/{environment}" -->
 ```go
 package main
 
@@ -622,7 +622,7 @@ Save a private or shared review filter.
 
 ### Example Usage
 
-<!-- UsageSnippet language="go" operationID="createReviewView" method="post" path="/v1/workspaces/{workspace_id}/review_views/{environment}" -->
+<!-- UsageSnippet language="go" operationID="createReviewView" method="post" path="/v1/workspaces/{workspace_id}/views/{environment}" -->
 ```go
 package main
 
@@ -690,7 +690,7 @@ Update your saved review filter after checking its expected version.
 
 ### Example Usage
 
-<!-- UsageSnippet language="go" operationID="updateReviewView" method="patch" path="/v1/workspaces/{workspace_id}/review_views/{environment}/{view_id}" -->
+<!-- UsageSnippet language="go" operationID="updateReviewView" method="patch" path="/v1/workspaces/{workspace_id}/views/{environment}/{view_id}" -->
 ```go
 package main
 
@@ -759,7 +759,7 @@ Delete your saved review filter after checking its expected version.
 
 ### Example Usage
 
-<!-- UsageSnippet language="go" operationID="deleteReviewView" method="delete" path="/v1/workspaces/{workspace_id}/review_views/{environment}/{view_id}" -->
+<!-- UsageSnippet language="go" operationID="deleteReviewView" method="delete" path="/v1/workspaces/{workspace_id}/views/{environment}/{view_id}" -->
 ```go
 package main
 

@@ -1901,7 +1901,7 @@ func (s *Lists) GetChange(ctx context.Context, workspaceID string, environment c
 	} else {
 		baseURL = *o.ServerURL
 	}
-	opURL, err := utils.GenerateURL(ctx, baseURL, "/v1/workspaces/{workspace_id}/list_changes/{environment}/{change_id}", request, nil)
+	opURL, err := utils.GenerateURL(ctx, baseURL, "/v1/workspaces/{workspace_id}/changes/{environment}/{change_id}", request, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error generating URL: %w", err)
 	}

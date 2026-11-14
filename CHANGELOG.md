@@ -1,5 +1,9 @@
 # Changelog
 
+## 11.1.0
+
+No changes detected.
+
 ## 11.0.1
 
 No changes detected.

@@ -14,7 +14,7 @@ Records requests made with API keys your platform issued to your accounts, one e
 
 ### Example Usage: batch
 
-<!-- UsageSnippet language="go" operationID="recordKeyUsage" method="post" path="/v1/key_usage/batches" example="batch" -->
+<!-- UsageSnippet language="go" operationID="recordKeyUsage" method="post" path="/v1/keys/usage" example="batch" -->
 ```go
 package main
 
@@ -62,7 +62,7 @@ func main() {
 ```
 ### Example Usage: recorded
 
-<!-- UsageSnippet language="go" operationID="recordKeyUsage" method="post" path="/v1/key_usage/batches" example="recorded" -->
+<!-- UsageSnippet language="go" operationID="recordKeyUsage" method="post" path="/v1/keys/usage" example="recorded" -->
 ```go
 package main
 

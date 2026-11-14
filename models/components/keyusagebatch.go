@@ -1,6 +1,6 @@
 package components
 
-// KeyUsageBatch - The 202 answer of POST /v1/key_usage/batches. A replay with the same Idempotency-Key and body answers the same record and counts nothing again.
+// KeyUsageBatch - The 202 answer of POST /v1/keys/usage. A replay with the same Idempotency-Key and body answers the same record and counts nothing again.
 type KeyUsageBatch struct {
 	// Opaque, server-assigned id of the batch: 'kub_' and a 26-character Crockford base32 ULID.
 	ID string `json:"id"`
