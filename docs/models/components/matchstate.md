@@ -6,7 +6,7 @@ How sure the latest screening is that it found the person's accounts. unscreened
 
 ```go
 import (
-	"github.com/noresponsehq/go/v11/models/components"
+	"github.com/noresponsehq/go/v12/models/components"
 )
 
 value := components.MatchStateUnscreened

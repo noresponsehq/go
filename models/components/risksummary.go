@@ -1,7 +1,7 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v11/internal/utils"
+	"github.com/noresponsehq/go/v12/internal/utils"
 )
 
 // RiskSummary - A few typed facts per identifier: an assessment's risk.summary, and a screened person's lookup summary. Every fact is optional: absent means the evidence did not answer and makes no claim, while false or 0 is a definite answer.

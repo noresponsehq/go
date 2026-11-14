@@ -14,7 +14,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/noresponsehq/go/v11/models/components"
+	"github.com/noresponsehq/go/v12/models/components"
 )
 
 type signatureVector struct {

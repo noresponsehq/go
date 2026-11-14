@@ -1,7 +1,7 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v11/internal/utils"
+	"github.com/noresponsehq/go/v12/internal/utils"
 )
 
 // ScreeningProfile - An account the screening matched to the person, how it was matched, and how much of it was read.

@@ -1,8 +1,8 @@
 package operations
 
 import (
-	"github.com/noresponsehq/go/v11/internal/utils"
-	"github.com/noresponsehq/go/v11/models/components"
+	"github.com/noresponsehq/go/v12/internal/utils"
+	"github.com/noresponsehq/go/v12/models/components"
 )
 
 type ListPolicyEvaluationsRequest struct {

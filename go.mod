@@ -1,4 +1,4 @@
-module github.com/noresponsehq/go/v11
+module github.com/noresponsehq/go/v12
 
 go 1.24
 

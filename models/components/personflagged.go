@@ -1,7 +1,7 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v11/internal/utils"
+	"github.com/noresponsehq/go/v12/internal/utils"
 )
 
 // PersonFlagged - A screening recorded a finding on a person. It says which person and how severe, not what they posted, who they are or why: GET the person report for the findings. Sent once per screening that flags the person, so a re-screen of someone on watch announces them again.

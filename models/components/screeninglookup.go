@@ -1,7 +1,7 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v11/internal/utils"
+	"github.com/noresponsehq/go/v12/internal/utils"
 )
 
 // ScreeningLookup - What the signup check's lookups found for a person: account presence for the email, phone and usernames (the person's handles), the phone lookup, the email domain's registration and the breach search. Context and coverage for the reviewer, not a finding: nothing here sets a band or a match state.

@@ -1,7 +1,7 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v11/internal/utils"
+	"github.com/noresponsehq/go/v12/internal/utils"
 )
 
 // PersonReport - Everything known about one person, and where else in the environment they appear.

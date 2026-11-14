@@ -6,7 +6,7 @@ Why an item read was not analysed. video: a video, whose caption alone is read. 
 
 ```go
 import (
-	"github.com/noresponsehq/go/v11/models/components"
+	"github.com/noresponsehq/go/v12/models/components"
 )
 
 value := components.ScreeningNotAnalysedReasonVideo

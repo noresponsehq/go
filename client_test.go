@@ -10,7 +10,7 @@ import (
 	"regexp"
 	"testing"
 
-	"github.com/noresponsehq/go/v11/models/components"
+	"github.com/noresponsehq/go/v12/models/components"
 )
 
 func TestNewClientSendsTheKeyAsBearer(t *testing.T) {

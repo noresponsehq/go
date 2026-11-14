@@ -3,11 +3,11 @@ package noresponse
 import (
 	"context"
 	"fmt"
-	"github.com/noresponsehq/go/v11/internal/config"
-	"github.com/noresponsehq/go/v11/internal/hooks"
-	"github.com/noresponsehq/go/v11/internal/utils"
-	"github.com/noresponsehq/go/v11/models/components"
-	"github.com/noresponsehq/go/v11/retry"
+	"github.com/noresponsehq/go/v12/internal/config"
+	"github.com/noresponsehq/go/v12/internal/hooks"
+	"github.com/noresponsehq/go/v12/internal/utils"
+	"github.com/noresponsehq/go/v12/models/components"
+	"github.com/noresponsehq/go/v12/retry"
 	"net/http"
 	"time"
 )
@@ -162,10 +162,10 @@ func WithTimeout(timeout time.Duration) SDKOption {
 // New creates a new instance of the SDK with the provided options
 func New(opts ...SDKOption) *NoResponse {
 	sdk := &NoResponse{
-		SDKVersion: "11.1.2",
+		SDKVersion: "12.0.0",
 		sdkConfiguration: config.SDKConfiguration{
-			UserAgent:         "noresponse-sdk/go 11.1.2",
-			SDKVersion:        "11.1.2",
+			UserAgent:         "noresponse-sdk/go 12.0.0",
+			SDKVersion:        "12.0.0",
 			GenVersion:        "internal",
 			OpenAPIDocVersion: "1",
 			ServerList:        ServerList,

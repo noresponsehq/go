@@ -2,7 +2,7 @@ package config
 
 import (
 	"context"
-	"github.com/noresponsehq/go/v11/retry"
+	"github.com/noresponsehq/go/v12/retry"
 	"net/http"
 	"time"
 )

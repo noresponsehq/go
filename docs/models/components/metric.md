@@ -6,7 +6,7 @@ assessments: assessments admitted. webhook_deliveries: events sent to endpoints,
 
 ```go
 import (
-	"github.com/noresponsehq/go/v11/models/components"
+	"github.com/noresponsehq/go/v12/models/components"
 )
 
 value := components.MetricAssessments
