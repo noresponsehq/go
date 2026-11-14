@@ -1,5 +1,9 @@
 # Changelog
 
+## 12.0.6
+
+* `Sdk.Groups.GetPerson()`:  `response.Profiles[].Record.Fields[].Role` **Changed**
+
 ## 12.0.5
 
 * `Sdk.Groups.StartSearch()`: **Added**

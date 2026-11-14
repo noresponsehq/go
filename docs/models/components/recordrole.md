@@ -30,7 +30,9 @@ custom := components.RecordRole("custom_value")
 | `RecordRoleBorn`            | born                        |
 | `RecordRoleBot`             | bot                         |
 | `RecordRoleCallerCategory`  | caller_category             |
+| `RecordRoleChargebacks`     | chargebacks                 |
 | `RecordRoleCoverPicture`    | cover_picture               |
+| `RecordRoleDeclines`        | declines                    |
 | `RecordRoleDeleted`         | deleted                     |
 | `RecordRoleDeletedOn`       | deleted_on                  |
 | `RecordRoleDepartment`      | department                  |
@@ -66,6 +68,7 @@ custom := components.RecordRole("custom_value")
 | `RecordRoleOtherIP`         | other_ip                    |
 | `RecordRolePaid`            | paid                        |
 | `RecordRolePasswordChanged` | password_changed            |
+| `RecordRolePaymentMethod`   | payment_method              |
 | `RecordRolePicture`         | picture                     |
 | `RecordRolePoints`          | points                      |
 | `RecordRolePosts`           | posts                       |
@@ -86,6 +89,7 @@ custom := components.RecordRole("custom_value")
 | `RecordRoleSiteRole`        | site_role                   |
 | `RecordRoleSpamScore`       | spam_score                  |
 | `RecordRoleStreet`          | street                      |
+| `RecordRoleTrades`          | trades                      |
 | `RecordRoleVerified`        | verified                    |
 | `RecordRoleWarnings`        | warnings                    |
 | `RecordRoleWebsite`         | website                     |

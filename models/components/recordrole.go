@@ -18,14 +18,18 @@ const (
 	RecordRoleBanned RecordRole = "banned"
 	// RecordRoleBio What the person wrote about themselves (`long_text`).
 	RecordRoleBio RecordRole = "bio"
-	// RecordRoleBorn The date of birth (`date`).
+	// RecordRoleBorn The date of birth (`date` or `date_time`).
 	RecordRoleBorn RecordRole = "born"
 	// RecordRoleBot Whether the site marks the account as a bot (`flag`).
 	RecordRoleBot RecordRole = "bot"
 	// RecordRoleCallerCategory The category callers give a phone number, such as telemarketer (`label`).
 	RecordRoleCallerCategory RecordRole = "caller_category"
+	// RecordRoleChargebacks How many chargebacks a shop recorded against the account, or whether it has one (`count` or `flag`).
+	RecordRoleChargebacks RecordRole = "chargebacks"
 	// RecordRoleCoverPicture The banner picture of the profile (`image`).
 	RecordRoleCoverPicture RecordRole = "cover_picture"
+	// RecordRoleDeclines How many of the account's payments a shop declined (`count`).
+	RecordRoleDeclines RecordRole = "declines"
 	// RecordRoleDeleted Whether the account is deleted or inactive (`flag`).
 	RecordRoleDeleted RecordRole = "deleted"
 	// RecordRoleDeletedOn When the account was deleted (`date` or `date_time`).
@@ -96,6 +100,8 @@ const (
 	RecordRolePaid RecordRole = "paid"
 	// RecordRolePasswordChanged When the password last changed (`date` or `date_time`).
 	RecordRolePasswordChanged RecordRole = "password_changed"
+	// RecordRolePaymentMethod The payment method or card brand the account paid with (`label`).
+	RecordRolePaymentMethod RecordRole = "payment_method"
 	// RecordRolePicture The profile picture (`image`).
 	RecordRolePicture RecordRole = "picture"
 	// RecordRolePoints Points on the site (`score`).
@@ -136,6 +142,8 @@ const (
 	RecordRoleSpamScore RecordRole = "spam_score"
 	// RecordRoleStreet A street line of an address (`address`).
 	RecordRoleStreet RecordRole = "street"
+	// RecordRoleTrades How many trades a forum account completed (`count`).
+	RecordRoleTrades RecordRole = "trades"
 	// RecordRoleVerified Whether the site verified the account (`flag`).
 	RecordRoleVerified RecordRole = "verified"
 	// RecordRoleWarnings Warnings and infractions on the account (`count`).
@@ -152,7 +160,7 @@ func (e RecordRole) ToPointer() *RecordRole {
 func (e *RecordRole) IsExact() bool {
 	if e != nil {
 		switch *e {
-		case "account_id", "account_status", "account_type", "alternate_phone", "balance", "banned", "bio", "born", "bot", "caller_category", "cover_picture", "deleted", "deleted_on", "department", "display_name", "email_verified", "expires", "first_name", "followers", "following", "friends", "full_address", "full_name", "handle", "headline", "interests", "job_title", "joined", "last_active", "last_ip", "last_name", "last_post", "last_updated", "level", "likes_given", "likes_received", "line_type", "linked_account", "location", "marked_spam", "middle_name", "nationality", "organisation", "other_ip", "paid", "password_changed", "picture", "points", "posts", "private", "profile_link", "profile_views", "rating", "referrals", "referrer", "report_count", "reputation", "reputation_label", "residence", "salutation", "school", "signature", "signup_ip", "site_role", "spam_score", "street", "verified", "warnings", "website":
+		case "account_id", "account_status", "account_type", "alternate_phone", "balance", "banned", "bio", "born", "bot", "caller_category", "chargebacks", "cover_picture", "declines", "deleted", "deleted_on", "department", "display_name", "email_verified", "expires", "first_name", "followers", "following", "friends", "full_address", "full_name", "handle", "headline", "interests", "job_title", "joined", "last_active", "last_ip", "last_name", "last_post", "last_updated", "level", "likes_given", "likes_received", "line_type", "linked_account", "location", "marked_spam", "middle_name", "nationality", "organisation", "other_ip", "paid", "password_changed", "payment_method", "picture", "points", "posts", "private", "profile_link", "profile_views", "rating", "referrals", "referrer", "report_count", "reputation", "reputation_label", "residence", "salutation", "school", "signature", "signup_ip", "site_role", "spam_score", "street", "trades", "verified", "warnings", "website":
 			return true
 		}
 	}
