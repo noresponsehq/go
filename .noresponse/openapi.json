@@ -20400,6 +20400,42 @@
             "minimum": 0,
             "description": "How many views or plays the platform shows for the post."
           },
+          "shares": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "How many times the platform shows the post was shared or reposted."
+          },
+          "language": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 35,
+            "description": "The language the platform says the post is in, as the platform codes it, such as en or pt-BR.",
+            "example": "en"
+          },
+          "edited": {
+            "type": "boolean",
+            "description": "true when the platform marks the post as edited after it went up. Absent when it does not mark it."
+          },
+          "sponsored": {
+            "type": "boolean",
+            "description": "true when the platform marks the post as a paid partnership or an ad. Absent when it does not mark it."
+          },
+          "ai_generated": {
+            "type": "boolean",
+            "description": "true when the platform labels the post as made or changed with AI. Absent when it does not label it."
+          },
+          "posted_with": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "description": "The app or device the platform says the post was made with.",
+            "example": "Twitter for iPhone"
+          },
+          "stated": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "Everything else the platform sent about the post, under the platform's own names and as it typed them: counts, ids of linked posts and accounts, links, media details, labels and notices. The fields above are not repeated here. Nothing that describes the account the screening read with, such as whether it liked or saved the post, is ever here."
+          },
           "profile_id": {
             "type": "string",
             "pattern": "^prf_[0-7][0-9A-HJKMNP-TV-Z]{25}$",
