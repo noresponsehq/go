@@ -1,5 +1,9 @@
 # Changelog
 
+## 12.0.4
+
+No changes detected.
+
 ## 12.0.3
 
 * `Sdk.Groups.JudgeRecord()`: **Added**

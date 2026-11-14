@@ -1,0 +1,9 @@
+{
+  "id": "rec_5c1e0d7a9b3f4e2d8a6c0b1f9e7d3a52",
+  "source": {"connector": "github", "kind": "platform", "site": "github.com"},
+  "matched": [{"by": "username", "field": "login"}],
+  "fields": [
+    {"field": "login", "original": "jordan-ellis", "kind": "nickname", "role": "handle", "value": "jordan-ellis"}
+  ],
+  "observed_at": "2026-11-14T10:01:40Z"
+}

@@ -18,3 +18,4 @@
 /docs_compile_test.go
 # Hand-written so the quick start calls NewIdempotencyKey, not a fixed key.
 /USAGE.md
+/records_test.go

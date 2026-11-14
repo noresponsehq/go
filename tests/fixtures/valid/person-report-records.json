@@ -1,0 +1,91 @@
+{
+  "person": {
+    "id": "per_01JC8Y2M4N6P8Q0R2S4T6V8W01",
+    "group_id": "grp_01JC8Y1K3M5N7P9Q1R3S5T7V9W",
+    "external_id": "reg-2048",
+    "name": "Jordan Ellis",
+    "email": "jordan.ellis@example.com",
+    "city": "Leeds",
+    "handles": [{"platform": "x", "handle": "jordan_ellis"}],
+    "match_state": "none_found",
+    "highest_band": null,
+    "decision": null,
+    "coverage": {
+      "accounts_found": 0,
+      "accounts_accessible": 0,
+      "items_read": 0,
+      "platforms": [{"platform": "x", "status": "none_found", "accounts_found": 0, "items_read": 0}]
+    },
+    "spend": {"total_minor": 2, "by_implementation": [{"implementation": "lookups", "role": "resolver", "spend_minor": 2}]},
+    "last_screening_id": "scn_01JC8Y3A5B7C9D1E3F5G7H9J1K",
+    "screened_at": "2026-11-14T10:02:11Z",
+    "created_at": "2026-11-14T10:00:00Z",
+    "updated_at": "2026-11-14T10:02:11Z"
+  },
+  "profiles": [],
+  "findings": [],
+  "posts": [],
+  "media": [],
+  "reviews": [],
+  "other_groups": {"total": 0, "items": []},
+  "lookup": {
+    "checks": [
+      {"identifier": "email", "lane": "accounts", "status": "found", "sources": 4, "answered": 4, "found": 2},
+      {"identifier": "email", "lane": "breach", "status": "found", "sources": 1, "answered": 1, "found": 1},
+      {"identifier": "username", "lane": "accounts", "status": "found", "sources": 6, "answered": 6, "found": 1},
+      {"identifier": "username", "lane": "breach", "status": "found", "sources": 1, "answered": 1, "found": 1}
+    ],
+    "records": [
+      {
+        "id": "rec_5c1e0d7a9b3f4e2d8a6c0b1f9e7d3a52",
+        "source": {"connector": "github", "kind": "platform", "site": "github.com"},
+        "matched": [{"by": "username", "field": "login"}],
+        "fields": [
+          {"field": "login", "original": "jordan-ellis", "kind": "username", "role": "handle", "value": "jordan-ellis", "distinctive": {"rating": "distinctive", "reason": "34 bits, about one in 17 billion usernames"}},
+          {"field": "id", "original": "48151623", "kind": "account_id", "role": "account_id", "value": "48151623"},
+          {"field": "name", "original": "Jordan  Ellis", "kind": "person_name", "role": "display_name", "value": "Jordan Ellis", "distinctive": {"rating": "distinctive", "reason": "in 3 breach rows"}},
+          {"field": "html_url", "original": "https://GitHub.com/jordan-ellis", "kind": "url", "role": "profile_link", "value": "https://github.com/jordan-ellis"},
+          {"field": "avatar_url", "original": "https://avatars.githubusercontent.com/u/48151623", "kind": "image", "role": "picture", "value": "https://avatars.githubusercontent.com/u/48151623"},
+          {"field": "bio", "original": "Security engineer. Climbing on weekends.", "kind": "long_text", "role": "bio", "value": "Security engineer. Climbing on weekends."},
+          {"field": "location", "original": "Leeds, UK", "kind": "text", "role": "location", "value": "Leeds, UK"},
+          {"field": "company", "original": "Northwind Example", "kind": "organisation", "role": "organisation", "value": "Northwind Example"},
+          {"field": "twitter_username", "original": "jordan_ellis", "kind": "username", "role": "linked_account", "value": "jordan_ellis", "distinctive": {"rating": "distinctive", "reason": "33 bits, about one in 8.6 billion usernames"}},
+          {"field": "followers", "original": "212", "kind": "count", "role": "followers", "value": "212"},
+          {"field": "created_at", "original": "2014-03-07T09:30:00Z", "kind": "date_time", "role": "joined", "value": "2014-03-07T09:30:00Z"},
+          {"field": "hireable", "original": "true", "kind": "flag", "value": "true"}
+        ],
+        "observed_at": "2026-11-14T10:01:40Z",
+        "likelihood": 0.74,
+        "agreed": ["name", "twitter_username"],
+        "clashed": [],
+        "joined": true,
+        "verdict": "joined"
+      },
+      {
+        "id": "rec_8e2b4f6a1c3d5e7f9a0b2c4d6e8f1a3b",
+        "source": {"connector": "breach", "kind": "site_breach", "site": "forum.example.net", "table": "FORUM_EXAMPLE_NET_2019", "date": "2019-03"},
+        "matched": [{"by": "email", "field": "email"}],
+        "fields": [
+          {"field": "birthday", "original": "07/03/1990", "kind": "date", "role": "born"},
+          {"field": "email", "original": "Jordan.Ellis@Example.com", "kind": "email", "value": "jordan.ellis@example.com", "distinctive": {"rating": "unique", "reason": "an email address belongs to one person"}},
+          {"field": "lastip", "original": "3405803781", "kind": "ip", "role": "last_ip", "value": "203.0.113.5", "distinctive": {"rating": "common", "reason": "many people share one IP address"}},
+          {"field": "password", "original": "Leeds1990!", "kind": "password", "value": "Leeds1990!", "distinctive": {"rating": "distinctive", "reason": "seen twice in breach data; needs about 10^9 guesses"}},
+          {"field": "password_hash", "original": "$2y$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy", "kind": "hash", "value": "$2y$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy", "detail": "bcrypt", "distinctive": {"rating": "distinctive", "reason": "in 1 breach row"}},
+          {"field": "regdate", "original": "1394184600", "kind": "date_time", "role": "joined", "value": "2014-03-07T09:30:00Z"},
+          {"field": "salt", "original": "x9Q", "kind": "salt", "value": "x9Q"},
+          {"field": "usergroupid", "original": "2", "kind": "label", "role": "site_role", "value": "2"},
+          {"field": "username", "original": "jellis", "kind": "username", "role": "handle", "value": "jellis", "distinctive": {"rating": "common", "reason": "19 bits, about one in 520 thousand usernames"}}
+        ],
+        "observed_at": "2026-11-14T10:01:42Z",
+        "likelihood": 0.99,
+        "agreed": ["regdate"],
+        "clashed": [],
+        "joined": true
+      }
+    ],
+    "remaining": [
+      {"source": {"connector": "breach", "kind": "credential_list", "table": "COMBOLIST_EXAMPLE_2021", "date": "2021"}, "by": "username", "rows": 37}
+    ],
+    "looked_at": "2026-11-14T10:01:42Z"
+  }
+}

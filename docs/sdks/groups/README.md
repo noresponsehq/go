@@ -496,7 +496,7 @@ Read a person's report: matched profiles, findings with their evidence, every re
 
 ### Example Usage
 
-<!-- UsageSnippet language="go" operationID="getPerson" method="get" path="/v1/workspaces/{workspace_id}/groups/{environment}/{group_id}/people/{person_id}" -->
+<!-- UsageSnippet language="go" operationID="getPerson" method="get" path="/v1/workspaces/{workspace_id}/groups/{environment}/{group_id}/people/{person_id}" example="records" -->
 ```go
 package main
 

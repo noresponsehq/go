@@ -4249,6 +4249,48 @@
         ]
       ],
       "why": "NOR-865 a customer workspace's owner invite is never answered with its token"
+    },
+    {
+      "file": "valid/person-report-records.json",
+      "schema": "groups.schema.json#/$defs/person_report",
+      "expect": "valid",
+      "why": "NOR-900 a person report whose lookup carries a platform account and a leaked row as records, with every member of a record"
+    },
+    {
+      "file": "invalid/record-unknown-kind.json",
+      "schema": "record.schema.json#/$defs/record",
+      "expect": "invalid",
+      "errors": [
+        [
+          "enum",
+          "/fields/0/kind"
+        ]
+      ],
+      "why": "NOR-900 a field's kind is one of the 45 kinds"
+    },
+    {
+      "file": "invalid/record-likelihood-above-one.json",
+      "schema": "record.schema.json#/$defs/record",
+      "expect": "invalid",
+      "errors": [
+        [
+          "maximum",
+          "/likelihood"
+        ]
+      ],
+      "why": "NOR-900 a likelihood is at most 1"
+    },
+    {
+      "file": "invalid/record-field-without-original.json",
+      "schema": "record.schema.json#/$defs/record",
+      "expect": "invalid",
+      "errors": [
+        [
+          "required",
+          "/fields/0"
+        ]
+      ],
+      "why": "NOR-900 a field always keeps the value as the source wrote it"
     }
   ]
 }
