@@ -1,8 +1,8 @@
 package components
 
-// ScreeningMatchEvidence - One identifier that ties a profile to the attendee.
+// ScreeningMatchEvidence - One identifier that ties a profile to the person.
 type ScreeningMatchEvidence struct {
-	// What matched. email, phone, supplied_handle and source_fact are hard identifiers; company, city and school are soft. supplied_handle is a handle on the attendee row; source_fact is an account a profile found by the attendee's lookups lists.
+	// What matched. email, phone, supplied_handle and source_fact are hard identifiers; company, city and school are soft. supplied_handle is a handle on the person row; source_fact is an account a profile found by the person's lookups lists.
 	Kind ScreeningMatchEvidenceKind `json:"kind"`
 	// Where the match was seen, such as the profile field that carried it.
 	Detail *string `json:"detail,omitzero"`

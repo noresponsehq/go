@@ -1,6 +1,6 @@
 package components
 
-// ScreeningRequest - Screens the event's attendees no screening has reached and everyone on watch or escalated.
+// ScreeningRequest - Screens the group's people no screening has reached and everyone on watch or escalated.
 type ScreeningRequest struct {
 	Depth     ScreeningDepth   `json:"depth"`
 	Platforms []HandlePlatform `json:"platforms"`

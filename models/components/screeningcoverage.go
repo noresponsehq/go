@@ -1,7 +1,7 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v10/internal/utils"
+	"github.com/noresponsehq/go/v11/internal/utils"
 )
 
 // ScreeningCoverage - The denominator of a screening: accounts found, how many could be read, items read and the period they span, so a clean result is distinct from a person nobody could see.
@@ -9,7 +9,7 @@ type ScreeningCoverage struct {
 	AccountsFound      int64 `json:"accounts_found"`
 	AccountsAccessible int64 `json:"accounts_accessible"`
 	ItemsRead          int64 `json:"items_read"`
-	// Items read that the analyser could not analyse. Above zero, the attendee is partial: a finding may be missing from them.
+	// Items read that the analyser could not analyse. Above zero, the person is partial: a finding may be missing from them.
 	ItemsNotAnalysed *int64 `json:"items_not_analysed,omitzero"`
 	// items_not_analysed split by reason, each reason once with at least one item.
 	NotAnalysedByReason []ScreeningNotAnalysedCount `json:"not_analysed_by_reason,omitzero"`
@@ -18,7 +18,7 @@ type ScreeningCoverage struct {
 	// The newest item read on any platform.
 	PeriodTo  *string                     `json:"period_to,omitzero"`
 	Platforms []ScreeningPlatformCoverage `json:"platforms"`
-	// Requested platforms where the attendee gave the screening nothing to look up, such as no handle for a platform that reads supplied handles only. Nothing looked and nothing failed: such a platform is not in platforms, is not none_found and does not make the attendee partial.
+	// Requested platforms where the person gave the screening nothing to look up, such as no handle for a platform that reads supplied handles only. Nothing looked and nothing failed: such a platform is not in platforms, is not none_found and does not make the person partial.
 	NotSearched []HandlePlatform `json:"not_searched,omitzero"`
 }
 

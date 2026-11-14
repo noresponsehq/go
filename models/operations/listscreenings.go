@@ -1,8 +1,8 @@
 package operations
 
 import (
-	"github.com/noresponsehq/go/v10/internal/utils"
-	"github.com/noresponsehq/go/v10/models/components"
+	"github.com/noresponsehq/go/v11/internal/utils"
+	"github.com/noresponsehq/go/v11/models/components"
 )
 
 type ListScreeningsRequest struct {
@@ -10,7 +10,7 @@ type ListScreeningsRequest struct {
 	WorkspaceID string `pathParam:"style=simple,explode=false,name=workspace_id"`
 	// The environment: live or test. Each has its own settings. Any other value answers 400. An API key reads and changes only its own environment's; the other answers 404.
 	Environment components.KeyEnvironment `pathParam:"style=simple,explode=false,name=environment"`
-	EventID     string                    `pathParam:"style=simple,explode=false,name=event_id"`
+	GroupID     string                    `pathParam:"style=simple,explode=false,name=group_id"`
 	// At most this many items.
 	Limit *int64 `default:"20" queryParam:"style=form,explode=true,name=limit"`
 	// Read screenings older than this one.
@@ -42,11 +42,11 @@ func (l *ListScreeningsRequest) GetEnvironment() components.KeyEnvironment {
 	return l.Environment
 }
 
-func (l *ListScreeningsRequest) GetEventID() string {
+func (l *ListScreeningsRequest) GetGroupID() string {
 	if l == nil {
 		return ""
 	}
-	return l.EventID
+	return l.GroupID
 }
 
 func (l *ListScreeningsRequest) GetLimit() *int64 {

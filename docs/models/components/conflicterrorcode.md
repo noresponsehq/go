@@ -6,7 +6,7 @@ Machine codes an HTTP 409 answer can carry.
 
 ```go
 import (
-	"github.com/noresponsehq/go/v10/models/components"
+	"github.com/noresponsehq/go/v11/models/components"
 )
 
 value := components.ConflictErrorCodeIdempotencyKeyReused
@@ -46,7 +46,7 @@ custom := components.ConflictErrorCode("custom_value")
 | `ConflictErrorCodeMemberLimitReached`          | member_limit_reached                           |
 | `ConflictErrorCodeOwnerInvitePending`          | owner_invite_pending                           |
 | `ConflictErrorCodeAggregateErasedData`         | aggregate_erased_data                          |
-| `ConflictErrorCodeEventConflict`               | event_conflict                                 |
-| `ConflictErrorCodeEventLimitReached`           | event_limit_reached                            |
+| `ConflictErrorCodeGroupConflict`               | group_conflict                                 |
+| `ConflictErrorCodeGroupLimitReached`           | group_limit_reached                            |
 | `ConflictErrorCodeScreeningCapExceeded`        | screening_cap_exceeded                         |
 | `ConflictErrorCodeScreeningUnavailable`        | screening_unavailable                          |

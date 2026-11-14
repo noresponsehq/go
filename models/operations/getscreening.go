@@ -1,7 +1,7 @@
 package operations
 
 import (
-	"github.com/noresponsehq/go/v10/models/components"
+	"github.com/noresponsehq/go/v11/models/components"
 )
 
 type GetScreeningRequest struct {
@@ -9,7 +9,7 @@ type GetScreeningRequest struct {
 	WorkspaceID string `pathParam:"style=simple,explode=false,name=workspace_id"`
 	// The environment: live or test. Each has its own settings. Any other value answers 400. An API key reads and changes only its own environment's; the other answers 404.
 	Environment components.KeyEnvironment `pathParam:"style=simple,explode=false,name=environment"`
-	EventID     string                    `pathParam:"style=simple,explode=false,name=event_id"`
+	GroupID     string                    `pathParam:"style=simple,explode=false,name=group_id"`
 	ScreeningID string                    `pathParam:"style=simple,explode=false,name=screening_id"`
 }
 
@@ -27,11 +27,11 @@ func (g *GetScreeningRequest) GetEnvironment() components.KeyEnvironment {
 	return g.Environment
 }
 
-func (g *GetScreeningRequest) GetEventID() string {
+func (g *GetScreeningRequest) GetGroupID() string {
 	if g == nil {
 		return ""
 	}
-	return g.EventID
+	return g.GroupID
 }
 
 func (g *GetScreeningRequest) GetScreeningID() string {

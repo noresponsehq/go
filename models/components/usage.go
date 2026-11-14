@@ -1,10 +1,10 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v10/internal/utils"
+	"github.com/noresponsehq/go/v11/internal/utils"
 )
 
-// Usage - Body of the 200 answer to GET /v1/workspaces/{workspace_id}/usage: what the workspace's environments were metered for on each UTC day from from through to. Each billable unit is counted once, where it becomes final: an assessment when it is admitted (by flow and depth), a webhook delivery once per event per endpoint (retries and replays add nothing), a key-usage event once when the ingest accepts it, and a screened attendee once per screening when its result is recorded. A count does not change when the assessment, account or workspace is later deleted. A day, environment or metric with nothing counted has no item. No prices or billing; screening spend is in each screening's spent. console_lookups is the one limit: the live environment's daily cap on console lookups, as spent today.
+// Usage - Body of the 200 answer to GET /v1/workspaces/{workspace_id}/usage: what the workspace's environments were metered for on each UTC day from from through to. Each billable unit is counted once, where it becomes final: an assessment when it is admitted (by flow and depth), a webhook delivery once per event per endpoint (retries and replays add nothing), a key-usage event once when the ingest accepts it, and a screened person once per screening when its result is recorded. A count does not change when the assessment, account or workspace is later deleted. A day, environment or metric with nothing counted has no item. No prices or billing; screening spend is in each screening's spent. console_lookups is the one limit: the live environment's daily cap on console lookups, as spent today.
 type Usage struct {
 	// The workspace id, which is also its live environment's workspace id; the test environment's is the same id with :test appended. A workspace created through the API is tnt_ and a 26-character ULID.
 	WorkspaceID string `json:"workspace_id"`

@@ -20,7 +20,7 @@ const (
 	KeyScopePolicyPublish KeyScope = "policy_publish"
 	KeyScopeMembers       KeyScope = "members"
 	KeyScopeMembersManage KeyScope = "members_manage"
-	KeyScopeEvents        KeyScope = "events"
+	KeyScopeGroups        KeyScope = "groups"
 )
 
 func (e KeyScope) ToPointer() *KeyScope {
@@ -31,7 +31,7 @@ func (e KeyScope) ToPointer() *KeyScope {
 func (e *KeyScope) IsExact() bool {
 	if e != nil {
 		switch *e {
-		case "assess", "history", "delete", "webhooks", "detailed", "integrations", "management", "audit", "usage", "investigate", "evidence", "exports", "audit_manage", "settings", "policy_publish", "members", "members_manage", "events":
+		case "assess", "history", "delete", "webhooks", "detailed", "integrations", "management", "audit", "usage", "investigate", "evidence", "exports", "audit_manage", "settings", "policy_publish", "members", "members_manage", "groups":
 			return true
 		}
 	}

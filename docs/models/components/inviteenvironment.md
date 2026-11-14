@@ -4,7 +4,7 @@
 
 ```go
 import (
-	"github.com/noresponsehq/go/v10/models/components"
+	"github.com/noresponsehq/go/v11/models/components"
 )
 
 value := components.InviteEnvironmentLive

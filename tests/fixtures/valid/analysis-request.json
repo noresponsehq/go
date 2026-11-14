@@ -1,8 +1,8 @@
 {
   "request_id": "anr_01JC8Y2M4N6P8Q0R2S4T6V8W01",
-  "attendee_id": "att_01JC8Y2M4N6P8Q0R2S4T6V8W01",
+  "person_id": "per_01JC8Y2M4N6P8Q0R2S4T6V8W01",
   "depth": "standard",
-  "event": {
+  "group": {
     "name": "Annual shareholder meeting",
     "starts_at": "2026-12-01T09:00:00Z",
     "ends_at": "2026-12-01T17:00:00Z",
@@ -42,7 +42,7 @@
           },
           {
             "kind": "email",
-            "detail": "the email on the attendee row",
+            "detail": "the email on the person's row",
             "resolver": "synthetic"
           },
           {

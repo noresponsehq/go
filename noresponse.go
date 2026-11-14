@@ -3,11 +3,11 @@ package noresponse
 import (
 	"context"
 	"fmt"
-	"github.com/noresponsehq/go/v10/internal/config"
-	"github.com/noresponsehq/go/v10/internal/hooks"
-	"github.com/noresponsehq/go/v10/internal/utils"
-	"github.com/noresponsehq/go/v10/models/components"
-	"github.com/noresponsehq/go/v10/retry"
+	"github.com/noresponsehq/go/v11/internal/config"
+	"github.com/noresponsehq/go/v11/internal/hooks"
+	"github.com/noresponsehq/go/v11/internal/utils"
+	"github.com/noresponsehq/go/v11/models/components"
+	"github.com/noresponsehq/go/v11/retry"
 	"net/http"
 	"time"
 )
@@ -84,8 +84,8 @@ type NoResponse struct {
 	Evaluations *Evaluations
 	// Retained outcomes, enforcement reports and review populations.
 	Operations *Operations
-	// Events, attendee lists, screenings and reviewer decisions.
-	Events *Events
+	// Groups, lists of people, screenings and reviewer decisions.
+	Groups *Groups
 
 	sdkConfiguration config.SDKConfiguration
 	hooks            *hooks.Hooks
@@ -162,10 +162,10 @@ func WithTimeout(timeout time.Duration) SDKOption {
 // New creates a new instance of the SDK with the provided options
 func New(opts ...SDKOption) *NoResponse {
 	sdk := &NoResponse{
-		SDKVersion: "10.0.21",
+		SDKVersion: "11.0.0",
 		sdkConfiguration: config.SDKConfiguration{
-			UserAgent:         "noresponse-sdk/go 10.0.21",
-			SDKVersion:        "10.0.21",
+			UserAgent:         "noresponse-sdk/go 11.0.0",
+			SDKVersion:        "11.0.0",
 			GenVersion:        "internal",
 			OpenAPIDocVersion: "1",
 			ServerList:        ServerList,
@@ -208,7 +208,7 @@ func New(opts ...SDKOption) *NoResponse {
 	sdk.Exports = newExports(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Evaluations = newEvaluations(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Operations = newOperations(sdk, sdk.sdkConfiguration, sdk.hooks)
-	sdk.Events = newEvents(sdk, sdk.sdkConfiguration, sdk.hooks)
+	sdk.Groups = newGroups(sdk, sdk.sdkConfiguration, sdk.hooks)
 
 	return sdk
 }

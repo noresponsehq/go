@@ -53,16 +53,16 @@ webhookEvent := components.CreateWebhookEventAuditEvent(components.AuditEventEve
 webhookEvent := components.CreateWebhookEventScreeningCompleted(components.ScreeningCompletedEvent{/* values here */})
 ```
 
-### AttendeeFlaggedEvent
+### PersonFlaggedEvent
 
 ```go
-webhookEvent := components.CreateWebhookEventAttendeeFlagged(components.AttendeeFlaggedEvent{/* values here */})
+webhookEvent := components.CreateWebhookEventPersonFlagged(components.PersonFlaggedEvent{/* values here */})
 ```
 
-### AttendeeDecidedEvent
+### PersonDecidedEvent
 
 ```go
-webhookEvent := components.CreateWebhookEventAttendeeDecided(components.AttendeeDecidedEvent{/* values here */})
+webhookEvent := components.CreateWebhookEventPersonDecided(components.PersonDecidedEvent{/* values here */})
 ```
 
 ## Union Discrimination
@@ -87,9 +87,9 @@ switch webhookEvent.Type {
 		// webhookEvent.AuditEventEvent is populated
 	case components.WebhookEventTypeScreeningCompleted:
 		// webhookEvent.ScreeningCompletedEvent is populated
-	case components.WebhookEventTypeAttendeeFlagged:
-		// webhookEvent.AttendeeFlaggedEvent is populated
-	case components.WebhookEventTypeAttendeeDecided:
-		// webhookEvent.AttendeeDecidedEvent is populated
+	case components.WebhookEventTypePersonFlagged:
+		// webhookEvent.PersonFlaggedEvent is populated
+	case components.WebhookEventTypePersonDecided:
+		// webhookEvent.PersonDecidedEvent is populated
 }
 ```

@@ -6,7 +6,7 @@ public profiles were read; a private or locked one exists but could not be read.
 
 ```go
 import (
-	"github.com/noresponsehq/go/v10/models/components"
+	"github.com/noresponsehq/go/v11/models/components"
 )
 
 value := components.AccessPublic

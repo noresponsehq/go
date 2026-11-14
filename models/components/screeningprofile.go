@@ -1,6 +1,6 @@
 package components
 
-// ScreeningProfile - An account the screening matched to the attendee, how it was matched, and how much of it was read.
+// ScreeningProfile - An account the screening matched to the person, how it was matched, and how much of it was read.
 type ScreeningProfile struct {
 	ID string `json:"id"`
 	// A platform a screening can cover. synthetic is the deterministic connector's own platform, for exercising the product end to end with no network.
@@ -14,7 +14,7 @@ type ScreeningProfile struct {
 	AccountCreatedAt *string        `json:"account_created_at,omitzero"`
 	// public profiles were read; a private or locked one exists but could not be read.
 	Access Access `json:"access"`
-	// How a profile was matched to the attendee: the state its evidence earns, and the evidence.
+	// How a profile was matched to the person: the state its evidence earns, and the evidence.
 	Match ScreeningMatch `json:"match"`
 	// The resolver, collector or analyser that produced a record, by its catalogue name.
 	Collector string `json:"collector"`

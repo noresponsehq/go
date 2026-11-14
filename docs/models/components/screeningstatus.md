@@ -1,12 +1,12 @@
 # ScreeningStatus
 
-partial finished with some attendees or platforms not covered; attendees_failed and attendees_partial count them.
+partial finished with some people or platforms not covered; people_failed and people_partial count them.
 
 ## Example Usage
 
 ```go
 import (
-	"github.com/noresponsehq/go/v10/models/components"
+	"github.com/noresponsehq/go/v11/models/components"
 )
 
 value := components.ScreeningStatusQueued

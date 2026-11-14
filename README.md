@@ -11,7 +11,7 @@ Go 1.24+.
 ## Install
 
 ```sh
-go get github.com/noresponsehq/go/v10
+go get github.com/noresponsehq/go/v11
 ```
 
 
@@ -26,8 +26,8 @@ import (
 	"log"
 	"os"
 
-	noresponse "github.com/noresponsehq/go/v10"
-	"github.com/noresponsehq/go/v10/models/components"
+	noresponse "github.com/noresponsehq/go/v11"
+	"github.com/noresponsehq/go/v11/models/components"
 )
 
 func main() {
@@ -66,7 +66,7 @@ Every method takes a `context.Context` first. Cancelling it cancels the request 
 | --- | --- |
 | Configure this client and explore its methods | [Go SDK guide](https://docs.noresponse.org/sdks/go) |
 | Act when an account's decision changes | [Late results](https://docs.noresponse.org/guides/late-results) |
-| Screen an event's attendees and record decisions | [Events and screenings](https://docs.noresponse.org/reference/events) |
+| Screen a group's people and record decisions | [Groups and screenings](https://docs.noresponse.org/reference/groups) |
 | Explore request and response fields | [API reference](https://docs.noresponse.org/api-reference) |
 
 <details>
@@ -123,7 +123,7 @@ case err != nil:
 }
 ```
 
-The typed errors are `BadRequestError` (400), `AuthenticationError` (401), `PermissionDeniedError` (403), `NotFoundError` (404), `ConflictError` (409) and `RateLimitError` (429), all in `github.com/noresponsehq/go/v10/models/apierrors`. Any other status is an `*apierrors.APIStatusError`.
+The typed errors are `BadRequestError` (400), `AuthenticationError` (401), `PermissionDeniedError` (403), `NotFoundError` (404), `ConflictError` (409) and `RateLimitError` (429), all in `github.com/noresponsehq/go/v11/models/apierrors`. Any other status is an `*apierrors.APIStatusError`.
 
 ## Retries and timeouts
 
@@ -209,12 +209,12 @@ http.HandleFunc("/webhooks/noresponse", func(w http.ResponseWriter, r *http.Requ
 	case components.WebhookEventTypeWebhookEndpointDisabled:
 		// Data.EndpointID failed for 72 hours and is disabled: fix it and verify it again.
 	case components.WebhookEventTypeScreeningCompleted:
-		// A screening of an event finished: event.ScreeningCompletedEvent.Data counts attendees by band,
-		// no footprint and partial coverage. It names no attendee: list the roster filtered by band.
-	case components.WebhookEventTypeAttendeeFlagged:
-		// A screening flagged an attendee: event.AttendeeFlaggedEvent.Data has its highest band, never what was posted.
-	case components.WebhookEventTypeAttendeeDecided:
-		// A reviewer marked the attendee cleared, watch or escalated; keep the latest decided_at per attendee.
+		// A screening of a group finished: event.ScreeningCompletedEvent.Data counts people by band,
+		// no footprint and partial coverage. It names no person: list the roster filtered by band.
+	case components.WebhookEventTypePersonFlagged:
+		// A screening flagged a person: event.PersonFlaggedEvent.Data has its highest band, never what was posted.
+	case components.WebhookEventTypePersonDecided:
+		// A reviewer marked the person cleared, watch or escalated; keep the latest decided_at per person.
 	case components.WebhookEventTypeAssessmentUpdated:
 		if expired := event.AssessmentUpdatedEvent.Data.AssessmentExpired; expired != nil {
 			// Delete what you hold for expired.AssessmentID.

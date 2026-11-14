@@ -1,6 +1,6 @@
 # ScreeningCompletedByBand
 
-Screened attendees by the band of their most severe finding.
+Screened people by the band of their most severe finding.
 
 
 ## Fields

@@ -6,7 +6,7 @@ A NoResponse source: github (GitHub accounts), phone (the phone lookup), breach 
 
 ```go
 import (
-	"github.com/noresponsehq/go/v10/models/components"
+	"github.com/noresponsehq/go/v11/models/components"
 )
 
 value := components.SourceIDGithub

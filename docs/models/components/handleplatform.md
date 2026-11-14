@@ -6,7 +6,7 @@ A platform a screening can cover. synthetic is the deterministic connector's own
 
 ```go
 import (
-	"github.com/noresponsehq/go/v10/models/components"
+	"github.com/noresponsehq/go/v11/models/components"
 )
 
 value := components.HandlePlatformInstagram

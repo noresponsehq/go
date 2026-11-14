@@ -4,7 +4,7 @@
 
 ```go
 import (
-	"github.com/noresponsehq/go/v10/models/components"
+	"github.com/noresponsehq/go/v11/models/components"
 )
 
 value := components.KeyScopeAssess
@@ -35,4 +35,4 @@ custom := components.KeyScope("custom_value")
 | `KeyScopePolicyPublish` | policy_publish          |
 | `KeyScopeMembers`       | members                 |
 | `KeyScopeMembersManage` | members_manage          |
-| `KeyScopeEvents`        | events                  |
+| `KeyScopeGroups`        | groups                  |

@@ -1,10 +1,10 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v10/internal/utils"
+	"github.com/noresponsehq/go/v11/internal/utils"
 )
 
-// ScreeningCompletedByBand - Screened attendees by the band of their most severe finding.
+// ScreeningCompletedByBand - Screened people by the band of their most severe finding.
 type ScreeningCompletedByBand struct {
 	Critical int64 `json:"critical"`
 	High     int64 `json:"high"`

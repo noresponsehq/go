@@ -1,0 +1,28 @@
+{
+  "items": [
+    {
+      "environment": "live",
+      "analyser": "claude",
+      "enabled": true,
+      "rate": 2,
+      "burst": 4,
+      "priority": 10,
+      "egress": true,
+      "credential": true,
+      "network": "direct",
+      "updated_at": "2026-11-08T10:00:00Z",
+      "updated_by": "operator-harry"
+    },
+    {
+      "environment": "test",
+      "analyser": "synthetic",
+      "enabled": true,
+      "rate": null,
+      "burst": null,
+      "priority": 0,
+      "egress": false,
+      "credential": false,
+      "network": "direct"
+    }
+  ]
+}

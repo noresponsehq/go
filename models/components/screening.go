@@ -3,9 +3,9 @@ package components
 // Screening - A screening and its progress.
 type Screening struct {
 	ID          string                   `json:"id"`
-	EventID     string                   `json:"event_id"`
+	GroupID     string                   `json:"group_id"`
 	Environment AuditSettingsEnvironment `json:"environment"`
-	// partial finished with some attendees or platforms not covered; attendees_failed and attendees_partial count them.
+	// partial finished with some people or platforms not covered; people_failed and people_partial count them.
 	Status      ScreeningStatus  `json:"status"`
 	Depth       ScreeningDepth   `json:"depth"`
 	Platforms   []HandlePlatform `json:"platforms"`
@@ -15,17 +15,17 @@ type Screening struct {
 	FinishedAt  *string          `json:"finished_at,omitzero"`
 	// A screening still running then fails with error_code expired.
 	ExpiresAt string `json:"expires_at"`
-	// Attendees selected when the screening started.
-	AttendeesTotal int64 `json:"attendees_total"`
-	// Attendees screened so far, failed ones included.
-	AttendeesDone    int64 `json:"attendees_done"`
-	AttendeesFlagged int64 `json:"attendees_flagged"`
-	AttendeesFailed  int64 `json:"attendees_failed"`
-	// Attendees screened with some requested platform not covered; their coverage names which.
-	AttendeesPartial int64 `json:"attendees_partial"`
-	// What the screening was estimated to cost when it started, in minor units of USD (cents): its attendees at its depth and platforms. Until the screening finishes, what it has not yet spent counts against the environment's screening_daily_cap.
+	// People selected when the screening started.
+	PeopleTotal int64 `json:"people_total"`
+	// People screened so far, failed ones included.
+	PeopleDone    int64 `json:"people_done"`
+	PeopleFlagged int64 `json:"people_flagged"`
+	PeopleFailed  int64 `json:"people_failed"`
+	// People screened with some requested platform not covered; their coverage names which.
+	PeoplePartial int64 `json:"people_partial"`
+	// What the screening was estimated to cost when it started, in minor units of USD (cents): its people at its depth and platforms. Until the screening finishes, what it has not yet spent counts against the environment's screening_daily_cap.
 	EstimatedSpend int64 `json:"estimated_spend"`
-	// What the attendees it has screened recorded, in minor units of USD. Each counts toward the UTC day it was recorded on; a failed attendee records nothing.
+	// What the people it has screened recorded, in minor units of USD. Each counts toward the UTC day it was recorded on; a failed person records nothing.
 	Spent int64 `json:"spent"`
 	// What screening cost, in US cents, in total and per implementation.
 	Spend ScreeningSpend `json:"spend"`
@@ -40,11 +40,11 @@ func (s *Screening) GetID() string {
 	return s.ID
 }
 
-func (s *Screening) GetEventID() string {
+func (s *Screening) GetGroupID() string {
 	if s == nil {
 		return ""
 	}
-	return s.EventID
+	return s.GroupID
 }
 
 func (s *Screening) GetEnvironment() AuditSettingsEnvironment {
@@ -110,39 +110,39 @@ func (s *Screening) GetExpiresAt() string {
 	return s.ExpiresAt
 }
 
-func (s *Screening) GetAttendeesTotal() int64 {
+func (s *Screening) GetPeopleTotal() int64 {
 	if s == nil {
 		return 0
 	}
-	return s.AttendeesTotal
+	return s.PeopleTotal
 }
 
-func (s *Screening) GetAttendeesDone() int64 {
+func (s *Screening) GetPeopleDone() int64 {
 	if s == nil {
 		return 0
 	}
-	return s.AttendeesDone
+	return s.PeopleDone
 }
 
-func (s *Screening) GetAttendeesFlagged() int64 {
+func (s *Screening) GetPeopleFlagged() int64 {
 	if s == nil {
 		return 0
 	}
-	return s.AttendeesFlagged
+	return s.PeopleFlagged
 }
 
-func (s *Screening) GetAttendeesFailed() int64 {
+func (s *Screening) GetPeopleFailed() int64 {
 	if s == nil {
 		return 0
 	}
-	return s.AttendeesFailed
+	return s.PeopleFailed
 }
 
-func (s *Screening) GetAttendeesPartial() int64 {
+func (s *Screening) GetPeoplePartial() int64 {
 	if s == nil {
 		return 0
 	}
-	return s.AttendeesPartial
+	return s.PeoplePartial
 }
 
 func (s *Screening) GetEstimatedSpend() int64 {

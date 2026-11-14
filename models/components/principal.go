@@ -1,10 +1,10 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v10/internal/utils"
+	"github.com/noresponsehq/go/v11/internal/utils"
 )
 
-// Principal - A person the event protects.
+// Principal - A person the group protects.
 type Principal struct {
 	// The principal's name.
 	Name string `json:"name"`

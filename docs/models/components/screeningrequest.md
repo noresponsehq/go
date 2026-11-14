@@ -1,6 +1,6 @@
 # ScreeningRequest
 
-Screens the event's attendees no screening has reached and everyone on watch or escalated.
+Screens the group's people no screening has reached and everyone on watch or escalated.
 
 
 ## Fields

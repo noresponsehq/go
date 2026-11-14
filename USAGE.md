@@ -11,8 +11,8 @@ import (
 	"log"
 	"os"
 
-	noresponse "github.com/noresponsehq/go/v10"
-	"github.com/noresponsehq/go/v10/models/components"
+	noresponse "github.com/noresponsehq/go/v11"
+	"github.com/noresponsehq/go/v11/models/components"
 )
 
 func main() {

@@ -1,6 +1,6 @@
 # Principal
 
-A person the event protects.
+A person the group protects.
 
 
 ## Fields

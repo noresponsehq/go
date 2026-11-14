@@ -190,13 +190,13 @@
       "why": "NOR-793 a screening's counts by band, no footprint and partial coverage"
     },
     {
-      "file": "valid/webhook-attendee-flagged.json",
+      "file": "valid/webhook-person-flagged.json",
       "schema": "webhook-event.schema.json",
       "expect": "valid",
-      "why": "NOR-793 an attendee's highest band, never what was posted"
+      "why": "NOR-793 a person's highest band, never what was posted"
     },
     {
-      "file": "valid/webhook-attendee-decided.json",
+      "file": "valid/webhook-person-decided.json",
       "schema": "webhook-event.schema.json",
       "expect": "valid",
       "why": "NOR-793 a reviewer's decision without its note"
@@ -2622,7 +2622,7 @@
       "why": "NOR-143 a workspace has a live and a test environment only"
     },
     {
-      "file": "invalid/webhook-attendee-flagged-post-text.json",
+      "file": "invalid/webhook-person-flagged-post-text.json",
       "schema": "webhook-event.schema.json",
       "expect": "invalid",
       "errors": [
@@ -2631,7 +2631,7 @@
           "/data"
         ]
       ],
-      "why": "NOR-793 attendee.flagged never carries what the attendee posted"
+      "why": "NOR-793 person.flagged never carries what the person posted"
     },
     {
       "file": "invalid/webhook-screening-completed-cancelled.json",
@@ -3812,23 +3812,23 @@
       "why": "NOR-362 a metric with nothing counted has no item"
     },
     {
-      "file": "valid/source-control.json",
-      "schema": "source-control.schema.json",
+      "file": "valid/connector.json",
+      "schema": "connectors.schema.json#/$defs/connector",
       "expect": "valid"
     },
     {
-      "file": "valid/source-control-list.json",
-      "schema": "source-control-list.schema.json",
+      "file": "valid/connector_list.json",
+      "schema": "connectors.schema.json#/$defs/connector_list",
       "expect": "valid"
     },
     {
-      "file": "valid/source-control-request.json",
-      "schema": "source-control-request.schema.json",
+      "file": "valid/connector_request.json",
+      "schema": "connectors.schema.json#/$defs/connector_request",
       "expect": "valid"
     },
     {
-      "file": "invalid/source-control-request-rate-alone.json",
-      "schema": "source-control-request.schema.json",
+      "file": "invalid/connector_request_rate_alone.json",
+      "schema": "connectors.schema.json#/$defs/connector_request",
       "expect": "invalid",
       "errors": [
         [
@@ -3837,6 +3837,18 @@
         ]
       ],
       "why": "NOR-468 rate and burst are set together"
+    },
+    {
+      "file": "invalid/connector_request_unknown_operation.json",
+      "schema": "connectors.schema.json#/$defs/connector_request",
+      "expect": "invalid",
+      "errors": [
+        [
+          "enum",
+          "/operations/1"
+        ]
+      ],
+      "why": "NOR-854 a connector has the three operations of the contract and no other"
     },
     {
       "file": "invalid/settings-request-unknown-source.json",
@@ -3851,8 +3863,8 @@
       "why": "NOR-468 a workspace refuses only NoResponse's own sources"
     },
     {
-      "file": "invalid/source-control-request-mixed-reset.json",
-      "schema": "source-control-request.schema.json",
+      "file": "invalid/connector_request_mixed_reset.json",
+      "schema": "connectors.schema.json#/$defs/connector_request",
       "expect": "invalid",
       "errors": [
         [
@@ -3888,6 +3900,28 @@
         ]
       ],
       "why": "NOR-750 a credential adds something to a request"
+    },
+    {
+      "file": "valid/proxies.json",
+      "schema": "proxies.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/proxy_list.json",
+      "schema": "proxy_list.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "invalid/proxy_list_direct.json",
+      "schema": "proxy_list.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "enum",
+          "/network"
+        ]
+      ],
+      "why": "NOR-846 a proxy list serves a proxy network, never direct"
     },
     {
       "file": "valid/assessment-aggregate-request.json",
@@ -4116,18 +4150,18 @@
       "why": "NOR-787 a finding's band is one of the five bands"
     },
     {
-      "file": "valid/screening-catalogue-entry.json",
-      "schema": "screening-catalogue.schema.json#/$defs/entry",
+      "file": "valid/analyser.json",
+      "schema": "analysers.schema.json#/$defs/analyser",
       "expect": "valid"
     },
     {
-      "file": "valid/screening-catalogue-list.json",
-      "schema": "screening-catalogue.schema.json#/$defs/entry_list",
+      "file": "valid/analyser_list.json",
+      "schema": "analysers.schema.json#/$defs/analyser_list",
       "expect": "valid"
     },
     {
-      "file": "valid/screening-catalogue-request.json",
-      "schema": "screening-catalogue.schema.json#/$defs/entry_request",
+      "file": "valid/analyser_request.json",
+      "schema": "analysers.schema.json#/$defs/analyser_request",
       "expect": "valid"
     }
   ]

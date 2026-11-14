@@ -1,0 +1,1 @@
+{"connector_id": "phone", "enabled": false, "rate": 20, "burst": 40, "priority": 5, "operations": [], "supports": [], "executor": true, "signup": true, "egress": true, "credential": false, "network": "direct", "answers_ms": 0, "updated_at": "2026-10-25T09:30:00.000Z", "updated_by": "harry"}

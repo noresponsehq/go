@@ -1,6 +1,6 @@
 package components
 
-// Handle - An account the attendee is known to hold.
+// Handle - An account the person is known to hold.
 type Handle struct {
 	// A platform a screening can cover. synthetic is the deterministic connector's own platform, for exercising the product end to end with no network.
 	Platform HandlePlatform `json:"platform"`

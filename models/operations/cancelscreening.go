@@ -1,7 +1,7 @@
 package operations
 
 import (
-	"github.com/noresponsehq/go/v10/models/components"
+	"github.com/noresponsehq/go/v11/models/components"
 )
 
 type CancelScreeningRequest struct {
@@ -9,7 +9,7 @@ type CancelScreeningRequest struct {
 	WorkspaceID string `pathParam:"style=simple,explode=false,name=workspace_id"`
 	// The environment: live or test. Each has its own settings. Any other value answers 400. An API key reads and changes only its own environment's; the other answers 404.
 	Environment components.KeyEnvironment         `pathParam:"style=simple,explode=false,name=environment"`
-	EventID     string                            `pathParam:"style=simple,explode=false,name=event_id"`
+	GroupID     string                            `pathParam:"style=simple,explode=false,name=group_id"`
 	ScreeningID string                            `pathParam:"style=simple,explode=false,name=screening_id"`
 	Body        components.ScreeningCancelRequest `request:"mediaType=application/json"`
 }
@@ -28,11 +28,11 @@ func (c *CancelScreeningRequest) GetEnvironment() components.KeyEnvironment {
 	return c.Environment
 }
 
-func (c *CancelScreeningRequest) GetEventID() string {
+func (c *CancelScreeningRequest) GetGroupID() string {
 	if c == nil {
 		return ""
 	}
-	return c.EventID
+	return c.GroupID
 }
 
 func (c *CancelScreeningRequest) GetScreeningID() string {

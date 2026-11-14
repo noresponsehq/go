@@ -1,6 +1,6 @@
 package components
 
-// ScreeningStatus - partial finished with some attendees or platforms not covered; attendees_failed and attendees_partial count them.
+// ScreeningStatus - partial finished with some people or platforms not covered; people_failed and people_partial count them.
 type ScreeningStatus string
 
 const (

@@ -4,7 +4,7 @@
 
 ```go
 import (
-	"github.com/noresponsehq/go/v10/models/components"
+	"github.com/noresponsehq/go/v11/models/components"
 )
 
 value := components.KeyRequestScopeAssess
@@ -32,4 +32,4 @@ value := components.KeyRequestScopeAssess
 | `KeyRequestScopePolicyPublish` | policy_publish                 |
 | `KeyRequestScopeMembers`       | members                        |
 | `KeyRequestScopeMembersManage` | members_manage                 |
-| `KeyRequestScopeEvents`        | events                         |
+| `KeyRequestScopeGroups`        | groups                         |

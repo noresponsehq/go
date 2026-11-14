@@ -1,0 +1,1 @@
+{"enabled": false, "rate": 20, "burst": 40, "operations": ["read_profile", "read_posts"]}
