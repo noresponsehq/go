@@ -8,9 +8,13 @@ import (
 type ScreeningPost struct {
 	ID string `json:"id"`
 	//lint:ignore U1000 accessed via reflection for JSON marshaling
-	kind      string  `const:"post" json:"kind"`
-	Text      string  `json:"text"`
-	ReplyTo   *string `json:"reply_to,omitzero"`
+	kind    string  `const:"post" json:"kind"`
+	Text    string  `json:"text"`
+	ReplyTo *string `json:"reply_to,omitzero"`
+	// The permalink of the post this one reposts. text then holds that post's author's words, not the person's.
+	RepostOf *string `json:"repost_of,omitzero"`
+	// The permalink of the post this one quotes. text holds the person's own words alone.
+	QuoteOf   *string `json:"quote_of,omitzero"`
 	ProfileID string  `json:"profile_id"`
 	Permalink string  `json:"permalink"`
 	PostedAt  string  `json:"posted_at"`
@@ -54,6 +58,20 @@ func (s *ScreeningPost) GetReplyTo() *string {
 		return nil
 	}
 	return s.ReplyTo
+}
+
+func (s *ScreeningPost) GetRepostOf() *string {
+	if s == nil {
+		return nil
+	}
+	return s.RepostOf
+}
+
+func (s *ScreeningPost) GetQuoteOf() *string {
+	if s == nil {
+		return nil
+	}
+	return s.QuoteOf
 }
 
 func (s *ScreeningPost) GetProfileID() string {

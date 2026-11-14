@@ -23,6 +23,8 @@ type ScreeningProfile struct {
 	// The resolver, collector or analyser that produced a record, by its catalogue name.
 	Collector string `json:"collector"`
 	ItemsRead int64  `json:"items_read"`
+	// Why fewer posts were read than the screening's depth asks for while the account holds more. platform_limit: the platform shows the screening no more of them. page_limit: the pages a screening reads ran out first. rate_limited or unavailable: a later page was held back or failed; the posts before it are kept and the person is partial. Absent when the account was read to its end or to the depth.
+	PostsStopped *PostsStopped `json:"posts_stopped,omitzero"`
 	// The oldest item read.
 	PeriodFrom *string `json:"period_from,omitzero"`
 	// The newest item read.
@@ -132,6 +134,13 @@ func (s *ScreeningProfile) GetItemsRead() int64 {
 		return 0
 	}
 	return s.ItemsRead
+}
+
+func (s *ScreeningProfile) GetPostsStopped() *PostsStopped {
+	if s == nil {
+		return nil
+	}
+	return s.PostsStopped
 }
 
 func (s *ScreeningProfile) GetPeriodFrom() *string {

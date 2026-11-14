@@ -16921,6 +16921,15 @@
         ],
         "description": "first_answers uses anonymous counters that can include erased detail. retained_first_answers computes exact intersections over retained first answers within 31 days. Requests exceeding the 100000-record work budget are refused."
       },
+      "PostsStopped": {
+        "enum": [
+          "platform_limit",
+          "page_limit",
+          "rate_limited",
+          "unavailable"
+        ],
+        "description": "Why fewer posts were read than the screening's depth asks for while the account holds more. platform_limit: the platform shows the screening no more of them. page_limit: the pages a screening reads ran out first. rate_limited or unavailable: a later page was held back or failed; the posts before it are kept and the person is partial. Absent when the account was read to its end or to the depth."
+      },
       "Principal": {
         "type": "object",
         "additionalProperties": false,
@@ -19826,6 +19835,22 @@
             "pattern": "^https://[^\\s]+$",
             "example": "https://synthetic.invalid/synthetic/jordanexample42/p0"
           },
+          "repost_of": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 2048,
+            "pattern": "^https://[^\\s]+$",
+            "description": "The permalink of the post this one reposts. text then holds that post's author's words, not the person's.",
+            "example": "https://synthetic.invalid/synthetic/caseyexample7/p2"
+          },
+          "quote_of": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 2048,
+            "pattern": "^https://[^\\s]+$",
+            "description": "The permalink of the post this one quotes. text holds the person's own words alone.",
+            "example": "https://synthetic.invalid/synthetic/caseyexample7/p3"
+          },
           "profile_id": {
             "type": "string",
             "pattern": "^prf_[0-7][0-9A-HJKMNP-TV-Z]{25}$",
@@ -19937,6 +19962,10 @@
             "type": "integer",
             "minimum": 0,
             "maximum": 100000
+          },
+          "posts_stopped": {
+            "$ref": "#/components/schemas/PostsStopped",
+            "description": "Why fewer posts were read than the screening's depth asks for while the account holds more. platform_limit: the platform shows the screening no more of them. page_limit: the pages a screening reads ran out first. rate_limited or unavailable: a later page was held back or failed; the posts before it are kept and the person is partial. Absent when the account was read to its end or to the depth."
           },
           "period_from": {
             "type": "string",
