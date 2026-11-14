@@ -1,5 +1,9 @@
 package components
 
+import (
+	"github.com/noresponsehq/go/v11/internal/utils"
+)
+
 // ScreeningProfile - An account the screening matched to the person, how it was matched, and how much of it was read.
 type ScreeningProfile struct {
 	ID string `json:"id"`
@@ -24,6 +28,19 @@ type ScreeningProfile struct {
 	// The newest item read.
 	PeriodTo    *string `json:"period_to,omitzero"`
 	CollectedAt string  `json:"collected_at"`
+	// One answer from one source: where it came from, what found it and every field it holds.
+	Record *Record `json:"record,omitzero"`
+}
+
+func (s ScreeningProfile) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(s, "", false)
+}
+
+func (s *ScreeningProfile) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (s *ScreeningProfile) GetID() string {
@@ -136,4 +153,11 @@ func (s *ScreeningProfile) GetCollectedAt() string {
 		return ""
 	}
 	return s.CollectedAt
+}
+
+func (s *ScreeningProfile) GetRecord() *Record {
+	if s == nil {
+		return nil
+	}
+	return s.Record
 }

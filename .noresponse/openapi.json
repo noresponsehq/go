@@ -17228,6 +17228,162 @@
         ],
         "description": "The recommended action: allow, step_up or review. Your application applies it."
       },
+      "Record": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "source",
+          "matched",
+          "fields",
+          "observed_at"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^rec_[0-9a-f]{32}$",
+            "description": "Made from the source and the fields' names and original values, so the same answer found twice is one record with the same id.",
+            "example": "rec_3f9a1c22d4e5b6a73f9a1c22d4e5b6a7"
+          },
+          "source": {
+            "$ref": "#/components/schemas/RecordSource"
+          },
+          "matched": {
+            "type": "array",
+            "maxItems": 50,
+            "items": {
+              "$ref": "#/components/schemas/RecordMatch"
+            },
+            "description": "Each kind of searched value that found the record."
+          },
+          "fields": {
+            "type": "array",
+            "maxItems": 100000,
+            "items": {
+              "$ref": "#/components/schemas/RecordField"
+            },
+            "description": "Every field the source returned, in the order the source's connector lists them."
+          },
+          "observed_at": {
+            "type": "string",
+            "description": "When the source last gave this answer.",
+            "example": "2026-01-02T00:00:00Z"
+          }
+        },
+        "description": "One answer from one source: where it came from, what found it and every field it holds."
+      },
+      "RecordField": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "field",
+          "original"
+        ],
+        "properties": {
+          "field": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500,
+            "description": "The source's own name for the field. A nested value's name is dotted, and a list element's carries its index.",
+            "example": "creation_date"
+          },
+          "original": {
+            "type": "string",
+            "description": "The value as the source wrote it. A count is written in decimal and a time in RFC 3339.",
+            "example": "2019-01-01T00:00:00Z"
+          },
+          "kind": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 50,
+            "description": "What sort of value the field holds. Absent until the field's kind is known.",
+            "example": "date_time"
+          },
+          "role": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 50,
+            "description": "Which common field it is, where many sources share it, such as handle, display_name, account_id, profile_link, picture, bio, website, linked_account (named by its network), account_status, joined, last_updated, organisation, location, followers, following or posts. Absent for a field only this source returns.",
+            "example": "joined"
+          },
+          "value": {
+            "type": "string",
+            "description": "The cleaned value. Absent when it cannot be cleaned, or until the field's kind is known.",
+            "example": "2019-01-01T00:00:00Z"
+          }
+        },
+        "description": "One value a source returned."
+      },
+      "RecordMatch": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "by"
+        ],
+        "properties": {
+          "by": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 50,
+            "description": "The kind of searched value: email, phone, username, name, or handle for a profile read of a handle.",
+            "example": "handle"
+          },
+          "field": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500,
+            "description": "The field the searched value hit, when the record holds it.",
+            "example": "username"
+          }
+        },
+        "description": "One searched value that found the record."
+      },
+      "RecordSource": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "connector",
+          "kind"
+        ],
+        "properties": {
+          "connector": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "description": "The id of the connector that read the record.",
+            "example": "bluesky"
+          },
+          "kind": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 50,
+            "description": "The kind of source: platform for an account read off a live platform.",
+            "example": "platform"
+          },
+          "site": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 253,
+            "description": "The host a person knows the source's site by.",
+            "example": "bsky.app"
+          },
+          "table": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500,
+            "description": "The table a leaked row came from.",
+            "example": "users"
+          },
+          "date": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 50,
+            "description": "When the source's data dates from, at the precision it is known.",
+            "example": "2019-03"
+          }
+        },
+        "description": "Where a record came from."
+      },
       "Report": {
         "type": "object",
         "required": [
@@ -19167,6 +19323,14 @@
             "$ref": "#/components/schemas/RiskDetails",
             "description": "The merged observations, as an assessment's risk.details: every account search, breach tables and names, phone names and dated events. Served only to a caller who may read evidence: a member with evidence.read, or a key with the detailed or evidence scope."
           },
+          "records": {
+            "type": "array",
+            "maxItems": 1000,
+            "items": {
+              "$ref": "#/components/schemas/Record"
+            },
+            "description": "What each source that found an account answered, whole: every field under the source's own names, each answer once. Served only to a caller who may read evidence, as details are."
+          },
           "looked_at": {
             "type": "string",
             "description": "When the lookups ran.",
@@ -19627,6 +19791,10 @@
           "collected_at": {
             "type": "string",
             "example": "2026-01-02T00:00:00Z"
+          },
+          "record": {
+            "$ref": "#/components/schemas/Record",
+            "description": "Everything the connector read of the account, whole, under the platform's own names. The fields above are the parts of it the roster shows. Absent from a profile screened before records were kept."
           }
         },
         "description": "An account the screening matched to the person, how it was matched, and how much of it was read."

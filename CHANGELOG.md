@@ -1,5 +1,9 @@
 # Changelog
 
+## 11.1.1
+
+* `Sdk.Groups.GetPerson()`:  `response` **Changed**
+
 ## 11.1.0
 
 No changes detected.

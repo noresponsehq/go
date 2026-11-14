@@ -12,6 +12,8 @@ type ScreeningLookup struct {
 	Summary *RiskSummary `json:"summary,omitzero"`
 	// Merged observations behind the summary, served only to a caller who may read evidence: no provider, source, origin, raw breach record or score.
 	Details *RiskDetails `json:"details,omitzero"`
+	// What each source that found an account answered, whole: every field under the source's own names, each answer once. Served only to a caller who may read evidence, as details are.
+	Records []Record `json:"records,omitzero"`
 	// When the lookups ran.
 	LookedAt string `json:"looked_at"`
 }
@@ -46,6 +48,13 @@ func (s *ScreeningLookup) GetDetails() *RiskDetails {
 		return nil
 	}
 	return s.Details
+}
+
+func (s *ScreeningLookup) GetRecords() []Record {
+	if s == nil {
+		return nil
+	}
+	return s.Records
 }
 
 func (s *ScreeningLookup) GetLookedAt() string {
