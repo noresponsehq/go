@@ -12,8 +12,10 @@ type ScreeningLookup struct {
 	Summary *RiskSummary `json:"summary,omitzero"`
 	// Merged observations behind the summary, served only to a caller who may read evidence: no provider, source, origin, raw breach record or score.
 	Details *RiskDetails `json:"details,omitzero"`
-	// What each source that found an account answered, whole: every field under the source's own names, each answer once. Served only to a caller who may read evidence, as details are.
+	// What each source answered, whole, each answer once: every field of each account a connector found, and every column of each breach row the person's email or usernames matched, under the source's own names. Anyone who may read the person reads them: no extra permission applies, breach passwords and hashes included.
 	Records []Record `json:"records,omitzero"`
+	// For each search and source whose matched rows records leave out, how many: a breach search returns at most 20 rows of a table and 100 in all, from its first 64 tables by name. Absent when records hold every matched row.
+	Remaining []RecordRemaining `json:"remaining,omitzero"`
 	// When the lookups ran.
 	LookedAt string `json:"looked_at"`
 }
@@ -55,6 +57,13 @@ func (s *ScreeningLookup) GetRecords() []Record {
 		return nil
 	}
 	return s.Records
+}
+
+func (s *ScreeningLookup) GetRemaining() []RecordRemaining {
+	if s == nil {
+		return nil
+	}
+	return s.Remaining
 }
 
 func (s *ScreeningLookup) GetLookedAt() string {

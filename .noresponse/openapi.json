@@ -17262,7 +17262,7 @@
             "items": {
               "$ref": "#/components/schemas/RecordField"
             },
-            "description": "Every field the source returned, in the order the source's connector lists them."
+            "description": "Every field the source returned, in the order the source's connector lists them; a breach row's columns in name order. Nothing is withheld: a breach row's passwords, hashes and salts are fields like any other."
           },
           "observed_at": {
             "type": "string",
@@ -17289,7 +17289,7 @@
           },
           "original": {
             "type": "string",
-            "description": "The value as the source wrote it. A count is written in decimal and a time in RFC 3339.",
+            "description": "The value as the source wrote it. A count is written in decimal and a time in RFC 3339; a breach column's value is as the leak holds it.",
             "example": "2019-01-01T00:00:00Z"
           },
           "kind": {
@@ -17325,7 +17325,7 @@
             "type": "string",
             "minLength": 1,
             "maxLength": 50,
-            "description": "The kind of searched value: email, phone, username, name, or handle for a profile read of a handle.",
+            "description": "The kind of searched value: email, phone, username, ip, name, or handle for a profile read of a handle.",
             "example": "handle"
           },
           "field": {
@@ -17337,6 +17337,33 @@
           }
         },
         "description": "One searched value that found the record."
+      },
+      "RecordRemaining": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "source",
+          "by",
+          "rows"
+        ],
+        "properties": {
+          "source": {
+            "$ref": "#/components/schemas/RecordSource"
+          },
+          "by": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 50,
+            "description": "The kind of searched value whose search matched the rows, as a record's matched names it.",
+            "example": "email"
+          },
+          "rows": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "How many rows of the source that search matched beyond the records the lookup carries."
+          }
+        },
+        "description": "Rows one search matched in one source that the lookup's records leave out, so no answer is cut short in silence."
       },
       "RecordSource": {
         "type": "object",
@@ -17350,14 +17377,14 @@
             "type": "string",
             "minLength": 1,
             "maxLength": 100,
-            "description": "The id of the connector that read the record.",
+            "description": "The id of the connector that read the record: breach for a breach row.",
             "example": "bluesky"
           },
           "kind": {
             "type": "string",
             "minLength": 1,
             "maxLength": 50,
-            "description": "The kind of source: platform for an account read off a live platform.",
+            "description": "The kind of source: platform for an account read off a live platform; for a breach row, the kind of leak its table is: site_breach, credential_list, stealer_log, scrape, hacking_forum, abuse_service or darkweb_site.",
             "example": "platform"
           },
           "site": {
@@ -17378,7 +17405,7 @@
             "type": "string",
             "minLength": 1,
             "maxLength": 50,
-            "description": "When the source's data dates from, at the precision it is known.",
+            "description": "When the source's data dates from, at the precision it is known: YYYY or YYYY-MM for a breach table.",
             "example": "2019-03"
           }
         },
@@ -19329,7 +19356,15 @@
             "items": {
               "$ref": "#/components/schemas/Record"
             },
-            "description": "What each source that found an account answered, whole: every field under the source's own names, each answer once. Served only to a caller who may read evidence, as details are."
+            "description": "What each source answered, whole, each answer once: every field of each account a connector found, and every column of each breach row the person's email or usernames matched, under the source's own names. Anyone who may read the person reads them: no extra permission applies, breach passwords and hashes included."
+          },
+          "remaining": {
+            "type": "array",
+            "maxItems": 1000,
+            "items": {
+              "$ref": "#/components/schemas/RecordRemaining"
+            },
+            "description": "For each search and source whose matched rows records leave out, how many: a breach search returns at most 20 rows of a table and 100 in all, from its first 64 tables by name. Absent when records hold every matched row."
           },
           "looked_at": {
             "type": "string",

@@ -4,7 +4,7 @@ package components
 type RecordField struct {
 	// The source's own name for the field. A nested value's name is dotted, and a list element's carries its index.
 	Field string `json:"field"`
-	// The value as the source wrote it. A count is written in decimal and a time in RFC 3339.
+	// The value as the source wrote it. A count is written in decimal and a time in RFC 3339; a breach column's value is as the leak holds it.
 	Original string `json:"original"`
 	// What sort of value the field holds. Absent until the field's kind is known.
 	Kind *string `json:"kind,omitzero"`

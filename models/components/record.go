@@ -8,7 +8,7 @@ type Record struct {
 	Source RecordSource `json:"source"`
 	// Each kind of searched value that found the record.
 	Matched []RecordMatch `json:"matched"`
-	// Every field the source returned, in the order the source's connector lists them.
+	// Every field the source returned, in the order the source's connector lists them; a breach row's columns in name order. Nothing is withheld: a breach row's passwords, hashes and salts are fields like any other.
 	Fields []RecordField `json:"fields"`
 	// When the source last gave this answer.
 	ObservedAt string `json:"observed_at"`
