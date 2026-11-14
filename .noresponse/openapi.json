@@ -7261,6 +7261,70 @@
         }
       }
     },
+    "/v1/workspaces/{workspace_id}/groups/{environment}/{group_id}/people/{person_id}/records": {
+      "post": {
+        "operationId": "judgeRecord",
+        "x-noresponse-group": "groups",
+        "x-noresponse-name-override": "judgeRecord",
+        "tags": [
+          "groups"
+        ],
+        "summary": "Join one of a person's records to them, or reject it.",
+        "description": "Join one of a person's lookup records to them whatever its likelihood, or reject it so it stays a lead. The verdict sticks while lookups find the same record.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/WorkspaceId"
+          },
+          {
+            "$ref": "#/components/parameters/Environment"
+          },
+          {
+            "$ref": "#/components/parameters/GroupId"
+          },
+          {
+            "$ref": "#/components/parameters/PersonId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RecordVerdictRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/RecordJudged"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidGroupRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ControlForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/WorkspaceNotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/IdempotencyConflict"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
     "/v1/workspaces/{workspace_id}/groups/{environment}/{group_id}/screenings": {
       "get": {
         "operationId": "listScreenings",
@@ -17286,9 +17350,45 @@
             "type": "string",
             "description": "When the source last gave this answer.",
             "example": "2026-01-02T00:00:00Z"
+          },
+          "likelihood": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "How likely the record is the person it was found for, from 0.01 to 0.99, to two places. A record found by the person's own email or phone starts as theirs; any other starts lower the more people its search found on its site. Each value it shares with what is known of the person raises it, a rare value more than a common one, and a different birth date or full name lowers it. What is known is what the person's row gives and the values of their own records: those found by their email or phone, and those a reviewer joined. Present on a person's lookup records, with agreed, clashed and joined."
+          },
+          "agreed": {
+            "type": "array",
+            "maxItems": 100000,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500,
+              "example": "lastip"
+            },
+            "description": "The fields of this record whose values agreed with what is known of the person, by their field names, in the record's order. The value that found the record is not among them."
+          },
+          "clashed": {
+            "type": "array",
+            "maxItems": 100000,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500,
+              "example": "dob"
+            },
+            "description": "The fields of this record that clashed with what is known of the person: a birth date or a full name that differs from the person's."
+          },
+          "joined": {
+            "type": "boolean",
+            "description": "Whether the record joins the person: its likelihood reached 0.9 or a reviewer joined it, and no reviewer rejected it. A record that does not join stays a lead."
+          },
+          "verdict": {
+            "$ref": "#/components/schemas/Verdict",
+            "description": "A reviewer's overrule (POST .../people/{person_id}/records), which decides joined whatever the likelihood and sticks for as long as a lookup finds the same record. Absent when nobody overruled it."
           }
         },
-        "description": "One answer from one source: where it came from, what found it and every field it holds."
+        "description": "One answer from one source: where it came from, what found it and every field it holds. A person's lookup records also say how likely each is the person."
       },
       "RecordDistinctive": {
         "type": "object",
@@ -17578,6 +17678,58 @@
           }
         },
         "description": "Where a record came from."
+      },
+      "RecordVerdict": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "record_id",
+          "verdict",
+          "decided_by",
+          "decided_at"
+        ],
+        "properties": {
+          "record_id": {
+            "type": "string",
+            "pattern": "^rec_[0-9a-f]{32}$",
+            "example": "rec_3f9a1c22d4e5b6a73f9a1c22d4e5b6a7"
+          },
+          "verdict": {
+            "$ref": "#/components/schemas/Verdict"
+          },
+          "decided_by": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256,
+            "example": "user_2abc"
+          },
+          "decided_at": {
+            "type": "string",
+            "example": "2026-01-01T00:00:00Z"
+          }
+        },
+        "description": "A recorded verdict on one record. A later verdict on the same record replaces it."
+      },
+      "RecordVerdictRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "record_id",
+          "verdict"
+        ],
+        "properties": {
+          "record_id": {
+            "type": "string",
+            "pattern": "^rec_[0-9a-f]{32}$",
+            "description": "One of the person's lookup records.",
+            "example": "rec_3f9a1c22d4e5b6a73f9a1c22d4e5b6a7"
+          },
+          "verdict": {
+            "$ref": "#/components/schemas/Verdict",
+            "description": "joined: the record is the person's, whatever its likelihood. rejected: the record stays a lead, whatever its likelihood."
+          }
+        },
+        "description": "A reviewer's verdict on whether one of a person's lookup records is theirs."
       },
       "Report": {
         "type": "object",
@@ -20675,6 +20827,13 @@
             "example": "mem_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
           }
         }
+      },
+      "Verdict": {
+        "enum": [
+          "joined",
+          "rejected"
+        ],
+        "description": "A reviewer's overrule (POST .../people/{person_id}/records), which decides joined whatever the likelihood and sticks for as long as a lookup finds the same record. Absent when nobody overruled it."
       },
       "WebhookAggregateRequest": {
         "description": "Count every retained matching attempt in [from,to). Capture is best effort; missing attempts cannot be inferred. UTC buckets may be partial at the edges. The window is at most 30 days.",
@@ -29060,6 +29219,34 @@
           "application/json": {
             "schema": {
               "$ref": "#/components/schemas/Person"
+            }
+          }
+        }
+      },
+      "RecordJudged": {
+        "description": "The verdict as recorded.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/RecordVerdict"
             }
           }
         }

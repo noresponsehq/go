@@ -30,7 +30,7 @@ type ScreeningProfile struct {
 	// The newest item read.
 	PeriodTo    *string `json:"period_to,omitzero"`
 	CollectedAt string  `json:"collected_at"`
-	// One answer from one source: where it came from, what found it and every field it holds.
+	// One answer from one source: where it came from, what found it and every field it holds. A person's lookup records also say how likely each is the person.
 	Record *Record `json:"record,omitzero"`
 }
 
