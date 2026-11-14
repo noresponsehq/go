@@ -4163,6 +4163,63 @@
       "file": "valid/analyser_request.json",
       "schema": "analysers.schema.json#/$defs/analyser_request",
       "expect": "valid"
+    },
+    {
+      "file": "valid/admin.json",
+      "schema": "admin.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/admin-removed.json",
+      "schema": "admin.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/admin-list.json",
+      "schema": "admin-list.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/admin-request.json",
+      "schema": "admin-request.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/admin-workspace-created.json",
+      "schema": "admin-workspace-created.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/admin-workspace-list.json",
+      "schema": "admin-workspace-list.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/admin-workspace-request.json",
+      "schema": "admin-workspace-request.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/workspace-platform-admin.json",
+      "schema": "workspace.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/problem-last-admin.json",
+      "schema": "problem-details.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "invalid/admin-workspace-created-token.json",
+      "schema": "admin-workspace-created.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "not",
+          "/invite"
+        ]
+      ],
+      "why": "NOR-865 a customer workspace's owner invite is never answered with its token"
     }
   ]
 }

@@ -1,0 +1,8 @@
+{
+  "type": "https://docs.noresponse.org/problems/last-admin",
+  "title": "Last admin",
+  "status": 409,
+  "detail": "The platform keeps at least one admin; add another admin first.",
+  "code": "last_admin",
+  "request_id": "0123456789abcdef0123456789abcdef"
+}

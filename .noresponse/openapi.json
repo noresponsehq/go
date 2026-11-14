@@ -13449,8 +13449,8 @@
           },
           "created_by": {
             "type": "string",
-            "pattern": "^(mem_|nrk_live_)[0-7][0-9A-HJKMNP-TV-Z]{25}$",
-            "description": "The stable member id that issued this invite, or the authenticated live API key prefix for members_manage automation. Reissuing preserves the original creator; the audit event names the reissuing actor.",
+            "pattern": "^(mem_|adm_|nrc_|nrk_live_)[0-7][0-9A-HJKMNP-TV-Z]{25}$",
+            "description": "The stable member id that issued this invite, the authenticated live API key prefix for members_manage automation, or, for an invite NoResponse issued for the workspace, NoResponse's own id (adm_ or nrc_). Reissuing preserves the original creator; the audit event names the reissuing actor.",
             "example": "mem_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
           },
           "created_at": {

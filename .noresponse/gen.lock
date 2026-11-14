@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: 25ddae46-795d-45f5-b455-3f48c41d440e
 management:
-  docChecksum: 9f81ad0ce84c2350b7ceca7a41c67e11
+  docChecksum: 263b6a5a670aa7e8efdc92c1790d42ba
   docVersion: "1"
   speakeasyVersion: internal
   generationVersion: internal
-  releaseVersion: 11.0.0
-  configChecksum: ccbfbea1928402f0e4d085702b3c882f
+  releaseVersion: 11.0.1
+  configChecksum: fcd581afc7c957bb2ed61cc90912f741
 features:
   go:
     additionalDependencies: 0.1.0
@@ -429,7 +429,7 @@ trackedFiles:
   docs/models/components/integrationrotationrequest.md:
     last_write_checksum: sha1:1bef11fc570b84799fda738531fee4f7cf378846
   docs/models/components/invite.md:
-    last_write_checksum: sha1:423517946877d57d930e58f3ed60e916030629da
+    last_write_checksum: sha1:98015b492651da8fac22d53efd573723416bb2cd
   docs/models/components/invitedeniedaction.md:
     last_write_checksum: sha1:4eb67421143b8014ccd1e2278fb20f910cec3062
   docs/models/components/inviteenvironment.md:
@@ -1851,7 +1851,7 @@ trackedFiles:
   models/components/integrationrotationrequest.go:
     last_write_checksum: sha1:76b1684c21805b087e81e99ed652b7db7a88e746
   models/components/invite.go:
-    last_write_checksum: sha1:c1c6535844868ff40e98057810cbdf13beca640d
+    last_write_checksum: sha1:840104bffdd980cdfbd6bb685984c93f832669b7
   models/components/invitelist.go:
     last_write_checksum: sha1:160766819230d80eaa030144f93e28e29e5199b4
   models/components/inviterequest.go:
@@ -2551,7 +2551,7 @@ trackedFiles:
   models/operations/updatesettings.go:
     last_write_checksum: sha1:8a184ea6bca81c075532322ec41a107a236897b6
   noresponse.go:
-    last_write_checksum: sha1:593f90d8f16a32e93ab1fa323fa7a8e44854f7ed
+    last_write_checksum: sha1:5a92b894b7512053d3d75324c31070440f1110ba
   operations.go:
     last_write_checksum: sha1:36396a1a78aa4f75f8eda1737582c2f99e53ece4
   optionalnullable/optionalnullable.go:

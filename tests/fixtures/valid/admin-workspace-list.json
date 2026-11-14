@@ -1,0 +1,31 @@
+{
+  "items": [
+    {
+      "workspace_id": "tnt_01JA2Z8K6Q4V7W9XBCDEFGHJKQ",
+      "name": "Acme",
+      "created_at": "2026-11-14T10:00:00.000Z",
+      "members": 0,
+      "invites": 1,
+      "owners": []
+    },
+    {
+      "workspace_id": "tnt_01JA2Z8K6Q4V7W9XBCDEFGHJKR",
+      "name": null,
+      "created_at": "2026-11-02T08:00:00.000Z",
+      "members": 3,
+      "invites": 0,
+      "owners": [
+        {
+          "user": "email:bcb4629282f450a52ebf2d84b74c92ec2c703590a0c0a3c17d26dfaf9768913a",
+          "email": "founder@beta.example",
+          "display_name": "Sam Beta"
+        },
+        {
+          "user": "usr_2pQ7",
+          "email": null,
+          "display_name": null
+        }
+      ]
+    }
+  ]
+}
