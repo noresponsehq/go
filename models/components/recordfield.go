@@ -1,5 +1,9 @@
 package components
 
+import (
+	"github.com/noresponsehq/go/v12/internal/utils"
+)
+
 // RecordField - One value a source returned.
 type RecordField struct {
 	// The source's own name for the field. A nested value's name is dotted, and a list element's carries its index.
@@ -14,6 +18,19 @@ type RecordField struct {
 	Value *string `json:"value,omitzero"`
 	// What the value shows of itself beyond its kind: the likely algorithm of a hash, the likely coin of a crypto address or the currency of an amount.
 	Detail *string `json:"detail,omitzero"`
+	// How distinctive a searchable value is: an email, phone, username, password, hash, person name or IP. Absent for other values, and when its rating could not be worked out, such as when a count failed.
+	Distinctive *RecordDistinctive `json:"distinctive,omitzero"`
+}
+
+func (r RecordField) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(r, "", false)
+}
+
+func (r *RecordField) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &r, "", false, nil); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (r *RecordField) GetField() string {
@@ -56,4 +73,11 @@ func (r *RecordField) GetDetail() *string {
 		return nil
 	}
 	return r.Detail
+}
+
+func (r *RecordField) GetDistinctive() *RecordDistinctive {
+	if r == nil {
+		return nil
+	}
+	return r.Distinctive
 }

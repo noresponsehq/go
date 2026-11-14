@@ -17152,6 +17152,15 @@
         ],
         "description": "Machine codes an HTTP 429 answer can carry."
       },
+      "Rating": {
+        "type": "string",
+        "enum": [
+          "unique",
+          "distinctive",
+          "common"
+        ],
+        "description": "unique: an email or phone, which belongs to one person by design. distinctive: rare enough that a new search on it likely finds one person. common: shared by many people, so a search on it finds strangers. A new search is suggested for unique and distinctive values only; any value can still be searched."
+      },
       "ReasonCode": {
         "enum": [
           "no_digital_footprint",
@@ -17281,6 +17290,28 @@
         },
         "description": "One answer from one source: where it came from, what found it and every field it holds."
       },
+      "RecordDistinctive": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "rating",
+          "reason"
+        ],
+        "properties": {
+          "rating": {
+            "$ref": "#/components/schemas/Rating",
+            "description": "unique: an email or phone, which belongs to one person by design. distinctive: rare enough that a new search on it likely finds one person. common: shared by many people, so a search on it finds strangers. A new search is suggested for unique and distinctive values only; any value can still be searched."
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "description": "Why, in plain words, such as \"seen 3,861,493 times in breach data\", \"in 4 breach rows\" or \"38 bits, about one in 430 billion usernames\".",
+            "example": "in 4 breach rows"
+          }
+        },
+        "description": "How distinctive a searchable value is: an email, phone, username, password, hash, person name or IP. Absent for other values, and when its rating could not be worked out, such as when a count failed."
+      },
       "RecordField": {
         "type": "object",
         "additionalProperties": false,
@@ -17318,6 +17349,9 @@
             "maxLength": 50,
             "description": "What the value shows of itself beyond its kind: the likely algorithm of a hash, the likely coin of a crypto address or the currency of an amount.",
             "example": "bcrypt"
+          },
+          "distinctive": {
+            "$ref": "#/components/schemas/RecordDistinctive"
           }
         },
         "description": "One value a source returned."
