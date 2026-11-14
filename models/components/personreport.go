@@ -20,6 +20,8 @@ type PersonReport struct {
 	Reviews []PersonReview `json:"reviews"`
 	// What the signup check's lookups found for a person: account presence for the email, phone and usernames (the person's handles), the phone lookup, the email domain's registration and the breach search. Context and coverage for the reviewer, not a finding: nothing here sets a band or a match state.
 	Lookup *ScreeningLookup `json:"lookup,omitzero"`
+	// The searches people started on this person's values, newest first: each names the value, and the record and field it came from. Absent when nobody searched.
+	Searches []Search `json:"searches,omitzero"`
 	// Where else in the environment the person appears, read live from those groups: deleting one removes it here.
 	OtherGroups OtherGroups `json:"other_groups"`
 }
@@ -82,6 +84,13 @@ func (p *PersonReport) GetLookup() *ScreeningLookup {
 		return nil
 	}
 	return p.Lookup
+}
+
+func (p *PersonReport) GetSearches() []Search {
+	if p == nil {
+		return nil
+	}
+	return p.Searches
 }
 
 func (p *PersonReport) GetOtherGroups() OtherGroups {

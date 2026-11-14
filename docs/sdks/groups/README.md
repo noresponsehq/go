@@ -16,6 +16,8 @@ Groups, lists of people, screenings and reviewer decisions.
 * [GetPerson](#getperson) - Read a person's report.
 * [ReviewPerson](#reviewperson) - Record a decision on a person.
 * [JudgeRecord](#judgerecord) - Join one of a person's records to them, or reject it.
+* [StartSearch](#startsearch) - Search again on a value of one of a person's records.
+* [RunSearch](#runsearch) - Run a counted password or hash search.
 * [ListScreenings](#listscreenings) - List a group's screenings.
 * [StartScreening](#startscreening) - Start a screening.
 * [GetScreening](#getscreening) - Read a screening.
@@ -670,6 +672,140 @@ func main() {
 ### Response
 
 **[*operations.JudgeRecordResponse](../../models/operations/judgerecordresponse.md), error**
+
+### Errors
+
+| Error Type                      | Status Code                     | Content Type                    |
+| ------------------------------- | ------------------------------- | ------------------------------- |
+| apierrors.BadRequestError       | 400                             | application/problem+json        |
+| apierrors.AuthenticationError   | 401                             | application/problem+json        |
+| apierrors.PermissionDeniedError | 403                             | application/problem+json        |
+| apierrors.NotFoundError         | 404                             | application/problem+json        |
+| apierrors.ConflictError         | 409                             | application/problem+json        |
+| apierrors.RateLimitError        | 429                             | application/problem+json        |
+| apierrors.APIStatusError        | 4XX, 5XX                        | \*/\*                           |
+
+## StartSearch
+
+Search again on the value of one field of one of a person's records, named by the record and field. Nothing searches again by itself. A password or hash search counts its breach rows first and runs only when you run it; read the person to see each search and what it found.
+
+### Example Usage
+
+<!-- UsageSnippet language="go" operationID="startSearch" method="post" path="/v1/workspaces/{workspace_id}/groups/{environment}/{group_id}/people/{person_id}/searches" -->
+```go
+package main
+
+import(
+	"context"
+	"os"
+	noresponse "github.com/noresponsehq/go/v12"
+	"github.com/noresponsehq/go/v12/models/components"
+	"log"
+)
+
+func main() {
+    ctx := context.Background()
+
+    s := noresponse.New(
+        noresponse.WithSecurity(os.Getenv("NORESPONSE_API_KEY")),
+    )
+
+    res, err := s.Groups.StartSearch(ctx, "tnt_01JA2Z8K6Q4V7W9XBCDEFGHJKM", components.KeyEnvironmentLive, "grp_01JA2Z8K6Q4V7W9XBCDEFGHJKM", "per_01JA2Z8K6Q4V7W9XBCDEFGHJKM", components.SearchRequest{
+        RecordID: "rec_3f9a1c22d4e5b6a73f9a1c22d4e5b6a7",
+        Field: "username",
+        Table: noresponse.Pointer("FORUM_EXAMPLE_COM_2019"),
+    })
+    if err != nil {
+        log.Fatal(err)
+    }
+    if res != nil {
+        // handle response
+    }
+}
+```
+
+### Parameters
+
+| Parameter                                                                                                                                                              | Type                                                                                                                                                                   | Required                                                                                                                                                               | Description                                                                                                                                                            | Example                                                                                                                                                                |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ctx`                                                                                                                                                                  | [context.Context](https://pkg.go.dev/context#Context)                                                                                                                  | :heavy_check_mark:                                                                                                                                                     | The context to use for the request.                                                                                                                                    |                                                                                                                                                                        |
+| `workspaceID`                                                                                                                                                          | `string`                                                                                                                                                               | :heavy_check_mark:                                                                                                                                                     | Your workspace id, as each key lists it in workspace_id. Another workspace, a malformed id and a test environment's id answer 404.                                     | tnt_01JA2Z8K6Q4V7W9XBCDEFGHJKM                                                                                                                                         |
+| `environment`                                                                                                                                                          | [components.KeyEnvironment](../../models/components/keyenvironment.md)                                                                                                 | :heavy_check_mark:                                                                                                                                                     | The environment: live or test. Each has its own settings. Any other value answers 400. An API key reads and changes only its own environment's; the other answers 404. |                                                                                                                                                                        |
+| `groupID`                                                                                                                                                              | `string`                                                                                                                                                               | :heavy_check_mark:                                                                                                                                                     | N/A                                                                                                                                                                    | grp_01JA2Z8K6Q4V7W9XBCDEFGHJKM                                                                                                                                         |
+| `personID`                                                                                                                                                             | `string`                                                                                                                                                               | :heavy_check_mark:                                                                                                                                                     | N/A                                                                                                                                                                    | per_01JA2Z8K6Q4V7W9XBCDEFGHJKM                                                                                                                                         |
+| `body`                                                                                                                                                                 | [components.SearchRequest](../../models/components/searchrequest.md)                                                                                                   | :heavy_check_mark:                                                                                                                                                     | N/A                                                                                                                                                                    |                                                                                                                                                                        |
+| `opts`                                                                                                                                                                 | [][operations.Option](../../models/operations/option.md)                                                                                                               | :heavy_minus_sign:                                                                                                                                                     | The options for this request.                                                                                                                                          |                                                                                                                                                                        |
+
+### Response
+
+**[*operations.StartSearchResponse](../../models/operations/startsearchresponse.md), error**
+
+### Errors
+
+| Error Type                      | Status Code                     | Content Type                    |
+| ------------------------------- | ------------------------------- | ------------------------------- |
+| apierrors.BadRequestError       | 400                             | application/problem+json        |
+| apierrors.AuthenticationError   | 401                             | application/problem+json        |
+| apierrors.PermissionDeniedError | 403                             | application/problem+json        |
+| apierrors.NotFoundError         | 404                             | application/problem+json        |
+| apierrors.ConflictError         | 409                             | application/problem+json        |
+| apierrors.RateLimitError        | 429                             | application/problem+json        |
+| apierrors.APIStatusError        | 4XX, 5XX                        | \*/\*                           |
+
+## RunSearch
+
+Run a counted password or hash search once you have seen how many breach rows hold the value.
+
+### Example Usage
+
+<!-- UsageSnippet language="go" operationID="runSearch" method="post" path="/v1/workspaces/{workspace_id}/groups/{environment}/{group_id}/people/{person_id}/searches/{search_id}/run" -->
+```go
+package main
+
+import(
+	"context"
+	"os"
+	noresponse "github.com/noresponsehq/go/v12"
+	"github.com/noresponsehq/go/v12/models/components"
+	"github.com/noresponsehq/go/v12/models/operations"
+	"log"
+)
+
+func main() {
+    ctx := context.Background()
+
+    s := noresponse.New(
+        noresponse.WithSecurity(os.Getenv("NORESPONSE_API_KEY")),
+    )
+
+    res, err := s.Groups.RunSearch(ctx, operations.RunSearchRequest{
+        WorkspaceID: "tnt_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+        Environment: components.KeyEnvironmentLive,
+        GroupID: "grp_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+        PersonID: "per_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+        SearchID: "srh_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+        Body: components.ScreeningCancelRequest{},
+    })
+    if err != nil {
+        log.Fatal(err)
+    }
+    if res != nil {
+        // handle response
+    }
+}
+```
+
+### Parameters
+
+| Parameter                                                                  | Type                                                                       | Required                                                                   | Description                                                                |
+| -------------------------------------------------------------------------- | -------------------------------------------------------------------------- | -------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| `ctx`                                                                      | [context.Context](https://pkg.go.dev/context#Context)                      | :heavy_check_mark:                                                         | The context to use for the request.                                        |
+| `request`                                                                  | [operations.RunSearchRequest](../../models/operations/runsearchrequest.md) | :heavy_check_mark:                                                         | The request object to use for the request.                                 |
+| `opts`                                                                     | [][operations.Option](../../models/operations/option.md)                   | :heavy_minus_sign:                                                         | The options for this request.                                              |
+
+### Response
+
+**[*operations.RunSearchResponse](../../models/operations/runsearchresponse.md), error**
 
 ### Errors
 

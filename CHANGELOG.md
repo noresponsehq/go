@@ -1,5 +1,11 @@
 # Changelog
 
+## 12.0.5
+
+* `Sdk.Groups.StartSearch()`: **Added**
+* `Sdk.Groups.RunSearch()`: **Added**
+* `Sdk.Groups.GetPerson()`:  `response` **Changed**
+
 ## 12.0.4
 
 No changes detected.

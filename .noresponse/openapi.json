@@ -7325,6 +7325,137 @@
         ]
       }
     },
+    "/v1/workspaces/{workspace_id}/groups/{environment}/{group_id}/people/{person_id}/searches": {
+      "post": {
+        "operationId": "startSearch",
+        "x-noresponse-group": "groups",
+        "x-noresponse-name-override": "startSearch",
+        "tags": [
+          "groups"
+        ],
+        "summary": "Search again on a value of one of a person's records.",
+        "description": "Search again on the value of one field of one of a person's records, named by the record and field. Nothing searches again by itself. A password or hash search counts its breach rows first and runs only when you run it; read the person to see each search and what it found.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/WorkspaceId"
+          },
+          {
+            "$ref": "#/components/parameters/Environment"
+          },
+          {
+            "$ref": "#/components/parameters/GroupId"
+          },
+          {
+            "$ref": "#/components/parameters/PersonId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SearchRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "$ref": "#/components/responses/SearchAccepted"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidGroupRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ControlForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/WorkspaceNotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/GroupConflict"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/v1/workspaces/{workspace_id}/groups/{environment}/{group_id}/people/{person_id}/searches/{search_id}/run": {
+      "post": {
+        "operationId": "runSearch",
+        "x-noresponse-group": "groups",
+        "x-noresponse-name-override": "runSearch",
+        "tags": [
+          "groups"
+        ],
+        "summary": "Run a counted password or hash search.",
+        "description": "Run a counted password or hash search once you have seen how many breach rows hold the value.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/WorkspaceId"
+          },
+          {
+            "$ref": "#/components/parameters/Environment"
+          },
+          {
+            "$ref": "#/components/parameters/GroupId"
+          },
+          {
+            "$ref": "#/components/parameters/PersonId"
+          },
+          {
+            "$ref": "#/components/parameters/SearchId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ScreeningCancelRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "$ref": "#/components/responses/SearchAccepted"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidGroupRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ControlForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/WorkspaceNotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/GroupConflict"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
     "/v1/workspaces/{workspace_id}/groups/{environment}/{group_id}/screenings": {
       "get": {
         "operationId": "listScreenings",
@@ -12088,6 +12219,14 @@
           "completed"
         ]
       },
+      "ErrorCode": {
+        "enum": [
+          "not_answered",
+          "no_source",
+          "worker_attempts_exhausted"
+        ],
+        "description": "Why a failed search found nothing: its sources did not answer, none could be asked, or it could not run before its attempts were spent."
+      },
       "Export": {
         "type": "object",
         "additionalProperties": false,
@@ -16000,7 +16139,15 @@
           },
           "lookup": {
             "$ref": "#/components/schemas/ScreeningLookup",
-            "description": "What the latest screening's lookups found. Absent until a screening that ran lookups reaches the person."
+            "description": "What the latest screening's lookups found, and the records the searches people started found, each match naming its search. Absent until a screening that ran lookups reaches the person."
+          },
+          "searches": {
+            "type": "array",
+            "maxItems": 10000,
+            "items": {
+              "$ref": "#/components/schemas/Search"
+            },
+            "description": "The searches people started on this person's values, newest first: each names the value, and the record and field it came from. Absent when nobody searched."
           },
           "other_groups": {
             "$ref": "#/components/schemas/OtherGroups",
@@ -17569,7 +17716,7 @@
             "type": "string",
             "minLength": 1,
             "maxLength": 50,
-            "description": "The kind of searched value: email, phone, username, ip, name, or handle for a profile read of a handle.",
+            "description": "The kind of searched value: email, phone, username, ip, name, password, hash, or handle for a profile read of a handle.",
             "example": "handle"
           },
           "field": {
@@ -17578,6 +17725,12 @@
             "maxLength": 500,
             "description": "The field the searched value hit, when the record holds it.",
             "example": "username"
+          },
+          "search": {
+            "type": "string",
+            "pattern": "^srh_[0-7][0-9A-HJKMNP-TV-Z]{25}$",
+            "description": "The search a person started on a value of another record that found this one, among the person report's searches, which names the value and the record and field it came from. A record found only by such searches is a lead, whatever kind of value found it. Absent for a match of the lookups.",
+            "example": "srh_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
           }
         },
         "description": "One searched value that found the record."
@@ -17601,6 +17754,12 @@
             "maxLength": 50,
             "description": "The kind of searched value whose search matched the rows, as a record's matched names it.",
             "example": "email"
+          },
+          "search": {
+            "type": "string",
+            "pattern": "^srh_[0-7][0-9A-HJKMNP-TV-Z]{25}$",
+            "description": "The search a person started that matched the rows. Searching the same field again with this source's table fetches them.",
+            "example": "srh_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
           },
           "rows": {
             "type": "integer",
@@ -19795,19 +19954,19 @@
           },
           "records": {
             "type": "array",
-            "maxItems": 1000,
+            "maxItems": 100000,
             "items": {
               "$ref": "#/components/schemas/Record"
             },
-            "description": "What each source answered, whole, each answer once: every field of each account a connector found, and every column of each breach row the person's email or usernames matched, under the source's own names. Anyone who may read the person reads them: no extra permission applies, breach passwords and hashes included."
+            "description": "What each source answered, whole, each answer once: every field of each account a connector found, and every column of each breach row the person's email or usernames matched, under the source's own names, and what each search a person started found, each match naming its search. Anyone who may read the person reads them: no extra permission applies, breach passwords and hashes included."
           },
           "remaining": {
             "type": "array",
-            "maxItems": 1000,
+            "maxItems": 100000,
             "items": {
               "$ref": "#/components/schemas/RecordRemaining"
             },
-            "description": "For each search and source whose matched rows records leave out, how many: a breach search returns at most 20 rows of a table and 100 in all, from its first 64 tables by name. Absent when records hold every matched row."
+            "description": "For each search and source whose matched rows records leave out, how many: a breach search returns at most 20 rows of a table and 100 in all, from its first 64 tables by name. A search a person starts on one table of its source fetches the rest of that table, up to 100 rows. Absent when records hold every matched row."
           },
           "looked_at": {
             "type": "string",
@@ -20388,6 +20547,170 @@
           "cancelled"
         ],
         "description": "partial finished with some people or platforms not covered; people_failed and people_partial count them."
+      },
+      "Search": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "search_id",
+          "record_id",
+          "field",
+          "kind",
+          "value",
+          "status",
+          "sources",
+          "answered",
+          "found",
+          "estimated_spend",
+          "spent",
+          "requested_by",
+          "created_at"
+        ],
+        "properties": {
+          "search_id": {
+            "type": "string",
+            "pattern": "^srh_[0-7][0-9A-HJKMNP-TV-Z]{25}$",
+            "example": "srh_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          },
+          "record_id": {
+            "type": "string",
+            "pattern": "^rec_[0-9a-f]{32}$",
+            "description": "The record whose value led to the search.",
+            "example": "rec_3f9a1c22d4e5b6a73f9a1c22d4e5b6a7"
+          },
+          "field": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500,
+            "description": "The field of that record that holds the value.",
+            "example": "username"
+          },
+          "table": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500,
+            "description": "The one breach table searched, when the search was of one table.",
+            "example": "FORUM_EXAMPLE_COM_2019"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/SearchKind",
+            "description": "The kind of the value searched."
+          },
+          "value": {
+            "type": "string",
+            "description": "The value searched: the field's cleaned value, else as the source wrote it.",
+            "example": "jordanexample42"
+          },
+          "status": {
+            "$ref": "#/components/schemas/SearchStatus",
+            "description": "A password or hash search is counting, then counted: rows says how many breach rows hold the value, and nothing runs until a person runs it (POST .../searches/{search_id}/run). Any other search is queued, then running. completed: every source it asked answered. partial: some did not. failed: none answered or none could be asked, which says nothing about whether the value is held anywhere."
+          },
+          "rows": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "How many breach rows hold the password or hash, counted before the search runs."
+          },
+          "sources": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "How many sources the search asked: the breach search and the account and phone lookups that take the value's kind."
+          },
+          "answered": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "How many of them gave a definite answer, found or not found."
+          },
+          "found": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "How many records the search found. They are among the person report's lookup records, each match naming this search."
+          },
+          "estimated_spend": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "What the search may spend, in US cents, held against the environment's daily screening cap while it runs."
+          },
+          "spent": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "What the search spent, in US cents, metered as screening work."
+          },
+          "error_code": {
+            "$ref": "#/components/schemas/ErrorCode",
+            "description": "Why a failed search found nothing: its sources did not answer, none could be asked, or it could not run before its attempts were spent."
+          },
+          "requested_by": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256,
+            "description": "Who started the search.",
+            "example": "user_2abc"
+          },
+          "created_at": {
+            "type": "string",
+            "example": "2026-01-01T00:00:00Z"
+          },
+          "finished_at": {
+            "type": "string",
+            "example": "2026-01-01T00:00:05Z"
+          }
+        },
+        "description": "One search a person started on a value of one of a person's records. Nothing searches again by itself."
+      },
+      "SearchKind": {
+        "enum": [
+          "email",
+          "phone",
+          "username",
+          "person_name",
+          "password",
+          "hash",
+          "ip"
+        ],
+        "description": "The kind of the value searched."
+      },
+      "SearchRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "record_id",
+          "field"
+        ],
+        "properties": {
+          "record_id": {
+            "type": "string",
+            "pattern": "^rec_[0-9a-f]{32}$",
+            "description": "One of the person's records: a lookup's, a profile's or one an earlier search found.",
+            "example": "rec_3f9a1c22d4e5b6a73f9a1c22d4e5b6a7"
+          },
+          "field": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500,
+            "description": "The name of the record's field whose value to search. Its kind must be email, phone, username, person_name, password, hash or ip.",
+            "example": "username"
+          },
+          "table": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500,
+            "description": "Search only this breach table, as a remaining entry names it, to fetch the rows an earlier search left out. Not for a phone.",
+            "example": "FORUM_EXAMPLE_COM_2019"
+          }
+        },
+        "description": "The value to search again, named by the record and field that hold it rather than sent again."
+      },
+      "SearchStatus": {
+        "enum": [
+          "counting",
+          "counted",
+          "queued",
+          "running",
+          "completed",
+          "partial",
+          "failed"
+        ],
+        "description": "A password or hash search is counting, then counted: rows says how many breach rows hold the value, and nothing runs until a person runs it (POST .../searches/{search_id}/run). Any other search is queued, then running. completed: every source it asked answered. partial: some did not. failed: none answered or none could be asked, which says nothing about whether the value is held anywhere."
       },
       "SentIdentifiers": {
         "type": "object",
@@ -21908,6 +22231,16 @@
           "type": "string",
           "pattern": "^scn_[0-7][0-9A-HJKMNP-TV-Z]{25}$",
           "example": "scn_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+        }
+      },
+      "SearchId": {
+        "name": "search_id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^srh_[0-7][0-9A-HJKMNP-TV-Z]{25}$",
+          "example": "srh_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
         }
       }
     },
@@ -29540,6 +29873,11 @@
                           {
                             "by": "email",
                             "field": "email"
+                          },
+                          {
+                            "by": "username",
+                            "field": "username",
+                            "search": "srh_01JC8Y5B7C9D1E3F5G7H9J1K3M"
                           }
                         ],
                         "fields": [
@@ -29641,11 +29979,30 @@
                           "date": "2021"
                         },
                         "by": "username",
+                        "search": "srh_01JC8Y5B7C9D1E3F5G7H9J1K3M",
                         "rows": 37
                       }
                     ],
                     "looked_at": "2026-11-14T10:01:42Z"
-                  }
+                  },
+                  "searches": [
+                    {
+                      "search_id": "srh_01JC8Y5B7C9D1E3F5G7H9J1K3M",
+                      "record_id": "rec_8e2b4f6a1c3d5e7f9a0b2c4d6e8f1a3b",
+                      "field": "username",
+                      "kind": "username",
+                      "value": "jellis",
+                      "status": "completed",
+                      "sources": 3,
+                      "answered": 3,
+                      "found": 1,
+                      "estimated_spend": 2,
+                      "spent": 2,
+                      "requested_by": "usr_security_lead",
+                      "created_at": "2026-11-14T10:05:00Z",
+                      "finished_at": "2026-11-14T10:05:04Z"
+                    }
+                  ]
                 }
               }
             }
@@ -29897,6 +30254,43 @@
           "application/problem+json": {
             "schema": {
               "$ref": "#/components/schemas/ConflictError"
+            }
+          }
+        }
+      },
+      "SearchAccepted": {
+        "description": "The search: counting, or queued to run. Read the person after Retry-After to see its status, its count and what it found.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          },
+          "Retry-After": {
+            "description": "Whole seconds to wait before reading the person.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,3}$",
+              "example": "2"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Search"
             }
           }
         }
