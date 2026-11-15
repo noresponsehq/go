@@ -101,3 +101,79 @@ func TestGetPersonReturnsTypedRecords(t *testing.T) {
 		t.Fatalf("remaining: %+v", remaining)
 	}
 }
+
+// The record the API serves for an account with every member set keeps its
+// zeros, false values, nested values, timestamps and source through the SDK.
+func TestGetPersonKeepsEveryMemberOfAnAccountsRecord(t *testing.T) {
+	report, err := os.ReadFile(filepath.Join("tests", "fixtures", "valid", "person-report-records.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	served, err := os.ReadFile(filepath.Join("tests", "fixtures", "valid", "record-every-account-member.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	var body map[string]any
+	if err := json.Unmarshal(report, &body); err != nil {
+		t.Fatal(err)
+	}
+	var record any
+	if err := json.Unmarshal(served, &record); err != nil {
+		t.Fatal(err)
+	}
+	body["lookup"].(map[string]any)["records"] = []any{record}
+	person := body["person"].(map[string]any)
+	answer, err := json.Marshal(body)
+	if err != nil {
+		t.Fatal(err)
+	}
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write(answer)
+	}))
+	defer server.Close()
+
+	client := NewClient("nrk_test_kkkkkkkkkkkkkkkkkkkk", WithServerURL(server.URL))
+	res, err := client.Groups.GetPerson(context.Background(), "tnt_01JC8Y0A2B4C6D8E0F2G4H6J8K", components.KeyEnvironmentTest,
+		person["group_id"].(string), person["id"].(string))
+	if err != nil {
+		t.Fatal(err)
+	}
+	lookup := res.Result.GetLookup()
+	if lookup == nil || len(lookup.Records) != 1 {
+		t.Fatalf("lookup: %+v", lookup)
+	}
+	account := lookup.Records[0]
+	if account.Source.Connector != "bluesky" || account.Source.Kind != "platform" || account.Source.GetSite() == nil || *account.Source.GetSite() != "bsky.app" {
+		t.Fatalf("source: %+v", account.Source)
+	}
+	var want struct {
+		Fields []struct {
+			Field    string `json:"field"`
+			Original string `json:"original"`
+			Value    string `json:"value"`
+		} `json:"fields"`
+	}
+	if err := json.Unmarshal(served, &want); err != nil {
+		t.Fatal(err)
+	}
+	if len(account.Fields) != len(want.Fields) {
+		t.Fatalf("%d fields, the API served %d", len(account.Fields), len(want.Fields))
+	}
+	for index, field := range account.Fields {
+		expected := want.Fields[index]
+		if field.Field != expected.Field || field.Original != expected.Original || field.Value == nil || *field.Value != expected.Value {
+			t.Fatalf("field %d: %+v, the API served %+v", index, field, expected)
+		}
+	}
+	for name, original := range map[string]string{"followers": "0", "verified": "false", "associated.lists.2": "true",
+		"creation_date": "2023-04-30T10:15:00Z", "contacts.0.since": "2024-01-09T00:00:00Z"} {
+		found := false
+		for _, field := range account.Fields {
+			found = found || field.Field == name && field.Original == original
+		}
+		if !found {
+			t.Fatalf("no field %s holding %s", name, original)
+		}
+	}
+}

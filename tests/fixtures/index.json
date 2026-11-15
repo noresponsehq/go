@@ -4257,6 +4257,12 @@
       "why": "NOR-900 a person report whose lookup carries a platform account and a leaked row as records, with every member of a record"
     },
     {
+      "file": "valid/record-every-account-member.json",
+      "schema": "record.schema.json#/$defs/record",
+      "expect": "valid",
+      "why": "NOR-1073 the record the API serves for a platform account with every member set, nested values, zeros, false values and timestamps included"
+    },
+    {
       "file": "invalid/record-unknown-kind.json",
       "schema": "record.schema.json#/$defs/record",
       "expect": "invalid",

@@ -1,0 +1,304 @@
+{
+  "id": "rec_8881ed302093435354e6c6bc5ad7ca9a",
+  "source": {
+    "connector": "bluesky",
+    "kind": "platform",
+    "site": "bsky.app"
+  },
+  "matched": [
+    {
+      "by": "handle",
+      "field": "username"
+    }
+  ],
+  "fields": [
+    {
+      "field": "username",
+      "original": "every-member.bsky.social",
+      "kind": "username",
+      "role": "handle",
+      "value": "every-member.bsky.social",
+      "distinctive": {
+        "rating": "distinctive",
+        "reason": "102 bits, rarer than one in a quadrillion usernames"
+      }
+    },
+    {
+      "field": "profile_url",
+      "original": "https://bsky.app/profile/every-member.bsky.social",
+      "kind": "url",
+      "role": "profile_link",
+      "value": "https://bsky.app/profile/every-member.bsky.social"
+    },
+    {
+      "field": "id",
+      "original": "did:plc:everymembereverymember01",
+      "kind": "account_id",
+      "role": "account_id",
+      "value": "did:plc:everymembereverymember01"
+    },
+    {
+      "field": "name",
+      "original": "Every Member",
+      "kind": "person_name",
+      "role": "display_name",
+      "value": "Every Member"
+    },
+    {
+      "field": "bio",
+      "original": "Notes on boats.",
+      "kind": "long_text",
+      "role": "bio",
+      "value": "Notes on boats."
+    },
+    {
+      "field": "picture_url",
+      "original": "https://cdn.bsky.app/img/avatar/every-member.jpg",
+      "kind": "image",
+      "role": "picture",
+      "value": "https://cdn.bsky.app/img/avatar/every-member.jpg"
+    },
+    {
+      "field": "company",
+      "original": "Example Boats",
+      "kind": "organisation",
+      "role": "organisation",
+      "value": "Example Boats"
+    },
+    {
+      "field": "location",
+      "original": "Hobart",
+      "kind": "text",
+      "role": "location",
+      "value": "Hobart"
+    },
+    {
+      "field": "website",
+      "original": "https://boats.example",
+      "kind": "url",
+      "role": "website",
+      "value": "https://boats.example"
+    },
+    {
+      "field": "followers",
+      "original": "0",
+      "kind": "count",
+      "role": "followers",
+      "value": "0"
+    },
+    {
+      "field": "following",
+      "original": "12",
+      "kind": "count",
+      "role": "following",
+      "value": "12"
+    },
+    {
+      "field": "posts",
+      "original": "3",
+      "kind": "count",
+      "role": "posts",
+      "value": "3"
+    },
+    {
+      "field": "creation_date",
+      "original": "2023-04-30T10:15:00Z",
+      "kind": "date_time",
+      "role": "joined",
+      "value": "2023-04-30T10:15:00Z"
+    },
+    {
+      "field": "last_updated",
+      "original": "2026-10-02T08:00:00Z",
+      "kind": "date_time",
+      "role": "last_updated",
+      "value": "2026-10-02T08:00:00Z"
+    },
+    {
+      "field": "account_access",
+      "original": "public",
+      "kind": "label",
+      "role": "account_status",
+      "value": "public"
+    },
+    {
+      "field": "lists",
+      "original": "0",
+      "kind": "flag",
+      "value": "false"
+    },
+    {
+      "field": "starter_packs",
+      "original": "2",
+      "kind": "count",
+      "value": "2"
+    },
+    {
+      "field": "x",
+      "original": "everymember",
+      "kind": "username",
+      "role": "linked_account",
+      "value": "everymember",
+      "distinctive": {
+        "rating": "distinctive",
+        "reason": "39 bits, about one in 550 billion usernames"
+      }
+    },
+    {
+      "field": "link",
+      "original": "every-member-elsewhere",
+      "kind": "username",
+      "role": "linked_account",
+      "value": "every-member-elsewhere",
+      "distinctive": {
+        "rating": "distinctive",
+        "reason": "98 bits, rarer than one in a quadrillion usernames"
+      }
+    },
+    {
+      "field": "contacts.0.handle",
+      "original": "crew.bsky.social",
+      "kind": "username",
+      "role": "contact",
+      "value": "crew.bsky.social",
+      "distinctive": {
+        "rating": "distinctive",
+        "reason": "64 bits, rarer than one in a quadrillion usernames"
+      }
+    },
+    {
+      "field": "contacts.0.relation",
+      "original": "reply",
+      "kind": "text",
+      "value": "reply"
+    },
+    {
+      "field": "contacts.0.name",
+      "original": "Crew Mate",
+      "kind": "text",
+      "value": "Crew Mate"
+    },
+    {
+      "field": "contacts.0.location",
+      "original": "Launceston",
+      "kind": "text",
+      "value": "Launceston"
+    },
+    {
+      "field": "contacts.0.times",
+      "original": "3",
+      "kind": "count",
+      "value": "3"
+    },
+    {
+      "field": "contacts.0.last_at",
+      "original": "2026-11-03T14:00:00Z",
+      "kind": "date_time",
+      "value": "2026-11-03T14:00:00Z"
+    },
+    {
+      "field": "contacts.0.since",
+      "original": "2024-01-09T00:00:00Z",
+      "kind": "date_time",
+      "value": "2024-01-09T00:00:00Z"
+    },
+    {
+      "field": "activity.events",
+      "original": "5",
+      "kind": "count",
+      "value": "5"
+    },
+    {
+      "field": "activity.first_at",
+      "original": "2024-01-09T00:00:00Z",
+      "kind": "date_time",
+      "value": "2024-01-09T00:00:00Z"
+    },
+    {
+      "field": "activity.last_at",
+      "original": "2026-11-03T14:00:00Z",
+      "kind": "date_time",
+      "role": "last_active",
+      "value": "2026-11-03T14:00:00Z"
+    },
+    {
+      "field": "activity.hours_utc.09",
+      "original": "4",
+      "kind": "count",
+      "value": "4"
+    },
+    {
+      "field": "activity.hours_utc.21",
+      "original": "1",
+      "kind": "count",
+      "value": "1"
+    },
+    {
+      "field": "activity.quiet_hours_utc",
+      "original": "00:00-06:00",
+      "kind": "text",
+      "value": "00:00-06:00"
+    },
+    {
+      "field": "activity.utc_offset",
+      "original": "+00:00",
+      "kind": "text",
+      "value": "+00:00"
+    },
+    {
+      "field": "associated.chat.allow_incoming",
+      "original": "following",
+      "kind": "text",
+      "value": "following"
+    },
+    {
+      "field": "associated.feedgens",
+      "original": "0",
+      "kind": "flag",
+      "value": "false"
+    },
+    {
+      "field": "associated.lists.0",
+      "original": "boats",
+      "kind": "text",
+      "value": "boats"
+    },
+    {
+      "field": "associated.lists.1",
+      "original": "2",
+      "kind": "text",
+      "value": "2"
+    },
+    {
+      "field": "associated.lists.2",
+      "original": "true",
+      "kind": "flag",
+      "value": "true"
+    },
+    {
+      "field": "pinned.at",
+      "original": "2026-11-07T10:30:00Z",
+      "kind": "date_time",
+      "value": "2026-11-07T10:30:00Z"
+    },
+    {
+      "field": "pinned.likes",
+      "original": "0",
+      "kind": "flag",
+      "value": "false"
+    },
+    {
+      "field": "pinned.uri",
+      "original": "at://did:plc:everymembereverymember01/app.bsky.feed.post/3l",
+      "kind": "text",
+      "value": "at://did:plc:everymembereverymember01/app.bsky.feed.post/3l"
+    },
+    {
+      "field": "verified",
+      "original": "false",
+      "kind": "flag",
+      "value": "false"
+    }
+  ],
+  "observed_at": "2026-11-08T09:59:30Z"
+}

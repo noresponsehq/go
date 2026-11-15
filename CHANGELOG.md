@@ -1,5 +1,9 @@
 # Changelog
 
+## 13.0.1
+
+No changes detected.
+
 ## 13.0.0
 
 * `Sdk.Settings.Get()`:  `response.RefusedSources[]` **Changed** (Breaking ⚠️)
