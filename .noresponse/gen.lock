@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: 25ddae46-795d-45f5-b455-3f48c41d440e
 management:
-  docChecksum: 1442872c8d0da4d8cb67131baa2db2c8
+  docChecksum: d0a9087a9ebee84d500948a3022a3790
   docVersion: "1"
   speakeasyVersion: internal
   generationVersion: internal
-  releaseVersion: 13.0.1
-  configChecksum: f994521110fd3b4480d80b65024d94e1
+  releaseVersion: 13.0.2
+  configChecksum: 86cbb81bedd54e1060b9e72774272154
 features:
   go:
     additionalDependencies: 0.1.0
@@ -695,7 +695,7 @@ trackedFiles:
   docs/models/components/recommendation.md:
     last_write_checksum: sha1:bf6ec48ee897e38bd325b605cb36cc7be8b4b053
   docs/models/components/record.md:
-    last_write_checksum: sha1:72f6a538eeef1775c57c0d09d00092cb7519e281
+    last_write_checksum: sha1:77b5426826c5adefe01777c4692024134c3d522a
   docs/models/components/recorddistinctive.md:
     last_write_checksum: sha1:fbaaf327220f4495bdde39d62df68918c7ffd7bc
   docs/models/components/recordfield.md:
@@ -2135,7 +2135,7 @@ trackedFiles:
   models/components/recommendation.go:
     last_write_checksum: sha1:8770aed4eaa81a81f4488f514ec9aad5fac6b28e
   models/components/record.go:
-    last_write_checksum: sha1:6e18ae8879828c2a4a498becd7f57143ac6c81d1
+    last_write_checksum: sha1:1b3bb8a1b0608126abe024a58a870f4bbb742ded
   models/components/recorddistinctive.go:
     last_write_checksum: sha1:c92e46b09e51634d846d2813fff2374e9bb4e7dd
   models/components/recordfield.go:
@@ -2645,7 +2645,7 @@ trackedFiles:
   models/operations/updatesettings.go:
     last_write_checksum: sha1:02a4167768f4920e6e5eeee76a6596caf550411b
   noresponse.go:
-    last_write_checksum: sha1:5432cb6549732367bc4933db8b9cd2f0d4d5cce3
+    last_write_checksum: sha1:c98d9ed2615e38db6fef40142c9d31e96b364d09
   operations.go:
     last_write_checksum: sha1:7be47a08a234e28bb62485cd072ac52204840851
   optionalnullable/optionalnullable.go:
