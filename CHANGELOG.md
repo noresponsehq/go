@@ -1,5 +1,9 @@
 # Changelog
 
+## 12.0.20
+
+No changes detected.
+
 ## 12.0.19
 
 * `Sdk.Groups.GetPerson()`:  `response.Searches[].Kind.Enum(domain)` **Added**
