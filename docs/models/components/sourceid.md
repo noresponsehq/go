@@ -1,6 +1,6 @@
 # SourceID
 
-A NoResponse source: github (GitHub accounts), phone (the phone lookup), breach (breach exposure), rdap (the email domain's registration), mx (the email domain's mail servers), ipintel (IP intelligence) or an email account source that searches one platform for an account by email address (adobe, nvidia, wix, life360, zapier, google). google runs only for Gmail addresses. scratch, dailymotion, substack, duolingo, dockerhub, wikipedia and internetarchive each search that platform for an account by username.
+A NoResponse source: github (GitHub accounts), phone (the phone lookup), breach (breach exposure), rdap (the email domain's registration), mx (the email domain's mail servers), ipintel (IP intelligence) or an email account source that searches one platform for an account by email address (adobe, nvidia, wix, life360, zapier, google). google runs only for Gmail addresses. scratch, dailymotion, substack, duolingo, dockerhub, wikipedia, internetarchive, telegram, spotify, patreon, wordpress, okru and flickr each search that platform for an account by username.
 
 ## Example Usage
 
@@ -39,3 +39,9 @@ custom := components.SourceID("custom_value")
 | `SourceIDDockerhub`       | dockerhub                 |
 | `SourceIDWikipedia`       | wikipedia                 |
 | `SourceIDInternetarchive` | internetarchive           |
+| `SourceIDTelegram`        | telegram                  |
+| `SourceIDSpotify`         | spotify                   |
+| `SourceIDPatreon`         | patreon                   |
+| `SourceIDWordpress`       | wordpress                 |
+| `SourceIDOkru`            | okru                      |
+| `SourceIDFlickr`          | flickr                    |
