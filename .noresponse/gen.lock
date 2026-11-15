@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: 25ddae46-795d-45f5-b455-3f48c41d440e
 management:
-  docChecksum: 5ec3e23e09c4c058381075349fc1285e
+  docChecksum: ade2c2a4132e7697dac95349eeb9ab30
   docVersion: "1"
   speakeasyVersion: internal
   generationVersion: internal
-  releaseVersion: 12.0.21
-  configChecksum: 5336bdfdd0106c0d2b9f26282fcfd4c1
+  releaseVersion: 12.0.22
+  configChecksum: 99151bea0c46412555c60896feb37989
 features:
   go:
     additionalDependencies: 0.1.0
@@ -909,7 +909,7 @@ trackedFiles:
   docs/models/components/source.md:
     last_write_checksum: sha1:3f74f5866b128d3832a953a399ab230918ebd3c4
   docs/models/components/sourceid.md:
-    last_write_checksum: sha1:368a0ba0ebb8af0d6d5058a1a1d92aee7dd3d975
+    last_write_checksum: sha1:4d2acc379f851eda3b5f32952f810d9ded97be2d
   docs/models/components/status.md:
     last_write_checksum: sha1:0a79d28f576da9b86682a4f71aa5b69f2a2502e2
   docs/models/components/thresholds.md:
@@ -2341,7 +2341,7 @@ trackedFiles:
   models/components/source.go:
     last_write_checksum: sha1:1741e5c100220a3563bef3549f67ee9381ceaefb
   models/components/sourceid.go:
-    last_write_checksum: sha1:ebbfd0be62d7e6b76989f3398ed570ca0d089885
+    last_write_checksum: sha1:8df33e06a80954befdf72f57b4ccbaf900fda9d6
   models/components/status.go:
     last_write_checksum: sha1:250e13a1a507d608c84475d622fe8e462d2814ef
   models/components/thresholds.go:
@@ -2645,7 +2645,7 @@ trackedFiles:
   models/operations/updatesettings.go:
     last_write_checksum: sha1:9d831829c1a1be8e6e1643d8e38399d6ff90d16c
   noresponse.go:
-    last_write_checksum: sha1:dd874868677de70fd7ea435b52b67669c99aa5a1
+    last_write_checksum: sha1:a76950eb7b0bbab6c9ba32c0cd22ea731cb34f2c
   operations.go:
     last_write_checksum: sha1:ce9e11910d81c21d2c8cb48fdfaecdf0660785a7
   optionalnullable/optionalnullable.go:
