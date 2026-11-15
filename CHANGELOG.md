@@ -1,5 +1,17 @@
 # Changelog
 
+## 13.0.4
+
+* `Sdk.Keys.UpdateAccess()`: **Added**
+* `Sdk.Groups.ExportPeople()`: **Added**
+* `Sdk.Keys.List()`:  `response.Items[]` **Changed**
+* `Sdk.Keys.Create()`: 
+  *  `request.Body` **Changed**
+  *  `response` **Changed**
+* `Sdk.Keys.Revoke()`:  `response` **Changed**
+* `Sdk.Audit.List()`:  `response.Items[].Target.Type` **Changed**
+* `Sdk.Groups.GetPerson()`:  `response.EvidenceRestricted` **Added**
+
 ## 13.0.3
 
 * `Sdk.Groups.Create()`:  `request.IdempotencyKey` **Added**

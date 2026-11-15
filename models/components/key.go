@@ -1,26 +1,34 @@
 package components
 
+import (
+	"github.com/noresponsehq/go/v13/internal/utils"
+)
+
 type KeyScope string
 
 const (
-	KeyScopeAssess        KeyScope = "assess"
-	KeyScopeHistory       KeyScope = "history"
-	KeyScopeDelete        KeyScope = "delete"
-	KeyScopeWebhooks      KeyScope = "webhooks"
-	KeyScopeDetailed      KeyScope = "detailed"
-	KeyScopeIntegrations  KeyScope = "integrations"
-	KeyScopeManagement    KeyScope = "management"
-	KeyScopeAudit         KeyScope = "audit"
-	KeyScopeUsage         KeyScope = "usage"
-	KeyScopeInvestigate   KeyScope = "investigate"
-	KeyScopeEvidence      KeyScope = "evidence"
-	KeyScopeExports       KeyScope = "exports"
-	KeyScopeAuditManage   KeyScope = "audit_manage"
-	KeyScopeSettings      KeyScope = "settings"
-	KeyScopePolicyPublish KeyScope = "policy_publish"
-	KeyScopeMembers       KeyScope = "members"
-	KeyScopeMembersManage KeyScope = "members_manage"
-	KeyScopeGroups        KeyScope = "groups"
+	KeyScopeAssess         KeyScope = "assess"
+	KeyScopeHistory        KeyScope = "history"
+	KeyScopeDelete         KeyScope = "delete"
+	KeyScopeWebhooks       KeyScope = "webhooks"
+	KeyScopeDetailed       KeyScope = "detailed"
+	KeyScopeIntegrations   KeyScope = "integrations"
+	KeyScopeManagement     KeyScope = "management"
+	KeyScopeAudit          KeyScope = "audit"
+	KeyScopeUsage          KeyScope = "usage"
+	KeyScopeInvestigate    KeyScope = "investigate"
+	KeyScopeEvidence       KeyScope = "evidence"
+	KeyScopeExports        KeyScope = "exports"
+	KeyScopeAuditManage    KeyScope = "audit_manage"
+	KeyScopeSettings       KeyScope = "settings"
+	KeyScopePolicyPublish  KeyScope = "policy_publish"
+	KeyScopeMembers        KeyScope = "members"
+	KeyScopeMembersManage  KeyScope = "members_manage"
+	KeyScopeGroups         KeyScope = "groups"
+	KeyScopePeople         KeyScope = "people"
+	KeyScopePeopleWrite    KeyScope = "people_write"
+	KeyScopeInvestigations KeyScope = "investigations"
+	KeyScopeDecisions      KeyScope = "decisions"
 )
 
 func (e KeyScope) ToPointer() *KeyScope {
@@ -31,7 +39,30 @@ func (e KeyScope) ToPointer() *KeyScope {
 func (e *KeyScope) IsExact() bool {
 	if e != nil {
 		switch *e {
-		case "assess", "history", "delete", "webhooks", "detailed", "integrations", "management", "audit", "usage", "investigate", "evidence", "exports", "audit_manage", "settings", "policy_publish", "members", "members_manage", "groups":
+		case "assess", "history", "delete", "webhooks", "detailed", "integrations", "management", "audit", "usage", "investigate", "evidence", "exports", "audit_manage", "settings", "policy_publish", "members", "members_manage", "groups", "people", "people_write", "investigations", "decisions":
+			return true
+		}
+	}
+	return false
+}
+
+type KeyDeniedAction string
+
+const (
+	KeyDeniedActionEvidenceRead  KeyDeniedAction = "evidence.read"
+	KeyDeniedActionExportsRead   KeyDeniedAction = "exports.read"
+	KeyDeniedActionPolicyPublish KeyDeniedAction = "policy.publish"
+)
+
+func (e KeyDeniedAction) ToPointer() *KeyDeniedAction {
+	return &e
+}
+
+// IsExact returns true if the value matches a known enum value, false otherwise.
+func (e *KeyDeniedAction) IsExact() bool {
+	if e != nil {
+		switch *e {
+		case "evidence.read", "exports.read", "policy.publish":
 			return true
 		}
 	}
@@ -73,6 +104,19 @@ type Key struct {
 	RotatedTo *string `json:"rotated_to,omitzero"`
 	// Latest recorded authenticated request observation, updated at most once per minute. Capture is best effort after the response and includes authenticated requests refused by authorization or rate limits. Absence means unknown and does not prove the key was unused. It is independent of diagnostic retention and resets on the replacement key after rotation. This field retains no raw IP or user-agent.
 	LastUsedAt *string `json:"last_used_at,omitzero"`
+	// Explicit restrictions that override scope grants. An empty list restores the access supplied by the scopes. Rotation preserves these restrictions.
+	DeniedActions []KeyDeniedAction `json:"denied_actions,omitzero"`
+}
+
+func (k Key) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(k, "", false)
+}
+
+func (k *Key) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &k, "", false, nil); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (k *Key) GetID() string {
@@ -199,4 +243,11 @@ func (k *Key) GetLastUsedAt() *string {
 		return nil
 	}
 	return k.LastUsedAt
+}
+
+func (k *Key) GetDeniedActions() []KeyDeniedAction {
+	if k == nil {
+		return nil
+	}
+	return k.DeniedActions
 }

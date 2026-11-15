@@ -1,0 +1,110 @@
+package operations
+
+import (
+	"github.com/noresponsehq/go/v13/internal/utils"
+	"github.com/noresponsehq/go/v13/models/components"
+)
+
+type ExportPeopleRequest struct {
+	// Your workspace id, as each key lists it in workspace_id. Another workspace, a malformed id and a test environment's id answer 404.
+	WorkspaceID string `pathParam:"style=simple,explode=false,name=workspace_id"`
+	// The environment: live or test. Each has its own settings. Any other value answers 400. An API key reads and changes only its own environment's; the other answers 404.
+	Environment components.KeyEnvironment `pathParam:"style=simple,explode=false,name=environment"`
+	GroupID     string                    `pathParam:"style=simple,explode=false,name=group_id"`
+	// At most this many people.
+	Limit *int64 `default:"100" queryParam:"style=form,explode=true,name=limit"`
+	// Read people after this one.
+	After *string `queryParam:"style=form,explode=true,name=after"`
+	// Only people whose highest finding has this band; none for people with no finding.
+	Band *components.ListPeopleBand `queryParam:"style=form,explode=true,name=band"`
+	// Only people with this decision; undecided for none yet.
+	Decision *components.ListPeopleDecision `queryParam:"style=form,explode=true,name=decision"`
+	// Only people with this role; unstated for people whose role was not given.
+	Role *components.ListPeopleRole `queryParam:"style=form,explode=true,name=role"`
+}
+
+func (e ExportPeopleRequest) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(e, "", false)
+}
+
+func (e *ExportPeopleRequest) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &e, "", false, nil); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (e *ExportPeopleRequest) GetWorkspaceID() string {
+	if e == nil {
+		return ""
+	}
+	return e.WorkspaceID
+}
+
+func (e *ExportPeopleRequest) GetEnvironment() components.KeyEnvironment {
+	if e == nil {
+		return components.KeyEnvironment("")
+	}
+	return e.Environment
+}
+
+func (e *ExportPeopleRequest) GetGroupID() string {
+	if e == nil {
+		return ""
+	}
+	return e.GroupID
+}
+
+func (e *ExportPeopleRequest) GetLimit() *int64 {
+	if e == nil {
+		return nil
+	}
+	return e.Limit
+}
+
+func (e *ExportPeopleRequest) GetAfter() *string {
+	if e == nil {
+		return nil
+	}
+	return e.After
+}
+
+func (e *ExportPeopleRequest) GetBand() *components.ListPeopleBand {
+	if e == nil {
+		return nil
+	}
+	return e.Band
+}
+
+func (e *ExportPeopleRequest) GetDecision() *components.ListPeopleDecision {
+	if e == nil {
+		return nil
+	}
+	return e.Decision
+}
+
+func (e *ExportPeopleRequest) GetRole() *components.ListPeopleRole {
+	if e == nil {
+		return nil
+	}
+	return e.Role
+}
+
+type ExportPeopleResponse struct {
+	Headers map[string][]string
+	Result  components.PersonList
+}
+
+func (e *ExportPeopleResponse) GetHeaders() map[string][]string {
+	if e == nil {
+		return map[string][]string{}
+	}
+	return e.Headers
+}
+
+func (e *ExportPeopleResponse) GetResult() components.PersonList {
+	if e == nil {
+		return components.PersonList{}
+	}
+	return e.Result
+}

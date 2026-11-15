@@ -3,29 +3,34 @@ package components
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/noresponsehq/go/v13/internal/utils"
 )
 
 type KeyRequestScope string
 
 const (
-	KeyRequestScopeAssess        KeyRequestScope = "assess"
-	KeyRequestScopeHistory       KeyRequestScope = "history"
-	KeyRequestScopeDelete        KeyRequestScope = "delete"
-	KeyRequestScopeWebhooks      KeyRequestScope = "webhooks"
-	KeyRequestScopeDetailed      KeyRequestScope = "detailed"
-	KeyRequestScopeIntegrations  KeyRequestScope = "integrations"
-	KeyRequestScopeManagement    KeyRequestScope = "management"
-	KeyRequestScopeAudit         KeyRequestScope = "audit"
-	KeyRequestScopeUsage         KeyRequestScope = "usage"
-	KeyRequestScopeInvestigate   KeyRequestScope = "investigate"
-	KeyRequestScopeEvidence      KeyRequestScope = "evidence"
-	KeyRequestScopeExports       KeyRequestScope = "exports"
-	KeyRequestScopeAuditManage   KeyRequestScope = "audit_manage"
-	KeyRequestScopeSettings      KeyRequestScope = "settings"
-	KeyRequestScopePolicyPublish KeyRequestScope = "policy_publish"
-	KeyRequestScopeMembers       KeyRequestScope = "members"
-	KeyRequestScopeMembersManage KeyRequestScope = "members_manage"
-	KeyRequestScopeGroups        KeyRequestScope = "groups"
+	KeyRequestScopeAssess         KeyRequestScope = "assess"
+	KeyRequestScopeHistory        KeyRequestScope = "history"
+	KeyRequestScopeDelete         KeyRequestScope = "delete"
+	KeyRequestScopeWebhooks       KeyRequestScope = "webhooks"
+	KeyRequestScopeDetailed       KeyRequestScope = "detailed"
+	KeyRequestScopeIntegrations   KeyRequestScope = "integrations"
+	KeyRequestScopeManagement     KeyRequestScope = "management"
+	KeyRequestScopeAudit          KeyRequestScope = "audit"
+	KeyRequestScopeUsage          KeyRequestScope = "usage"
+	KeyRequestScopeInvestigate    KeyRequestScope = "investigate"
+	KeyRequestScopeEvidence       KeyRequestScope = "evidence"
+	KeyRequestScopeExports        KeyRequestScope = "exports"
+	KeyRequestScopeAuditManage    KeyRequestScope = "audit_manage"
+	KeyRequestScopeSettings       KeyRequestScope = "settings"
+	KeyRequestScopePolicyPublish  KeyRequestScope = "policy_publish"
+	KeyRequestScopeMembers        KeyRequestScope = "members"
+	KeyRequestScopeMembersManage  KeyRequestScope = "members_manage"
+	KeyRequestScopeGroups         KeyRequestScope = "groups"
+	KeyRequestScopePeople         KeyRequestScope = "people"
+	KeyRequestScopePeopleWrite    KeyRequestScope = "people_write"
+	KeyRequestScopeInvestigations KeyRequestScope = "investigations"
+	KeyRequestScopeDecisions      KeyRequestScope = "decisions"
 )
 
 func (e KeyRequestScope) ToPointer() *KeyRequestScope {
@@ -72,10 +77,47 @@ func (e *KeyRequestScope) UnmarshalJSON(data []byte) error {
 	case "members_manage":
 		fallthrough
 	case "groups":
+		fallthrough
+	case "people":
+		fallthrough
+	case "people_write":
+		fallthrough
+	case "investigations":
+		fallthrough
+	case "decisions":
 		*e = KeyRequestScope(v)
 		return nil
 	default:
 		return fmt.Errorf("invalid value for KeyRequestScope: %v", v)
+	}
+}
+
+type KeyRequestDeniedAction string
+
+const (
+	KeyRequestDeniedActionEvidenceRead  KeyRequestDeniedAction = "evidence.read"
+	KeyRequestDeniedActionExportsRead   KeyRequestDeniedAction = "exports.read"
+	KeyRequestDeniedActionPolicyPublish KeyRequestDeniedAction = "policy.publish"
+)
+
+func (e KeyRequestDeniedAction) ToPointer() *KeyRequestDeniedAction {
+	return &e
+}
+func (e *KeyRequestDeniedAction) UnmarshalJSON(data []byte) error {
+	var v string
+	if err := json.Unmarshal(data, &v); err != nil {
+		return err
+	}
+	switch v {
+	case "evidence.read":
+		fallthrough
+	case "exports.read":
+		fallthrough
+	case "policy.publish":
+		*e = KeyRequestDeniedAction(v)
+		return nil
+	default:
+		return fmt.Errorf("invalid value for KeyRequestDeniedAction: %v", v)
 	}
 }
 
@@ -94,6 +136,19 @@ type KeyRequest struct {
 	ExpiresAt *string `json:"expires_at,omitzero"`
 	// Caller-chosen identifier for one creation attempt, scoped to the issuing actor and environment. Use 1 to 256 printable ASCII characters without spaces. A retry with the same parameters returns the original key metadata with status 200 and no secret; changed parameters return 409.
 	RequestID *string `json:"request_id,omitzero"`
+	// Explicit restrictions that override scope grants. An empty list restores the access supplied by the scopes. Rotation preserves these restrictions.
+	DeniedActions []KeyRequestDeniedAction `json:"denied_actions,omitzero"`
+}
+
+func (k KeyRequest) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(k, "", false)
+}
+
+func (k *KeyRequest) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &k, "", false, nil); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (k *KeyRequest) GetEnvironment() KeyEnvironment {
@@ -143,4 +198,11 @@ func (k *KeyRequest) GetRequestID() *string {
 		return nil
 	}
 	return k.RequestID
+}
+
+func (k *KeyRequest) GetDeniedActions() []KeyRequestDeniedAction {
+	if k == nil {
+		return nil
+	}
+	return k.DeniedActions
 }

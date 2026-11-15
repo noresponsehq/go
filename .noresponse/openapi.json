@@ -2330,6 +2330,62 @@
             "apiKey": []
           }
         ]
+      },
+      "patch": {
+        "operationId": "updateKeyAccess",
+        "x-noresponse-group": "keys",
+        "x-noresponse-name-override": "updateAccess",
+        "tags": [
+          "keys"
+        ],
+        "summary": "Restrict an API key.",
+        "description": "Replaces the explicit restrictions on an active key. Restrictions take effect on its next request and survive rotation. The issuer must be able to grant the resulting access in the key environment. A restricted caller cannot remove its own restrictions or grant unrestricted access to another key. Changes are audited without recording the secret.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/WorkspaceId"
+          },
+          {
+            "$ref": "#/components/parameters/KeyId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/KeyAccessRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/KeyUpdated"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidControlRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ControlForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/WorkspaceNotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/IdempotencyConflict"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
       }
     },
     "/v1/workspaces/{workspace_id}/settings/{environment}": {
@@ -6706,7 +6762,7 @@
           "groups"
         ],
         "summary": "List an environment's groups.",
-        "description": "List this environment's groups, newest first. Pass next_before back as before for the next page. Requires the groups scope.",
+        "description": "Groups, newest first. The people scope grants this operation. Explicit evidence.read restrictions override default evidence access. The groups scope is also accepted for existing integrations.",
         "parameters": [
           {
             "$ref": "#/components/parameters/WorkspaceId"
@@ -6772,7 +6828,7 @@
           "groups"
         ],
         "summary": "Create a group to screen.",
-        "description": "Create a group to screen: its name, start, venue, host, the principals it protects and the sensitive topics posts are read against. An environment holds at most 1000 groups. Send an Idempotency-Key to repeat a request safely while the group is retained. A replay returns the same group in its current state; changed input returns 409.",
+        "description": "Creates a group with its name, start, venue, host, the principals it protects and the sensitive topics its screening reads posts against. An environment holds at most 1000 groups. Send an Idempotency-Key to retry safely: the same key and request return the same resource in its current state while it is retained, even after work completes. Reusing the key with different input answers 409 idempotency_key_reused. Use a new key for a deliberate new operation. The people_write scope grants this operation. Explicit evidence.read restrictions override default evidence access. The groups scope is also accepted for existing integrations.",
         "parameters": [
           {
             "$ref": "#/components/parameters/WorkspaceId"
@@ -6837,7 +6893,7 @@
           "groups"
         ],
         "summary": "Read a group.",
-        "description": "Read a group and how many people it holds.",
+        "description": "The group and how many people it holds. The people scope grants this operation. Explicit evidence.read restrictions override default evidence access. The groups scope is also accepted for existing integrations.",
         "parameters": [
           {
             "$ref": "#/components/parameters/WorkspaceId"
@@ -6886,7 +6942,7 @@
           "groups"
         ],
         "summary": "Change a group.",
-        "description": "Change the fields you name. Send expected_version to apply the change only to that version.",
+        "description": "Changes the fields the body names. With expected_version, the change applies only to that version (409 group_conflict otherwise). The people_write scope grants this operation. Explicit evidence.read restrictions override default evidence access. The groups scope is also accepted for existing integrations.",
         "parameters": [
           {
             "$ref": "#/components/parameters/WorkspaceId"
@@ -6945,7 +7001,7 @@
           "groups"
         ],
         "summary": "Erase a group.",
-        "description": "Erase a group with its people, their decisions and its screenings, and stop any screening still running.",
+        "description": "Erases the group with its people, their reviews and its screenings, and stops any screening still running. The delete scope is required; group read, write, investigation and review access do not grant deletion.",
         "parameters": [
           {
             "$ref": "#/components/parameters/WorkspaceId"
@@ -6996,7 +7052,7 @@
           "groups"
         ],
         "summary": "List a group's people.",
-        "description": "Read a group's roster in upload order, with each person's match state, highest finding band and decision. Filter by band or decision; pass next_after back as after.",
+        "description": "The roster in upload order, with each person's role, match state, highest finding band and decision. Filter by band (or none), decision (or undecided) and role (or unstated). The people scope grants this operation. Explicit evidence.read restrictions override default evidence access. The groups scope is also accepted for existing integrations.",
         "parameters": [
           {
             "$ref": "#/components/parameters/WorkspaceId"
@@ -7089,7 +7145,7 @@
           "groups"
         ],
         "summary": "Add or update a batch of people.",
-        "description": "Add or update 1 to 500 people with an Idempotency-Key. A row with the same external_id, else email, else phone as an existing person updates it. Identities are stored encrypted.",
+        "description": "Adds 1 to 500 people, at most 512 KiB. A row naming an existing person in the group (the same external_id, else the same email, else the same phone) updates it; a changed identity is screened afresh by the next screening. Identities are stored encrypted under the workspace's key. Idempotency-Key is required: a retry with the same key and body within 24 hours answers the first result with Idempotent-Replayed: true, and the same key with another body answers 409 idempotency_key_reused. A group holds at most 20000 people. The people_write scope grants this operation. Explicit evidence.read restrictions override default evidence access. The groups scope is also accepted for existing integrations.",
         "parameters": [
           {
             "$ref": "#/components/parameters/WorkspaceId"
@@ -7153,7 +7209,7 @@
           "groups"
         ],
         "summary": "Read a person's report.",
-        "description": "Read a person's report: matched profiles, findings with their evidence, every recorded decision, and the other groups where the same email or phone appears.",
+        "description": "The person, the profiles the screening matched with how each was matched, its findings with their evidence, every recorded decision, and the other groups in the environment where a person with the same email or phone appears, with the decision recorded there. Profiles and findings fill in as the screening pipeline ships. The people scope grants this operation. Explicit evidence.read restrictions override default evidence access. The groups scope is also accepted for existing integrations. Each successful read is durably audited as person.viewed. Restricted responses keep submitted details, coverage, job status and decision summaries and set evidence_restricted to true.",
         "parameters": [
           {
             "$ref": "#/components/parameters/WorkspaceId"
@@ -7207,7 +7263,7 @@
           "groups"
         ],
         "summary": "Record a decision on a person.",
-        "description": "Record a cleared, watch or escalated decision with a note. The latest decision is the person's; the next screening refreshes everyone on watch or escalated.",
+        "description": "Marks the person cleared, watch or escalated with a note. Decisions are kept in order; the latest is the person's. The next screening refreshes everyone on watch or escalated. The decisions scope grants this operation. Explicit evidence.read restrictions override default evidence access. The groups scope is also accepted for existing integrations.",
         "parameters": [
           {
             "$ref": "#/components/parameters/WorkspaceId"
@@ -7274,7 +7330,7 @@
           "groups"
         ],
         "summary": "Join one of a person's records to them, or reject it.",
-        "description": "Join one of a person's lookup records to them whatever its likelihood, or reject it so it stays a lead. The verdict sticks while lookups find the same record.",
+        "description": "Records a verdict on one of the records the person's latest lookups found: joined makes the record the person's whatever its likelihood, and rejected keeps it a lead. The verdict sticks for as long as a lookup finds the same record, and a later verdict on the same record replaces it. A record the person's latest lookup does not hold answers 404. Each verdict is audited as person.record_judged. The decisions scope grants this operation. Explicit evidence.read restrictions override default evidence access. The groups scope is also accepted for existing integrations.",
         "parameters": [
           {
             "$ref": "#/components/parameters/WorkspaceId"
@@ -7338,7 +7394,7 @@
           "groups"
         ],
         "summary": "Search again on a value of one of a person's records.",
-        "description": "Search again on the value of one field of one of a person's records, named by the record and field. Nothing searches again by itself. A password or hash search counts its breach rows first and runs only when you run it; read the person to see each search and what it found. Send an Idempotency-Key to return the same search after a lost answer, even after it completes. A different request with the same key returns 409. Use a new key for a deliberate new search.",
+        "description": "Starts a new search on the value of one field of one of the person's records: a lookup's, a profile's or one an earlier search found. Name the record and the field; the value itself is not sent. The field's kind must be email, phone, username, person_name, password, hash, ip or domain. A domain search finds the breach rows of every email address at the domain, which must be a registrable domain or a host under one; any other domain answers 400. Nothing ever searches again by itself: a search starts only when a person asks. The search runs the breach search and the account and phone lookups that take the value's kind, under the environment's source controls, and finishes seconds later. A password or hash search counts first: it stops at counted with rows, how many breach rows hold the value, and runs only when a person runs it. Name a table, as a lookup remaining entry names it, to fetch the rows an earlier search left out, up to 100. What the search finds joins the person's lookup records as leads, each match naming the search; the person report lists the searches, each with the value and the record and field it came from, and its records are scored like the rest. Without an Idempotency-Key, starting the same open search returns it. Its estimate counts against the environment's screening_daily_cap, and one the cap cannot hold answers 409 screening_cap_exceeded. A record or field the person does not hold answers 404. Each search is audited as person.search_started. Send an Idempotency-Key to retry safely: the same key and request return the same resource in its current state while it is retained, even after work completes. Reusing the key with different input answers 409 idempotency_key_reused. Use a new key for a deliberate new operation. The investigations scope grants this operation. Explicit evidence.read restrictions override default evidence access. The groups scope is also accepted for existing integrations.",
         "parameters": [
           {
             "$ref": "#/components/parameters/WorkspaceId"
@@ -7408,7 +7464,7 @@
           "groups"
         ],
         "summary": "Run a counted password or hash search.",
-        "description": "Run a counted password or hash search once you have seen how many breach rows hold the value.",
+        "description": "Runs a password or hash search once a person has seen its count. A search still counting answers 409 group_conflict; one already queued, running or finished answers as it is. The body is an empty object. Its estimate counts against the environment's screening_daily_cap. Each run is audited as person.search_run. The investigations scope grants this operation. Explicit evidence.read restrictions override default evidence access. The groups scope is also accepted for existing integrations.",
         "parameters": [
           {
             "$ref": "#/components/parameters/WorkspaceId"
@@ -7475,7 +7531,7 @@
           "groups"
         ],
         "summary": "List a group's screenings.",
-        "description": "List a group's screenings, newest first.",
+        "description": "Screenings, newest first. The people scope grants this operation. Explicit evidence.read restrictions override default evidence access. The groups scope is also accepted for existing integrations.",
         "parameters": [
           {
             "$ref": "#/components/parameters/WorkspaceId"
@@ -7544,7 +7600,7 @@
           "groups"
         ],
         "summary": "Start a screening.",
-        "description": "Start a screening of new people and everyone on watch or escalated, with an Idempotency-Key. It finishes completed, partial or failed minutes to hours later; poll it. The answer carries estimated_spend; a screening whose estimate exceeds what the daily screening cap has left answers 409 screening_cap_exceeded. The test environment screens with the synthetic connector, which makes up deterministic profiles, posts and findings.",
+        "description": "Queues a screening of every person no screening has reached and everyone on watch or escalated. One screening of a group runs at a time; it finishes completed, partial (some people not covered, counted in people_failed) or failed, and fails with error_code expired after 24 hours. Idempotency-Key is required and binds the body for the screening's life. The 202 body carries estimated_spend, what the selected people would cost at the depth and platforms. A screening whose estimate exceeds the environment's screening_daily_cap, less the day's recorded spend and what open screenings may still spend, answers 409 screening_cap_exceeded and queues nothing. The test environment screens with a deterministic simulator that contacts no source. A platform that no connector serves in the environment answers 409 screening_unavailable. The investigations scope grants this operation. Explicit evidence.read restrictions override default evidence access. The groups scope is also accepted for existing integrations.",
         "parameters": [
           {
             "$ref": "#/components/parameters/WorkspaceId"
@@ -7608,7 +7664,7 @@
           "groups"
         ],
         "summary": "Read a screening.",
-        "description": "Read a screening's status and progress.",
+        "description": "The screening's status and progress. The people scope grants this operation. Explicit evidence.read restrictions override default evidence access. The groups scope is also accepted for existing integrations.",
         "parameters": [
           {
             "$ref": "#/components/parameters/WorkspaceId"
@@ -7662,7 +7718,7 @@
           "groups"
         ],
         "summary": "Cancel a screening.",
-        "description": "Stop a queued or running screening. People already screened keep their results.",
+        "description": "Stops a queued or running screening. People it already screened keep their results. Cancelling a finished screening answers it unchanged. The body is an empty object. The investigations scope grants this operation. Explicit evidence.read restrictions override default evidence access. The groups scope is also accepted for existing integrations.",
         "parameters": [
           {
             "$ref": "#/components/parameters/WorkspaceId"
@@ -7693,6 +7749,101 @@
           },
           "400": {
             "$ref": "#/components/responses/InvalidGroupRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ControlForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/WorkspaceNotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/IdempotencyConflict"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/v1/workspaces/{workspace_id}/groups/{environment}/{group_id}/export": {
+      "get": {
+        "operationId": "exportPeople",
+        "x-noresponse-group": "groups",
+        "x-noresponse-name-override": "exportPeople",
+        "tags": [
+          "groups"
+        ],
+        "summary": "Export the people in a group.",
+        "description": "Returns one page for export. Each returned person is durably audited as person.exported with the actor, group, person ID and request ID. Requires both people read access and exports. Explicit evidence restrictions also hide free-text decision notes. No raw evidence enters audit logs. Follow next_after until absent for a complete export.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/WorkspaceId"
+          },
+          {
+            "$ref": "#/components/parameters/Environment"
+          },
+          {
+            "$ref": "#/components/parameters/GroupId"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "At most this many people.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 500,
+              "default": 100
+            }
+          },
+          {
+            "name": "after",
+            "in": "query",
+            "description": "Read people after this one.",
+            "schema": {
+              "type": "string",
+              "pattern": "^per_[0-7][0-9A-HJKMNP-TV-Z]{25}$"
+            }
+          },
+          {
+            "name": "band",
+            "in": "query",
+            "description": "Only people whose highest finding has this band; none for people with no finding.",
+            "schema": {
+              "$ref": "#/components/schemas/listPeopleBand"
+            }
+          },
+          {
+            "name": "decision",
+            "in": "query",
+            "description": "Only people with this decision; undecided for none yet.",
+            "schema": {
+              "$ref": "#/components/schemas/listPeopleDecision"
+            }
+          },
+          {
+            "name": "role",
+            "in": "query",
+            "description": "Only people with this role; unstated for people whose role was not given.",
+            "schema": {
+              "$ref": "#/components/schemas/listPeopleRole"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/PeopleListed"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidControlRequest"
           },
           "401": {
             "$ref": "#/components/responses/Unauthorized"
@@ -10525,7 +10676,7 @@
             "type": "object",
             "additionalProperties": {
               "type": "string",
-              "maxLength": 128,
+              "maxLength": 256,
               "pattern": "^[ -~]*$",
               "example": "test"
             },
@@ -10647,7 +10798,9 @@
           "webhook_endpoint",
           "integration",
           "billing",
-          "review"
+          "review",
+          "person",
+          "group"
         ],
         "description": "The kind of resource the change acted on."
       },
@@ -13867,7 +14020,7 @@
           "scopes": {
             "type": "array",
             "minItems": 1,
-            "maxItems": 18,
+            "maxItems": 22,
             "uniqueItems": true,
             "items": {
               "enum": [
@@ -13888,7 +14041,11 @@
                 "policy_publish",
                 "members",
                 "members_manage",
-                "groups"
+                "groups",
+                "people",
+                "people_write",
+                "investigations",
+                "decisions"
               ]
             },
             "description": "The key's scopes, each at most once."
@@ -13969,6 +14126,41 @@
             "type": "string",
             "description": "Latest recorded authenticated request observation, updated at most once per minute. Capture is best effort after the response and includes authenticated requests refused by authorization or rate limits. Absence means unknown and does not prove the key was unused. It is independent of diagnostic retention and resets on the replacement key after rotation. This field retains no raw IP or user-agent.",
             "example": "2026-10-23T09:30:00.000Z"
+          },
+          "denied_actions": {
+            "type": "array",
+            "maxItems": 3,
+            "uniqueItems": true,
+            "items": {
+              "enum": [
+                "evidence.read",
+                "exports.read",
+                "policy.publish"
+              ]
+            },
+            "description": "Explicit restrictions that override scope grants. An empty list restores the access supplied by the scopes. Rotation preserves these restrictions."
+          }
+        }
+      },
+      "KeyAccessRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "denied_actions"
+        ],
+        "properties": {
+          "denied_actions": {
+            "type": "array",
+            "maxItems": 3,
+            "uniqueItems": true,
+            "items": {
+              "enum": [
+                "evidence.read",
+                "exports.read",
+                "policy.publish"
+              ]
+            },
+            "description": "Explicit restrictions that override scope grants. An empty list restores the access supplied by the scopes. Rotation preserves these restrictions."
           }
         }
       },
@@ -14038,7 +14230,7 @@
           "scopes": {
             "type": "array",
             "minItems": 1,
-            "maxItems": 18,
+            "maxItems": 22,
             "uniqueItems": true,
             "items": {
               "enum": [
@@ -14059,7 +14251,11 @@
                 "policy_publish",
                 "members",
                 "members_manage",
-                "groups"
+                "groups",
+                "people",
+                "people_write",
+                "investigations",
+                "decisions"
               ]
             },
             "description": "The key's scopes, each at most once."
@@ -14096,6 +14292,19 @@
             "pattern": "^[!-~]{1,256}$",
             "description": "Caller-chosen identifier for one creation attempt, scoped to the issuing actor and environment. Use 1 to 256 printable ASCII characters without spaces. A retry with the same parameters returns the original key metadata with status 200 and no secret; changed parameters return 409.",
             "example": "issue_gateway_key_1"
+          },
+          "denied_actions": {
+            "type": "array",
+            "maxItems": 3,
+            "uniqueItems": true,
+            "items": {
+              "enum": [
+                "evidence.read",
+                "exports.read",
+                "policy.publish"
+              ]
+            },
+            "description": "Explicit restrictions that override scope grants. An empty list restores the access supplied by the scopes. Rotation preserves these restrictions."
           }
         }
       },
@@ -16152,6 +16361,10 @@
           "other_groups": {
             "$ref": "#/components/schemas/OtherGroups",
             "description": "The other groups of this environment where a person with the same email or phone appears, newest group first. History only: nothing in it changes this person's screening, band, match state or decision."
+          },
+          "evidence_restricted": {
+            "type": "boolean",
+            "description": "True when evidence.read is explicitly denied. Submitted details, coverage, job status and decisions remain available. Collected records, profiles, findings, posts, media, discovered values and free-text decision notes are withheld."
           }
         },
         "description": "Everything known about one person, and where else in the environment they appear."
@@ -20776,7 +20989,7 @@
           },
           "value": {
             "type": "string",
-            "description": "The value searched: the field's cleaned value, else as the source wrote it.",
+            "description": "The searched value. Empty in person reports when evidence.read is denied.",
             "example": "jordanexample42"
           },
           "status": {
@@ -30505,6 +30718,34 @@
           "application/json": {
             "schema": {
               "$ref": "#/components/schemas/Search"
+            }
+          }
+        }
+      },
+      "KeyUpdated": {
+        "description": "The key with its updated restrictions. Changes take effect on its next request.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Key"
             }
           }
         }

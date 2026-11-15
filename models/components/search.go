@@ -11,7 +11,7 @@ type Search struct {
 	Table *string `json:"table,omitzero"`
 	// The kind of the value searched. A domain search finds the leaked rows of every email address at the domain.
 	Kind SearchKind `json:"kind"`
-	// The value searched: the field's cleaned value, else as the source wrote it.
+	// The searched value. Empty in person reports when evidence.read is denied.
 	Value string `json:"value"`
 	// A password or hash search is counting, then counted: rows says how many breach rows hold the value, and nothing runs until a person runs it (POST .../searches/{search_id}/run). Any other search is queued, then running. completed: every source it asked answered. partial: some did not. failed: none answered or none could be asked, which says nothing about whether the value is held anywhere.
 	Status SearchStatus `json:"status"`

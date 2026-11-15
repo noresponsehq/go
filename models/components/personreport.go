@@ -24,6 +24,8 @@ type PersonReport struct {
 	Searches []Search `json:"searches,omitzero"`
 	// Where else in the environment the person appears, read live from those groups: deleting one removes it here.
 	OtherGroups OtherGroups `json:"other_groups"`
+	// True when evidence.read is explicitly denied. Submitted details, coverage, job status and decisions remain available. Collected records, profiles, findings, posts, media, discovered values and free-text decision notes are withheld.
+	EvidenceRestricted *bool `json:"evidence_restricted,omitzero"`
 }
 
 func (p PersonReport) MarshalJSON() ([]byte, error) {
@@ -98,4 +100,11 @@ func (p *PersonReport) GetOtherGroups() OtherGroups {
 		return OtherGroups{}
 	}
 	return p.OtherGroups
+}
+
+func (p *PersonReport) GetEvidenceRestricted() *bool {
+	if p == nil {
+		return nil
+	}
+	return p.EvidenceRestricted
 }

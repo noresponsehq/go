@@ -13,6 +13,8 @@ const (
 	AuditEventTargetTypeIntegration     AuditEventTargetType = "integration"
 	AuditEventTargetTypeBilling         AuditEventTargetType = "billing"
 	AuditEventTargetTypeReview          AuditEventTargetType = "review"
+	AuditEventTargetTypePerson          AuditEventTargetType = "person"
+	AuditEventTargetTypeGroup           AuditEventTargetType = "group"
 )
 
 func (e AuditEventTargetType) ToPointer() *AuditEventTargetType {
@@ -23,7 +25,7 @@ func (e AuditEventTargetType) ToPointer() *AuditEventTargetType {
 func (e *AuditEventTargetType) IsExact() bool {
 	if e != nil {
 		switch *e {
-		case "workspace", "member", "invite", "key", "setting", "webhook_endpoint", "integration", "billing", "review":
+		case "workspace", "member", "invite", "key", "setting", "webhook_endpoint", "integration", "billing", "review", "person", "group":
 			return true
 		}
 	}

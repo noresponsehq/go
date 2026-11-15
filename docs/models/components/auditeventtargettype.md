@@ -29,3 +29,5 @@ custom := components.AuditEventTargetType("custom_value")
 | `AuditEventTargetTypeIntegration`     | integration                           |
 | `AuditEventTargetTypeBilling`         | billing                               |
 | `AuditEventTargetTypeReview`          | review                                |
+| `AuditEventTargetTypePerson`          | person                                |
+| `AuditEventTargetTypeGroup`           | group                                 |

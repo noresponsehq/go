@@ -16,23 +16,27 @@ custom := components.KeyScope("custom_value")
 
 ## Values
 
-| Name                    | Value                   |
-| ----------------------- | ----------------------- |
-| `KeyScopeAssess`        | assess                  |
-| `KeyScopeHistory`       | history                 |
-| `KeyScopeDelete`        | delete                  |
-| `KeyScopeWebhooks`      | webhooks                |
-| `KeyScopeDetailed`      | detailed                |
-| `KeyScopeIntegrations`  | integrations            |
-| `KeyScopeManagement`    | management              |
-| `KeyScopeAudit`         | audit                   |
-| `KeyScopeUsage`         | usage                   |
-| `KeyScopeInvestigate`   | investigate             |
-| `KeyScopeEvidence`      | evidence                |
-| `KeyScopeExports`       | exports                 |
-| `KeyScopeAuditManage`   | audit_manage            |
-| `KeyScopeSettings`      | settings                |
-| `KeyScopePolicyPublish` | policy_publish          |
-| `KeyScopeMembers`       | members                 |
-| `KeyScopeMembersManage` | members_manage          |
-| `KeyScopeGroups`        | groups                  |
+| Name                     | Value                    |
+| ------------------------ | ------------------------ |
+| `KeyScopeAssess`         | assess                   |
+| `KeyScopeHistory`        | history                  |
+| `KeyScopeDelete`         | delete                   |
+| `KeyScopeWebhooks`       | webhooks                 |
+| `KeyScopeDetailed`       | detailed                 |
+| `KeyScopeIntegrations`   | integrations             |
+| `KeyScopeManagement`     | management               |
+| `KeyScopeAudit`          | audit                    |
+| `KeyScopeUsage`          | usage                    |
+| `KeyScopeInvestigate`    | investigate              |
+| `KeyScopeEvidence`       | evidence                 |
+| `KeyScopeExports`        | exports                  |
+| `KeyScopeAuditManage`    | audit_manage             |
+| `KeyScopeSettings`       | settings                 |
+| `KeyScopePolicyPublish`  | policy_publish           |
+| `KeyScopeMembers`        | members                  |
+| `KeyScopeMembersManage`  | members_manage           |
+| `KeyScopeGroups`         | groups                   |
+| `KeyScopePeople`         | people                   |
+| `KeyScopePeopleWrite`    | people_write             |
+| `KeyScopeInvestigations` | investigations           |
+| `KeyScopeDecisions`      | decisions                |
