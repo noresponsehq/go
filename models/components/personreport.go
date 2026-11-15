@@ -1,20 +1,20 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v13/internal/utils"
+	"github.com/noresponsehq/go/v14/internal/utils"
 )
 
 // PersonReport - Everything known about one person, and where else in the environment they appear.
 type PersonReport struct {
 	// A person and where their screening and review stand.
 	Person Person `json:"person"`
-	// The accounts the latest screening matched, with how each was matched.
+	// The accounts this result matched, with how each was matched.
 	Profiles []ScreeningProfile `json:"profiles"`
-	// What the latest screening flagged, most severe first, each citing its evidence.
+	// What this result flagged, most severe first, each citing its evidence.
 	Findings []ScreeningFinding `json:"findings"`
-	// The posts the findings cite.
+	// All posts retained for this result, including posts that no finding cites.
 	Posts []ScreeningPost `json:"posts"`
-	// The images and videos the findings cite.
+	// All images and videos retained for this result, including media that no finding cites.
 	Media []ScreeningMedia `json:"media"`
 	// Every recorded decision, oldest first.
 	Reviews []PersonReview `json:"reviews"`

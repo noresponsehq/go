@@ -1,7 +1,7 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v13/internal/utils"
+	"github.com/noresponsehq/go/v14/internal/utils"
 )
 
 // PersonDecided - A reviewer recorded a decision on a person. The decision's note stays in the API. Sent once per recorded review; a person's latest review is its decision, so order by decided_at.

@@ -3,7 +3,7 @@ package components
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/noresponsehq/go/v13/internal/utils"
+	"github.com/noresponsehq/go/v14/internal/utils"
 )
 
 type KeyRequestScope string

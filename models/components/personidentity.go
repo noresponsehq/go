@@ -1,15 +1,14 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v13/internal/utils"
+	"github.com/noresponsehq/go/v14/internal/utils"
 )
 
-// PersonIdentity - What you know about a person. Stored encrypted under the workspace's key.
 type PersonIdentity struct {
-	// Your own id for the person, unique within the group. A later row with the same external id updates this person.
+	// Your reference for this person within the workspace environment. Only an explicit reference or person_id can reuse an existing person.
 	ExternalID *string `json:"external_id,omitzero"`
 	// The person's full name.
-	Name string `json:"name"`
+	Name *string `json:"name,omitzero"`
 	// The person's email.
 	Email *string `json:"email,omitzero"`
 	// The person's phone in E.164 form.
@@ -17,9 +16,9 @@ type PersonIdentity struct {
 	// Where the person works.
 	Company *string `json:"company,omitzero"`
 	// Where the person lives.
-	City *string `json:"city,omitzero"`
-	// Accounts the person is known to hold, at most 20.
-	Handles []Handle `json:"handles,omitzero"`
+	City     *string  `json:"city,omitzero"`
+	Handles  []Handle `json:"handles,omitzero"`
+	PersonID *string  `json:"person_id,omitzero"`
 	// The person's role in the group: guest (a ticket holder), crew, vendor or press. Leave it out when you do not know it: a person without one has no role, not guest. A later row naming the same person replaces it, and a change of role alone keeps the person's screening results.
 	Role *PersonRole `json:"role,omitzero"`
 }
@@ -42,9 +41,9 @@ func (p *PersonIdentity) GetExternalID() *string {
 	return p.ExternalID
 }
 
-func (p *PersonIdentity) GetName() string {
+func (p *PersonIdentity) GetName() *string {
 	if p == nil {
-		return ""
+		return nil
 	}
 	return p.Name
 }
@@ -82,6 +81,13 @@ func (p *PersonIdentity) GetHandles() []Handle {
 		return nil
 	}
 	return p.Handles
+}
+
+func (p *PersonIdentity) GetPersonID() *string {
+	if p == nil {
+		return nil
+	}
+	return p.PersonID
 }
 
 func (p *PersonIdentity) GetRole() *PersonRole {

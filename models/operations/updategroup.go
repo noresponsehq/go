@@ -1,30 +1,12 @@
 package operations
 
 import (
-	"github.com/noresponsehq/go/v13/models/components"
+	"github.com/noresponsehq/go/v14/models/components"
 )
 
 type UpdateGroupRequest struct {
-	// Your workspace id, as each key lists it in workspace_id. Another workspace, a malformed id and a test environment's id answer 404.
-	WorkspaceID string `pathParam:"style=simple,explode=false,name=workspace_id"`
-	// The environment: live or test. Each has its own settings. Any other value answers 400. An API key reads and changes only its own environment's; the other answers 404.
-	Environment components.KeyEnvironment `pathParam:"style=simple,explode=false,name=environment"`
-	GroupID     string                    `pathParam:"style=simple,explode=false,name=group_id"`
-	Body        components.GroupUpdate    `request:"mediaType=application/json"`
-}
-
-func (u *UpdateGroupRequest) GetWorkspaceID() string {
-	if u == nil {
-		return ""
-	}
-	return u.WorkspaceID
-}
-
-func (u *UpdateGroupRequest) GetEnvironment() components.KeyEnvironment {
-	if u == nil {
-		return components.KeyEnvironment("")
-	}
-	return u.Environment
+	GroupID string                 `pathParam:"style=simple,explode=false,name=group_id"`
+	Body    components.GroupUpdate `request:"mediaType=application/json"`
 }
 
 func (u *UpdateGroupRequest) GetGroupID() string {

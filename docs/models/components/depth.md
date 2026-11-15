@@ -6,7 +6,7 @@ How long the synchronous answer waits for sources. quick waits only for the fast
 
 ```go
 import (
-	"github.com/noresponsehq/go/v13/models/components"
+	"github.com/noresponsehq/go/v14/models/components"
 )
 
 value := components.DepthQuick

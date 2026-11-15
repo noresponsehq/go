@@ -3,11 +3,11 @@ package noresponse
 import (
 	"context"
 	"fmt"
-	"github.com/noresponsehq/go/v13/internal/config"
-	"github.com/noresponsehq/go/v13/internal/hooks"
-	"github.com/noresponsehq/go/v13/internal/utils"
-	"github.com/noresponsehq/go/v13/models/components"
-	"github.com/noresponsehq/go/v13/retry"
+	"github.com/noresponsehq/go/v14/internal/config"
+	"github.com/noresponsehq/go/v14/internal/hooks"
+	"github.com/noresponsehq/go/v14/internal/utils"
+	"github.com/noresponsehq/go/v14/models/components"
+	"github.com/noresponsehq/go/v14/retry"
 	"net/http"
 	"time"
 )
@@ -44,8 +44,8 @@ func Float64(f float64) *float64 { return &f }
 // Pointer provides a helper function to return a pointer to a type
 func Pointer[T any](v T) *T { return &v }
 
-// NoResponse API: Server-side risk assessment of account creation, login and purchase: a recommendation, polling and signed webhooks.
-// Assess an account creation, login or purchase and get back the account's one current risk, poll a pending assessment, page through an account's history, record what you later learned, report usage of the API keys you issue to your accounts, rotate your API key, manage your webhook endpoints, and register hosted endpoints that answer your WorkOS, Auth0 or Supabase sign-up and sign-in hooks. Every response carries X-Request-ID; every error is an RFC 9457 problem document. Keep the API key on your server.
+// NoResponse API: Workspace people, source-grounded investigations, group screening and signup assessment recommendations.
+// NoResponse is an identity and people risk engine. Retain workspace people, investigate their identifiers, read complete source evidence and preserve investigation history. Groups organize people for screening and context-specific decisions. Account creation, login and purchase assessments use the same engine. People-read access includes evidence by default; explicit evidence restrictions retain submitted details, job status, coverage and decision summaries. Keep the API key on your server.
 type NoResponse struct {
 	SDKVersion string
 	// Assessments of account creation, login and purchase.
@@ -86,6 +86,10 @@ type NoResponse struct {
 	Operations *Operations
 	// Groups, lists of people, screenings and reviewer decisions.
 	Groups *Groups
+	// Workspace people, submitted identity, source evidence and expiry.
+	People *People
+	// Person investigation jobs, retained results and contextual decisions.
+	Investigations *Investigations
 
 	sdkConfiguration config.SDKConfiguration
 	hooks            *hooks.Hooks
@@ -162,10 +166,10 @@ func WithTimeout(timeout time.Duration) SDKOption {
 // New creates a new instance of the SDK with the provided options
 func New(opts ...SDKOption) *NoResponse {
 	sdk := &NoResponse{
-		SDKVersion: "13.0.5",
+		SDKVersion: "14.0.0",
 		sdkConfiguration: config.SDKConfiguration{
-			UserAgent:         "noresponse-sdk/go 13.0.5",
-			SDKVersion:        "13.0.5",
+			UserAgent:         "noresponse-sdk/go 14.0.0",
+			SDKVersion:        "14.0.0",
 			GenVersion:        "internal",
 			OpenAPIDocVersion: "1",
 			ServerList:        ServerList,
@@ -209,6 +213,8 @@ func New(opts ...SDKOption) *NoResponse {
 	sdk.Evaluations = newEvaluations(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Operations = newOperations(sdk, sdk.sdkConfiguration, sdk.hooks)
 	sdk.Groups = newGroups(sdk, sdk.sdkConfiguration, sdk.hooks)
+	sdk.People = newPeople(sdk, sdk.sdkConfiguration, sdk.hooks)
+	sdk.Investigations = newInvestigations(sdk, sdk.sdkConfiguration, sdk.hooks)
 
 	return sdk
 }

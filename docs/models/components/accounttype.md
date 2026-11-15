@@ -6,7 +6,7 @@ personal, or business: an account a company or school manages.
 
 ```go
 import (
-	"github.com/noresponsehq/go/v13/models/components"
+	"github.com/noresponsehq/go/v14/models/components"
 )
 
 value := components.AccountTypePersonal

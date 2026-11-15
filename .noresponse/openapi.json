@@ -3,8 +3,8 @@
   "info": {
     "title": "NoResponse API",
     "version": "1",
-    "summary": "Server-side risk assessment of account creation, login and purchase: a recommendation, polling and signed webhooks.",
-    "description": "Assess an account creation, login or purchase and get back the account's one current risk, poll a pending assessment, page through an account's history, record what you later learned, report usage of the API keys you issue to your accounts, rotate your API key, manage your webhook endpoints, and register hosted endpoints that answer your WorkOS, Auth0 or Supabase sign-up and sign-in hooks. Every response carries X-Request-ID; every error is an RFC 9457 problem document. Keep the API key on your server.",
+    "summary": "Workspace people, source-grounded investigations, group screening and signup assessment recommendations.",
+    "description": "NoResponse is an identity and people risk engine. Retain workspace people, investigate their identifiers, read complete source evidence and preserve investigation history. Groups organize people for screening and context-specific decisions. Account creation, login and purchase assessments use the same engine. People-read access includes evidence by default; explicit evidence restrictions retain submitted details, job status, coverage and decision summaries. Keep the API key on your server.",
     "license": {
       "name": "Apache-2.0",
       "identifier": "Apache-2.0"
@@ -37,6 +37,14 @@
     "retryConnectionErrors": true
   },
   "tags": [
+    {
+      "name": "people",
+      "description": "Workspace people, submitted identity, source evidence and expiry."
+    },
+    {
+      "name": "investigations",
+      "description": "Person investigation jobs, retained results and contextual decisions."
+    },
     {
       "name": "operations",
       "description": "Retained outcomes, enforcement reports and review populations."
@@ -6753,7 +6761,7 @@
         ]
       }
     },
-    "/v1/workspaces/{workspace_id}/groups/{environment}": {
+    "/v1/groups": {
       "get": {
         "operationId": "listGroups",
         "x-noresponse-group": "groups",
@@ -6762,14 +6770,8 @@
           "groups"
         ],
         "summary": "List an environment's groups.",
-        "description": "Groups, newest first. The people scope grants this operation. Explicit evidence.read restrictions override default evidence access. The groups scope is also accepted for existing integrations.",
+        "description": "Groups, newest first. The people scope grants this operation. Explicit evidence.read restrictions override default evidence access. The groups scope is also accepted for existing integrations. The API key selects the workspace and environment.",
         "parameters": [
-          {
-            "$ref": "#/components/parameters/WorkspaceId"
-          },
-          {
-            "$ref": "#/components/parameters/Environment"
-          },
           {
             "name": "limit",
             "in": "query",
@@ -6828,14 +6830,8 @@
           "groups"
         ],
         "summary": "Create a group to screen.",
-        "description": "Creates a group with its name, start, venue, host, the principals it protects and the sensitive topics its screening reads posts against. An environment holds at most 1000 groups. Send an Idempotency-Key to retry safely: the same key and request return the same resource in its current state while it is retained, even after work completes. Reusing the key with different input answers 409 idempotency_key_reused. Use a new key for a deliberate new operation. The people_write scope grants this operation. Explicit evidence.read restrictions override default evidence access. The groups scope is also accepted for existing integrations.",
+        "description": "Creates a group with its name, start, venue, host, the principals it protects and the sensitive topics its screening reads posts against. An environment holds at most 1000 groups. Send an Idempotency-Key to retry safely: the same key and request return the same resource in its current state while it is retained, even after work completes. Reusing the key with different input answers 409 idempotency_key_reused. Use a new key for a deliberate new operation. The people_write scope grants this operation. Explicit evidence.read restrictions override default evidence access. The groups scope is also accepted for existing integrations. The API key selects the workspace and environment.",
         "parameters": [
-          {
-            "$ref": "#/components/parameters/WorkspaceId"
-          },
-          {
-            "$ref": "#/components/parameters/Environment"
-          },
           {
             "$ref": "#/components/parameters/ResourceIdempotencyKey"
           }
@@ -6884,7 +6880,7 @@
         "x-noresponse-go-optional-method-arguments": "shared-options"
       }
     },
-    "/v1/workspaces/{workspace_id}/groups/{environment}/{group_id}": {
+    "/v1/groups/{group_id}": {
       "get": {
         "operationId": "getGroup",
         "x-noresponse-group": "groups",
@@ -6893,14 +6889,8 @@
           "groups"
         ],
         "summary": "Read a group.",
-        "description": "The group and how many people it holds. The people scope grants this operation. Explicit evidence.read restrictions override default evidence access. The groups scope is also accepted for existing integrations.",
+        "description": "The group and how many people it holds. The people scope grants this operation. Explicit evidence.read restrictions override default evidence access. The groups scope is also accepted for existing integrations. The API key selects the workspace and environment.",
         "parameters": [
-          {
-            "$ref": "#/components/parameters/WorkspaceId"
-          },
-          {
-            "$ref": "#/components/parameters/Environment"
-          },
           {
             "$ref": "#/components/parameters/GroupId"
           }
@@ -6942,14 +6932,8 @@
           "groups"
         ],
         "summary": "Change a group.",
-        "description": "Changes the fields the body names. With expected_version, the change applies only to that version (409 group_conflict otherwise). The people_write scope grants this operation. Explicit evidence.read restrictions override default evidence access. The groups scope is also accepted for existing integrations.",
+        "description": "Changes the fields the body names. With expected_version, the change applies only to that version (409 group_conflict otherwise). The people_write scope grants this operation. Explicit evidence.read restrictions override default evidence access. The groups scope is also accepted for existing integrations. The API key selects the workspace and environment.",
         "parameters": [
-          {
-            "$ref": "#/components/parameters/WorkspaceId"
-          },
-          {
-            "$ref": "#/components/parameters/Environment"
-          },
           {
             "$ref": "#/components/parameters/GroupId"
           }
@@ -7001,14 +6985,8 @@
           "groups"
         ],
         "summary": "Erase a group.",
-        "description": "Erases the group with its people, their reviews and its screenings, and stops any screening still running. The delete scope is required; group read, write, investigation and review access do not grant deletion.",
+        "description": "Deletes the group, its memberships and its review context, and cancels unfinished group work. Workspace people, source evidence and completed investigations remain available. Retained investigations no longer name the deleted group. The delete scope is required; group read, write, investigation and review access do not grant deletion. The API key selects the workspace and environment.",
         "parameters": [
-          {
-            "$ref": "#/components/parameters/WorkspaceId"
-          },
-          {
-            "$ref": "#/components/parameters/Environment"
-          },
           {
             "$ref": "#/components/parameters/GroupId"
           }
@@ -7043,7 +7021,7 @@
         ]
       }
     },
-    "/v1/workspaces/{workspace_id}/groups/{environment}/{group_id}/people": {
+    "/v1/groups/{group_id}/people": {
       "get": {
         "operationId": "listPeople",
         "x-noresponse-group": "groups",
@@ -7052,14 +7030,8 @@
           "groups"
         ],
         "summary": "List a group's people.",
-        "description": "The roster in upload order, with each person's role, match state, highest finding band and decision. Filter by band (or none), decision (or undecided) and role (or unstated). The people scope grants this operation. Explicit evidence.read restrictions override default evidence access. The groups scope is also accepted for existing integrations.",
+        "description": "The roster in upload order, with each person's role, match state, highest finding band and decision. Filter by band (or none), decision (or undecided) and role (or unstated). The people scope grants this operation. Explicit evidence.read restrictions override default evidence access. The groups scope is also accepted for existing integrations. The API key selects the workspace and environment.",
         "parameters": [
-          {
-            "$ref": "#/components/parameters/WorkspaceId"
-          },
-          {
-            "$ref": "#/components/parameters/Environment"
-          },
           {
             "$ref": "#/components/parameters/GroupId"
           },
@@ -7145,14 +7117,8 @@
           "groups"
         ],
         "summary": "Add or update a batch of people.",
-        "description": "Adds 1 to 500 people, at most 512 KiB. A row naming an existing person in the group (the same external_id, else the same email, else the same phone) updates it; a changed identity is screened afresh by the next screening. Identities are stored encrypted under the workspace's key. Idempotency-Key is required: a retry with the same key and body within 24 hours answers the first result with Idempotent-Replayed: true, and the same key with another body answers 409 idempotency_key_reused. A group holds at most 20000 people. The people_write scope grants this operation. Explicit evidence.read restrictions override default evidence access. The groups scope is also accepted for existing integrations.",
+        "description": "Adds 1 to 500 workspace people to this group, at most 512 KiB. An explicit person_id or external_id reuses the named workspace person. A reference-only row keeps submitted details; an identity supplied with that reference replaces those details. A shared email or phone only suggests matches and does not merge people. A changed identity clears current group screening summaries; prior investigation history remains available. Identities are encrypted under the workspace key. Idempotency-Key is required: the same key and body return the original import result while it is retained, with Idempotent-Replayed: true. A different body answers 409 idempotency_key_reused. A group holds at most 20000 people. The people_write scope grants this operation; groups is also accepted. Suggested matches require people-read access. The API key selects the workspace and environment.",
         "parameters": [
-          {
-            "$ref": "#/components/parameters/WorkspaceId"
-          },
-          {
-            "$ref": "#/components/parameters/Environment"
-          },
           {
             "$ref": "#/components/parameters/GroupId"
           },
@@ -7200,7 +7166,7 @@
         ]
       }
     },
-    "/v1/workspaces/{workspace_id}/groups/{environment}/{group_id}/people/{person_id}": {
+    "/v1/groups/{group_id}/people/{person_id}": {
       "get": {
         "operationId": "getPerson",
         "x-noresponse-group": "groups",
@@ -7209,14 +7175,8 @@
           "groups"
         ],
         "summary": "Read a person's report.",
-        "description": "The person, the profiles the screening matched with how each was matched, its findings with their evidence, every recorded decision, and the other groups in the environment where a person with the same email or phone appears, with the decision recorded there. Profiles and findings fill in as the screening pipeline ships. The people scope grants this operation. Explicit evidence.read restrictions override default evidence access. The groups scope is also accepted for existing integrations. Each successful read is durably audited as person.viewed. Restricted responses keep submitted details, coverage, job status and decision summaries and set evidence_restricted to true.",
+        "description": "Returns submitted details, this group's latest screening evidence and contextual decisions, and the other groups that explicitly include the same workspace person. Membership requires an explicit person or customer reference. The people scope grants this operation; groups is also accepted. Each successful read is durably audited as person.viewed. Full source records, posts and media are returned by default. Explicit evidence.read denial keeps submitted details, coverage, job status and decision summaries, hides collected evidence and free-text notes, and sets evidence_restricted to true. The API key selects the workspace and environment.",
         "parameters": [
-          {
-            "$ref": "#/components/parameters/WorkspaceId"
-          },
-          {
-            "$ref": "#/components/parameters/Environment"
-          },
           {
             "$ref": "#/components/parameters/GroupId"
           },
@@ -7252,9 +7212,55 @@
             "apiKey": []
           }
         ]
+      },
+      "delete": {
+        "operationId": "removeGroupPerson",
+        "x-noresponse-group": "groups",
+        "x-noresponse-name-override": "removePerson",
+        "tags": [
+          "groups"
+        ],
+        "summary": "Remove a person from a group",
+        "description": "Removes this membership and its group review history. Keeps the workspace person, source evidence and completed investigations. Needs delete access. The API key selects the workspace and environment.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/GroupId"
+          },
+          {
+            "$ref": "#/components/parameters/PersonId"
+          }
+        ],
+        "responses": {
+          "204": {
+            "$ref": "#/components/responses/RemoveGroupPerson204"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidControlRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ControlForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/WorkspaceNotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/IdempotencyConflict"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
       }
     },
-    "/v1/workspaces/{workspace_id}/groups/{environment}/{group_id}/people/{person_id}/review": {
+    "/v1/groups/{group_id}/people/{person_id}/review": {
       "post": {
         "operationId": "reviewPerson",
         "x-noresponse-group": "groups",
@@ -7263,14 +7269,8 @@
           "groups"
         ],
         "summary": "Record a decision on a person.",
-        "description": "Marks the person cleared, watch or escalated with a note. Decisions are kept in order; the latest is the person's. The next screening refreshes everyone on watch or escalated. The decisions scope grants this operation. Explicit evidence.read restrictions override default evidence access. The groups scope is also accepted for existing integrations.",
+        "description": "Marks the person cleared, watch or escalated with a note. Decisions are kept in order; the latest is the person's. The next screening refreshes everyone on watch or escalated. The decisions scope grants this operation. Explicit evidence.read restrictions override default evidence access. The groups scope is also accepted for existing integrations. The API key selects the workspace and environment.",
         "parameters": [
-          {
-            "$ref": "#/components/parameters/WorkspaceId"
-          },
-          {
-            "$ref": "#/components/parameters/Environment"
-          },
           {
             "$ref": "#/components/parameters/GroupId"
           },
@@ -7321,7 +7321,7 @@
         }
       }
     },
-    "/v1/workspaces/{workspace_id}/groups/{environment}/{group_id}/people/{person_id}/records": {
+    "/v1/groups/{group_id}/people/{person_id}/records": {
       "post": {
         "operationId": "judgeRecord",
         "x-noresponse-group": "groups",
@@ -7330,14 +7330,8 @@
           "groups"
         ],
         "summary": "Join one of a person's records to them, or reject it.",
-        "description": "Records a verdict on one of the records the person's latest lookups found: joined makes the record the person's whatever its likelihood, and rejected keeps it a lead. The verdict sticks for as long as a lookup finds the same record, and a later verdict on the same record replaces it. A record the person's latest lookup does not hold answers 404. Each verdict is audited as person.record_judged. The decisions scope grants this operation. Explicit evidence.read restrictions override default evidence access. The groups scope is also accepted for existing integrations.",
+        "description": "Records a verdict on one of the records the person's latest lookups found: joined makes the record the person's whatever its likelihood, and rejected keeps it a lead. The verdict sticks for as long as a lookup finds the same record, and a later verdict on the same record replaces it. A record the person's latest lookup does not hold answers 404. Each verdict is audited as person.record_judged. The decisions scope grants this operation. Explicit evidence.read restrictions override default evidence access. The groups scope is also accepted for existing integrations. The API key selects the workspace and environment.",
         "parameters": [
-          {
-            "$ref": "#/components/parameters/WorkspaceId"
-          },
-          {
-            "$ref": "#/components/parameters/Environment"
-          },
           {
             "$ref": "#/components/parameters/GroupId"
           },
@@ -7385,7 +7379,7 @@
         ]
       }
     },
-    "/v1/workspaces/{workspace_id}/groups/{environment}/{group_id}/people/{person_id}/searches": {
+    "/v1/groups/{group_id}/people/{person_id}/searches": {
       "post": {
         "operationId": "startSearch",
         "x-noresponse-group": "groups",
@@ -7394,14 +7388,8 @@
           "groups"
         ],
         "summary": "Search again on a value of one of a person's records.",
-        "description": "Starts a new search on the value of one field of one of the person's records: a lookup's, a profile's or one an earlier search found. Name the record and the field; the value itself is not sent. The field's kind must be email, phone, username, person_name, password, hash, ip or domain. A domain search finds the breach rows of every email address at the domain, which must be a registrable domain or a host under one; any other domain answers 400. Nothing ever searches again by itself: a search starts only when a person asks. The search runs the breach search and the account and phone lookups that take the value's kind, under the environment's source controls, and finishes seconds later. A password or hash search counts first: it stops at counted with rows, how many breach rows hold the value, and runs only when a person runs it. Name a table, as a lookup remaining entry names it, to fetch the rows an earlier search left out, up to 100. What the search finds joins the person's lookup records as leads, each match naming the search; the person report lists the searches, each with the value and the record and field it came from, and its records are scored like the rest. Without an Idempotency-Key, starting the same open search returns it. Its estimate counts against the environment's screening_daily_cap, and one the cap cannot hold answers 409 screening_cap_exceeded. A record or field the person does not hold answers 404. Each search is audited as person.search_started. Send an Idempotency-Key to retry safely: the same key and request return the same resource in its current state while it is retained, even after work completes. Reusing the key with different input answers 409 idempotency_key_reused. Use a new key for a deliberate new operation. The investigations scope grants this operation. Explicit evidence.read restrictions override default evidence access. The groups scope is also accepted for existing integrations.",
+        "description": "Starts a new search on the value of one field of one of the person's records: a lookup's, a profile's or one an earlier search found. Name the record and the field; the value itself is not sent. The field's kind must be email, phone, username, person_name, password, hash, ip or domain. A domain search finds the breach rows of every email address at the domain, which must be a registrable domain or a host under one; any other domain answers 400. Nothing ever searches again by itself: a search starts only when a person asks. The search runs the breach search and the account and phone lookups that take the value's kind, under the environment's source controls, and finishes seconds later. A password or hash search counts first: it stops at counted with rows, how many breach rows hold the value, and runs only when a person runs it. Name a table, as a lookup remaining entry names it, to fetch the rows an earlier search left out, up to 100. What the search finds joins the person's lookup records as leads, each match naming the search; the person report lists the searches, each with the value and the record and field it came from, and its records are scored like the rest. Without an Idempotency-Key, starting the same open search returns it. Its estimate counts against the environment's screening_daily_cap, and one the cap cannot hold answers 409 screening_cap_exceeded. A record or field the person does not hold answers 404. Each search is audited as person.search_started. Send an Idempotency-Key to retry safely: the same key and request return the same resource in its current state while it is retained, even after work completes. Reusing the key with different input answers 409 idempotency_key_reused. Use a new key for a deliberate new operation. The investigations scope grants this operation. Explicit evidence.read restrictions override default evidence access. The groups scope is also accepted for existing integrations. The API key selects the workspace and environment.",
         "parameters": [
-          {
-            "$ref": "#/components/parameters/WorkspaceId"
-          },
-          {
-            "$ref": "#/components/parameters/Environment"
-          },
           {
             "$ref": "#/components/parameters/GroupId"
           },
@@ -7455,7 +7443,7 @@
         }
       }
     },
-    "/v1/workspaces/{workspace_id}/groups/{environment}/{group_id}/people/{person_id}/searches/{search_id}/run": {
+    "/v1/groups/{group_id}/people/{person_id}/searches/{search_id}/run": {
       "post": {
         "operationId": "runSearch",
         "x-noresponse-group": "groups",
@@ -7464,14 +7452,8 @@
           "groups"
         ],
         "summary": "Run a counted password or hash search.",
-        "description": "Runs a password or hash search once a person has seen its count. A search still counting answers 409 group_conflict; one already queued, running or finished answers as it is. The body is an empty object. Its estimate counts against the environment's screening_daily_cap. Each run is audited as person.search_run. The investigations scope grants this operation. Explicit evidence.read restrictions override default evidence access. The groups scope is also accepted for existing integrations.",
+        "description": "Runs a password or hash search once a person has seen its count. A search still counting answers 409 group_conflict; one already queued, running or finished answers as it is. The body is an empty object. Its estimate counts against the environment's screening_daily_cap. Each run is audited as person.search_run. The investigations scope grants this operation. Explicit evidence.read restrictions override default evidence access. The groups scope is also accepted for existing integrations. The API key selects the workspace and environment.",
         "parameters": [
-          {
-            "$ref": "#/components/parameters/WorkspaceId"
-          },
-          {
-            "$ref": "#/components/parameters/Environment"
-          },
           {
             "$ref": "#/components/parameters/GroupId"
           },
@@ -7522,7 +7504,7 @@
         ]
       }
     },
-    "/v1/workspaces/{workspace_id}/groups/{environment}/{group_id}/screenings": {
+    "/v1/groups/{group_id}/screenings": {
       "get": {
         "operationId": "listScreenings",
         "x-noresponse-group": "groups",
@@ -7531,14 +7513,8 @@
           "groups"
         ],
         "summary": "List a group's screenings.",
-        "description": "Screenings, newest first. The people scope grants this operation. Explicit evidence.read restrictions override default evidence access. The groups scope is also accepted for existing integrations.",
+        "description": "Screenings, newest first. The people scope grants this operation. Explicit evidence.read restrictions override default evidence access. The groups scope is also accepted for existing integrations. The API key selects the workspace and environment.",
         "parameters": [
-          {
-            "$ref": "#/components/parameters/WorkspaceId"
-          },
-          {
-            "$ref": "#/components/parameters/Environment"
-          },
           {
             "$ref": "#/components/parameters/GroupId"
           },
@@ -7600,14 +7576,8 @@
           "groups"
         ],
         "summary": "Start a screening.",
-        "description": "Queues a screening of every person no screening has reached and everyone on watch or escalated. One screening of a group runs at a time; it finishes completed, partial (some people not covered, counted in people_failed) or failed, and fails with error_code expired after 24 hours. Idempotency-Key is required and binds the body for the screening's life. The 202 body carries estimated_spend, what the selected people would cost at the depth and platforms. A screening whose estimate exceeds the environment's screening_daily_cap, less the day's recorded spend and what open screenings may still spend, answers 409 screening_cap_exceeded and queues nothing. The test environment screens with a deterministic simulator that contacts no source. A platform that no connector serves in the environment answers 409 screening_unavailable. The investigations scope grants this operation. Explicit evidence.read restrictions override default evidence access. The groups scope is also accepted for existing integrations.",
+        "description": "Queues a screening of every person no screening has reached and everyone on watch or escalated. One screening of a group runs at a time; it finishes completed, partial (some people not covered, counted in people_failed) or failed, and fails with error_code expired after 24 hours. Idempotency-Key is required and binds the body for the screening's life. The 202 body carries estimated_spend, what the selected people would cost at the depth and platforms. A screening whose estimate exceeds the environment's screening_daily_cap, less the day's recorded spend and what open screenings may still spend, answers 409 screening_cap_exceeded and queues nothing. The test environment screens with a deterministic simulator that contacts no source. A platform that no connector serves in the environment answers 409 screening_unavailable. The investigations scope grants this operation. Explicit evidence.read restrictions override default evidence access. The groups scope is also accepted for existing integrations. The API key selects the workspace and environment.",
         "parameters": [
-          {
-            "$ref": "#/components/parameters/WorkspaceId"
-          },
-          {
-            "$ref": "#/components/parameters/Environment"
-          },
           {
             "$ref": "#/components/parameters/GroupId"
           },
@@ -7655,7 +7625,7 @@
         ]
       }
     },
-    "/v1/workspaces/{workspace_id}/groups/{environment}/{group_id}/screenings/{screening_id}": {
+    "/v1/groups/{group_id}/screenings/{screening_id}": {
       "get": {
         "operationId": "getScreening",
         "x-noresponse-group": "groups",
@@ -7664,14 +7634,8 @@
           "groups"
         ],
         "summary": "Read a screening.",
-        "description": "The screening's status and progress. The people scope grants this operation. Explicit evidence.read restrictions override default evidence access. The groups scope is also accepted for existing integrations.",
+        "description": "The screening's status and progress. The people scope grants this operation. Explicit evidence.read restrictions override default evidence access. The groups scope is also accepted for existing integrations. The API key selects the workspace and environment.",
         "parameters": [
-          {
-            "$ref": "#/components/parameters/WorkspaceId"
-          },
-          {
-            "$ref": "#/components/parameters/Environment"
-          },
           {
             "$ref": "#/components/parameters/GroupId"
           },
@@ -7709,7 +7673,7 @@
         ]
       }
     },
-    "/v1/workspaces/{workspace_id}/groups/{environment}/{group_id}/screenings/{screening_id}/cancel": {
+    "/v1/groups/{group_id}/screenings/{screening_id}/cancel": {
       "post": {
         "operationId": "cancelScreening",
         "x-noresponse-group": "groups",
@@ -7718,14 +7682,8 @@
           "groups"
         ],
         "summary": "Cancel a screening.",
-        "description": "Stops a queued or running screening. People it already screened keep their results. Cancelling a finished screening answers it unchanged. The body is an empty object. The investigations scope grants this operation. Explicit evidence.read restrictions override default evidence access. The groups scope is also accepted for existing integrations.",
+        "description": "Stops a queued or running screening. People it already screened keep their results. Cancelling a finished screening answers it unchanged. The body is an empty object. The investigations scope grants this operation. Explicit evidence.read restrictions override default evidence access. The groups scope is also accepted for existing integrations. The API key selects the workspace and environment.",
         "parameters": [
-          {
-            "$ref": "#/components/parameters/WorkspaceId"
-          },
-          {
-            "$ref": "#/components/parameters/Environment"
-          },
           {
             "$ref": "#/components/parameters/GroupId"
           },
@@ -7773,7 +7731,7 @@
         ]
       }
     },
-    "/v1/workspaces/{workspace_id}/groups/{environment}/{group_id}/export": {
+    "/v1/groups/{group_id}/export": {
       "get": {
         "operationId": "exportPeople",
         "x-noresponse-group": "groups",
@@ -7782,14 +7740,8 @@
           "groups"
         ],
         "summary": "Export the people in a group.",
-        "description": "Returns one page for export. Each returned person is durably audited as person.exported with the actor, group, person ID and request ID. Requires both people read access and exports. Explicit evidence restrictions also hide free-text decision notes. No raw evidence enters audit logs. Follow next_after until absent for a complete export.",
+        "description": "Returns one page for export. Each returned person is durably audited as person.exported with the actor, group, person ID and request ID. Requires both people read access and exports. Explicit evidence restrictions also hide free-text decision notes. No raw evidence enters audit logs. Follow next_after until absent for a complete export. The API key selects the workspace and environment.",
         "parameters": [
-          {
-            "$ref": "#/components/parameters/WorkspaceId"
-          },
-          {
-            "$ref": "#/components/parameters/Environment"
-          },
           {
             "$ref": "#/components/parameters/GroupId"
           },
@@ -7867,6 +7819,493 @@
           }
         ]
       }
+    },
+    "/v1/people": {
+      "get": {
+        "operationId": "listWorkspacePeople",
+        "x-noresponse-group": "people",
+        "x-noresponse-name-override": "list",
+        "tags": [
+          "people"
+        ],
+        "summary": "List workspace people.",
+        "description": "Lists retained people in the key workspace and environment, including people in no group. Each returned person records a person.viewed audit event. Expired people are excluded before background deletion.",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 500,
+              "default": 100
+            }
+          },
+          {
+            "name": "after",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "pattern": "^per_[0-7][0-9A-HJKMNP-TV-Z]{25}$"
+            },
+            "description": "Pass next_cursor from the prior page."
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ListWorkspacePeople200"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidControlRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/WorkspaceForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/IdempotencyConflict"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "createWorkspacePerson",
+        "x-noresponse-group": "people",
+        "x-noresponse-name-override": "create",
+        "tags": [
+          "people"
+        ],
+        "summary": "Create or reuse a workspace person.",
+        "description": "Creates a person without a group. An explicit person_id or external_id reuses the named workspace person. A reference-only request keeps submitted details; identity supplied with that reference replaces those details. A shared email or phone only suggests a match. Suggested matches are returned only with people-read access. The workspace retention setting determines expires_at. An existing person keeps their original expiry. An Idempotency-Key returns the same retained person on retries, without creating another. Changed input with the same key answers 409 idempotency_key_reused. A customer reference that names another person or several people answers 409 person_reference_conflict.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ResourceIdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WorkspacePersonRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/CreateWorkspacePerson200"
+          },
+          "201": {
+            "$ref": "#/components/responses/CreateWorkspacePerson201"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidControlRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/WorkspaceForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/CreateWorkspacePerson409"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ],
+        "x-noresponse-retries": {
+          "strategy": "none"
+        }
+      }
+    },
+    "/v1/people/{person_id}": {
+      "get": {
+        "operationId": "getWorkspacePerson",
+        "x-noresponse-group": "people",
+        "x-noresponse-name-override": "get",
+        "tags": [
+          "people"
+        ],
+        "summary": "Read a workspace person.",
+        "description": "Returns submitted details, the current retention expiry and the most recent retained completed or partial investigation evidence, together with retained follow-up search evidence from all of this person's groups. Search evidence remains available after its group is deleted. Migrated results whose original per-person status is unknown may also supply evidence. Earlier results and pending jobs remain available through investigation history; each investigation retains its own collected result. Full source records, posts and media are returned by default; explicit evidence.read denial withholds collected evidence and free-text notes. Each read records person.viewed without raw evidence in the audit log. A missing or expired person answers 404.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PersonId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/GetWorkspacePerson200"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidControlRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/WorkspaceForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/IdempotencyConflict"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "deleteWorkspacePerson",
+        "x-noresponse-group": "people",
+        "x-noresponse-name-override": "delete",
+        "tags": [
+          "people"
+        ],
+        "summary": "Delete a workspace person.",
+        "description": "Deletes a person and their retained evidence, investigation history and group memberships. Requires the separate delete permission. The audit retains only the person id and deletion metadata.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PersonId"
+          }
+        ],
+        "responses": {
+          "204": {
+            "$ref": "#/components/responses/DeleteWorkspacePerson204"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidControlRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/WorkspaceForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/IdempotencyConflict"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/v1/investigations": {
+      "get": {
+        "operationId": "listInvestigations",
+        "x-noresponse-group": "investigations",
+        "x-noresponse-name-override": "list",
+        "tags": [
+          "investigations"
+        ],
+        "summary": "List investigation history.",
+        "description": "List investigation history. The API key determines the workspace and environment.",
+        "parameters": [
+          {
+            "name": "person_id",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "pattern": "^per_[0-7][0-9A-HJKMNP-TV-Z]{25}$"
+            }
+          },
+          {
+            "name": "before",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "pattern": "^inv_[0-7][0-9A-HJKMNP-TV-Z]{25}$"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 100
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ListInvestigations200"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidControlRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/WorkspaceForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/IdempotencyConflict"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "createInvestigation",
+        "x-noresponse-group": "investigations",
+        "x-noresponse-name-override": "create",
+        "tags": [
+          "investigations"
+        ],
+        "summary": "Start an investigation for a person.",
+        "description": "Starts an investigation against a retained workspace person, independently of group membership. Idempotency-Key is required: the same key and input return the same retained job in its current state without repeating billable work. Different input with that key answers 409 idempotency_key_reused; a deliberate new investigation uses a new key. The response includes Location and Retry-After. The person's retention expiry limits both execution and retained history. The API key selects the workspace and environment.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/InvestigationIdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InvestigationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "$ref": "#/components/responses/CreateInvestigation202"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidControlRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/WorkspaceForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/GroupConflict"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/v1/investigations/{investigation_id}": {
+      "get": {
+        "operationId": "getInvestigation",
+        "x-noresponse-group": "investigations",
+        "x-noresponse-name-override": "get",
+        "tags": [
+          "investigations"
+        ],
+        "summary": "Read an investigation and its evidence.",
+        "description": "Returns this investigation's status, coverage, source records, posts, media and contextual review history. Full evidence is returned by default; explicit evidence.read denial keeps submitted person details, status, coverage and decision summaries and hides collected evidence and free-text notes. The read is durably audited as person.viewed. The API key selects the workspace and environment. Missing, foreign or expired results answer 404.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/InvestigationId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/GetInvestigation200"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidControlRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/WorkspaceForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/IdempotencyConflict"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/v1/investigations/{investigation_id}/reviews": {
+      "post": {
+        "operationId": "reviewInvestigation",
+        "x-noresponse-group": "investigations",
+        "x-noresponse-name-override": "review",
+        "tags": [
+          "investigations"
+        ],
+        "summary": "Record an investigation decision.",
+        "description": "Record an investigation decision. The API key determines the workspace and environment.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/InvestigationId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PersonReviewRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ReviewInvestigation200"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidControlRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/WorkspaceForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/IdempotencyConflict"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ],
+        "x-noresponse-retries": {
+          "strategy": "none"
+        }
+      }
+    },
+    "/v1/investigations/{investigation_id}/cancel": {
+      "post": {
+        "operationId": "cancelInvestigation",
+        "x-noresponse-group": "investigations",
+        "x-noresponse-name-override": "cancel",
+        "tags": [
+          "investigations"
+        ],
+        "summary": "Cancel an investigation",
+        "description": "Stops this investigation. A completed or already cancelled investigation keeps its current result. Other investigations for the person keep running.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/InvestigationId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ScreeningCancelRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ReviewInvestigation200"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidControlRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/WorkspaceForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/IdempotencyConflict"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -7874,7 +8313,7 @@
       "apiKey": {
         "type": "http",
         "scheme": "bearer",
-        "description": "Your API key, sent as `Authorization: Bearer <key>`. Keys are opaque, scoped (assess, history, webhooks, integrations, and optionally detailed) and identify one workspace. Rotate with POST /v1/keys/rotate. A missing, malformed, revoked or expired key answers 401; a key without the operation's scope answers 403."
+        "description": "Your API key, sent as `Authorization: Bearer <key>`. A key selects one workspace environment. Each operation declares its required scope. People-read access includes evidence by default, subject to explicit evidence restrictions. Rotate with POST /v1/keys/rotate. A missing, malformed, revoked or expired key answers 401; a key without the operation's scope answers 403."
       }
     },
     "schemas": {
@@ -11440,7 +11879,8 @@
           "group_conflict",
           "group_limit_reached",
           "screening_cap_exceeded",
-          "screening_unavailable"
+          "screening_unavailable",
+          "person_reference_conflict"
         ],
         "description": "Machine codes an HTTP 409 answer can carry."
       },
@@ -12821,7 +13261,6 @@
           "topics",
           "people",
           "version",
-          "purge_after",
           "created_by",
           "created_at",
           "updated_at"
@@ -12897,11 +13336,6 @@
             "minimum": 1,
             "maximum": 2147483647,
             "description": "Goes up by one with every change."
-          },
-          "purge_after": {
-            "type": "string",
-            "description": "When raw collected items and unmatched candidate profiles are purged: 30 days after the group ends.",
-            "example": "2026-02-01T00:00:00Z"
           },
           "created_by": {
             "type": "string",
@@ -13756,6 +14190,372 @@
             "description": "The WorkOS Actions signing secret or the Supabase hook secret, as the provider's dashboard shows it: 16 to 256 printable ASCII characters with no spaces. It is stored sealed and is not returned.",
             "example": "wos_action_secret_Z9cD1eF5gH0jL4sP",
             "x-noresponse-example-unset": true
+          }
+        }
+      },
+      "Investigation": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "highest_band",
+          "coverage",
+          "spend",
+          "decision",
+          "id",
+          "person_id",
+          "group_id",
+          "status",
+          "depth",
+          "platforms",
+          "match_state",
+          "created_at",
+          "expires_at",
+          "deadline_at"
+        ],
+        "properties": {
+          "highest_band": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/HighestBand"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The most severe finding's band, or null when nothing was flagged."
+          },
+          "coverage": {
+            "$ref": "#/components/schemas/ScreeningCoverage",
+            "description": "What the latest screening read: accounts found, accessible, items read, the period covered and each platform's status. Zero, with no platforms, until a screening reaches the person."
+          },
+          "spend": {
+            "$ref": "#/components/schemas/ScreeningSpend",
+            "description": "What the latest screening of the person cost."
+          },
+          "decision": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PersonDecision"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The latest reviewer decision, or null before any."
+          },
+          "decision_note": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000,
+            "example": "Source records reviewed."
+          },
+          "decided_by": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256,
+            "example": "user_investigator"
+          },
+          "decided_at": {
+            "type": "string",
+            "example": "2026-01-01T00:00:00Z"
+          },
+          "id": {
+            "type": "string",
+            "pattern": "^inv_[0-7][0-9A-HJKMNP-TV-Z]{25}$",
+            "example": "inv_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          },
+          "person_id": {
+            "type": "string",
+            "pattern": "^per_[0-7][0-9A-HJKMNP-TV-Z]{25}$",
+            "example": "per_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          },
+          "group_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^grp_[0-7][0-9A-HJKMNP-TV-Z]{25}$",
+                "example": "grp_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "status": {
+            "$ref": "#/components/schemas/InvestigationStatus"
+          },
+          "depth": {
+            "$ref": "#/components/schemas/ScreeningDepth",
+            "description": "standard reads the bio and the last 100 posts of each profile."
+          },
+          "platforms": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 11,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]{0,63}$",
+              "description": "A platform a screening can cover, such as instagram, x, bluesky, youtube, tiktok or github. The screening registry owns the set: a request that names a platform it does not cover answers 422. A new platform adds an id without changing this contract, so read a platform you do not know in a response as one you have not seen before, not as an error. synthetic is the deterministic connector's own platform, for exercising the product end to end with no network.",
+              "example": "x"
+            }
+          },
+          "match_state": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MatchState",
+                "description": "How sure the latest screening is that it found the person's accounts. unscreened until a screening reaches the person, and after one that had no profile to check (no_profile_to_check)."
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "error_code": {
+            "type": "string",
+            "example": "expired"
+          },
+          "created_at": {
+            "type": "string",
+            "example": "2026-01-01T00:00:00Z"
+          },
+          "started_at": {
+            "type": "string",
+            "example": "2026-01-01T00:00:00Z"
+          },
+          "finished_at": {
+            "type": "string",
+            "example": "2026-01-01T00:00:00Z"
+          },
+          "expires_at": {
+            "type": "string",
+            "example": "2026-02-01T00:00:00Z"
+          },
+          "deadline_at": {
+            "type": "string",
+            "example": "2026-01-01T00:00:00Z"
+          }
+        }
+      },
+      "InvestigationCompleted": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "investigation_id",
+          "person_id",
+          "status",
+          "finished_at"
+        ],
+        "properties": {
+          "investigation_id": {
+            "type": "string",
+            "pattern": "^inv_[0-7][0-9A-HJKMNP-TV-Z]{25}$",
+            "example": "inv_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          },
+          "person_id": {
+            "type": "string",
+            "pattern": "^per_[0-7][0-9A-HJKMNP-TV-Z]{25}$",
+            "example": "per_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          },
+          "status": {
+            "$ref": "#/components/schemas/InvestigationCompletedStatus"
+          },
+          "error_code": {
+            "type": "string",
+            "example": "expired"
+          },
+          "finished_at": {
+            "type": "string",
+            "example": "2026-11-20T08:12:44.000Z"
+          }
+        }
+      },
+      "InvestigationCompletedEvent": {
+        "type": "object",
+        "description": "The investigation.completed event.",
+        "required": [
+          "id",
+          "type",
+          "created_at",
+          "data"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^evt_[0-9A-HJKMNP-TV-Z]{26}$",
+            "description": "The event id, equal to the NR-Webhook-Id header and across redeliveries and every endpoint the event fans out to.",
+            "example": "evt_01JA2ZB4N5P6Q7R8S9T0VWXYZ1"
+          },
+          "created_at": {
+            "type": "string",
+            "description": "When the event was created. Equal across redeliveries; the signing timestamp header is per delivery.",
+            "example": "2026-10-14T09:00:02.000Z"
+          },
+          "type": {
+            "type": "string",
+            "const": "investigation.completed",
+            "description": "Always investigation.completed."
+          },
+          "test": {
+            "type": "boolean",
+            "description": "Present, and true, only on an event sent by POST /v1/webhooks/{endpoint_id}/test: its data is a fixed example assessment, not one of the workspace's, so a receiver acknowledges it and applies nothing. Real events have no test member."
+          },
+          "data": {
+            "$ref": "#/components/schemas/InvestigationCompleted"
+          }
+        }
+      },
+      "InvestigationCompletedStatus": {
+        "enum": [
+          "completed",
+          "partial",
+          "failed",
+          "cancelled"
+        ]
+      },
+      "InvestigationReport": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "profiles",
+          "findings",
+          "posts",
+          "media",
+          "reviews",
+          "person",
+          "investigation"
+        ],
+        "properties": {
+          "profiles": {
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+              "$ref": "#/components/schemas/ScreeningProfile"
+            },
+            "description": "The accounts this result matched, with how each was matched."
+          },
+          "findings": {
+            "type": "array",
+            "maxItems": 500,
+            "items": {
+              "$ref": "#/components/schemas/ScreeningFinding"
+            },
+            "description": "What this result flagged, most severe first, each citing its evidence."
+          },
+          "posts": {
+            "type": "array",
+            "maxItems": 5000,
+            "items": {
+              "$ref": "#/components/schemas/ScreeningPost"
+            },
+            "description": "All posts retained for this result, including posts that no finding cites."
+          },
+          "media": {
+            "type": "array",
+            "maxItems": 5000,
+            "items": {
+              "$ref": "#/components/schemas/ScreeningMedia"
+            },
+            "description": "All images and videos retained for this result, including media that no finding cites."
+          },
+          "reviews": {
+            "type": "array",
+            "maxItems": 1000,
+            "items": {
+              "$ref": "#/components/schemas/PersonReview"
+            },
+            "description": "Every recorded decision, oldest first."
+          },
+          "lookup": {
+            "$ref": "#/components/schemas/ScreeningLookup",
+            "description": "The source records and lookup coverage retained for this result. Absent when this result contains no completed lookup."
+          },
+          "evidence_restricted": {
+            "type": "boolean",
+            "description": "True when evidence.read is explicitly denied. Submitted details, coverage, job status and decisions remain available. Collected records, profiles, findings, posts, media, discovered values and free-text decision notes are withheld."
+          },
+          "person": {
+            "$ref": "#/components/schemas/WorkspacePerson"
+          },
+          "investigation": {
+            "$ref": "#/components/schemas/Investigation"
+          }
+        }
+      },
+      "InvestigationRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "depth",
+          "platforms",
+          "person_id"
+        ],
+        "properties": {
+          "depth": {
+            "$ref": "#/components/schemas/ScreeningDepth",
+            "description": "standard reads the bio and the last 100 posts of each profile."
+          },
+          "platforms": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 11,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]{0,63}$",
+              "description": "A platform a screening can cover, such as instagram, x, bluesky, youtube, tiktok or github. The screening registry owns the set: a request that names a platform it does not cover answers 422. A new platform adds an id without changing this contract, so read a platform you do not know in a response as one you have not seen before, not as an error. synthetic is the deterministic connector's own platform, for exercising the product end to end with no network.",
+              "example": "x"
+            }
+          },
+          "person_id": {
+            "type": "string",
+            "pattern": "^per_[0-7][0-9A-HJKMNP-TV-Z]{25}$",
+            "example": "per_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          }
+        },
+        "description": "Runs a new investigation against one retained workspace person."
+      },
+      "InvestigationStatus": {
+        "enum": [
+          "queued",
+          "running",
+          "completed",
+          "partial",
+          "failed",
+          "cancelled",
+          "unknown"
+        ]
+      },
+      "InvestigationsList": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "items",
+          "has_more",
+          "next_cursor"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+              "$ref": "#/components/schemas/Investigation"
+            }
+          },
+          "has_more": {
+            "type": "boolean"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^inv_[0-7][0-9A-HJKMNP-TV-Z]{25}$",
+                "example": "inv_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         }
       },
@@ -15580,16 +16380,14 @@
           "matched_on": {
             "type": "array",
             "minItems": 1,
-            "maxItems": 3,
+            "maxItems": 1,
             "uniqueItems": true,
             "items": {
               "enum": [
-                "email",
-                "phone",
-                "external_id"
+                "person_id"
               ]
             },
-            "description": "Which identifiers match, in this order. external_id appears only beside email or phone: the same external id alone is not a match, since ticket numbers may be reused across groups."
+            "description": "The same workspace person explicitly belongs to this group. Membership requires an explicit person or customer reference."
           },
           "match_state": {
             "$ref": "#/components/schemas/MatchState",
@@ -15647,7 +16445,7 @@
           "total": {
             "type": "integer",
             "minimum": 0,
-            "description": "How many people of other groups match, of which items lists the 20 most recent."
+            "description": "How many other groups include this person, of which items lists the 20 most recent."
           },
           "items": {
             "type": "array",
@@ -15655,7 +16453,7 @@
             "items": {
               "$ref": "#/components/schemas/OtherGroup"
             },
-            "description": "The 20 people of the most recent other groups, newest group first."
+            "description": "This person's memberships in the 20 most recent other groups, newest group first."
           }
         },
         "description": "Where else in the environment the person appears, read live from those groups: deleting one removes it here."
@@ -15799,7 +16597,8 @@
           "coverage",
           "created_at",
           "updated_at",
-          "spend"
+          "spend",
+          "expires_at"
         ],
         "properties": {
           "id": {
@@ -15816,12 +16615,12 @@
             "type": "string",
             "minLength": 1,
             "maxLength": 128,
-            "description": "Your own id for the person, unique within the group. A later row with the same external id updates this person.",
+            "description": "Your reference for the person in this workspace environment.",
             "example": "ticket-1042"
           },
           "name": {
             "type": "string",
-            "minLength": 1,
+            "minLength": 0,
             "maxLength": 200,
             "description": "The person's full name.",
             "example": "Jordan Example"
@@ -15936,6 +16735,11 @@
           "spend": {
             "$ref": "#/components/schemas/ScreeningSpend",
             "description": "What the latest screening of the person cost."
+          },
+          "expires_at": {
+            "type": "string",
+            "description": "When workspace retention removes the person and their investigation history.",
+            "example": "2026-02-01T00:00:00Z"
           }
         },
         "description": "A person and where their screening and review stand."
@@ -15992,6 +16796,13 @@
           "outcome": {
             "$ref": "#/components/schemas/PersonBatchItemOutcome",
             "description": "unchanged: the row matched a person with the same details."
+          },
+          "suggested_matches": {
+            "type": "array",
+            "maxItems": 20,
+            "items": {
+              "$ref": "#/components/schemas/PersonMatch"
+            }
           }
         }
       },
@@ -16019,7 +16830,7 @@
             }
           }
         },
-        "description": "Adds or updates 1 to 500 people. A row naming an existing person of the group (the same external_id, else the same email, else the same phone) updates it."
+        "description": "Adds 1 to 500 workspace people to the group. Reuses an explicit person_id or external_id. Matching email or phone values only suggest people; automatic merging is disabled."
       },
       "PersonDecided": {
         "type": "object",
@@ -16206,15 +17017,12 @@
       "PersonIdentity": {
         "type": "object",
         "additionalProperties": false,
-        "required": [
-          "name"
-        ],
         "properties": {
           "external_id": {
             "type": "string",
             "minLength": 1,
             "maxLength": 128,
-            "description": "Your own id for the person, unique within the group. A later row with the same external id updates this person.",
+            "description": "Your reference for this person within the workspace environment. Only an explicit reference or person_id can reuse an existing person.",
             "example": "ticket-1042"
           },
           "name": {
@@ -16253,19 +17061,28 @@
             "example": "Melbourne"
           },
           "handles": {
-            "type": "array",
-            "maxItems": 20,
-            "items": {
-              "$ref": "#/components/schemas/Handle"
-            },
-            "description": "Accounts the person is known to hold, at most 20."
+            "allOf": [
+              {
+                "type": "array",
+                "maxItems": 20,
+                "items": {
+                  "$ref": "#/components/schemas/Handle"
+                },
+                "description": "Accounts the person is known to hold, at most 20."
+              }
+            ],
+            "minItems": 1
+          },
+          "person_id": {
+            "type": "string",
+            "pattern": "^per_[0-7][0-9A-HJKMNP-TV-Z]{25}$",
+            "example": "per_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
           },
           "role": {
             "$ref": "#/components/schemas/PersonRole",
             "description": "The person's role in the group: guest (a ticket holder), crew, vendor or press. Leave it out when you do not know it: a person without one has no role, not guest. A later row naming the same person replaces it, and a change of role alone keeps the person's screening results."
           }
-        },
-        "description": "What you know about a person. Stored encrypted under the workspace's key."
+        }
       },
       "PersonList": {
         "type": "object",
@@ -16290,6 +17107,33 @@
         },
         "description": "People in upload order."
       },
+      "PersonMatch": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "person_id",
+          "matched_on"
+        ],
+        "properties": {
+          "person_id": {
+            "type": "string",
+            "pattern": "^per_[0-7][0-9A-HJKMNP-TV-Z]{25}$",
+            "example": "per_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          },
+          "matched_on": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 2,
+            "uniqueItems": true,
+            "items": {
+              "enum": [
+                "email",
+                "phone"
+              ]
+            }
+          }
+        }
+      },
       "PersonReport": {
         "type": "object",
         "additionalProperties": false,
@@ -16312,7 +17156,7 @@
             "items": {
               "$ref": "#/components/schemas/ScreeningProfile"
             },
-            "description": "The accounts the latest screening matched, with how each was matched."
+            "description": "The accounts this result matched, with how each was matched."
           },
           "findings": {
             "type": "array",
@@ -16320,7 +17164,7 @@
             "items": {
               "$ref": "#/components/schemas/ScreeningFinding"
             },
-            "description": "What the latest screening flagged, most severe first, each citing its evidence."
+            "description": "What this result flagged, most severe first, each citing its evidence."
           },
           "posts": {
             "type": "array",
@@ -16328,7 +17172,7 @@
             "items": {
               "$ref": "#/components/schemas/ScreeningPost"
             },
-            "description": "The posts the findings cite."
+            "description": "All posts retained for this result, including posts that no finding cites."
           },
           "media": {
             "type": "array",
@@ -16336,7 +17180,7 @@
             "items": {
               "$ref": "#/components/schemas/ScreeningMedia"
             },
-            "description": "The images and videos the findings cite."
+            "description": "All images and videos retained for this result, including media that no finding cites."
           },
           "reviews": {
             "type": "array",
@@ -16348,7 +17192,7 @@
           },
           "lookup": {
             "$ref": "#/components/schemas/ScreeningLookup",
-            "description": "What the latest screening's lookups found, and the records the searches people started found, each match naming its search. Absent until a screening that ran lookups reaches the person."
+            "description": "The source records and lookup coverage retained for this result. Absent when this result contains no completed lookup."
           },
           "searches": {
             "type": "array",
@@ -16360,7 +17204,7 @@
           },
           "other_groups": {
             "$ref": "#/components/schemas/OtherGroups",
-            "description": "The other groups of this environment where a person with the same email or phone appears, newest group first. History only: nothing in it changes this person's screening, band, match state or decision."
+            "description": "The other groups of this environment that explicitly include this workspace person, newest group first. Each group keeps its own screening, band, match state and decision. Membership requires an explicit person or customer reference."
           },
           "evidence_restricted": {
             "type": "boolean",
@@ -21738,7 +22582,7 @@
           },
           "event_type": {
             "type": "string",
-            "description": "The event's type, as its body's type: assessment.updated, endpoint.verification, account.deleted, workspace.deleted, webhook_endpoint.disabled, account.risk_changed, audit.event, screening.completed, person.flagged, person.decided, or a type added later.",
+            "description": "The event's type, as its body's type: assessment.updated, endpoint.verification, account.deleted, workspace.deleted, webhook_endpoint.disabled, account.risk_changed, audit.event, screening.completed, person.flagged, person.decided, investigation.completed, or a type added later.",
             "example": "assessment.updated"
           },
           "assessment_id": {
@@ -22059,6 +22903,9 @@
           },
           {
             "$ref": "#/components/schemas/PersonDecidedEvent"
+          },
+          {
+            "$ref": "#/components/schemas/InvestigationCompletedEvent"
           }
         ],
         "discriminator": {
@@ -22073,7 +22920,8 @@
             "audit.event": "#/components/schemas/AuditEventEvent",
             "screening.completed": "#/components/schemas/ScreeningCompletedEvent",
             "person.flagged": "#/components/schemas/PersonFlaggedEvent",
-            "person.decided": "#/components/schemas/PersonDecidedEvent"
+            "person.decided": "#/components/schemas/PersonDecidedEvent",
+            "investigation.completed": "#/components/schemas/InvestigationCompletedEvent"
           }
         }
       },
@@ -22140,7 +22988,7 @@
           },
           "event_type": {
             "type": "string",
-            "description": "The event's type, as its body's type: assessment.updated, endpoint.verification, account.deleted, workspace.deleted, webhook_endpoint.disabled, account.risk_changed, audit.event, screening.completed, person.flagged, person.decided, or a type added later.",
+            "description": "The event's type, as its body's type: assessment.updated, endpoint.verification, account.deleted, workspace.deleted, webhook_endpoint.disabled, account.risk_changed, audit.event, screening.completed, person.flagged, person.decided, investigation.completed, or a type added later.",
             "example": "assessment.updated"
           }
         }
@@ -22380,6 +23228,341 @@
           }
         },
         "description": "Read a past [from,to) interval of at most 31 days. The complete retained populations must fit a combined 100000-row budget and a 1500ms SQL statement budget. No pagination or sampled totals; choose a shorter interval after a row-budget refusal."
+      },
+      "WorkspacePeopleList": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "items",
+          "has_more",
+          "next_cursor"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "maxItems": 500,
+            "items": {
+              "$ref": "#/components/schemas/WorkspacePerson"
+            }
+          },
+          "has_more": {
+            "type": "boolean"
+          },
+          "next_cursor": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "example": "per_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          }
+        }
+      },
+      "WorkspacePerson": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "created_at",
+          "updated_at",
+          "expires_at"
+        ],
+        "properties": {
+          "external_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "description": "Your reference for this person within the workspace environment. Only an explicit reference or person_id can reuse an existing person.",
+            "example": "case-person-1042"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 200,
+            "example": "Jordan Example"
+          },
+          "email": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 254,
+            "pattern": "^[^@\\s]+@[^@\\s]+$",
+            "description": "The person's email.",
+            "example": "jordan@example.com"
+          },
+          "phone": {
+            "type": "string",
+            "pattern": "^\\+[1-9][0-9]{6,14}$",
+            "description": "The person's phone in E.164 form.",
+            "example": "+14155550100"
+          },
+          "company": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "description": "Where the person works.",
+            "example": "Example Ltd"
+          },
+          "city": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "description": "Where the person lives.",
+            "example": "Melbourne"
+          },
+          "handles": {
+            "type": "array",
+            "maxItems": 20,
+            "items": {
+              "$ref": "#/components/schemas/Handle"
+            },
+            "description": "Accounts the person is known to hold, at most 20."
+          },
+          "id": {
+            "type": "string",
+            "pattern": "^per_[0-7][0-9A-HJKMNP-TV-Z]{25}$",
+            "example": "per_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          },
+          "created_at": {
+            "type": "string",
+            "example": "2026-01-01T00:00:00Z"
+          },
+          "updated_at": {
+            "type": "string",
+            "example": "2026-01-01T00:00:00Z"
+          },
+          "expires_at": {
+            "type": "string",
+            "description": "The time the workspace retention policy removes this person, their evidence and investigation history. Shortening workspace retention can move this time earlier.",
+            "example": "2026-02-01T00:00:00Z"
+          }
+        }
+      },
+      "WorkspacePersonReport": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "created_at",
+          "updated_at",
+          "expires_at",
+          "profiles",
+          "findings",
+          "posts",
+          "media",
+          "evidence_investigation"
+        ],
+        "properties": {
+          "external_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "description": "Your reference for this person within the workspace environment. Only an explicit reference or person_id can reuse an existing person.",
+            "example": "case-person-1042"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 200,
+            "example": "Jordan Example"
+          },
+          "email": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 254,
+            "pattern": "^[^@\\s]+@[^@\\s]+$",
+            "description": "The person's email.",
+            "example": "jordan@example.com"
+          },
+          "phone": {
+            "type": "string",
+            "pattern": "^\\+[1-9][0-9]{6,14}$",
+            "description": "The person's phone in E.164 form.",
+            "example": "+14155550100"
+          },
+          "company": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "description": "Where the person works.",
+            "example": "Example Ltd"
+          },
+          "city": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "description": "Where the person lives.",
+            "example": "Melbourne"
+          },
+          "handles": {
+            "type": "array",
+            "maxItems": 20,
+            "items": {
+              "$ref": "#/components/schemas/Handle"
+            },
+            "description": "Accounts the person is known to hold, at most 20."
+          },
+          "id": {
+            "type": "string",
+            "pattern": "^per_[0-7][0-9A-HJKMNP-TV-Z]{25}$",
+            "example": "per_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          },
+          "created_at": {
+            "type": "string",
+            "example": "2026-01-01T00:00:00Z"
+          },
+          "updated_at": {
+            "type": "string",
+            "example": "2026-01-01T00:00:00Z"
+          },
+          "expires_at": {
+            "type": "string",
+            "description": "The time the workspace retention policy removes this person, their evidence and investigation history. Shortening workspace retention can move this time earlier.",
+            "example": "2026-02-01T00:00:00Z"
+          },
+          "profiles": {
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+              "$ref": "#/components/schemas/ScreeningProfile"
+            },
+            "description": "The accounts this result matched, with how each was matched."
+          },
+          "findings": {
+            "type": "array",
+            "maxItems": 500,
+            "items": {
+              "$ref": "#/components/schemas/ScreeningFinding"
+            },
+            "description": "What this result flagged, most severe first, each citing its evidence."
+          },
+          "posts": {
+            "type": "array",
+            "maxItems": 5000,
+            "items": {
+              "$ref": "#/components/schemas/ScreeningPost"
+            },
+            "description": "All posts retained for this result, including posts that no finding cites."
+          },
+          "media": {
+            "type": "array",
+            "maxItems": 5000,
+            "items": {
+              "$ref": "#/components/schemas/ScreeningMedia"
+            },
+            "description": "All images and videos retained for this result, including media that no finding cites."
+          },
+          "lookup": {
+            "$ref": "#/components/schemas/ScreeningLookup",
+            "description": "The source records and lookup coverage retained for this result. Absent when this result contains no completed lookup."
+          },
+          "evidence_restricted": {
+            "type": "boolean",
+            "description": "True when evidence.read is explicitly denied. Submitted details, coverage, job status and decisions remain available. Collected records, profiles, findings, posts, media, discovered values and free-text decision notes are withheld."
+          },
+          "evidence_investigation": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Investigation"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The most recent retained completed or partial investigation, or a migrated result whose original per-person status is unknown. The evidence below belongs to this investigation. Read investigation history for earlier results and pending jobs."
+          }
+        }
+      },
+      "WorkspacePersonRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "external_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "description": "Your reference for this person within the workspace environment. Only an explicit reference or person_id can reuse an existing person.",
+            "example": "case-person-1042"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "description": "The person's full name.",
+            "example": "Jordan Example"
+          },
+          "email": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 254,
+            "pattern": "^[^@\\s]+@[^@\\s]+$",
+            "description": "The person's email.",
+            "example": "jordan@example.com"
+          },
+          "phone": {
+            "type": "string",
+            "pattern": "^\\+[1-9][0-9]{6,14}$",
+            "description": "The person's phone in E.164 form.",
+            "example": "+14155550100"
+          },
+          "company": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "description": "Where the person works.",
+            "example": "Example Ltd"
+          },
+          "city": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "description": "Where the person lives.",
+            "example": "Melbourne"
+          },
+          "handles": {
+            "allOf": [
+              {
+                "type": "array",
+                "maxItems": 20,
+                "items": {
+                  "$ref": "#/components/schemas/Handle"
+                },
+                "description": "Accounts the person is known to hold, at most 20."
+              }
+            ],
+            "minItems": 1
+          },
+          "person_id": {
+            "type": "string",
+            "pattern": "^per_[0-7][0-9A-HJKMNP-TV-Z]{25}$",
+            "example": "per_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          }
+        },
+        "example": {
+          "external_id": "case-person-1042",
+          "name": "Jordan Example",
+          "email": "jordan@example.com"
+        }
+      },
+      "WorkspacePersonResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "person",
+          "suggested_matches",
+          "created"
+        ],
+        "properties": {
+          "person": {
+            "$ref": "#/components/schemas/WorkspacePerson"
+          },
+          "suggested_matches": {
+            "type": "array",
+            "maxItems": 20,
+            "items": {
+              "$ref": "#/components/schemas/PersonMatch"
+            }
+          },
+          "created": {
+            "type": "boolean"
+          }
+        }
       },
       "listPeopleBand": {
         "enum": [
@@ -22656,6 +23839,29 @@
           "maxLength": 128,
           "pattern": "^[A-Za-z0-9._:-]{16,128}$",
           "example": "request-01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+        }
+      },
+      "InvestigationId": {
+        "name": "investigation_id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^inv_[0-7][0-9A-HJKMNP-TV-Z]{25}$",
+          "example": "inv_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+        }
+      },
+      "InvestigationIdempotencyKey": {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "description": "Opaque request key, 16 to 128 characters. Repeating the key and request returns the same resource in its current state while it is retained. A different request with the same key answers 409. Use a new key for a deliberate new operation. Keys are scoped to the environment and operation; person searches also scope them to the group and person.",
+        "schema": {
+          "type": "string",
+          "minLength": 16,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9._:-]{16,128}$",
+          "example": "investigation-case-1042-first"
         }
       }
     },
@@ -30114,7 +31320,8 @@
                     "last_screening_id": "scn_01JC8Y3A5B7C9D1E3F5G7H9J1K",
                     "screened_at": "2026-11-14T10:02:11Z",
                     "created_at": "2026-11-14T10:00:00Z",
-                    "updated_at": "2026-11-14T10:02:11Z"
+                    "updated_at": "2026-11-14T10:02:11Z",
+                    "expires_at": "2026-12-14T10:00:00Z"
                   },
                   "profiles": [],
                   "findings": [],
@@ -30746,6 +31953,333 @@
           "application/json": {
             "schema": {
               "$ref": "#/components/schemas/Key"
+            }
+          }
+        }
+      },
+      "ListWorkspacePeople200": {
+        "description": "List workspace people.",
+        "headers": {
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            }
+          },
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            }
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/WorkspacePeopleList"
+            }
+          }
+        }
+      },
+      "CreateWorkspacePerson200": {
+        "description": "Create or reuse a workspace person.",
+        "headers": {
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            }
+          },
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            }
+          },
+          "Location": {
+            "description": "The polling URI of the assessment, /v1/assessments/{assessment_id}.",
+            "schema": {
+              "type": "string",
+              "maxLength": 64,
+              "pattern": "^/v1/assessments/asm_[0-9A-HJKMNP-TV-Z]{26}$",
+              "description": "Server-relative path of the authoritative assessment, GET /v1/assessments/{assessment_id}.",
+              "example": "/v1/assessments/asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+            }
+          },
+          "Idempotent-Replayed": {
+            "description": "Present and true when this answer replays an earlier request with the same Idempotency-Key and body: the body is the latest assessment of the assessment that request created.",
+            "schema": {
+              "type": "string",
+              "const": "true"
+            }
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/WorkspacePersonResult"
+            }
+          }
+        }
+      },
+      "CreateWorkspacePerson201": {
+        "description": "Person created.",
+        "headers": {
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            }
+          },
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            }
+          },
+          "Location": {
+            "description": "The polling URI of the assessment, /v1/assessments/{assessment_id}.",
+            "schema": {
+              "type": "string",
+              "maxLength": 64,
+              "pattern": "^/v1/assessments/asm_[0-9A-HJKMNP-TV-Z]{26}$",
+              "description": "Server-relative path of the authoritative assessment, GET /v1/assessments/{assessment_id}.",
+              "example": "/v1/assessments/asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+            }
+          },
+          "Idempotent-Replayed": {
+            "description": "Present and true when this answer replays an earlier request with the same Idempotency-Key and body: the body is the latest assessment of the assessment that request created.",
+            "schema": {
+              "type": "string",
+              "const": "true"
+            }
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/WorkspacePersonResult"
+            }
+          }
+        }
+      },
+      "CreateWorkspacePerson409": {
+        "description": "Idempotency input changed or the customer reference is ambiguous.",
+        "headers": {
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            }
+          },
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            }
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/ConflictError"
+            }
+          }
+        }
+      },
+      "GetWorkspacePerson200": {
+        "description": "Read a workspace person.",
+        "headers": {
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            }
+          },
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            }
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/WorkspacePersonReport"
+            }
+          }
+        }
+      },
+      "DeleteWorkspacePerson204": {
+        "description": "Person deleted.",
+        "headers": {
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            }
+          },
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            }
+          }
+        }
+      },
+      "ListInvestigations200": {
+        "description": "List investigation history.",
+        "headers": {
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            }
+          },
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            }
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/InvestigationsList"
+            }
+          }
+        }
+      },
+      "CreateInvestigation202": {
+        "description": "Start an investigation for a person.",
+        "headers": {
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            }
+          },
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            }
+          },
+          "Location": {
+            "schema": {
+              "type": "string",
+              "example": "/v1/assessments/asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+            }
+          },
+          "Idempotent-Replayed": {
+            "schema": {
+              "type": "string",
+              "example": "true"
+            }
+          },
+          "Retry-After": {
+            "description": "Whole seconds to wait before polling or retrying. Required on 202, 429 and 503.",
+            "schema": {
+              "type": "string",
+              "pattern": "^(?:[1-9]|[1-9][0-9]|[1-9][0-9]{2}|[12][0-9]{3}|3[0-5][0-9]{2}|3600)$",
+              "description": "Whole decimal seconds; wait at least this long.",
+              "example": "2"
+            }
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Investigation"
+            }
+          }
+        }
+      },
+      "GetInvestigation200": {
+        "description": "Read an investigation and its evidence.",
+        "headers": {
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            }
+          },
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            }
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/InvestigationReport"
+            }
+          }
+        }
+      },
+      "ReviewInvestigation200": {
+        "description": "Record an investigation decision.",
+        "headers": {
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            }
+          },
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            }
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Investigation"
+            }
+          }
+        }
+      },
+      "RemoveGroupPerson204": {
+        "description": "Membership removed.",
+        "headers": {
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            }
+          },
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
             }
           }
         }
@@ -31443,6 +32977,43 @@
                       "decision": "escalated",
                       "decided_by": "email:2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae",
                       "decided_at": "2026-11-20T09:03:27.000Z"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Accepted. Any 2xx within 5 seconds acknowledges the delivery; the body is ignored. A receiver that has already processed this id still answers 2xx."
+          }
+        }
+      }
+    },
+    "investigation.completed": {
+      "post": {
+        "operationId": "investigationCompleted",
+        "summary": "An investigation completed or was cancelled.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebhookEvent"
+              },
+              "examples": {
+                "completed": {
+                  "value": {
+                    "id": "evt_01JA2ZE5N6P7Q8R9S0T1VWXYZ7",
+                    "type": "investigation.completed",
+                    "created_at": "2026-11-20T08:12:44.000Z",
+                    "data": {
+                      "investigation_id": "inv_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+                      "person_id": "per_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+                      "status": "partial",
+                      "error_code": "expired",
+                      "finished_at": "2026-11-20T08:12:44.000Z"
                     }
                   }
                 }

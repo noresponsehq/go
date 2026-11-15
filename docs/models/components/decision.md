@@ -6,7 +6,7 @@ An assessment's own decision: block when its stored risk.block is true, otherwis
 
 ```go
 import (
-	"github.com/noresponsehq/go/v13/models/components"
+	"github.com/noresponsehq/go/v14/models/components"
 )
 
 value := components.DecisionAllow

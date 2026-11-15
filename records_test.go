@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/noresponsehq/go/v13/models/components"
+	"github.com/noresponsehq/go/v14/models/components"
 )
 
 // A person's report returns the contract's worked records as typed models:
@@ -29,7 +29,6 @@ func TestGetPersonReturnsTypedRecords(t *testing.T) {
 	if err := json.Unmarshal(body, &ids); err != nil {
 		t.Fatal(err)
 	}
-	const workspace = "tnt_01JC8Y0A2B4C6D8E0F2G4H6J8K"
 	var path string
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		path = r.URL.Path
@@ -39,11 +38,11 @@ func TestGetPersonReturnsTypedRecords(t *testing.T) {
 	defer server.Close()
 
 	client := NewClient("nrk_test_kkkkkkkkkkkkkkkkkkkk", WithServerURL(server.URL))
-	res, err := client.Groups.GetPerson(context.Background(), workspace, components.KeyEnvironmentTest, ids.Person.GroupID, ids.Person.ID)
+	res, err := client.Groups.GetPerson(context.Background(), ids.Person.GroupID, ids.Person.ID)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if want := "/v1/workspaces/" + workspace + "/groups/test/" + ids.Person.GroupID + "/people/" + ids.Person.ID; path != want {
+	if want := "/v1/groups/" + ids.Person.GroupID + "/people/" + ids.Person.ID; path != want {
 		t.Fatalf("path %s, want %s", path, want)
 	}
 	lookup := res.Result.GetLookup()
@@ -134,8 +133,7 @@ func TestGetPersonKeepsEveryMemberOfAnAccountsRecord(t *testing.T) {
 	defer server.Close()
 
 	client := NewClient("nrk_test_kkkkkkkkkkkkkkkkkkkk", WithServerURL(server.URL))
-	res, err := client.Groups.GetPerson(context.Background(), "tnt_01JC8Y0A2B4C6D8E0F2G4H6J8K", components.KeyEnvironmentTest,
-		person["group_id"].(string), person["id"].(string))
+	res, err := client.Groups.GetPerson(context.Background(), person["group_id"].(string), person["id"].(string))
 	if err != nil {
 		t.Fatal(err)
 	}

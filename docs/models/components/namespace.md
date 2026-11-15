@@ -6,7 +6,7 @@ Required for username: the username submitted by this customer in this workspace
 
 ```go
 import (
-	"github.com/noresponsehq/go/v13/models/components"
+	"github.com/noresponsehq/go/v14/models/components"
 )
 
 value := components.NamespaceCustomer

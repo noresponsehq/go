@@ -4324,6 +4324,11 @@
         ]
       ],
       "why": "NOR-995 a site change names the switch it sets"
+    },
+    {
+      "file": "valid/webhook-investigation-completed.json",
+      "schema": "webhook-event.schema.json",
+      "expect": "valid"
     }
   ]
 }

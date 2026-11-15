@@ -6,7 +6,7 @@ A password or hash search is counting, then counted: rows says how many breach r
 
 ```go
 import (
-	"github.com/noresponsehq/go/v13/models/components"
+	"github.com/noresponsehq/go/v14/models/components"
 )
 
 value := components.SearchStatusCounting

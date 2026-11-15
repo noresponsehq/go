@@ -1,22 +1,20 @@
 package components
 
-type MatchedOn string
+type OtherGroupMatchedOn string
 
 const (
-	MatchedOnEmail      MatchedOn = "email"
-	MatchedOnPhone      MatchedOn = "phone"
-	MatchedOnExternalID MatchedOn = "external_id"
+	OtherGroupMatchedOnPersonID OtherGroupMatchedOn = "person_id"
 )
 
-func (e MatchedOn) ToPointer() *MatchedOn {
+func (e OtherGroupMatchedOn) ToPointer() *OtherGroupMatchedOn {
 	return &e
 }
 
 // IsExact returns true if the value matches a known enum value, false otherwise.
-func (e *MatchedOn) IsExact() bool {
+func (e *OtherGroupMatchedOn) IsExact() bool {
 	if e != nil {
 		switch *e {
-		case "email", "phone", "external_id":
+		case "person_id":
 			return true
 		}
 	}
@@ -30,8 +28,8 @@ type OtherGroup struct {
 	GroupStartsAt string `json:"group_starts_at"`
 	// The person on that group's list.
 	PersonID string `json:"person_id"`
-	// Which identifiers match, in this order. external_id appears only beside email or phone: the same external id alone is not a match, since ticket numbers may be reused across groups.
-	MatchedOn []MatchedOn `json:"matched_on"`
+	// The same workspace person explicitly belongs to this group. Membership requires an explicit person or customer reference.
+	MatchedOn []OtherGroupMatchedOn `json:"matched_on"`
 	// How sure the latest screening is that it found the person's accounts. unscreened until a screening reaches the person, and after one that had no profile to check (no_profile_to_check).
 	MatchState MatchState `json:"match_state"`
 	// true when that person's latest screening had no profile to check (see the person's no_profile_to_check). Left out otherwise.
@@ -74,9 +72,9 @@ func (o *OtherGroup) GetPersonID() string {
 	return o.PersonID
 }
 
-func (o *OtherGroup) GetMatchedOn() []MatchedOn {
+func (o *OtherGroup) GetMatchedOn() []OtherGroupMatchedOn {
 	if o == nil {
-		return []MatchedOn{}
+		return []OtherGroupMatchedOn{}
 	}
 	return o.MatchedOn
 }

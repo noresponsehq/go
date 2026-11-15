@@ -1,0 +1,12 @@
+{
+  "id": "evt_01JA2ZE5N6P7Q8R9S0T1VWXYZ7",
+  "type": "investigation.completed",
+  "created_at": "2026-11-20T08:12:44.000Z",
+  "data": {
+    "investigation_id": "inv_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+    "person_id": "per_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
+    "status": "partial",
+    "error_code": "expired",
+    "finished_at": "2026-11-20T08:12:44.000Z"
+  }
+}

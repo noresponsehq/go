@@ -1,14 +1,14 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v13/internal/utils"
+	"github.com/noresponsehq/go/v14/internal/utils"
 )
 
 // Person - A person and where their screening and review stand.
 type Person struct {
 	ID      string `json:"id"`
 	GroupID string `json:"group_id"`
-	// Your own id for the person, unique within the group. A later row with the same external id updates this person.
+	// Your reference for the person in this workspace environment.
 	ExternalID *string `json:"external_id,omitzero"`
 	// The person's full name.
 	Name string `json:"name"`
@@ -43,6 +43,8 @@ type Person struct {
 	UpdatedAt       string            `json:"updated_at"`
 	// What screening cost, in US cents, in total and per implementation.
 	Spend ScreeningSpend `json:"spend"`
+	// When workspace retention removes the person and their investigation history.
+	ExpiresAt string `json:"expires_at"`
 }
 
 func (p Person) MarshalJSON() ([]byte, error) {
@@ -215,4 +217,11 @@ func (p *Person) GetSpend() ScreeningSpend {
 		return ScreeningSpend{}
 	}
 	return p.Spend
+}
+
+func (p *Person) GetExpiresAt() string {
+	if p == nil {
+		return ""
+	}
+	return p.ExpiresAt
 }

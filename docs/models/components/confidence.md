@@ -6,7 +6,7 @@ Evidence coverage: how much of the planned source evidence gave a definite answe
 
 ```go
 import (
-	"github.com/noresponsehq/go/v13/models/components"
+	"github.com/noresponsehq/go/v14/models/components"
 )
 
 value := components.ConfidenceLow

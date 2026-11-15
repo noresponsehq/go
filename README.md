@@ -2,7 +2,7 @@
 
 # NoResponse for Go
 
-Investigate everyone, everywhere, all at once. Find the accounts and leaked rows behind an email, phone, username or name, screen groups of people, and assess sign-ups with the NoResponse API.
+NoResponse is an identity and people risk engine. Create a person, investigate the accounts and source records behind their identifiers, and keep investigation history. Groups organize people for events, venues and team review. Signup assessment uses the same engine.
 
 Go 1.24+.
 
@@ -11,7 +11,7 @@ Go 1.24+.
 ## Install
 
 ```sh
-go get github.com/noresponsehq/go/v13
+go get github.com/noresponsehq/go/v14
 ```
 
 
@@ -21,56 +21,43 @@ go get github.com/noresponsehq/go/v13
 package main
 
 import (
-	"context"
-	"fmt"
-	"log"
-	"os"
+    "context"
+    "fmt"
+    "log"
+    "os"
 
-	noresponse "github.com/noresponsehq/go/v13"
-	"github.com/noresponsehq/go/v13/models/components"
-	"github.com/noresponsehq/go/v13/models/operations"
+    noresponse "github.com/noresponsehq/go/v14"
+    "github.com/noresponsehq/go/v14/models/components"
 )
 
 func main() {
-	ctx := context.Background()
-	client := noresponse.NewClient(os.Getenv("NORESPONSE_API_KEY")) // the key needs the groups scope
-	workspaceID := os.Getenv("NORESPONSE_WORKSPACE")
-	env := components.KeyEnvironmentTest
-
-	group, err := client.Groups.Create(ctx, workspaceID, env, components.GroupRequest{Name: "Case 2026-114", StartsAt: "2026-12-03T09:30:00Z"}, operations.WithGroupsCreateIdempotencyKey("case-2026-114-create"))
-	if err != nil {
-		log.Fatal(err)
-	}
-	added, err := client.Groups.AddPeople(ctx, workspaceID, env, group.Result.ID, noresponse.NewIdempotencyKey(), components.PersonBatchRequest{
-		People: []components.PersonIdentity{{
-			Name:    "Jordan Ellis",
-			Email:   noresponse.Pointer("jordan.ellis@example.com"),
-			Handles: []components.Handle{{Platform: "x", Handle: "jordanellis"}},
-		}},
-	})
-	if err != nil {
-		log.Fatal(err)
-	}
-	if _, err := client.Groups.StartScreening(ctx, workspaceID, env, group.Result.ID, noresponse.NewIdempotencyKey(), components.ScreeningRequest{
-		Depth: components.ScreeningDepthStandard, Platforms: []string{"x"},
-	}); err != nil {
-		log.Fatal(err)
-	}
-
-	// Once the screening.completed webhook arrives (or GetScreening is no longer queued or running):
-	report, err := client.Groups.GetPerson(ctx, workspaceID, env, group.Result.ID, added.Result.Items[0].ID)
-	if err != nil {
-		log.Fatal(err)
-	}
-	if lookup := report.Result.GetLookup(); lookup != nil {
-		for _, record := range lookup.Records {
-			fmt.Println(record.Source.Kind, record.ID)
-		}
-	}
+    ctx := context.Background()
+    client := noresponse.NewClient(os.Getenv("NORESPONSE_API_KEY"))
+    created, err := client.People.Create(ctx, components.WorkspacePersonRequest{
+        ExternalID: noresponse.Pointer("case-person-1042"),
+        Name: noresponse.Pointer("Jordan Example"),
+        Email: noresponse.Pointer("jordan@example.com"),
+    }, noresponse.Pointer("case-1042-person-create"))
+    if err != nil {
+        log.Fatal(err)
+    }
+    job, err := client.Investigations.Create(ctx, "case-1042-investigation-1", components.InvestigationRequest{
+        PersonID: created.Result.Person.ID,
+        Depth: components.ScreeningDepthStandard,
+        Platforms: []string{"x"},
+    })
+    if err != nil {
+        log.Fatal(err)
+    }
+    fmt.Println(job.Result.ID, job.Result.Status, created.Result.Person.ExpiresAt)
 }
 ```
 
-Every account and leaked row comes back as a record that names its source. See the [quickstart](https://docs.noresponse.org/quickstart) and [records](https://docs.noresponse.org/guides/records).
+After `investigation.completed`, use `client.Investigations.Get(ctx, investigationID)` to read that investigation's report. Its `Result.Lookup.Records` keep every account and source row as a record with its source.
+
+The API key selects the workspace and environment. This flow needs `people_write` to create a person, `investigations` to start work, and `people` to read the report. Save the investigation id and key: retry the same work with the same key; use a new key for a deliberate new investigation. A person can belong to several groups or none. Their `expires_at` comes from workspace retention.
+
+Evidence is included by default for pre-verified customers. An explicit evidence restriction keeps submitted details, status, coverage and decision summaries, and withholds collected records, profiles, posts, media and discovered identifiers. Each investigation and group keeps its own review context.
 
 ## Assess a signup
 
@@ -83,8 +70,8 @@ import (
 	"log"
 	"os"
 
-	noresponse "github.com/noresponsehq/go/v13"
-	"github.com/noresponsehq/go/v13/models/components"
+	noresponse "github.com/noresponsehq/go/v14"
+	"github.com/noresponsehq/go/v14/models/components"
 )
 
 func main() {
@@ -180,7 +167,7 @@ case err != nil:
 }
 ```
 
-The typed errors are `BadRequestError` (400), `AuthenticationError` (401), `PermissionDeniedError` (403), `NotFoundError` (404), `ConflictError` (409) and `RateLimitError` (429), all in `github.com/noresponsehq/go/v13/models/apierrors`. Any other status is an `*apierrors.APIStatusError`.
+The typed errors are `BadRequestError` (400), `AuthenticationError` (401), `PermissionDeniedError` (403), `NotFoundError` (404), `ConflictError` (409) and `RateLimitError` (429), all in `github.com/noresponsehq/go/v14/models/apierrors`. Any other status is an `*apierrors.APIStatusError`.
 
 ## Retries and timeouts
 

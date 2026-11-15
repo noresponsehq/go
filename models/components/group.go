@@ -22,8 +22,6 @@ type Group struct {
 	People int64 `json:"people"`
 	// Goes up by one with every change.
 	Version int64 `json:"version"`
-	// When raw collected items and unmatched candidate profiles are purged: 30 days after the group ends.
-	PurgeAfter string `json:"purge_after"`
 	// The member or key label that created the group.
 	CreatedBy string `json:"created_by"`
 	CreatedAt string `json:"created_at"`
@@ -105,13 +103,6 @@ func (g *Group) GetVersion() int64 {
 		return 0
 	}
 	return g.Version
-}
-
-func (g *Group) GetPurgeAfter() string {
-	if g == nil {
-		return ""
-	}
-	return g.PurgeAfter
 }
 
 func (g *Group) GetCreatedBy() string {

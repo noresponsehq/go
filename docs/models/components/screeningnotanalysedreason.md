@@ -6,7 +6,7 @@ Why an item read was not analysed. video: a video with no cover frame the analys
 
 ```go
 import (
-	"github.com/noresponsehq/go/v13/models/components"
+	"github.com/noresponsehq/go/v14/models/components"
 )
 
 value := components.ScreeningNotAnalysedReasonVideo

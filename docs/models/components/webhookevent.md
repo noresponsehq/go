@@ -65,6 +65,12 @@ webhookEvent := components.CreateWebhookEventPersonFlagged(components.PersonFlag
 webhookEvent := components.CreateWebhookEventPersonDecided(components.PersonDecidedEvent{/* values here */})
 ```
 
+### InvestigationCompletedEvent
+
+```go
+webhookEvent := components.CreateWebhookEventInvestigationCompleted(components.InvestigationCompletedEvent{/* values here */})
+```
+
 ## Union Discrimination
 
 Use the `Type` field to determine which variant is active, then access the corresponding field:
@@ -91,5 +97,7 @@ switch webhookEvent.Type {
 		// webhookEvent.PersonFlaggedEvent is populated
 	case components.WebhookEventTypePersonDecided:
 		// webhookEvent.PersonDecidedEvent is populated
+	case components.WebhookEventTypeInvestigationCompleted:
+		// webhookEvent.InvestigationCompletedEvent is populated
 }
 ```

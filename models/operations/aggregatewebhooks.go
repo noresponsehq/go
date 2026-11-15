@@ -1,7 +1,7 @@
 package operations
 
 import (
-	"github.com/noresponsehq/go/v13/models/components"
+	"github.com/noresponsehq/go/v14/models/components"
 )
 
 type AggregateWebhooksResponse struct {

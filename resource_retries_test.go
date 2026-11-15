@@ -6,8 +6,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/noresponsehq/go/v13/models/components"
-	"github.com/noresponsehq/go/v13/models/operations"
+	"github.com/noresponsehq/go/v14/models/components"
+	"github.com/noresponsehq/go/v14/models/operations"
 )
 
 func TestGroupCreationKeepsItsArgumentsAndAcceptsARequestKeyOption(t *testing.T) {
@@ -22,12 +22,11 @@ func TestGroupCreationKeepsItsArgumentsAndAcceptsARequestKeyOption(t *testing.T)
 	client := NewClient("nrk_test_kkkkkkkkkkkkkkkkkkkk", WithServerURL(server.URL))
 	body := components.GroupRequest{Name: "Retry test", StartsAt: "2026-12-03T09:30:00Z"}
 	ctx := context.Background()
-	workspace := "tnt_01JC8Y0A2B4C6D8E0F2G4H6J8K"
-	if _, err := client.Groups.Create(ctx, workspace, components.KeyEnvironmentTest, body); err == nil {
+	if _, err := client.Groups.Create(ctx, body); err == nil {
 		t.Fatal("an unavailable API returned success")
 	}
 	key := NewIdempotencyKey()
-	if _, err := client.Groups.Create(ctx, workspace, components.KeyEnvironmentTest, body, operations.WithGroupsCreateIdempotencyKey(key)); err == nil {
+	if _, err := client.Groups.Create(ctx, body, operations.WithGroupsCreateIdempotencyKey(key)); err == nil {
 		t.Fatal("an unavailable API returned success")
 	}
 	if len(keys) != 2 || keys[0] != "" || keys[1] != key {

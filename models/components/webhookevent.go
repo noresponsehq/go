@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/noresponsehq/go/v13/internal/utils"
+	"github.com/noresponsehq/go/v14/internal/utils"
 )
 
 type WebhookEventType string
@@ -20,6 +20,7 @@ const (
 	WebhookEventTypeScreeningCompleted      WebhookEventType = "screening.completed"
 	WebhookEventTypePersonFlagged           WebhookEventType = "person.flagged"
 	WebhookEventTypePersonDecided           WebhookEventType = "person.decided"
+	WebhookEventTypeInvestigationCompleted  WebhookEventType = "investigation.completed"
 )
 
 // WebhookEvent - The body of every webhook delivery: {id, type, created_at, data}, where type chooses the shape of data. Deliveries are at least once and unordered: deduplicate on id, and keep an assessment only when its detail.assessment_version is newer than the one you hold. GET /v1/assessments/{assessment_id} stays authoritative.
@@ -34,6 +35,7 @@ type WebhookEvent struct {
 	ScreeningCompletedEvent      *ScreeningCompletedEvent      `queryParam:"inline" union:"member"`
 	PersonFlaggedEvent           *PersonFlaggedEvent           `queryParam:"inline" union:"member"`
 	PersonDecidedEvent           *PersonDecidedEvent           `queryParam:"inline" union:"member"`
+	InvestigationCompletedEvent  *InvestigationCompletedEvent  `queryParam:"inline" union:"member"`
 
 	Type WebhookEventType
 }
@@ -125,6 +127,15 @@ func CreateWebhookEventPersonDecided(personDecided PersonDecidedEvent) WebhookEv
 	return WebhookEvent{
 		PersonDecidedEvent: &personDecided,
 		Type:               typ,
+	}
+}
+
+func CreateWebhookEventInvestigationCompleted(investigationCompleted InvestigationCompletedEvent) WebhookEvent {
+	typ := WebhookEventTypeInvestigationCompleted
+
+	return WebhookEvent{
+		InvestigationCompletedEvent: &investigationCompleted,
+		Type:                        typ,
 	}
 }
 
@@ -237,6 +248,15 @@ func (u *WebhookEvent) UnmarshalJSON(data []byte) (err error) {
 		u.PersonDecidedEvent = personDecidedEvent
 		u.Type = WebhookEventTypePersonDecided
 		return nil
+	case "investigation.completed":
+		investigationCompletedEvent := new(InvestigationCompletedEvent)
+		if err := utils.UnmarshalJSON(data, &investigationCompletedEvent, "", true, nil); err != nil {
+			return fmt.Errorf("could not unmarshal `%s` into expected (Type == investigation.completed) type InvestigationCompletedEvent within WebhookEvent: %w", string(data), err)
+		}
+
+		u.InvestigationCompletedEvent = investigationCompletedEvent
+		u.Type = WebhookEventTypeInvestigationCompleted
+		return nil
 	}
 
 	return fmt.Errorf("could not unmarshal `%s` into any supported union types for WebhookEvent", string(data))
@@ -281,6 +301,10 @@ func (u WebhookEvent) MarshalJSON() ([]byte, error) {
 
 	if u.PersonDecidedEvent != nil {
 		return utils.MarshalJSON(u.PersonDecidedEvent, "", true)
+	}
+
+	if u.InvestigationCompletedEvent != nil {
+		return utils.MarshalJSON(u.InvestigationCompletedEvent, "", true)
 	}
 
 	return nil, errors.New("could not marshal union type WebhookEvent: all fields are null")

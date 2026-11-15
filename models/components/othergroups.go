@@ -2,9 +2,9 @@ package components
 
 // OtherGroups - Where else in the environment the person appears, read live from those groups: deleting one removes it here.
 type OtherGroups struct {
-	// How many people of other groups match, of which items lists the 20 most recent.
+	// How many other groups include this person, of which items lists the 20 most recent.
 	Total int64 `json:"total"`
-	// The 20 people of the most recent other groups, newest group first.
+	// This person's memberships in the 20 most recent other groups, newest group first.
 	Items []OtherGroup `json:"items"`
 }
 
