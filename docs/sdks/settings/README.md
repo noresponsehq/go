@@ -25,8 +25,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v12"
-	"github.com/noresponsehq/go/v12/models/components"
+	noresponse "github.com/noresponsehq/go/v13"
+	"github.com/noresponsehq/go/v13/models/components"
 	"log"
 )
 
@@ -85,8 +85,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v12"
-	"github.com/noresponsehq/go/v12/models/components"
+	noresponse "github.com/noresponsehq/go/v13"
+	"github.com/noresponsehq/go/v13/models/components"
 	"log"
 )
 
@@ -97,7 +97,7 @@ func main() {
         noresponse.WithSecurity(os.Getenv("NORESPONSE_API_KEY")),
     )
 
-    res, err := s.Settings.Update(ctx, "tnt_01JA2Z8K6Q4V7W9XBCDEFGHJKM", components.KeyEnvironmentTest, components.SettingsRequest{
+    res, err := s.Settings.Update(ctx, "tnt_01JA2Z8K6Q4V7W9XBCDEFGHJKM", components.KeyEnvironmentLive, components.SettingsRequest{
         RetentionDays: noresponse.Pointer[int64](30),
         ExpectedPolicyVersion: noresponse.Pointer[int64](1),
         ChangeReason: noresponse.Pointer("Reviewed retention policy"),
@@ -119,9 +119,9 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v12"
-	"github.com/noresponsehq/go/v12/models/components"
-	"github.com/noresponsehq/go/v12/optionalnullable"
+	noresponse "github.com/noresponsehq/go/v13"
+	"github.com/noresponsehq/go/v13/models/components"
+	"github.com/noresponsehq/go/v13/optionalnullable"
 	"log"
 )
 
@@ -134,8 +134,8 @@ func main() {
 
     res, err := s.Settings.Update(ctx, "tnt_01JA2Z8K6Q4V7W9XBCDEFGHJKM", components.KeyEnvironmentLive, components.SettingsRequest{
         RetentionDays: noresponse.Pointer[int64](90),
-        RefusedSources: []components.SourceID{
-            components.SourceIDPhone,
+        RefusedSources: []string{
+            "phone",
         },
         Flows: &components.SettingsRequestFlows{
             AccountCreation: &components.FlowChange{
@@ -171,9 +171,9 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v12"
-	"github.com/noresponsehq/go/v12/models/components"
-	"github.com/noresponsehq/go/v12/optionalnullable"
+	noresponse "github.com/noresponsehq/go/v13"
+	"github.com/noresponsehq/go/v13/models/components"
+	"github.com/noresponsehq/go/v13/optionalnullable"
 	"log"
 )
 
@@ -239,8 +239,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v12"
-	"github.com/noresponsehq/go/v12/models/components"
+	noresponse "github.com/noresponsehq/go/v13"
+	"github.com/noresponsehq/go/v13/models/components"
 	"log"
 )
 
@@ -301,8 +301,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v12"
-	"github.com/noresponsehq/go/v12/models/components"
+	noresponse "github.com/noresponsehq/go/v13"
+	"github.com/noresponsehq/go/v13/models/components"
 	"log"
 )
 
@@ -365,8 +365,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v12"
-	"github.com/noresponsehq/go/v12/models/components"
+	noresponse "github.com/noresponsehq/go/v13"
+	"github.com/noresponsehq/go/v13/models/components"
 	"log"
 )
 

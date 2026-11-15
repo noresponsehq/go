@@ -16,7 +16,7 @@ type Settings struct {
 	UpdatedAt *string       `json:"updated_at,omitzero"`
 	Flows     SettingsFlows `json:"flows"`
 	// The sources this environment refuses, sorted; empty, the default, refuses none. An assessment leaves a refused source out: its coverage is missing (an identifier with no other source lists coverage-unavailable as unavailable) rather than not_found, and a stored result of a refused source is not reused.
-	RefusedSources []SourceID `json:"refused_sources"`
+	RefusedSources []string `json:"refused_sources"`
 	// The most the environment's screenings may spend in one UTC day, in minor units of USD (cents), 0 to 100000000; null is no cap. Default 50000. A screening whose estimated_spend exceeds the cap less the day's recorded spend and what open screenings may still spend answers 409 screening_cap_exceeded.
 	ScreeningDailyCap *int64 `json:"screening_daily_cap"`
 }
@@ -70,9 +70,9 @@ func (s *Settings) GetFlows() SettingsFlows {
 	return s.Flows
 }
 
-func (s *Settings) GetRefusedSources() []SourceID {
+func (s *Settings) GetRefusedSources() []string {
 	if s == nil {
-		return []SourceID{}
+		return []string{}
 	}
 	return s.RefusedSources
 }

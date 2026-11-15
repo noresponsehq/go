@@ -6,7 +6,7 @@ The person's role in the group: guest (a ticket holder), crew, vendor or press. 
 
 ```go
 import (
-	"github.com/noresponsehq/go/v12/models/components"
+	"github.com/noresponsehq/go/v13/models/components"
 )
 
 value := components.PersonRoleGuest

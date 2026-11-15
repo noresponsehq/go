@@ -1,21 +1,21 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v12/internal/utils"
+	"github.com/noresponsehq/go/v13/internal/utils"
 )
 
 // ScreeningProfile - An account the screening matched to the person, how it was matched, and how much of it was read.
 type ScreeningProfile struct {
 	ID string `json:"id"`
-	// A platform a screening can cover. github and scratch through flickr are each one read of the public profile a handle names, with no posts; chesscom also reads the profile's stats, clubs and last two months of games, for its activity and contacts, and through a signed-in session up to 100 of the player's friends, each a contact with the date the friendship began. synthetic is the deterministic connector's own platform, for exercising the product end to end with no network.
-	Platform         HandlePlatform `json:"platform"`
-	Handle           string         `json:"handle"`
-	URL              string         `json:"url"`
-	DisplayName      *string        `json:"display_name,omitzero"`
-	Bio              *string        `json:"bio,omitzero"`
-	AvatarURL        *string        `json:"avatar_url,omitzero"`
-	Followers        *int64         `json:"followers,omitzero"`
-	AccountCreatedAt *string        `json:"account_created_at,omitzero"`
+	// A platform a screening can cover, such as instagram, x, bluesky, youtube, tiktok or github. The screening registry owns the set: a request that names a platform it does not cover answers 422. A new platform adds an id without changing this contract, so read a platform you do not know in a response as one you have not seen before, not as an error. synthetic is the deterministic connector's own platform, for exercising the product end to end with no network.
+	Platform         string  `json:"platform"`
+	Handle           string  `json:"handle"`
+	URL              string  `json:"url"`
+	DisplayName      *string `json:"display_name,omitzero"`
+	Bio              *string `json:"bio,omitzero"`
+	AvatarURL        *string `json:"avatar_url,omitzero"`
+	Followers        *int64  `json:"followers,omitzero"`
+	AccountCreatedAt *string `json:"account_created_at,omitzero"`
 	// public profiles were read; a private or locked one exists but could not be read.
 	Access Access `json:"access"`
 	// How a profile was matched to the person: the state its evidence earns, and the evidence.
@@ -52,9 +52,9 @@ func (s *ScreeningProfile) GetID() string {
 	return s.ID
 }
 
-func (s *ScreeningProfile) GetPlatform() HandlePlatform {
+func (s *ScreeningProfile) GetPlatform() string {
 	if s == nil {
-		return HandlePlatform("")
+		return ""
 	}
 	return s.Platform
 }

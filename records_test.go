@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/noresponsehq/go/v12/models/components"
+	"github.com/noresponsehq/go/v13/models/components"
 )
 
 // A person's report returns the contract's worked records as typed models:

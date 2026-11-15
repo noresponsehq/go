@@ -8,8 +8,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/noresponsehq/go/v12/models/components"
-	"github.com/noresponsehq/go/v12/models/operations"
+	"github.com/noresponsehq/go/v13/models/components"
+	"github.com/noresponsehq/go/v13/models/operations"
 )
 
 const DefaultWaitTimeout = 30 * time.Second

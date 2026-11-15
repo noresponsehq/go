@@ -1,7 +1,7 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v12/internal/utils"
+	"github.com/noresponsehq/go/v13/internal/utils"
 )
 
 // ScreeningCoverage - The denominator of a screening: accounts found, how many could be read, items read and the period they span, so a clean result is distinct from a person nobody could see.
@@ -21,7 +21,7 @@ type ScreeningCoverage struct {
 	PeriodTo  *string                     `json:"period_to,omitzero"`
 	Platforms []ScreeningPlatformCoverage `json:"platforms"`
 	// Requested platforms where the person gave the screening nothing to look up, such as no handle for a platform that reads supplied handles only. Nothing looked and nothing failed: such a platform is not in platforms, is not none_found and does not make the person partial.
-	NotSearched []HandlePlatform `json:"not_searched,omitzero"`
+	NotSearched []string `json:"not_searched,omitzero"`
 }
 
 func (s ScreeningCoverage) MarshalJSON() ([]byte, error) {
@@ -98,7 +98,7 @@ func (s *ScreeningCoverage) GetPlatforms() []ScreeningPlatformCoverage {
 	return s.Platforms
 }
 
-func (s *ScreeningCoverage) GetNotSearched() []HandlePlatform {
+func (s *ScreeningCoverage) GetNotSearched() []string {
 	if s == nil {
 		return nil
 	}

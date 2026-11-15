@@ -3,7 +3,7 @@ package components
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/noresponsehq/go/v12/internal/utils"
+	"github.com/noresponsehq/go/v13/internal/utils"
 )
 
 type AssessmentAggregateRequestMetric string

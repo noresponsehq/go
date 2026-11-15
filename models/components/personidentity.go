@@ -1,7 +1,7 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v12/internal/utils"
+	"github.com/noresponsehq/go/v13/internal/utils"
 )
 
 // PersonIdentity - What you know about a person. Stored encrypted under the workspace's key.

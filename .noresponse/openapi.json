@@ -12917,7 +12917,10 @@
         ],
         "properties": {
           "platform": {
-            "$ref": "#/components/schemas/HandlePlatform"
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]{0,63}$",
+            "description": "A platform a screening can cover, such as instagram, x, bluesky, youtube, tiktok or github. The screening registry owns the set: a request that names a platform it does not cover answers 422. A new platform adds an id without changing this contract, so read a platform you do not know in a response as one you have not seen before, not as an error. synthetic is the deterministic connector's own platform, for exercising the product end to end with no network.",
+            "example": "bluesky"
           },
           "handle": {
             "type": "string",
@@ -12928,36 +12931,6 @@
           }
         },
         "description": "An account the person is known to hold."
-      },
-      "HandlePlatform": {
-        "enum": [
-          "instagram",
-          "x",
-          "bluesky",
-          "youtube",
-          "tiktok",
-          "facebook",
-          "threads",
-          "reddit",
-          "telegram",
-          "linkedin",
-          "github",
-          "scratch",
-          "dailymotion",
-          "substack",
-          "duolingo",
-          "dockerhub",
-          "wikipedia",
-          "internetarchive",
-          "spotify",
-          "patreon",
-          "wordpress",
-          "okru",
-          "flickr",
-          "chesscom",
-          "synthetic"
-        ],
-        "description": "A platform a screening can cover. github and scratch through flickr are each one read of the public profile a handle names, with no posts; chesscom also reads the profile's stats, clubs and last two months of games, for its activity and contacts, and through a signed-in session up to 100 of the player's friends, each a contact with the date the friendship began. synthetic is the deterministic connector's own platform, for exercising the product end to end with no network."
       },
       "HighestBand": {
         "enum": [
@@ -19567,7 +19540,10 @@
             "maxItems": 11,
             "uniqueItems": true,
             "items": {
-              "$ref": "#/components/schemas/HandlePlatform"
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]{0,63}$",
+              "description": "A platform a screening can cover, such as instagram, x, bluesky, youtube, tiktok or github. The screening registry owns the set: a request that names a platform it does not cover answers 422. A new platform adds an id without changing this contract, so read a platform you do not know in a response as one you have not seen before, not as an error. synthetic is the deterministic connector's own platform, for exercising the product end to end with no network.",
+              "example": "bluesky"
             }
           },
           "requested_by": {
@@ -19876,7 +19852,10 @@
             "maxItems": 11,
             "uniqueItems": true,
             "items": {
-              "$ref": "#/components/schemas/HandlePlatform"
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]{0,63}$",
+              "description": "A platform a screening can cover, such as instagram, x, bluesky, youtube, tiktok or github. The screening registry owns the set: a request that names a platform it does not cover answers 422. A new platform adds an id without changing this contract, so read a platform you do not know in a response as one you have not seen before, not as an error. synthetic is the deterministic connector's own platform, for exercising the product end to end with no network.",
+              "example": "instagram"
             },
             "description": "Requested platforms where the person gave the screening nothing to look up, such as no handle for a platform that reads supplied handles only. Nothing looked and nothing failed: such a platform is not in platforms, is not none_found and does not make the person partial."
           }
@@ -20356,7 +20335,10 @@
         ],
         "properties": {
           "platform": {
-            "$ref": "#/components/schemas/HandlePlatform"
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]{0,63}$",
+            "description": "A platform a screening can cover, such as instagram, x, bluesky, youtube, tiktok or github. The screening registry owns the set: a request that names a platform it does not cover answers 422. A new platform adds an id without changing this contract, so read a platform you do not know in a response as one you have not seen before, not as an error. synthetic is the deterministic connector's own platform, for exercising the product end to end with no network.",
+            "example": "bluesky"
           },
           "status": {
             "$ref": "#/components/schemas/ScreeningPlatformCoverageStatus",
@@ -20550,7 +20532,10 @@
             "example": "prf_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
           },
           "platform": {
-            "$ref": "#/components/schemas/HandlePlatform"
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]{0,63}$",
+            "description": "A platform a screening can cover, such as instagram, x, bluesky, youtube, tiktok or github. The screening registry owns the set: a request that names a platform it does not cover answers 422. A new platform adds an id without changing this contract, so read a platform you do not know in a response as one you have not seen before, not as an error. synthetic is the deterministic connector's own platform, for exercising the product end to end with no network.",
+            "example": "bluesky"
           },
           "handle": {
             "type": "string",
@@ -20654,7 +20639,10 @@
             "maxItems": 11,
             "uniqueItems": true,
             "items": {
-              "$ref": "#/components/schemas/HandlePlatform"
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]{0,63}$",
+              "description": "A platform a screening can cover, such as instagram, x, bluesky, youtube, tiktok or github. The screening registry owns the set: a request that names a platform it does not cover answers 422. A new platform adds an id without changing this contract, so read a platform you do not know in a response as one you have not seen before, not as an error. synthetic is the deterministic connector's own platform, for exercising the product end to end with no network.",
+              "example": "bluesky"
             }
           }
         },
@@ -21009,9 +20997,12 @@
           "refused_sources": {
             "type": "array",
             "uniqueItems": true,
-            "maxItems": 39,
+            "maxItems": 256,
             "items": {
-              "$ref": "#/components/schemas/SourceId"
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]{0,63}$",
+              "description": "A connector id a signup assessment may call, such as github, phone, breach, rdap, mx, ipintel, or a platform searched by email address, phone number or username. The connector registry owns the set: a request that names an id it does not declare for signup answers 422. A new source adds an id without changing this contract, so read an id you do not know in a response as a source you have not seen before, not as an error.",
+              "example": "breach"
             },
             "description": "The sources this environment refuses, sorted; empty, the default, refuses none. An assessment leaves a refused source out: its coverage is missing (an identifier with no other source lists coverage-unavailable as unavailable) rather than not_found, and a stored result of a refused source is not reused."
           },
@@ -21059,9 +21050,12 @@
           "refused_sources": {
             "type": "array",
             "uniqueItems": true,
-            "maxItems": 39,
+            "maxItems": 256,
             "items": {
-              "$ref": "#/components/schemas/SourceId"
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]{0,63}$",
+              "description": "A connector id a signup assessment may call, such as github, phone, breach, rdap, mx, ipintel, or a platform searched by email address, phone number or username. The connector registry owns the set: a request that names an id it does not declare for signup answers 422. A new source adds an id without changing this contract, so read an id you do not know in a response as a source you have not seen before, not as an error.",
+              "example": "breach"
             },
             "description": "Replaces the refused sources; [] refuses none. A change applies to new assessments within a minute."
           },
@@ -21283,51 +21277,6 @@
           "requests",
           "webhook_attempts"
         ]
-      },
-      "SourceId": {
-        "enum": [
-          "github",
-          "phone",
-          "breach",
-          "rdap",
-          "mx",
-          "ipintel",
-          "adobe",
-          "nvidia",
-          "wix",
-          "life360",
-          "life360_phone",
-          "zapier",
-          "x_email",
-          "snapchat_email",
-          "amazon",
-          "spotify_email",
-          "chesscom_email",
-          "google",
-          "scratch",
-          "dailymotion",
-          "substack",
-          "duolingo",
-          "duolingo_email",
-          "dockerhub",
-          "wikipedia",
-          "internetarchive",
-          "telegram",
-          "youtube",
-          "spotify",
-          "patreon",
-          "wordpress",
-          "okru",
-          "flickr",
-          "chesscom",
-          "whatsapp",
-          "opplysningen",
-          "ratsit",
-          "numlookup",
-          "usphonebook",
-          "reverseaustralia"
-        ],
-        "description": "A NoResponse source: github (GitHub accounts), phone (the phone lookup), breach (breach exposure), rdap (the email domain's registration), mx (the email domain's mail servers), ipintel (IP intelligence) or an email account source that searches one platform for an account by email address (adobe, nvidia, wix, life360, zapier, x_email, snapchat_email, amazon, spotify_email, google, duolingo_email, chesscom_email). x_email, snapchat_email, amazon, spotify_email and chesscom_email only say whether the email has an account on X, Snapchat, Amazon, Spotify or Chess.com. google runs only for Gmail addresses. scratch, dailymotion, substack, duolingo, dockerhub, wikipedia, internetarchive, telegram, spotify, patreon, wordpress, okru, flickr and chesscom each search that platform for an account by username; telegram also searches by phone number, through a logged-in Telegram lookup account. whatsapp searches WhatsApp for an account by phone number, and life360_phone searches Life360 for one. opplysningen (1881, Norway), ratsit (Sweden), numlookup and usphonebook (the US) and reverseaustralia (Australia) each look up a phone number of their own country on that site. youtube searches YouTube for a channel by username."
       },
       "Status": {
         "enum": [

@@ -6,7 +6,7 @@ Why fewer posts were read than the screening's depth asks for while the account 
 
 ```go
 import (
-	"github.com/noresponsehq/go/v12/models/components"
+	"github.com/noresponsehq/go/v13/models/components"
 )
 
 value := components.PostsStoppedPlatformLimit

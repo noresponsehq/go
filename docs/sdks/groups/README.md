@@ -36,8 +36,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v12"
-	"github.com/noresponsehq/go/v12/models/components"
+	noresponse "github.com/noresponsehq/go/v13"
+	"github.com/noresponsehq/go/v13/models/components"
 	"log"
 )
 
@@ -98,8 +98,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v12"
-	"github.com/noresponsehq/go/v12/models/components"
+	noresponse "github.com/noresponsehq/go/v13"
+	"github.com/noresponsehq/go/v13/models/components"
 	"log"
 )
 
@@ -175,8 +175,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v12"
-	"github.com/noresponsehq/go/v12/models/components"
+	noresponse "github.com/noresponsehq/go/v13"
+	"github.com/noresponsehq/go/v13/models/components"
 	"log"
 )
 
@@ -236,8 +236,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v12"
-	"github.com/noresponsehq/go/v12/models/components"
+	noresponse "github.com/noresponsehq/go/v13"
+	"github.com/noresponsehq/go/v13/models/components"
 	"log"
 )
 
@@ -315,8 +315,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v12"
-	"github.com/noresponsehq/go/v12/models/components"
+	noresponse "github.com/noresponsehq/go/v13"
+	"github.com/noresponsehq/go/v13/models/components"
 	"log"
 )
 
@@ -376,9 +376,9 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v12"
-	"github.com/noresponsehq/go/v12/models/components"
-	"github.com/noresponsehq/go/v12/models/operations"
+	noresponse "github.com/noresponsehq/go/v13"
+	"github.com/noresponsehq/go/v13/models/components"
+	"github.com/noresponsehq/go/v13/models/operations"
 	"log"
 )
 
@@ -440,8 +440,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v12"
-	"github.com/noresponsehq/go/v12/models/components"
+	noresponse "github.com/noresponsehq/go/v13"
+	"github.com/noresponsehq/go/v13/models/components"
 	"log"
 )
 
@@ -505,8 +505,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v12"
-	"github.com/noresponsehq/go/v12/models/components"
+	noresponse "github.com/noresponsehq/go/v13"
+	"github.com/noresponsehq/go/v13/models/components"
 	"log"
 )
 
@@ -567,8 +567,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v12"
-	"github.com/noresponsehq/go/v12/models/components"
+	noresponse "github.com/noresponsehq/go/v13"
+	"github.com/noresponsehq/go/v13/models/components"
 	"log"
 )
 
@@ -632,8 +632,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v12"
-	"github.com/noresponsehq/go/v12/models/components"
+	noresponse "github.com/noresponsehq/go/v13"
+	"github.com/noresponsehq/go/v13/models/components"
 	"log"
 )
 
@@ -698,8 +698,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v12"
-	"github.com/noresponsehq/go/v12/models/components"
+	noresponse "github.com/noresponsehq/go/v13"
+	"github.com/noresponsehq/go/v13/models/components"
 	"log"
 )
 
@@ -765,9 +765,9 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v12"
-	"github.com/noresponsehq/go/v12/models/components"
-	"github.com/noresponsehq/go/v12/models/operations"
+	noresponse "github.com/noresponsehq/go/v13"
+	"github.com/noresponsehq/go/v13/models/components"
+	"github.com/noresponsehq/go/v13/models/operations"
 	"log"
 )
 
@@ -832,8 +832,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v12"
-	"github.com/noresponsehq/go/v12/models/components"
+	noresponse "github.com/noresponsehq/go/v13"
+	"github.com/noresponsehq/go/v13/models/components"
 	"log"
 )
 
@@ -895,8 +895,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v12"
-	"github.com/noresponsehq/go/v12/models/components"
+	noresponse "github.com/noresponsehq/go/v13"
+	"github.com/noresponsehq/go/v13/models/components"
 	"log"
 )
 
@@ -909,7 +909,9 @@ func main() {
 
     res, err := s.Groups.StartScreening(ctx, "tnt_01JA2Z8K6Q4V7W9XBCDEFGHJKM", components.KeyEnvironmentLive, "grp_01JA2Z8K6Q4V7W9XBCDEFGHJKM", "account-acct_7f3a9c", components.ScreeningRequest{
         Depth: components.ScreeningDepthStandard,
-        Platforms: []components.HandlePlatform{},
+        Platforms: []string{
+            "bluesky",
+        },
     })
     if err != nil {
         log.Fatal(err)
@@ -961,8 +963,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v12"
-	"github.com/noresponsehq/go/v12/models/components"
+	noresponse "github.com/noresponsehq/go/v13"
+	"github.com/noresponsehq/go/v13/models/components"
 	"log"
 )
 
@@ -1023,8 +1025,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v12"
-	"github.com/noresponsehq/go/v12/models/components"
+	noresponse "github.com/noresponsehq/go/v13"
+	"github.com/noresponsehq/go/v13/models/components"
 	"log"
 )
 

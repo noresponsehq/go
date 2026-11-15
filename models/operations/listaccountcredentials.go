@@ -1,8 +1,8 @@
 package operations
 
 import (
-	"github.com/noresponsehq/go/v12/internal/utils"
-	"github.com/noresponsehq/go/v12/models/components"
+	"github.com/noresponsehq/go/v13/internal/utils"
+	"github.com/noresponsehq/go/v13/models/components"
 )
 
 type ListAccountCredentialsRequest struct {

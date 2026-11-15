@@ -6,7 +6,7 @@ found: a source found the identifier. not_found: every source answered and none 
 
 ```go
 import (
-	"github.com/noresponsehq/go/v12/models/components"
+	"github.com/noresponsehq/go/v13/models/components"
 )
 
 value := components.ScreeningLookupCheckStatusFound

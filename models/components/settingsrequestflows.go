@@ -1,7 +1,7 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v12/internal/utils"
+	"github.com/noresponsehq/go/v13/internal/utils"
 )
 
 // SettingsRequestFlows - Use account_creation or its deprecated alias signup, not both.

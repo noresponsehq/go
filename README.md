@@ -11,7 +11,7 @@ Go 1.24+.
 ## Install
 
 ```sh
-go get github.com/noresponsehq/go/v12
+go get github.com/noresponsehq/go/v13
 ```
 
 
@@ -26,8 +26,8 @@ import (
 	"log"
 	"os"
 
-	noresponse "github.com/noresponsehq/go/v12"
-	"github.com/noresponsehq/go/v12/models/components"
+	noresponse "github.com/noresponsehq/go/v13"
+	"github.com/noresponsehq/go/v13/models/components"
 )
 
 func main() {
@@ -44,14 +44,14 @@ func main() {
 		People: []components.PersonIdentity{{
 			Name:    "Jordan Ellis",
 			Email:   noresponse.Pointer("jordan.ellis@example.com"),
-			Handles: []components.Handle{{Platform: components.HandlePlatformX, Handle: "jordanellis"}},
+			Handles: []components.Handle{{Platform: "x", Handle: "jordanellis"}},
 		}},
 	})
 	if err != nil {
 		log.Fatal(err)
 	}
 	if _, err := client.Groups.StartScreening(ctx, workspaceID, env, group.Result.ID, noresponse.NewIdempotencyKey(), components.ScreeningRequest{
-		Depth: components.ScreeningDepthStandard, Platforms: []components.HandlePlatform{components.HandlePlatformX},
+		Depth: components.ScreeningDepthStandard, Platforms: []string{"x"},
 	}); err != nil {
 		log.Fatal(err)
 	}
@@ -82,8 +82,8 @@ import (
 	"log"
 	"os"
 
-	noresponse "github.com/noresponsehq/go/v12"
-	"github.com/noresponsehq/go/v12/models/components"
+	noresponse "github.com/noresponsehq/go/v13"
+	"github.com/noresponsehq/go/v13/models/components"
 )
 
 func main() {
@@ -179,7 +179,7 @@ case err != nil:
 }
 ```
 
-The typed errors are `BadRequestError` (400), `AuthenticationError` (401), `PermissionDeniedError` (403), `NotFoundError` (404), `ConflictError` (409) and `RateLimitError` (429), all in `github.com/noresponsehq/go/v12/models/apierrors`. Any other status is an `*apierrors.APIStatusError`.
+The typed errors are `BadRequestError` (400), `AuthenticationError` (401), `PermissionDeniedError` (403), `NotFoundError` (404), `ConflictError` (409) and `RateLimitError` (429), all in `github.com/noresponsehq/go/v13/models/apierrors`. Any other status is an `*apierrors.APIStatusError`.
 
 ## Retries and timeouts
 

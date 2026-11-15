@@ -2,8 +2,8 @@ package components
 
 // ScreeningRequest - Screens the group's people no screening has reached and everyone on watch or escalated.
 type ScreeningRequest struct {
-	Depth     ScreeningDepth   `json:"depth"`
-	Platforms []HandlePlatform `json:"platforms"`
+	Depth     ScreeningDepth `json:"depth"`
+	Platforms []string       `json:"platforms"`
 }
 
 func (s *ScreeningRequest) GetDepth() ScreeningDepth {
@@ -13,9 +13,9 @@ func (s *ScreeningRequest) GetDepth() ScreeningDepth {
 	return s.Depth
 }
 
-func (s *ScreeningRequest) GetPlatforms() []HandlePlatform {
+func (s *ScreeningRequest) GetPlatforms() []string {
 	if s == nil {
-		return []HandlePlatform{}
+		return []string{}
 	}
 	return s.Platforms
 }

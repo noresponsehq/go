@@ -6,7 +6,7 @@ Which submitted identifier a signal concerns. ip is a selector of breach_exposur
 
 ```go
 import (
-	"github.com/noresponsehq/go/v12/models/components"
+	"github.com/noresponsehq/go/v13/models/components"
 )
 
 value := components.IdentifierKindEmail

@@ -6,13 +6,13 @@ type Screening struct {
 	GroupID     string                   `json:"group_id"`
 	Environment AuditSettingsEnvironment `json:"environment"`
 	// partial finished with some people or platforms not covered; people_failed and people_partial count them.
-	Status      ScreeningStatus  `json:"status"`
-	Depth       ScreeningDepth   `json:"depth"`
-	Platforms   []HandlePlatform `json:"platforms"`
-	RequestedBy string           `json:"requested_by"`
-	CreatedAt   string           `json:"created_at"`
-	StartedAt   *string          `json:"started_at,omitzero"`
-	FinishedAt  *string          `json:"finished_at,omitzero"`
+	Status      ScreeningStatus `json:"status"`
+	Depth       ScreeningDepth  `json:"depth"`
+	Platforms   []string        `json:"platforms"`
+	RequestedBy string          `json:"requested_by"`
+	CreatedAt   string          `json:"created_at"`
+	StartedAt   *string         `json:"started_at,omitzero"`
+	FinishedAt  *string         `json:"finished_at,omitzero"`
 	// A screening still running then fails with error_code expired.
 	ExpiresAt string `json:"expires_at"`
 	// People selected when the screening started.
@@ -68,9 +68,9 @@ func (s *Screening) GetDepth() ScreeningDepth {
 	return s.Depth
 }
 
-func (s *Screening) GetPlatforms() []HandlePlatform {
+func (s *Screening) GetPlatforms() []string {
 	if s == nil {
-		return []HandlePlatform{}
+		return []string{}
 	}
 	return s.Platforms
 }

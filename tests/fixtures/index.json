@@ -3851,16 +3851,16 @@
       "why": "NOR-854 a connector has the three operations of the contract and no other"
     },
     {
-      "file": "invalid/settings-request-unknown-source.json",
+      "file": "invalid/settings-request-malformed-source.json",
       "schema": "settings-request.schema.json",
       "expect": "invalid",
       "errors": [
         [
-          "enum",
+          "pattern",
           "/refused_sources/0"
         ]
       ],
-      "why": "NOR-468 a workspace refuses only NoResponse's own sources"
+      "why": "NOR-1040 a source id is lower case; the registry, not the contract, answers 422 for an id it does not declare"
     },
     {
       "file": "invalid/connector_request_mixed_reset.json",
