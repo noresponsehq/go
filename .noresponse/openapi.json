@@ -17959,7 +17959,7 @@
           "structured": "A nested value that could not be split. value: as written.",
           "text": "Anything else. value: as written."
         },
-        "description": "What sort of value a field holds, which decides how it is cleaned, compared and searched again. It comes from the value itself where its shape is certain (an email, an IP, a URL, an international phone number), else from the answer committed for the source's column, else from the answer stored for it, else text. A value of any kind is returned. Each kind's description says what it holds and the form value takes."
+        "description": "What sort of value a field holds, which decides how it is cleaned, compared and searched again. It comes from the source where the source declares it, as a connector does for the fields it states, else from the value itself where its shape is certain (an email, an IP, a URL, an international phone number), else from the answer committed for the source's column, else from the answer stored for it, else text. A value of any kind is returned. Each kind's description says what it holds and the form value takes."
       },
       "RecordMatch": {
         "type": "object",
@@ -18115,7 +18115,7 @@
           "bot": "Whether the site marks the account as a bot (`flag`).",
           "caller_category": "The category callers give a phone number, such as telemarketer (`label`).",
           "chargebacks": "How many chargebacks a shop recorded against the account, or whether it has one (`count` or `flag`).",
-          "contact": "Another account on the same platform the account deals with, such as an opponent it plays most, a friend or a follower (`username`). Fields beside it under the same name say how, how often, when last and since when. They also give the contact's own name and location where the platform shows them. It names another person, never the account's owner.",
+          "contact": "Another person the account deals with, such as an opponent it plays most, a friend, a follower or a calendar event's organiser (`username`, `email`, `phone` or `person_name`). Fields beside it under the same name say how, how often, when last and since when. They also give the contact's own name and location where the platform shows them. It names another person, never the account's owner, so its value is not one of the person's own names, emails, phones or usernames.",
           "cover_picture": "The banner picture of the profile (`image`).",
           "declines": "How many of the account's payments a shop declined (`count`).",
           "deleted": "Whether the account is deleted or inactive (`flag`).",

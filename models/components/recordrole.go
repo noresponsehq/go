@@ -26,7 +26,7 @@ const (
 	RecordRoleCallerCategory RecordRole = "caller_category"
 	// RecordRoleChargebacks How many chargebacks a shop recorded against the account, or whether it has one (`count` or `flag`).
 	RecordRoleChargebacks RecordRole = "chargebacks"
-	// RecordRoleContact Another account on the same platform the account deals with, such as an opponent it plays most, a friend or a follower (`username`). Fields beside it under the same name say how, how often, when last and since when. They also give the contact's own name and location where the platform shows them. It names another person, never the account's owner.
+	// RecordRoleContact Another person the account deals with, such as an opponent it plays most, a friend, a follower or a calendar event's organiser (`username`, `email`, `phone` or `person_name`). Fields beside it under the same name say how, how often, when last and since when. They also give the contact's own name and location where the platform shows them. It names another person, never the account's owner, so its value is not one of the person's own names, emails, phones or usernames.
 	RecordRoleContact RecordRole = "contact"
 	// RecordRoleCoverPicture The banner picture of the profile (`image`).
 	RecordRoleCoverPicture RecordRole = "cover_picture"

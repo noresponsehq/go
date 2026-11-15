@@ -175,7 +175,8 @@
     {
       "field": "contacts.0.name",
       "original": "Crew Mate",
-      "kind": "text",
+      "kind": "person_name",
+      "role": "contact",
       "value": "Crew Mate"
     },
     {
