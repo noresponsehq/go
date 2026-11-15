@@ -2,7 +2,7 @@
 
 # NoResponse for Go
 
-Assess sign-ups, logins and purchases with the NoResponse Identity Intelligence API.
+Investigate everyone, everywhere, all at once. Find the accounts and leaked rows behind an email, phone, username or name, screen groups of people, and assess sign-ups with the NoResponse API.
 
 Go 1.24+.
 
@@ -15,7 +15,63 @@ go get github.com/noresponsehq/go/v12
 ```
 
 
-## Quick start
+## Investigate a person
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"log"
+	"os"
+
+	noresponse "github.com/noresponsehq/go/v12"
+	"github.com/noresponsehq/go/v12/models/components"
+)
+
+func main() {
+	ctx := context.Background()
+	client := noresponse.NewClient(os.Getenv("NORESPONSE_API_KEY")) // the key needs the groups scope
+	workspaceID := os.Getenv("NORESPONSE_WORKSPACE")
+	env := components.KeyEnvironmentTest
+
+	group, err := client.Groups.Create(ctx, workspaceID, env, components.GroupRequest{Name: "Case 2026-114", StartsAt: "2026-12-03T09:30:00Z"})
+	if err != nil {
+		log.Fatal(err)
+	}
+	added, err := client.Groups.AddPeople(ctx, workspaceID, env, group.Result.ID, noresponse.NewIdempotencyKey(), components.PersonBatchRequest{
+		People: []components.PersonIdentity{{
+			Name:    "Jordan Ellis",
+			Email:   noresponse.Pointer("jordan.ellis@example.com"),
+			Handles: []components.Handle{{Platform: components.HandlePlatformX, Handle: "jordanellis"}},
+		}},
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+	if _, err := client.Groups.StartScreening(ctx, workspaceID, env, group.Result.ID, noresponse.NewIdempotencyKey(), components.ScreeningRequest{
+		Depth: components.ScreeningDepthStandard, Platforms: []components.HandlePlatform{components.HandlePlatformX},
+	}); err != nil {
+		log.Fatal(err)
+	}
+
+	// Once the screening.completed webhook arrives (or GetScreening is no longer queued or running):
+	report, err := client.Groups.GetPerson(ctx, workspaceID, env, group.Result.ID, added.Result.Items[0].ID)
+	if err != nil {
+		log.Fatal(err)
+	}
+	if lookup := report.Result.GetLookup(); lookup != nil {
+		for _, record := range lookup.Records {
+			fmt.Println(record.Source.Kind, record.ID)
+		}
+	}
+}
+```
+
+Every account and leaked row comes back as a record that names its source. See the [quickstart](https://docs.noresponse.org/quickstart) and [records](https://docs.noresponse.org/guides/records).
+
+## Assess a signup
 
 ```go
 package main

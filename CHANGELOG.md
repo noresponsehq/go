@@ -1,5 +1,9 @@
 # Changelog
 
+## 12.0.23
+
+No changes detected.
+
 ## 12.0.22
 
 * `Sdk.Settings.Get()`:  `response.RefusedSources[].Enum(life360Phone)` **Added**

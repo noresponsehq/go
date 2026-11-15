@@ -10,10 +10,11 @@ import (
 	"os/exec"
 	"path/filepath"
 	"regexp"
+	"strings"
 	"testing"
 )
 
-var firstGoBlock = regexp.MustCompile("(?s)```go\n(.*?)```")
+var goBlock = regexp.MustCompile("(?s)```go\n(.*?)```")
 
 // noImporter fails every import; createUsesNewKey only needs local names.
 type noImporter struct{}
@@ -157,9 +158,11 @@ func createUsesNewKey(src string) bool {
 	return true
 }
 
-// TestDocQuickStartsCompile vets the first Go block of README.md and USAGE.md
-// as a program inside this module, so the published quick starts cannot drift
-// from the client or fall back to a fixed idempotency key.
+// TestDocQuickStartsCompile vets every Go program (a block with package main)
+// of README.md and USAGE.md inside this module, so the published examples
+// cannot drift from the client. Every block, program or fragment, that calls
+// Assessments.Create must pass a key from noresponse.NewIdempotencyKey(), and
+// each document has at least one program that creates an assessment.
 func TestDocQuickStartsCompile(t *testing.T) {
 	gobin, err := exec.LookPath("go")
 	if err != nil {
@@ -171,28 +174,63 @@ func TestDocQuickStartsCompile(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			match := firstGoBlock.FindSubmatch(text)
-			if match == nil {
+			blocks := goBlock.FindAllSubmatch(text, -1)
+			if len(blocks) == 0 {
 				t.Fatalf("%s has no Go block", doc)
 			}
-			code := string(match[1])
-			if !createUsesNewKey(code) {
-				t.Fatalf("%s quick start does not pass a key from noresponse.NewIdempotencyKey() to every Assessments.Create call", doc)
+			programs := 0
+			for i, match := range blocks {
+				code := string(match[1])
+				program := strings.Contains(code, "package main")
+				src := code
+				if !program {
+					src = "package main\n\nfunc main() {\n" + code + "\n}\n"
+				}
+				if callsCreate(src) || strings.Contains(code, "Assessments.Create") {
+					if !createUsesNewKey(src) {
+						t.Fatalf("%s block %d does not pass a key from noresponse.NewIdempotencyKey() to every Assessments.Create call", doc, i+1)
+					}
+					if program {
+						programs++
+					}
+				}
+				if !program {
+					continue
+				}
+				dir, err := os.MkdirTemp(".", "doccheck-")
+				if err != nil {
+					t.Fatal(err)
+				}
+				t.Cleanup(func() { _ = os.RemoveAll(dir) })
+				if err := os.WriteFile(filepath.Join(dir, "main.go"), []byte(code), 0o600); err != nil {
+					t.Fatal(err)
+				}
+				out, err := exec.Command(gobin, "vet", "./"+filepath.ToSlash(dir)).CombinedOutput()
+				if err != nil {
+					t.Fatalf("%s block %d does not compile: %v\n%s", doc, i+1, err, out)
+				}
 			}
-			dir, err := os.MkdirTemp(".", "doccheck-")
-			if err != nil {
-				t.Fatal(err)
-			}
-			t.Cleanup(func() { _ = os.RemoveAll(dir) })
-			if err := os.WriteFile(filepath.Join(dir, "main.go"), []byte(code), 0o600); err != nil {
-				t.Fatal(err)
-			}
-			out, err := exec.Command(gobin, "vet", "./"+filepath.ToSlash(dir)).CombinedOutput()
-			if err != nil {
-				t.Fatalf("%s quick start does not compile: %v\n%s", doc, err, out)
+			if programs == 0 {
+				t.Fatalf("%s has no program that creates an assessment", doc)
 			}
 		})
 	}
+}
+
+// callsCreate reports whether src parses and calls Assessments.Create.
+func callsCreate(src string) bool {
+	file, err := parser.ParseFile(token.NewFileSet(), "main.go", src, 0)
+	if err != nil {
+		return false
+	}
+	found := false
+	ast.Inspect(file, func(node ast.Node) bool {
+		if call, ok := node.(*ast.CallExpr); ok && isCreateCall(call) {
+			found = true
+		}
+		return !found
+	})
+	return found
 }
 
 func TestCreateUsesNewKey(t *testing.T) {
