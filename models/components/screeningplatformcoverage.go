@@ -2,7 +2,7 @@ package components
 
 // ScreeningPlatformCoverage - What a screening read on one platform.
 type ScreeningPlatformCoverage struct {
-	// A platform a screening can cover. synthetic is the deterministic connector's own platform, for exercising the product end to end with no network.
+	// A platform a screening can cover. github and scratch through flickr are each one read of the public profile a handle names, with no posts. synthetic is the deterministic connector's own platform, for exercising the product end to end with no network.
 	Platform HandlePlatform `json:"platform"`
 	// covered read at least one profile; none_found looked and found no account; inaccessible found accounts that are private or locked; failed could not finish looking; unavailable has no resolver or collector enabled.
 	Status        ScreeningPlatformCoverageStatus `json:"status"`

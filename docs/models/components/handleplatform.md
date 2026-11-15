@@ -1,6 +1,6 @@
 # HandlePlatform
 
-A platform a screening can cover. synthetic is the deterministic connector's own platform, for exercising the product end to end with no network.
+A platform a screening can cover. github and scratch through flickr are each one read of the public profile a handle names, with no posts. synthetic is the deterministic connector's own platform, for exercising the product end to end with no network.
 
 ## Example Usage
 
@@ -18,16 +18,29 @@ custom := components.HandlePlatform("custom_value")
 
 ## Values
 
-| Name                      | Value                     |
-| ------------------------- | ------------------------- |
-| `HandlePlatformInstagram` | instagram                 |
-| `HandlePlatformX`         | x                         |
-| `HandlePlatformBluesky`   | bluesky                   |
-| `HandlePlatformYoutube`   | youtube                   |
-| `HandlePlatformTiktok`    | tiktok                    |
-| `HandlePlatformFacebook`  | facebook                  |
-| `HandlePlatformThreads`   | threads                   |
-| `HandlePlatformReddit`    | reddit                    |
-| `HandlePlatformTelegram`  | telegram                  |
-| `HandlePlatformLinkedin`  | linkedin                  |
-| `HandlePlatformSynthetic` | synthetic                 |
+| Name                            | Value                           |
+| ------------------------------- | ------------------------------- |
+| `HandlePlatformInstagram`       | instagram                       |
+| `HandlePlatformX`               | x                               |
+| `HandlePlatformBluesky`         | bluesky                         |
+| `HandlePlatformYoutube`         | youtube                         |
+| `HandlePlatformTiktok`          | tiktok                          |
+| `HandlePlatformFacebook`        | facebook                        |
+| `HandlePlatformThreads`         | threads                         |
+| `HandlePlatformReddit`          | reddit                          |
+| `HandlePlatformTelegram`        | telegram                        |
+| `HandlePlatformLinkedin`        | linkedin                        |
+| `HandlePlatformGithub`          | github                          |
+| `HandlePlatformScratch`         | scratch                         |
+| `HandlePlatformDailymotion`     | dailymotion                     |
+| `HandlePlatformSubstack`        | substack                        |
+| `HandlePlatformDuolingo`        | duolingo                        |
+| `HandlePlatformDockerhub`       | dockerhub                       |
+| `HandlePlatformWikipedia`       | wikipedia                       |
+| `HandlePlatformInternetarchive` | internetarchive                 |
+| `HandlePlatformSpotify`         | spotify                         |
+| `HandlePlatformPatreon`         | patreon                         |
+| `HandlePlatformWordpress`       | wordpress                       |
+| `HandlePlatformOkru`            | okru                            |
+| `HandlePlatformFlickr`          | flickr                          |
+| `HandlePlatformSynthetic`       | synthetic                       |
