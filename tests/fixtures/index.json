@@ -4291,6 +4291,33 @@
         ]
       ],
       "why": "NOR-900 a field always keeps the value as the source wrote it"
+    },
+    {
+      "file": "valid/site.json",
+      "schema": "sites.schema.json#/$defs/site",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/site_list.json",
+      "schema": "sites.schema.json#/$defs/site_list",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/site_request.json",
+      "schema": "sites.schema.json#/$defs/site_request",
+      "expect": "valid"
+    },
+    {
+      "file": "invalid/site_request_empty.json",
+      "schema": "sites.schema.json#/$defs/site_request",
+      "expect": "invalid",
+      "errors": [
+        [
+          "required",
+          ""
+        ]
+      ],
+      "why": "NOR-995 a site change names the switch it sets"
     }
   ]
 }

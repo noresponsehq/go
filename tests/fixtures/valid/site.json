@@ -1,0 +1,12 @@
+{
+  "site": "example.com",
+  "website": true,
+  "connectors": [],
+  "breach": {
+    "enabled": false,
+    "tables": 2,
+    "kind": "site_breach",
+    "updated_at": "2026-11-15T08:00:00Z",
+    "updated_by": "operator-example"
+  }
+}

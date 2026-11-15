@@ -8,9 +8,9 @@ const (
 	RecordKindEmail RecordKind = "email"
 	// RecordKindPhone A phone number. value: in E.164 form, such as +447700900123. A national number is cleaned only when the country of the source's site is known.
 	RecordKindPhone RecordKind = "phone"
-	// RecordKindUsername A handle a person chose. value: as written. Compare it in lower case.
+	// RecordKindUsername A handle a person chose. value: as written. Compare it in lower case. A value that is only zeros, or null, nil, none, undefined or n/a, has no value.
 	RecordKindUsername RecordKind = "username"
-	// RecordKindAccountID A platform's own id for an account. value: as written.
+	// RecordKindAccountID A platform's own id for an account. value: as written. A value that is only zeros, or null, nil, none, undefined or n/a, has no value.
 	RecordKindAccountID RecordKind = "account_id"
 	// RecordKindURL A web address. value: the scheme and host in lower case, the path, query and fragment as written.
 	RecordKindURL RecordKind = "url"
@@ -36,7 +36,7 @@ const (
 	RecordKindRegion RecordKind = "region"
 	// RecordKindCity A city or town. value: as written.
 	RecordKindCity RecordKind = "city"
-	// RecordKindAddress A street address or one line of it. value: as written.
+	// RecordKindAddress A street address or one line of it. value: as written. A value that is only zeros, or null, nil, none, undefined or n/a, has no value.
 	RecordKindAddress RecordKind = "address"
 	// RecordKindPostcode A postal code. value: in upper case with single spaces.
 	RecordKindPostcode RecordKind = "postcode"
@@ -54,7 +54,7 @@ const (
 	RecordKindIP RecordKind = "ip"
 	// RecordKindMacAddress A network card address. value: in lower case with colons.
 	RecordKindMacAddress RecordKind = "mac_address"
-	// RecordKindDeviceID An id of a phone, computer or browser. value: as written.
+	// RecordKindDeviceID An id of a phone, computer or browser. value: as written. A value that is only zeros, or null, nil, none, undefined or n/a, has no value.
 	RecordKindDeviceID RecordKind = "device_id"
 	// RecordKindUserAgent A browser or app signature. value: as written.
 	RecordKindUserAgent RecordKind = "user_agent"
@@ -64,7 +64,7 @@ const (
 	RecordKindHash RecordKind = "hash"
 	// RecordKindSalt The salt for a hash. value: exactly as written.
 	RecordKindSalt RecordKind = "salt"
-	// RecordKindToken A session, reset or API token. value: as written.
+	// RecordKindToken A session, reset or API token. value: as written. A value that is only zeros, or null, nil, none, undefined or n/a, has no value.
 	RecordKindToken RecordKind = "token"
 	// RecordKindSecurityAnswer A security question or its answer. value: exactly as written.
 	RecordKindSecurityAnswer RecordKind = "security_answer"
@@ -76,7 +76,7 @@ const (
 	RecordKindCryptoAddress RecordKind = "crypto_address"
 	// RecordKindAmount Money, with its currency when given. value: a plain decimal. detail names the currency, such as USD.
 	RecordKindAmount RecordKind = "amount"
-	// RecordKindIDNumber A passport, tax, national or licence number. value: as written.
+	// RecordKindIDNumber A passport, tax, national or licence number. value: as written. A value that is only zeros, or null, nil, none, undefined or n/a, has no value.
 	RecordKindIDNumber RecordKind = "id_number"
 	// RecordKindVehicle A number plate or a VIN. value: in upper case with no spaces.
 	RecordKindVehicle RecordKind = "vehicle"

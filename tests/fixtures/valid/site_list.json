@@ -1,0 +1,29 @@
+{
+  "items": [
+    {
+      "site": "example.com",
+      "website": true,
+      "connectors": [],
+      "breach": {
+        "enabled": true,
+        "tables": 2,
+        "kind": "site_breach"
+      }
+    },
+    {
+      "site": "x.com",
+      "website": true,
+      "connectors": [
+        "x_email",
+        "x"
+      ],
+      "breach": {
+        "enabled": false,
+        "tables": 1,
+        "kind": "site_breach",
+        "updated_at": "2026-11-15T08:00:00Z",
+        "updated_by": "operator-example"
+      }
+    }
+  ]
+}

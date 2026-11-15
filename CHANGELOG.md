@@ -1,5 +1,9 @@
 # Changelog
 
+## 12.0.25
+
+No changes detected.
+
 ## 12.0.24
 
 * `Sdk.Settings.Get()`:  `response.RefusedSources[].Enum(chesscom)` **Added**

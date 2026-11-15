@@ -10,7 +10,7 @@ type RecordSource struct {
 	Site *string `json:"site,omitzero"`
 	// The table a leaked row came from.
 	Table *string `json:"table,omitzero"`
-	// When the source's data dates from, at the precision it is known: YYYY or YYYY-MM for a breach table.
+	// When the source's data dates from, at the precision it is known: YYYY or YYYY-MM for a breach table, and YYYY-MM-DD, the day the computer was infected, for a row of a stealer log.
 	Date *string `json:"date,omitzero"`
 }
 
