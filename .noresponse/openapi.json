@@ -10502,6 +10502,9 @@
               },
               {
                 "$ref": "#/components/schemas/KeyActor"
+              },
+              {
+                "$ref": "#/components/schemas/ServiceActor"
               }
             ]
           },
@@ -20913,6 +20916,27 @@
             "maxLength": 39,
             "description": "identifiers.ip as the request sent it.",
             "example": "203.0.113.45"
+          }
+        }
+      },
+      "ServiceActor": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "type",
+          "name"
+        ],
+        "properties": {
+          "type": {
+            "const": "service"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256,
+            "pattern": "^[!-~]{1,256}$",
+            "description": "The NoResponse service that made the change with no person acting, such as replenisher, which replaces dead platform sessions in NoResponse's own workspace.",
+            "example": "replenisher"
           }
         }
       },

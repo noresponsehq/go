@@ -12,13 +12,15 @@ type ActorType string
 const (
 	ActorTypeUser    ActorType = "user"
 	ActorTypeAPIKey  ActorType = "api_key"
+	ActorTypeService ActorType = "service"
 	ActorTypeUnknown ActorType = "UNKNOWN"
 )
 
 type Actor struct {
-	UserActor  *UserActor      `queryParam:"inline" union:"member"`
-	KeyActor   *KeyActor       `queryParam:"inline" union:"member"`
-	UnknownRaw json.RawMessage `json:"-" union:"unknown"`
+	UserActor    *UserActor      `queryParam:"inline" union:"member"`
+	KeyActor     *KeyActor       `queryParam:"inline" union:"member"`
+	ServiceActor *ServiceActor   `queryParam:"inline" union:"member"`
+	UnknownRaw   json.RawMessage `json:"-" union:"unknown"`
 
 	Type ActorType
 }
@@ -38,6 +40,15 @@ func CreateActorAPIKey(apiKey KeyActor) Actor {
 	return Actor{
 		KeyActor: &apiKey,
 		Type:     typ,
+	}
+}
+
+func CreateActorService(service ServiceActor) Actor {
+	typ := ActorTypeService
+
+	return Actor{
+		ServiceActor: &service,
+		Type:         typ,
 	}
 }
 
@@ -104,6 +115,15 @@ func (u *Actor) UnmarshalJSON(data []byte) (err error) {
 		u.KeyActor = keyActor
 		u.Type = ActorTypeAPIKey
 		return nil
+	case "service":
+		serviceActor := new(ServiceActor)
+		if err := utils.UnmarshalJSON(data, &serviceActor, "", true, nil); err != nil {
+			return fmt.Errorf("could not unmarshal `%s` into expected (Type == service) type ServiceActor within Actor: %w", string(data), err)
+		}
+
+		u.ServiceActor = serviceActor
+		u.Type = ActorTypeService
+		return nil
 	default:
 		u.UnknownRaw = json.RawMessage(data)
 		u.Type = ActorTypeUnknown
@@ -119,6 +139,10 @@ func (u Actor) MarshalJSON() ([]byte, error) {
 
 	if u.KeyActor != nil {
 		return utils.MarshalJSON(u.KeyActor, "", true)
+	}
+
+	if u.ServiceActor != nil {
+		return utils.MarshalJSON(u.ServiceActor, "", true)
 	}
 
 	if u.UnknownRaw != nil {
@@ -206,6 +230,10 @@ func (a *AuditEvent) GetActorUser() *UserActor {
 
 func (a *AuditEvent) GetActorAPIKey() *KeyActor {
 	return a.GetActor().KeyActor
+}
+
+func (a *AuditEvent) GetActorService() *ServiceActor {
+	return a.GetActor().ServiceActor
 }
 
 func (a *AuditEvent) GetTarget() AuditEventTarget {

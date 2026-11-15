@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: 25ddae46-795d-45f5-b455-3f48c41d440e
 management:
-  docChecksum: aef5662028ea3dd500fe672dc8c48ff3
+  docChecksum: 3f04863dce77f4824dace24dbbc64f4e
   docVersion: "1"
   speakeasyVersion: internal
   generationVersion: internal
-  releaseVersion: 12.0.29
-  configChecksum: 04010e6f38f9f919af39e9bc8977be54
+  releaseVersion: 12.0.30
+  configChecksum: d5f6f1f924d5dd186014812117a1ebbb
 features:
   go:
     additionalDependencies: 0.1.0
@@ -113,7 +113,7 @@ trackedFiles:
   docs/models/components/action.md:
     last_write_checksum: sha1:b4ef8b174a3fe67659c58ff724b35fb38267611e
   docs/models/components/actor.md:
-    last_write_checksum: sha1:f300df3b37bff08085f94925092f08a61c12d876
+    last_write_checksum: sha1:3cab872eed8588782b1c45364fc22e57b042d9be
   docs/models/components/admission.md:
     last_write_checksum: sha1:472be1a811ba92134b4681a7d562255cf8a0035a
   docs/models/components/aggregatebucket.md:
@@ -884,6 +884,8 @@ trackedFiles:
     last_write_checksum: sha1:17e398b2abd89b7459f07c9ff820a7cc7c7b7bb7
   docs/models/components/sentidentifiers.md:
     last_write_checksum: sha1:cdc44e13363c3b159d0b730abecec68f9fe04b10
+  docs/models/components/serviceactor.md:
+    last_write_checksum: sha1:771b27c85a543bbf3b6c93bb1d38d7fc3182eb3d
   docs/models/components/settings.md:
     last_write_checksum: sha1:00430d7b2cac43a6df3cf4d0c9256c8a90a4dac3
   docs/models/components/settingsflows.md:
@@ -1679,7 +1681,7 @@ trackedFiles:
   models/components/attributeagreement.go:
     last_write_checksum: sha1:a4fde927c5b8708a2e8d2905a68b5fbc91516f15
   models/components/auditevent.go:
-    last_write_checksum: sha1:7164a7bd7086650c63ed8b16c900366f91de8459
+    last_write_checksum: sha1:323cf99560aaccce2f467a48a7cd291cab3e1279
   models/components/auditeventevent.go:
     last_write_checksum: sha1:0b91f24ee6c09bb1920e95b1e26b2900dba23802
   models/components/auditeventlist.go:
@@ -2324,6 +2326,8 @@ trackedFiles:
     last_write_checksum: sha1:8e1c3363726b63d12898cc4357547d5e969b5b7b
   models/components/sentidentifiers.go:
     last_write_checksum: sha1:bf516f7b1942ddd8c53146735a23daa738a96ba2
+  models/components/serviceactor.go:
+    last_write_checksum: sha1:59104888a0737d455c473beb78f65ffbc3a7eb78
   models/components/settings.go:
     last_write_checksum: sha1:858a1f44033d3fdb82e243109d8b9ff6b1c77a7b
   models/components/settingsflows.go:
@@ -2649,7 +2653,7 @@ trackedFiles:
   models/operations/updatesettings.go:
     last_write_checksum: sha1:9d831829c1a1be8e6e1643d8e38399d6ff90d16c
   noresponse.go:
-    last_write_checksum: sha1:44f31a19091d3c2468e790eec292046a97057497
+    last_write_checksum: sha1:9cee130cbe9d4d935072982af4c6d607ebc148ad
   operations.go:
     last_write_checksum: sha1:ce9e11910d81c21d2c8cb48fdfaecdf0660785a7
   optionalnullable/optionalnullable.go:

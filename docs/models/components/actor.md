@@ -15,6 +15,12 @@ actor := components.CreateActorUser(components.UserActor{/* values here */})
 actor := components.CreateActorAPIKey(components.KeyActor{/* values here */})
 ```
 
+### ServiceActor
+
+```go
+actor := components.CreateActorService(components.ServiceActor{/* values here */})
+```
+
 ## Union Discrimination
 
 Use the `Type` field to determine which variant is active, then access the corresponding field:
@@ -25,6 +31,8 @@ switch actor.Type {
 		// actor.UserActor is populated
 	case components.ActorTypeAPIKey:
 		// actor.KeyActor is populated
+	case components.ActorTypeService:
+		// actor.ServiceActor is populated
 	default:
 		// Unknown type - use actor.GetUnknownRaw() for raw JSON
 }

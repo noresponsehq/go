@@ -1,5 +1,9 @@
 # Changelog
 
+## 12.0.30
+
+* `Sdk.Audit.List()`:  `response.Items[].Actor.union(service)` **Added**
+
 ## 12.0.29
 
 * `Sdk.Groups.GetPerson()`:  `response.Lookup.Checks[].Unanswered` **Added**
