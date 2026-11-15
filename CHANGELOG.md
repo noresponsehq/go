@@ -1,5 +1,9 @@
 # Changelog
 
+## 12.0.16
+
+No changes detected.
+
 ## 12.0.15
 
 * `Sdk.Settings.Get()`:  `response.RefusedSources[].Enum(duolingoEmail)` **Added**
