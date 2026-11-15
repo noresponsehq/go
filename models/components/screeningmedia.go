@@ -13,6 +13,10 @@ type ScreeningMedia struct {
 	MediaType MediaType `json:"media_type"`
 	// Where the platform serves the image or video.
 	MediaURL string `json:"media_url"`
+	// For an image that is a video's cover frame, the id of that video's media item.
+	CoverOf *string `json:"cover_of,omitzero"`
+	// true on a video the analyser read from its cover frame (the image whose cover_of names it) and its caption alone. Left out otherwise.
+	FrameOnly *bool `json:"frame_only,omitzero"`
 	// The caption or alt text.
 	Text      *string `json:"text,omitzero"`
 	ProfileID string  `json:"profile_id"`
@@ -65,6 +69,20 @@ func (s *ScreeningMedia) GetMediaURL() string {
 		return ""
 	}
 	return s.MediaURL
+}
+
+func (s *ScreeningMedia) GetCoverOf() *string {
+	if s == nil {
+		return nil
+	}
+	return s.CoverOf
+}
+
+func (s *ScreeningMedia) GetFrameOnly() *bool {
+	if s == nil {
+		return nil
+	}
+	return s.FrameOnly
 }
 
 func (s *ScreeningMedia) GetText() *string {

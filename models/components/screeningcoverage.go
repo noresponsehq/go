@@ -13,6 +13,8 @@ type ScreeningCoverage struct {
 	ItemsNotAnalysed *int64 `json:"items_not_analysed,omitzero"`
 	// items_not_analysed split by reason, each reason once with at least one item.
 	NotAnalysedByReason []ScreeningNotAnalysedCount `json:"not_analysed_by_reason,omitzero"`
+	// Videos the analyser read from their cover frame and caption alone, without their sound or later frames. They count as analysed and do not make the person partial. Left out when none.
+	ItemsFrameOnly *int64 `json:"items_frame_only,omitzero"`
 	// The oldest item read on any platform.
 	PeriodFrom *string `json:"period_from,omitzero"`
 	// The newest item read on any platform.
@@ -66,6 +68,13 @@ func (s *ScreeningCoverage) GetNotAnalysedByReason() []ScreeningNotAnalysedCount
 		return nil
 	}
 	return s.NotAnalysedByReason
+}
+
+func (s *ScreeningCoverage) GetItemsFrameOnly() *int64 {
+	if s == nil {
+		return nil
+	}
+	return s.ItemsFrameOnly
 }
 
 func (s *ScreeningCoverage) GetPeriodFrom() *string {
