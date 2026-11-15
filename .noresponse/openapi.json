@@ -17647,7 +17647,7 @@
           },
           "value": {
             "type": "string",
-            "description": "The value cleaned to its kind's one form: an email in lower case, a phone number in international form when its country is known, a date in ISO form, a country as its two-letter code, a flag as true or false. Absent when the value cannot be cleaned as its kind; original still holds it.",
+            "description": "The value cleaned to its kind's one form: an email in lower case, a phone number in international form when its country is known, a date in ISO form, a country as its two-letter code, a flag as true or false. Absent when the value cannot be cleaned as its kind, or when the source masked it or cut it short, with a run of asterisks or bullets or a trailing ellipsis, in a kind that links people or is searched again; original still holds it.",
             "example": "2019-01-01T00:00:00Z"
           },
           "detail": {
@@ -17720,7 +17720,7 @@
           "account_id": "A platform's own id for an account. value: as written. A value that is only zeros, or null, nil, none, undefined or n/a, has no value.",
           "url": "A web address. value: the scheme and host in lower case, the path, query and fragment as written.",
           "domain": "A host name with no path. value: in lower case, also when the source wrote a URL.",
-          "image": "A picture, as a link or a file. value: the link, cleaned as a `url`.",
+          "image": "A picture, as a link or a file. value: the link, cleaned as a `url`, else the file as written. A value that is only zeros, or null, nil, none, undefined or n/a, has no value.",
           "person_name": "A whole name or a part of one. value: with each run of spaces made one space.",
           "gender": "A stated gender. value: `female`, `male` or `other` when the value names one of them, else as written.",
           "age": "An age in years. value: a whole number from 0 to 150.",
@@ -17754,7 +17754,7 @@
           "vehicle": "A number plate or a VIN. value: in upper case with no spaces.",
           "label": "One of a small set, such as a status or level. value: as written.",
           "long_text": "Free writing, such as a bio or signature. value: as written.",
-          "count": "A whole number of things. value: a whole number with no thousands separators.",
+          "count": "A whole number of things. value: a whole number of 0 or more, with no thousands separators.",
           "score": "A rating, rank or points. value: a plain decimal.",
           "flag": "A yes or no. value: `true` or `false`.",
           "structured": "A nested value that could not be split. value: as written.",

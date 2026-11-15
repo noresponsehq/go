@@ -16,7 +16,7 @@ const (
 	RecordKindURL RecordKind = "url"
 	// RecordKindDomain A host name with no path. value: in lower case, also when the source wrote a URL.
 	RecordKindDomain RecordKind = "domain"
-	// RecordKindImage A picture, as a link or a file. value: the link, cleaned as a `url`.
+	// RecordKindImage A picture, as a link or a file. value: the link, cleaned as a `url`, else the file as written. A value that is only zeros, or null, nil, none, undefined or n/a, has no value.
 	RecordKindImage RecordKind = "image"
 	// RecordKindPersonName A whole name or a part of one. value: with each run of spaces made one space.
 	RecordKindPersonName RecordKind = "person_name"
@@ -84,7 +84,7 @@ const (
 	RecordKindLabel RecordKind = "label"
 	// RecordKindLongText Free writing, such as a bio or signature. value: as written.
 	RecordKindLongText RecordKind = "long_text"
-	// RecordKindCount A whole number of things. value: a whole number with no thousands separators.
+	// RecordKindCount A whole number of things. value: a whole number of 0 or more, with no thousands separators.
 	RecordKindCount RecordKind = "count"
 	// RecordKindScore A rating, rank or points. value: a plain decimal.
 	RecordKindScore RecordKind = "score"
