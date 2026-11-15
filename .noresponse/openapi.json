@@ -17772,7 +17772,7 @@
             "type": "string",
             "minLength": 1,
             "maxLength": 50,
-            "description": "The kind of searched value: email, phone, username, ip, name, password, hash, or handle for a profile read of a handle.",
+            "description": "The kind of searched value: email, phone, username, ip, name, password, hash, domain, or handle for a profile read of a handle.",
             "example": "handle"
           },
           "field": {
@@ -20724,7 +20724,7 @@
           },
           "kind": {
             "$ref": "#/components/schemas/SearchKind",
-            "description": "The kind of the value searched."
+            "description": "The kind of the value searched. A domain search finds the leaked rows of every email address at the domain."
           },
           "value": {
             "type": "string",
@@ -20795,9 +20795,10 @@
           "person_name",
           "password",
           "hash",
-          "ip"
+          "ip",
+          "domain"
         ],
-        "description": "The kind of the value searched."
+        "description": "The kind of the value searched. A domain search finds the leaked rows of every email address at the domain."
       },
       "SearchRequest": {
         "type": "object",

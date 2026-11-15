@@ -1,5 +1,11 @@
 # Changelog
 
+## 12.0.19
+
+* `Sdk.Groups.GetPerson()`:  `response.Searches[].Kind.Enum(domain)` **Added**
+* `Sdk.Groups.StartSearch()`:  `response.Kind.Enum(domain)` **Added**
+* `Sdk.Groups.RunSearch()`:  `response.Kind.Enum(domain)` **Added**
+
 ## 12.0.18
 
 * `Sdk.Settings.Get()`:  `response.RefusedSources[]` **Changed**

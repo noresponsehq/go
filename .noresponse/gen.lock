@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: 25ddae46-795d-45f5-b455-3f48c41d440e
 management:
-  docChecksum: bcba00b7f77348ef1b292993ff620b96
+  docChecksum: 93a5e7d8b251c61da3c0b7db3fcf7757
   docVersion: "1"
   speakeasyVersion: internal
   generationVersion: internal
-  releaseVersion: 12.0.18
-  configChecksum: 62f63ecbaf32f8866bdfe8c0896646b9
+  releaseVersion: 12.0.19
+  configChecksum: 3a1f8f8c03da4ec90195cc199e263349
 features:
   go:
     additionalDependencies: 0.1.0
@@ -705,7 +705,7 @@ trackedFiles:
   docs/models/components/recordkind.md:
     last_write_checksum: sha1:6259959022e7d08e22eba860568b02bd8b216840
   docs/models/components/recordmatch.md:
-    last_write_checksum: sha1:9ca95efafafdc0ea7e9b076f0d5819c943bb6cd3
+    last_write_checksum: sha1:ba82e266ffd7343ab803b0bc213c437a497bec78
   docs/models/components/recordremaining.md:
     last_write_checksum: sha1:40d27dfdb8458a3cf5c6d7b87017c4d257f3c853
   docs/models/components/recordrole.md:
@@ -871,9 +871,9 @@ trackedFiles:
   docs/models/components/screeningstatus.md:
     last_write_checksum: sha1:4b3de436b28398fb9da8cd2dcd969bb60b923e2f
   docs/models/components/search.md:
-    last_write_checksum: sha1:1f398b500f9b6d939724f8b11f2d55ad7b46594b
+    last_write_checksum: sha1:b7d7c9c29bf19371499f2ff8f43a861894e98ce6
   docs/models/components/searchkind.md:
-    last_write_checksum: sha1:5be2ee03282f4ec9296e0f9f7b83da252ff642e4
+    last_write_checksum: sha1:973be9220970124b7dccc6b68dfdcb510232e6b5
   docs/models/components/searchrequest.md:
     last_write_checksum: sha1:aad4adebb5f57511549438ac041005ce82910371
   docs/models/components/searchstatus.md:
@@ -2145,7 +2145,7 @@ trackedFiles:
   models/components/recordkind.go:
     last_write_checksum: sha1:3a02b4ccd81f480a717711ff93b4b69bb12c08c3
   models/components/recordmatch.go:
-    last_write_checksum: sha1:a63940ee02ef854f14ad3040694f7d2eae46499c
+    last_write_checksum: sha1:3eb9f7832185044c83fc7b11fce559cbb8dfe6f1
   models/components/recordremaining.go:
     last_write_checksum: sha1:733eb86220cf3ea7049122608e2a75f7c622f387
   models/components/recordrole.go:
@@ -2309,9 +2309,9 @@ trackedFiles:
   models/components/screeningstatus.go:
     last_write_checksum: sha1:d6dbe1d70cac31e027837696badeccb28bee41f2
   models/components/search.go:
-    last_write_checksum: sha1:5ba50769c6e20a0570b0c0eb937b0b154ad5cd64
+    last_write_checksum: sha1:ed1f7bc49e5470df983b7858d732ac410651ffe3
   models/components/searchkind.go:
-    last_write_checksum: sha1:a27fd292a0cd2ed45f5d106fbc9d3069b6751c25
+    last_write_checksum: sha1:ca946604e098d6b80dd344173d0c4898c51f6d74
   models/components/searchrequest.go:
     last_write_checksum: sha1:70adfae1f1b35601d9184745f10122666cf0e7b5
   models/components/searchstatus.go:
@@ -2645,7 +2645,7 @@ trackedFiles:
   models/operations/updatesettings.go:
     last_write_checksum: sha1:9d831829c1a1be8e6e1643d8e38399d6ff90d16c
   noresponse.go:
-    last_write_checksum: sha1:71ed6c4e49eb8b8360310ef751a385b7943f32f5
+    last_write_checksum: sha1:80a41db8fb1d97b5abc1db1e68cfa3774fe59c2a
   operations.go:
     last_write_checksum: sha1:ce9e11910d81c21d2c8cb48fdfaecdf0660785a7
   optionalnullable/optionalnullable.go:
@@ -5224,7 +5224,7 @@ examples:
         application/json: {"record_id": "rec_3f9a1c22d4e5b6a73f9a1c22d4e5b6a7", "field": "username", "table": "FORUM_EXAMPLE_COM_2019"}
       responses:
         "202":
-          application/json: {"search_id": "srh_01JA2Z8K6Q4V7W9XBCDEFGHJKM", "record_id": "rec_3f9a1c22d4e5b6a73f9a1c22d4e5b6a7", "field": "username", "table": "FORUM_EXAMPLE_COM_2019", "kind": "email", "value": "jordanexample42", "status": "completed", "sources": 369225, "answered": 317146, "found": 776513, "estimated_spend": 346465, "spent": 341223, "requested_by": "user_2abc", "created_at": "2026-01-01T00:00:00Z", "finished_at": "2026-01-01T00:00:05Z"}
+          application/json: {"search_id": "srh_01JA2Z8K6Q4V7W9XBCDEFGHJKM", "record_id": "rec_3f9a1c22d4e5b6a73f9a1c22d4e5b6a7", "field": "username", "table": "FORUM_EXAMPLE_COM_2019", "kind": "phone", "value": "jordanexample42", "status": "completed", "sources": 369225, "answered": 317146, "found": 776513, "estimated_spend": 346465, "spent": 341223, "requested_by": "user_2abc", "created_at": "2026-01-01T00:00:00Z", "finished_at": "2026-01-01T00:00:05Z"}
         "400":
           application/problem+json: {"type": "https://docs.noresponse.org/errors/invalid_request", "title": "Invalid request", "status": 400, "detail": "identifiers: at least one of email, username or phone is required.", "instance": "/v1/assessments", "code": "webhook_url_refused", "request_id": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c", "invalid_params": [{"field": "identifiers", "reason": "at least one of email, username or phone is required", "example": "new.user@example.com"}]}
         "401":

@@ -9,7 +9,7 @@ type Search struct {
 	Field string `json:"field"`
 	// The one breach table searched, when the search was of one table.
 	Table *string `json:"table,omitzero"`
-	// The kind of the value searched.
+	// The kind of the value searched. A domain search finds the leaked rows of every email address at the domain.
 	Kind SearchKind `json:"kind"`
 	// The value searched: the field's cleaned value, else as the source wrote it.
 	Value string `json:"value"`

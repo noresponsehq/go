@@ -2,7 +2,7 @@ package components
 
 // RecordMatch - One searched value that found the record.
 type RecordMatch struct {
-	// The kind of searched value: email, phone, username, ip, name, password, hash, or handle for a profile read of a handle.
+	// The kind of searched value: email, phone, username, ip, name, password, hash, domain, or handle for a profile read of a handle.
 	By string `json:"by"`
 	// The field the searched value hit, when the record holds it.
 	Field *string `json:"field,omitzero"`
