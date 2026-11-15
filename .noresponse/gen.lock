@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: 25ddae46-795d-45f5-b455-3f48c41d440e
 management:
-  docChecksum: d0a9087a9ebee84d500948a3022a3790
+  docChecksum: 8c217f661e091f63535dfd8d529c7a26
   docVersion: "1"
   speakeasyVersion: internal
   generationVersion: internal
-  releaseVersion: 13.0.2
-  configChecksum: 86cbb81bedd54e1060b9e72774272154
+  releaseVersion: 13.0.3
+  configChecksum: d289ca0c31f632c5acf4fff922e02f7e
 features:
   go:
     additionalDependencies: 0.1.0
@@ -1041,7 +1041,7 @@ trackedFiles:
   docs/models/operations/createcustomerexportresponse.md:
     last_write_checksum: sha1:ba7ff6fb1137128f5290d1e420ac41204541ee6f
   docs/models/operations/creategrouprequest.md:
-    last_write_checksum: sha1:ed25bcc3241d51dc6f073357f3c120744b4dac86
+    last_write_checksum: sha1:dbf9ebb25bbd010a614767aa1a928cad2b3fe823
   docs/models/operations/creategroupresponse.md:
     last_write_checksum: sha1:1fc828fc0898e8f30947a5146a49dd1077775e17
   docs/models/operations/createintegrationresponse.md:
@@ -1405,7 +1405,7 @@ trackedFiles:
   docs/models/operations/startscreeningresponse.md:
     last_write_checksum: sha1:951ab6ba12d0bc225ad570bf58669ddd1f48ece1
   docs/models/operations/startsearchrequest.md:
-    last_write_checksum: sha1:3542b9634d183e09c0da96de040d31a3f8be708e
+    last_write_checksum: sha1:979e56017a03690b02ec537e37ef7e6b7f309c2a
   docs/models/operations/startsearchresponse.md:
     last_write_checksum: sha1:d50dd6f9b57a7cf625f9deaf3f4dbea563e8cefc
   docs/models/operations/summarizeworkspaceoperationsrequest.md:
@@ -1449,7 +1449,7 @@ trackedFiles:
   docs/sdks/exports/README.md:
     last_write_checksum: sha1:a1248ff9fa008f7a2d9f3f913687087a06b7f5bb
   docs/sdks/groups/README.md:
-    last_write_checksum: sha1:2ba4f169007c3d76e6b0d9fa55cd1aae13bd2b20
+    last_write_checksum: sha1:183f45e02474329bc4c34929dc25d87101afa4de
   docs/sdks/integrations/README.md:
     last_write_checksum: sha1:d13f2894eb50972e25a6e09a93009da8a4a8647e
   docs/sdks/invites/README.md:
@@ -1483,7 +1483,7 @@ trackedFiles:
   go.mod:
     last_write_checksum: sha1:a1c05cb259179664ea2cd29f52bbfd1801310ee1
   groups.go:
-    last_write_checksum: sha1:20c4f779b5f566d59a0797212b4943aac531b9c5
+    last_write_checksum: sha1:7fdb5da91e0211796250ebaab5ddd4ae9cb6fc65
   integrations.go:
     last_write_checksum: sha1:c93bc3b47d9eeea0b26b5dbd470f75a14048563c
   internal/config/sdkconfiguration.go:
@@ -2439,7 +2439,7 @@ trackedFiles:
   models/operations/createcustomerexport.go:
     last_write_checksum: sha1:065ea8d1e111eda710c1d9ef4298b0a4ec7dc8a2
   models/operations/creategroup.go:
-    last_write_checksum: sha1:a25a8ca59859717d9c8590c205efb8917f8e9944
+    last_write_checksum: sha1:fd16f5f1c3c579050f1bdbb40c2aa8ae66e9107a
   models/operations/createintegration.go:
     last_write_checksum: sha1:a5f4d6b3e312f681b6d0ca7fc4bb5cac827b3a19
   models/operations/createinvite.go:
@@ -2568,8 +2568,10 @@ trackedFiles:
     last_write_checksum: sha1:240ae479dd0863827df53d377671a5a17538053d
   models/operations/listwebhookendpoints.go:
     last_write_checksum: sha1:779e8a942a5b85156e39fba6ca07cfab2e63d196
+  models/operations/method_options.go:
+    last_write_checksum: sha1:e543d0e151d8c6b1a8e3e53e32cde9d92b16a79a
   models/operations/options.go:
-    last_write_checksum: sha1:6a42a438ec9b0b3653f5a8c080ae81525644c8c0
+    last_write_checksum: sha1:8430908c1b00394712b74803e1994582436fcee2
   models/operations/previewlist.go:
     last_write_checksum: sha1:be01927eac7185106ff33c8ffba6021ec0af6ce9
   models/operations/previewpolicy.go:
@@ -2629,7 +2631,7 @@ trackedFiles:
   models/operations/startscreening.go:
     last_write_checksum: sha1:5260b5195f42b5d508da872d541608fcc959eafc
   models/operations/startsearch.go:
-    last_write_checksum: sha1:92c25664a79b5e5074ea8fc180846d79087844ec
+    last_write_checksum: sha1:415e08a1ab87190d15910358ca6dc8942f7f1697
   models/operations/summarizeworkspaceoperations.go:
     last_write_checksum: sha1:fdefa274da1da193bbfb95c09b01af7918ba5a7e
   models/operations/updateauditretention.go:
@@ -2645,7 +2647,7 @@ trackedFiles:
   models/operations/updatesettings.go:
     last_write_checksum: sha1:02a4167768f4920e6e5eeee76a6596caf550411b
   noresponse.go:
-    last_write_checksum: sha1:c98d9ed2615e38db6fef40142c9d31e96b364d09
+    last_write_checksum: sha1:3584fb385d6cca47156580792d73ad6ffd987239
   operations.go:
     last_write_checksum: sha1:7be47a08a234e28bb62485cd072ac52204840851
   optionalnullable/optionalnullable.go:
@@ -5018,6 +5020,8 @@ examples:
         path:
           workspace_id: "tnt_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
           environment: "live"
+        header:
+          Idempotency-Key: "request-01JA2Z8K6Q4V7W9XBCDEFGHJKM"
       requestBody:
         application/json: {"name": "Annual shareholder meeting", "starts_at": "2026-01-01T00:00:00Z", "ends_at": "2026-01-02T00:00:00Z", "venue": "Example Convention Centre", "host": "Example Holdings", "principals": [{"name": "Alex Principal", "aliases": ["Alex P"]}], "topics": ["executive pay"]}
       responses:
@@ -5220,6 +5224,8 @@ examples:
           environment: "live"
           group_id: "grp_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
           person_id: "per_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+        header:
+          Idempotency-Key: "request-01JA2Z8K6Q4V7W9XBCDEFGHJKM"
       requestBody:
         application/json: {"record_id": "rec_3f9a1c22d4e5b6a73f9a1c22d4e5b6a7", "field": "username", "table": "FORUM_EXAMPLE_COM_2019"}
       responses:

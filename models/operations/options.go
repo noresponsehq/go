@@ -36,6 +36,20 @@ type Options struct {
 	URLOverride          *string
 	SetHeaders           map[string]string
 	SkipDeserialization  *bool
+	methodArguments      map[string]any
+}
+
+func (o *Options) setMethodArgument(key string, value any) {
+	if o.methodArguments == nil {
+		o.methodArguments = make(map[string]any)
+	}
+	o.methodArguments[key] = value
+}
+
+// GetMethodArgument returns a generated optional method argument by its opaque key.
+func (o *Options) GetMethodArgument(key string) (any, bool) {
+	value, ok := o.methodArguments[key]
+	return value, ok
 }
 
 type Option func(*Options, ...string) error

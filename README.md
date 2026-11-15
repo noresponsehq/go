@@ -28,6 +28,7 @@ import (
 
 	noresponse "github.com/noresponsehq/go/v13"
 	"github.com/noresponsehq/go/v13/models/components"
+	"github.com/noresponsehq/go/v13/models/operations"
 )
 
 func main() {
@@ -36,7 +37,7 @@ func main() {
 	workspaceID := os.Getenv("NORESPONSE_WORKSPACE")
 	env := components.KeyEnvironmentTest
 
-	group, err := client.Groups.Create(ctx, workspaceID, env, components.GroupRequest{Name: "Case 2026-114", StartsAt: "2026-12-03T09:30:00Z"})
+	group, err := client.Groups.Create(ctx, workspaceID, env, components.GroupRequest{Name: "Case 2026-114", StartsAt: "2026-12-03T09:30:00Z"}, operations.WithGroupsCreateIdempotencyKey("case-2026-114-create"))
 	if err != nil {
 		log.Fatal(err)
 	}

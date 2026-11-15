@@ -1,5 +1,11 @@
 # Changelog
 
+## 13.0.3
+
+* `Sdk.Groups.Create()`:  `request.IdempotencyKey` **Added**
+* `Sdk.Groups.StartSearch()`: 
+  *  `request.Request.IdempotencyKey` **Added**
+
 ## 13.0.2
 
 No changes detected.

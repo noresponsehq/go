@@ -6772,13 +6772,16 @@
           "groups"
         ],
         "summary": "Create a group to screen.",
-        "description": "Create a group to screen: its name, start, venue, host, the principals it protects and the sensitive topics posts are read against. An environment holds at most 1000 groups.",
+        "description": "Create a group to screen: its name, start, venue, host, the principals it protects and the sensitive topics posts are read against. An environment holds at most 1000 groups. Send an Idempotency-Key to repeat a request safely while the group is retained. A replay returns the same group in its current state; changed input returns 409.",
         "parameters": [
           {
             "$ref": "#/components/parameters/WorkspaceId"
           },
           {
             "$ref": "#/components/parameters/Environment"
+          },
+          {
+            "$ref": "#/components/parameters/ResourceIdempotencyKey"
           }
         ],
         "requestBody": {
@@ -6821,7 +6824,8 @@
         ],
         "x-noresponse-retries": {
           "strategy": "none"
-        }
+        },
+        "x-noresponse-go-optional-method-arguments": "shared-options"
       }
     },
     "/v1/workspaces/{workspace_id}/groups/{environment}/{group_id}": {
@@ -7334,7 +7338,7 @@
           "groups"
         ],
         "summary": "Search again on a value of one of a person's records.",
-        "description": "Search again on the value of one field of one of a person's records, named by the record and field. Nothing searches again by itself. A password or hash search counts its breach rows first and runs only when you run it; read the person to see each search and what it found.",
+        "description": "Search again on the value of one field of one of a person's records, named by the record and field. Nothing searches again by itself. A password or hash search counts its breach rows first and runs only when you run it; read the person to see each search and what it found. Send an Idempotency-Key to return the same search after a lost answer, even after it completes. A different request with the same key returns 409. Use a new key for a deliberate new search.",
         "parameters": [
           {
             "$ref": "#/components/parameters/WorkspaceId"
@@ -7347,6 +7351,9 @@
           },
           {
             "$ref": "#/components/parameters/PersonId"
+          },
+          {
+            "$ref": "#/components/parameters/ResourceIdempotencyKey"
           }
         ],
         "requestBody": {
@@ -7386,7 +7393,10 @@
           {
             "apiKey": []
           }
-        ]
+        ],
+        "x-noresponse-retries": {
+          "strategy": "none"
+        }
       }
     },
     "/v1/workspaces/{workspace_id}/groups/{environment}/{group_id}/people/{person_id}/searches/{search_id}/run": {
@@ -22421,6 +22431,19 @@
           "pattern": "^srh_[0-7][0-9A-HJKMNP-TV-Z]{25}$",
           "example": "srh_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
         }
+      },
+      "ResourceIdempotencyKey": {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": false,
+        "description": "Opaque request key, 16 to 128 characters. Repeating the key and request returns the same resource in its current state while it is retained. A different request with the same key answers 409. Use a new key for a deliberate new operation. Keys are scoped to the environment and operation; person searches also scope them to the group and person.",
+        "schema": {
+          "type": "string",
+          "minLength": 16,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9._:-]{16,128}$",
+          "example": "request-01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+        }
       }
     },
     "responses": {
@@ -29652,6 +29675,12 @@
               "example": "/v1/assessments/asm_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
             },
             "required": true
+          },
+          "Idempotent-Replayed": {
+            "schema": {
+              "type": "boolean"
+            },
+            "description": "True when this response reuses the resource created by this request key."
           }
         },
         "content": {
@@ -30464,6 +30493,12 @@
               "example": "2"
             },
             "required": true
+          },
+          "Idempotent-Replayed": {
+            "schema": {
+              "type": "boolean"
+            },
+            "description": "True when this response reuses the resource created by this request key."
           }
         },
         "content": {
