@@ -12957,7 +12957,7 @@
           "chesscom",
           "synthetic"
         ],
-        "description": "A platform a screening can cover. github and scratch through flickr are each one read of the public profile a handle names, with no posts; chesscom also reads the profile's stats, clubs and last two months of games, for its activity and contacts. synthetic is the deterministic connector's own platform, for exercising the product end to end with no network."
+        "description": "A platform a screening can cover. github and scratch through flickr are each one read of the public profile a handle names, with no posts; chesscom also reads the profile's stats, clubs and last two months of games, for its activity and contacts, and through a signed-in session up to 100 of the player's friends, each a contact with the date the friendship began. synthetic is the deterministic connector's own platform, for exercising the product end to end with no network."
       },
       "HighestBand": {
         "enum": [
@@ -17919,7 +17919,7 @@
           "bot": "Whether the site marks the account as a bot (`flag`).",
           "caller_category": "The category callers give a phone number, such as telemarketer (`label`).",
           "chargebacks": "How many chargebacks a shop recorded against the account, or whether it has one (`count` or `flag`).",
-          "contact": "Another account on the same platform the account deals with, such as an opponent it plays most or a follower (`username`). Fields beside it under the same name say how, how often and when last. It names another person, never the account's owner.",
+          "contact": "Another account on the same platform the account deals with, such as an opponent it plays most, a friend or a follower (`username`). Fields beside it under the same name say how, how often, when last and since when. They also give the contact's own name and location where the platform shows them. It names another person, never the account's owner.",
           "cover_picture": "The banner picture of the profile (`image`).",
           "declines": "How many of the account's payments a shop declined (`count`).",
           "deleted": "Whether the account is deleted or inactive (`flag`).",

@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: 25ddae46-795d-45f5-b455-3f48c41d440e
 management:
-  docChecksum: 2e39af07626708e73f57c28a29e99785
+  docChecksum: e5ef62689d56a5a5dddd8fa2269350ff
   docVersion: "1"
   speakeasyVersion: internal
   generationVersion: internal
-  releaseVersion: 12.0.31
-  configChecksum: 81a6dce9cb92d71c10e405f45c7b73b2
+  releaseVersion: 12.0.32
+  configChecksum: 8dd51e812103ae82914cc7a50832caf3
 features:
   go:
     additionalDependencies: 0.1.0
@@ -381,9 +381,9 @@ trackedFiles:
   docs/models/components/groupupdate.md:
     last_write_checksum: sha1:80f2436091cb6a9309852e60d1184c883176b3ef
   docs/models/components/handle.md:
-    last_write_checksum: sha1:d0415167d65c2f485b757d7fdbfef2fa8d04d404
+    last_write_checksum: sha1:0825e705fcf1acbef15b19e6640c2f267214f731
   docs/models/components/handleplatform.md:
-    last_write_checksum: sha1:a0f481a1216c89df931f5f84c3a0799718187814
+    last_write_checksum: sha1:baf161969e1a78e0f2f0522606f4b2e8e27cd2f0
   docs/models/components/highestband.md:
     last_write_checksum: sha1:6f0cf7cc018fae8abed5385dbf56d203c79747e3
   docs/models/components/hookpoint.md:
@@ -855,13 +855,13 @@ trackedFiles:
   docs/models/components/screeningnotanalysedreason.md:
     last_write_checksum: sha1:e094e685783e80be6d8509022df22b9eb299fa77
   docs/models/components/screeningplatformcoverage.md:
-    last_write_checksum: sha1:1cd6977d62bee9887d5d064f53296dccbe929cbf
+    last_write_checksum: sha1:eba5034e6c7fc89ad3bb3d98bfd6790de03dee59
   docs/models/components/screeningplatformcoveragestatus.md:
     last_write_checksum: sha1:588a8e4a0c5faf81ad8f17a65bf738747372bf9c
   docs/models/components/screeningpost.md:
     last_write_checksum: sha1:9d49fa0bf96ff7cef73af300cede9de32354268d
   docs/models/components/screeningprofile.md:
-    last_write_checksum: sha1:5c6c9fbcede7cd34e715b0f151741c1014ab5fbf
+    last_write_checksum: sha1:431cd64a4509c663cace496da1e462aef46cd64b
   docs/models/components/screeningrequest.md:
     last_write_checksum: sha1:0b490fcad65e08356cafc8e8ed60976c85a808dd
   docs/models/components/screeningspend.md:
@@ -1857,9 +1857,9 @@ trackedFiles:
   models/components/groupupdate.go:
     last_write_checksum: sha1:05f0715ea0bc93a4ce42658fdcda6a7ce4b80836
   models/components/handle.go:
-    last_write_checksum: sha1:efdba52953970697e1a2d1a6cf27b4805819211a
+    last_write_checksum: sha1:578af70807e4a2e8b975632809769e3a247568bd
   models/components/handleplatform.go:
-    last_write_checksum: sha1:781ebb5b802c413ad92b3d9df48b61402cbc0e32
+    last_write_checksum: sha1:ca23c2406eba569145457fec1e669bf6ab63db19
   models/components/highestband.go:
     last_write_checksum: sha1:c7dd6280a36e1a8d6a2d8bf94c8daad34d3a1370
   models/components/hookpoint.go:
@@ -2153,7 +2153,7 @@ trackedFiles:
   models/components/recordremaining.go:
     last_write_checksum: sha1:733eb86220cf3ea7049122608e2a75f7c622f387
   models/components/recordrole.go:
-    last_write_checksum: sha1:8e04270b087467982ce66e785c89bac3c1ac1281
+    last_write_checksum: sha1:c1f445136dbf087008a2c386fb8c10602cef45b2
   models/components/recordsource.go:
     last_write_checksum: sha1:9b4af615de5ffb8cf855be9afe3d6a12303ca6f8
   models/components/recordverdict.go:
@@ -2297,13 +2297,13 @@ trackedFiles:
   models/components/screeningnotanalysedreason.go:
     last_write_checksum: sha1:2522008abf9af35ba4f607c5baf60fdae423c0a7
   models/components/screeningplatformcoverage.go:
-    last_write_checksum: sha1:61895ac420b8d4f52b1b5f39eecc53bfbdf8fe00
+    last_write_checksum: sha1:95ff7a21d5f24507993965b44b788c8ad562e764
   models/components/screeningplatformcoveragestatus.go:
     last_write_checksum: sha1:b2c72dafe682a9b1d062f3e6fddd77fbf9b173fb
   models/components/screeningpost.go:
     last_write_checksum: sha1:110106146bcfa05005366f72df00f3fb78be3231
   models/components/screeningprofile.go:
-    last_write_checksum: sha1:0d4914133442cfba4e04fc5e5942d667cf8e1457
+    last_write_checksum: sha1:c33bfbbfebe1f9e88bcea09d51f31da7c8e7384f
   models/components/screeningrequest.go:
     last_write_checksum: sha1:1074178e865e151478cda59308e4c5a212a8f5d2
   models/components/screeningspend.go:
@@ -2653,7 +2653,7 @@ trackedFiles:
   models/operations/updatesettings.go:
     last_write_checksum: sha1:9d831829c1a1be8e6e1643d8e38399d6ff90d16c
   noresponse.go:
-    last_write_checksum: sha1:971a54f27f13ddf122a2227e48b09469a5ef9aa4
+    last_write_checksum: sha1:5e8f3606acc7572ef30887dc8b389bdaad27af57
   operations.go:
     last_write_checksum: sha1:ce9e11910d81c21d2c8cb48fdfaecdf0660785a7
   optionalnullable/optionalnullable.go:

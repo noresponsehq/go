@@ -1,5 +1,9 @@
 # Changelog
 
+## 12.0.32
+
+No changes detected.
+
 ## 12.0.31
 
 * `Sdk.Settings.Get()`:  `response.RefusedSources[]` **Changed**
