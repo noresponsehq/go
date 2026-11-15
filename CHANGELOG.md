@@ -1,5 +1,9 @@
 # Changelog
 
+## 12.0.29
+
+* `Sdk.Groups.GetPerson()`:  `response.Lookup.Checks[].Unanswered` **Added**
+
 ## 12.0.28
 
 No changes detected.

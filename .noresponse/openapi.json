@@ -20086,6 +20086,14 @@
           "reason": {
             "$ref": "#/components/schemas/FailureReason",
             "description": "Why a source did not answer, or none could be asked: the lane's most specific failure, or insufficient_evidence when every source that did not answer could not tell (inconclusive). A lane with a reason reads partial or not_covered."
+          },
+          "unanswered": {
+            "type": "array",
+            "maxItems": 256,
+            "description": "Each source that did not give a definite answer, by connector, with why: the same connector id a record's source names. A source of the lane that no connector covers is counted in sources and not named here.",
+            "items": {
+              "$ref": "#/components/schemas/ScreeningLookupCheckUnansweredItem"
+            }
           }
         },
         "description": "What came of one lane of the lookups for one identifier."
@@ -20098,6 +20106,26 @@
           "not_covered"
         ],
         "description": "found: a source found the identifier. not_found: every source answered and none found it. partial: the sources that answered found nothing and the others did not answer. not_covered: no source answered. A lookup that failed reads partial or not_covered, not not_found."
+      },
+      "ScreeningLookupCheckUnansweredItem": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "connector",
+          "reason"
+        ],
+        "properties": {
+          "connector": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "description": "The id of the connector that did not answer: breach for the breach search.",
+            "example": "github"
+          },
+          "reason": {
+            "$ref": "#/components/schemas/FailureReason"
+          }
+        }
       },
       "ScreeningMatch": {
         "type": "object",

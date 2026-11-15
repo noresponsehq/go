@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: 25ddae46-795d-45f5-b455-3f48c41d440e
 management:
-  docChecksum: 8c19c30ca140167ca9a4d2be4c6a6260
+  docChecksum: aef5662028ea3dd500fe672dc8c48ff3
   docVersion: "1"
   speakeasyVersion: internal
   generationVersion: internal
-  releaseVersion: 12.0.28
-  configChecksum: e750c20dcfd69f14d68cf97418b4ccba
+  releaseVersion: 12.0.29
+  configChecksum: 04010e6f38f9f919af39e9bc8977be54
 features:
   go:
     additionalDependencies: 0.1.0
@@ -835,9 +835,11 @@ trackedFiles:
   docs/models/components/screeninglookup.md:
     last_write_checksum: sha1:33a5ab43da4b5da6aa1e2872b92a069a6523b840
   docs/models/components/screeninglookupcheck.md:
-    last_write_checksum: sha1:1eb7987dd0a2c9fa64d35956665722891d94a4d4
+    last_write_checksum: sha1:eb4b1d40dec6c8c608ef1b3562ae5e532976ca89
   docs/models/components/screeninglookupcheckstatus.md:
     last_write_checksum: sha1:b131326acc2f377eaad122f9798aab31d5753a71
+  docs/models/components/screeninglookupcheckunanswereditem.md:
+    last_write_checksum: sha1:416f9007a49bd4507625619bd52accd0f67ede18
   docs/models/components/screeningmatch.md:
     last_write_checksum: sha1:fa3b783aa139187c17a48cd23d9af6e71a0cd8a3
   docs/models/components/screeningmatchevidence.md:
@@ -2273,9 +2275,11 @@ trackedFiles:
   models/components/screeninglookup.go:
     last_write_checksum: sha1:f1f7344e69038d0cefd1ffbcaca0e64ceb8a66be
   models/components/screeninglookupcheck.go:
-    last_write_checksum: sha1:7a27c6caf8c32f2d21852fddfcd665dd1e414383
+    last_write_checksum: sha1:5567467a5d4f5b3124f5553cfd3c05a82d1043fe
   models/components/screeninglookupcheckstatus.go:
     last_write_checksum: sha1:5f6d643066711d688e83866f3c969665b989f4b8
+  models/components/screeninglookupcheckunanswereditem.go:
+    last_write_checksum: sha1:32d06c2c4ad8915b75262e120959ba7dd643993d
   models/components/screeningmatch.go:
     last_write_checksum: sha1:9233d7fb1c5caab15548eb19c56a823277dd933d
   models/components/screeningmatchevidence.go:
@@ -2645,7 +2649,7 @@ trackedFiles:
   models/operations/updatesettings.go:
     last_write_checksum: sha1:9d831829c1a1be8e6e1643d8e38399d6ff90d16c
   noresponse.go:
-    last_write_checksum: sha1:13e7457b90c35b603d60e9f19c709e137f407d90
+    last_write_checksum: sha1:44f31a19091d3c2468e790eec292046a97057497
   operations.go:
     last_write_checksum: sha1:ce9e11910d81c21d2c8cb48fdfaecdf0660785a7
   optionalnullable/optionalnullable.go:

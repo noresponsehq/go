@@ -1,5 +1,9 @@
 package components
 
+import (
+	"github.com/noresponsehq/go/v12/internal/utils"
+)
+
 // ScreeningLookupCheck - What came of one lane of the lookups for one identifier.
 type ScreeningLookupCheck struct {
 	Identifier IdentifierSearchKind `json:"identifier"`
@@ -15,6 +19,19 @@ type ScreeningLookupCheck struct {
 	Found int64 `json:"found"`
 	// Why a signal or source did not produce a definite found/not_found. timed_out means the source missed the request deadline; a continuation may still settle it. deferred means the (source, identifier) pair is async-only and was not attempted on the synchronous path; a continuation settles it.
 	Reason *FailureReason `json:"reason,omitzero"`
+	// Each source that did not give a definite answer, by connector, with why: the same connector id a record's source names. A source of the lane that no connector covers is counted in sources and not named here.
+	Unanswered []ScreeningLookupCheckUnansweredItem `json:"unanswered,omitzero"`
+}
+
+func (s ScreeningLookupCheck) MarshalJSON() ([]byte, error) {
+	return utils.MarshalJSON(s, "", false)
+}
+
+func (s *ScreeningLookupCheck) UnmarshalJSON(data []byte) error {
+	if err := utils.UnmarshalJSON(data, &s, "", false, nil); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (s *ScreeningLookupCheck) GetIdentifier() IdentifierSearchKind {
@@ -64,4 +81,11 @@ func (s *ScreeningLookupCheck) GetReason() *FailureReason {
 		return nil
 	}
 	return s.Reason
+}
+
+func (s *ScreeningLookupCheck) GetUnanswered() []ScreeningLookupCheckUnansweredItem {
+	if s == nil {
+		return nil
+	}
+	return s.Unanswered
 }
