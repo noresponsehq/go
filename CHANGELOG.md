@@ -1,5 +1,15 @@
 # Changelog
 
+## 12.0.34
+
+* `Sdk.Settings.Get()`:  `response.RefusedSources[].Enum(chesscomEmail)` **Added**
+* `Sdk.Settings.Update()`: 
+  *  `request.Body.RefusedSources[].Enum(chesscomEmail)` **Added**
+  *  `response.RefusedSources[].Enum(chesscomEmail)` **Added**
+* `Sdk.Settings.ListHistory()`:  `response.Items[].Settings.RefusedSources[].Enum(chesscomEmail)` **Added**
+* `Sdk.Settings.Restore()`:  `response.RefusedSources[].Enum(chesscomEmail)` **Added**
+* `Sdk.Evaluations.Publish()`:  `response.RefusedSources[].Enum(chesscomEmail)` **Added**
+
 ## 12.0.33
 
 No changes detected.
