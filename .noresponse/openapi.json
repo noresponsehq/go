@@ -17618,7 +17618,7 @@
             "example": "in 4 breach rows"
           }
         },
-        "description": "How distinctive a searchable value is: an email, phone, username, password, hash, person name or IP. Absent for other values, and when its rating could not be worked out, such as when a count failed."
+        "description": "How distinctive a searchable value is: an email, phone, username, password, hash, person name or IP. Absent for other values, for a field with no value, and when its rating could not be worked out, such as when a count failed."
       },
       "RecordField": {
         "type": "object",
@@ -20852,7 +20852,7 @@
             "type": "string",
             "minLength": 1,
             "maxLength": 500,
-            "description": "The name of the record's field whose value to search. Its kind must be email, phone, username, person_name, password, hash or ip.",
+            "description": "The name of the record's field whose value to search. Its kind must be email, phone, username, person_name, password, hash, ip or domain, and it must have a value: a field the source masked or that could not be cleaned is not searched.",
             "example": "username"
           },
           "table": {

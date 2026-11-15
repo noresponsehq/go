@@ -18,7 +18,7 @@ type RecordField struct {
 	Value *string `json:"value,omitzero"`
 	// What the value shows of itself beyond its kind: the likely algorithm of a hash, the likely coin of a crypto address or the currency of an amount.
 	Detail *string `json:"detail,omitzero"`
-	// How distinctive a searchable value is: an email, phone, username, password, hash, person name or IP. Absent for other values, and when its rating could not be worked out, such as when a count failed.
+	// How distinctive a searchable value is: an email, phone, username, password, hash, person name or IP. Absent for other values, for a field with no value, and when its rating could not be worked out, such as when a count failed.
 	Distinctive *RecordDistinctive `json:"distinctive,omitzero"`
 }
 
