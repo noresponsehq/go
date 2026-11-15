@@ -6,7 +6,7 @@ import (
 
 // Record - One answer from one source: where it came from, what found it and every field it holds. A person's lookup records also say how likely each is the person.
 type Record struct {
-	// Made from the source and the fields' names and original values, so the same answer found twice is one record with the same id.
+	// Made from the source and the fields' names and original values, so the same answer found twice is one record with the same id. Its fields are typed as its latest finding typed them.
 	ID string `json:"id"`
 	// Where a record came from.
 	Source RecordSource `json:"source"`

@@ -1,5 +1,9 @@
 # Changelog
 
+## 12.0.28
+
+No changes detected.
+
 ## 12.0.27
 
 No changes detected.

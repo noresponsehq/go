@@ -17528,7 +17528,7 @@
           "id": {
             "type": "string",
             "pattern": "^rec_[0-9a-f]{32}$",
-            "description": "Made from the source and the fields' names and original values, so the same answer found twice is one record with the same id.",
+            "description": "Made from the source and the fields' names and original values, so the same answer found twice is one record with the same id. Its fields are typed as its latest finding typed them.",
             "example": "rec_3f9a1c22d4e5b6a73f9a1c22d4e5b6a7"
           },
           "source": {
