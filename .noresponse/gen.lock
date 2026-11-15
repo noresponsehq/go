@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: 25ddae46-795d-45f5-b455-3f48c41d440e
 management:
-  docChecksum: 1ab2c6ed8628c389e577d8fa1513bb35
+  docChecksum: 887b47f37c8b2d2cfd752fa8ff320b2e
   docVersion: "1"
   speakeasyVersion: internal
   generationVersion: internal
-  releaseVersion: 12.0.12
-  configChecksum: 24c69cbadd16ef2aeb121290cf7768dd
+  releaseVersion: 12.0.13
+  configChecksum: d4763f46972ed4e2f5a76503cc1affc6
 features:
   go:
     additionalDependencies: 0.1.0
@@ -909,7 +909,7 @@ trackedFiles:
   docs/models/components/source.md:
     last_write_checksum: sha1:3f74f5866b128d3832a953a399ab230918ebd3c4
   docs/models/components/sourceid.md:
-    last_write_checksum: sha1:381c4efd6b249d09b50a0bfa48394fd15bfcd413
+    last_write_checksum: sha1:d914521e17252364f1da303e9b45227f6fd6da07
   docs/models/components/status.md:
     last_write_checksum: sha1:0a79d28f576da9b86682a4f71aa5b69f2a2502e2
   docs/models/components/thresholds.md:
@@ -2341,7 +2341,7 @@ trackedFiles:
   models/components/source.go:
     last_write_checksum: sha1:1741e5c100220a3563bef3549f67ee9381ceaefb
   models/components/sourceid.go:
-    last_write_checksum: sha1:e2ebab7aae609d47126c4c0dbbe91be54ef80b0f
+    last_write_checksum: sha1:66ad8953fdfc8ff4f7f7a523dc97c48842ce7b26
   models/components/status.go:
     last_write_checksum: sha1:250e13a1a507d608c84475d622fe8e462d2814ef
   models/components/thresholds.go:
@@ -2645,7 +2645,7 @@ trackedFiles:
   models/operations/updatesettings.go:
     last_write_checksum: sha1:9d831829c1a1be8e6e1643d8e38399d6ff90d16c
   noresponse.go:
-    last_write_checksum: sha1:7025193cde1f40be74387544a03c2e87afd1b32a
+    last_write_checksum: sha1:746d0d867134e655be801794e9d76af5e69c13b2
   operations.go:
     last_write_checksum: sha1:ce9e11910d81c21d2c8cb48fdfaecdf0660785a7
   optionalnullable/optionalnullable.go:
@@ -4115,7 +4115,7 @@ examples:
         application/json: {"version": 157178, "expected_policy_version": 260899, "change_reason": "Adjust thresholds after reviewing retained evidence"}
       responses:
         "200":
-          application/json: {"workspace_id": "tnt_01JA2Z8K6Q4V7W9XBCDEFGHJKM", "environment": "live", "retention_days": 450670, "policy_version": 529327, "updated_by": "nrk_live_01JA2Z8K6Q4V7W9XBCDEFGHJKM", "updated_at": "2026-10-23T09:14:12.000Z", "flows": {"account_creation": {"step_up": 477126, "review": 980395, "default_depth": "quick", "inherits_account_creation": false, "admission": "immediate", "hold_seconds": 948838, "on_expiry": "block"}, "login": {"step_up": 867829, "review": 523593, "default_depth": "quick", "inherits_account_creation": false, "admission": "held", "hold_seconds": 363505, "on_expiry": "block"}, "purchase": {"step_up": 374559, "review": 194632, "default_depth": "quick", "inherits_account_creation": true, "admission": "held", "hold_seconds": 365509, "on_expiry": "allow"}}, "refused_sources": ["okru"], "screening_daily_cap": null}
+          application/json: {"workspace_id": "tnt_01JA2Z8K6Q4V7W9XBCDEFGHJKM", "environment": "live", "retention_days": 450670, "policy_version": 529327, "updated_by": "nrk_live_01JA2Z8K6Q4V7W9XBCDEFGHJKM", "updated_at": "2026-10-23T09:14:12.000Z", "flows": {"account_creation": {"step_up": 477126, "review": 980395, "default_depth": "quick", "inherits_account_creation": false, "admission": "immediate", "hold_seconds": 948838, "on_expiry": "block"}, "login": {"step_up": 867829, "review": 523593, "default_depth": "quick", "inherits_account_creation": false, "admission": "held", "hold_seconds": 363505, "on_expiry": "block"}, "purchase": {"step_up": 374559, "review": 194632, "default_depth": "quick", "inherits_account_creation": true, "admission": "held", "hold_seconds": 365509, "on_expiry": "allow"}}, "refused_sources": ["flickr"], "screening_daily_cap": null}
         "400":
           application/problem+json: {"type": "https://docs.noresponse.org/errors/invalid_request", "title": "Invalid request", "status": 400, "detail": "identifiers: at least one of email, username or phone is required.", "instance": "/v1/assessments", "code": "invalid_idempotency_key", "request_id": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c", "invalid_params": [{"field": "identifiers", "reason": "at least one of email, username or phone is required", "example": "new.user@example.com"}]}
         "401":

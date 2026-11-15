@@ -1,5 +1,15 @@
 # Changelog
 
+## 12.0.13
+
+* `Sdk.Settings.Get()`:  `response.RefusedSources[].Enum(whatsapp)` **Added**
+* `Sdk.Settings.Update()`: 
+  *  `request.Body.RefusedSources[].Enum(whatsapp)` **Added**
+  *  `response.RefusedSources[].Enum(whatsapp)` **Added**
+* `Sdk.Settings.ListHistory()`:  `response.Items[].Settings.RefusedSources[].Enum(whatsapp)` **Added**
+* `Sdk.Settings.Restore()`:  `response.RefusedSources[].Enum(whatsapp)` **Added**
+* `Sdk.Evaluations.Publish()`:  `response.RefusedSources[].Enum(whatsapp)` **Added**
+
 ## 12.0.12
 
 * `Sdk.Groups.ListPeople()`:  `response.Items[].Handles[].Platform` **Changed**
