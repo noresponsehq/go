@@ -1,6 +1,6 @@
 # HandlePlatform
 
-A platform a screening can cover. github and scratch through flickr are each one read of the public profile a handle names, with no posts. synthetic is the deterministic connector's own platform, for exercising the product end to end with no network.
+A platform a screening can cover. github and scratch through flickr are each one read of the public profile a handle names, with no posts; chesscom also reads the profile's stats, clubs and last two months of games, for its activity and contacts. synthetic is the deterministic connector's own platform, for exercising the product end to end with no network.
 
 ## Example Usage
 
@@ -43,4 +43,5 @@ custom := components.HandlePlatform("custom_value")
 | `HandlePlatformWordpress`       | wordpress                       |
 | `HandlePlatformOkru`            | okru                            |
 | `HandlePlatformFlickr`          | flickr                          |
+| `HandlePlatformChesscom`        | chesscom                        |
 | `HandlePlatformSynthetic`       | synthetic                       |

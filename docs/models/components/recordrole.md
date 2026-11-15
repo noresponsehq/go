@@ -31,6 +31,7 @@ custom := components.RecordRole("custom_value")
 | `RecordRoleBot`             | bot                         |
 | `RecordRoleCallerCategory`  | caller_category             |
 | `RecordRoleChargebacks`     | chargebacks                 |
+| `RecordRoleContact`         | contact                     |
 | `RecordRoleCoverPicture`    | cover_picture               |
 | `RecordRoleDeclines`        | declines                    |
 | `RecordRoleDeleted`         | deleted                     |

@@ -1,6 +1,6 @@
 package components
 
-// HandlePlatform - A platform a screening can cover. github and scratch through flickr are each one read of the public profile a handle names, with no posts. synthetic is the deterministic connector's own platform, for exercising the product end to end with no network.
+// HandlePlatform - A platform a screening can cover. github and scratch through flickr are each one read of the public profile a handle names, with no posts; chesscom also reads the profile's stats, clubs and last two months of games, for its activity and contacts. synthetic is the deterministic connector's own platform, for exercising the product end to end with no network.
 type HandlePlatform string
 
 const (
@@ -27,6 +27,7 @@ const (
 	HandlePlatformWordpress       HandlePlatform = "wordpress"
 	HandlePlatformOkru            HandlePlatform = "okru"
 	HandlePlatformFlickr          HandlePlatform = "flickr"
+	HandlePlatformChesscom        HandlePlatform = "chesscom"
 	HandlePlatformSynthetic       HandlePlatform = "synthetic"
 )
 
@@ -38,7 +39,7 @@ func (e HandlePlatform) ToPointer() *HandlePlatform {
 func (e *HandlePlatform) IsExact() bool {
 	if e != nil {
 		switch *e {
-		case "instagram", "x", "bluesky", "youtube", "tiktok", "facebook", "threads", "reddit", "telegram", "linkedin", "github", "scratch", "dailymotion", "substack", "duolingo", "dockerhub", "wikipedia", "internetarchive", "spotify", "patreon", "wordpress", "okru", "flickr", "synthetic":
+		case "instagram", "x", "bluesky", "youtube", "tiktok", "facebook", "threads", "reddit", "telegram", "linkedin", "github", "scratch", "dailymotion", "substack", "duolingo", "dockerhub", "wikipedia", "internetarchive", "spotify", "patreon", "wordpress", "okru", "flickr", "chesscom", "synthetic":
 			return true
 		}
 	}

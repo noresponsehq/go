@@ -26,6 +26,8 @@ const (
 	RecordRoleCallerCategory RecordRole = "caller_category"
 	// RecordRoleChargebacks How many chargebacks a shop recorded against the account, or whether it has one (`count` or `flag`).
 	RecordRoleChargebacks RecordRole = "chargebacks"
+	// RecordRoleContact Another account on the same platform the account deals with, such as an opponent it plays most or a follower (`username`). Fields beside it under the same name say how, how often and when last. It names another person, never the account's owner.
+	RecordRoleContact RecordRole = "contact"
 	// RecordRoleCoverPicture The banner picture of the profile (`image`).
 	RecordRoleCoverPicture RecordRole = "cover_picture"
 	// RecordRoleDeclines How many of the account's payments a shop declined (`count`).
@@ -160,7 +162,7 @@ func (e RecordRole) ToPointer() *RecordRole {
 func (e *RecordRole) IsExact() bool {
 	if e != nil {
 		switch *e {
-		case "account_id", "account_status", "account_type", "alternate_phone", "balance", "banned", "bio", "born", "bot", "caller_category", "chargebacks", "cover_picture", "declines", "deleted", "deleted_on", "department", "display_name", "email_verified", "expires", "first_name", "followers", "following", "friends", "full_address", "full_name", "handle", "headline", "interests", "job_title", "joined", "last_active", "last_ip", "last_name", "last_post", "last_updated", "level", "likes_given", "likes_received", "line_type", "linked_account", "location", "marked_spam", "middle_name", "nationality", "organisation", "other_ip", "paid", "password_changed", "payment_method", "picture", "points", "posts", "private", "profile_link", "profile_views", "rating", "referrals", "referrer", "report_count", "reputation", "reputation_label", "residence", "salutation", "school", "signature", "signup_ip", "site_role", "spam_score", "street", "trades", "verified", "warnings", "website":
+		case "account_id", "account_status", "account_type", "alternate_phone", "balance", "banned", "bio", "born", "bot", "caller_category", "chargebacks", "contact", "cover_picture", "declines", "deleted", "deleted_on", "department", "display_name", "email_verified", "expires", "first_name", "followers", "following", "friends", "full_address", "full_name", "handle", "headline", "interests", "job_title", "joined", "last_active", "last_ip", "last_name", "last_post", "last_updated", "level", "likes_given", "likes_received", "line_type", "linked_account", "location", "marked_spam", "middle_name", "nationality", "organisation", "other_ip", "paid", "password_changed", "payment_method", "picture", "points", "posts", "private", "profile_link", "profile_views", "rating", "referrals", "referrer", "report_count", "reputation", "reputation_label", "residence", "salutation", "school", "signature", "signup_ip", "site_role", "spam_score", "street", "trades", "verified", "warnings", "website":
 			return true
 		}
 	}
