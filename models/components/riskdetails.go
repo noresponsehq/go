@@ -1,7 +1,7 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v14/internal/utils"
+	"github.com/noresponsehq/go/v15/internal/utils"
 )
 
 // RiskDetails - Merged observations behind the summary, served only to a caller who may read evidence: no provider, source, origin, raw breach record or score.

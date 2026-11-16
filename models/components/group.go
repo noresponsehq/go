@@ -1,15 +1,15 @@
 package components
 
-// Group - A group and its screening context.
+// Group - A workspace group for a building, organization or event. Dates are optional and do not control person retention.
 type Group struct {
 	ID          string                   `json:"id"`
 	Environment AuditSettingsEnvironment `json:"environment"`
 	// The group's name.
 	Name string `json:"name"`
-	// When the group starts.
-	StartsAt string `json:"starts_at"`
-	// When the group ends, at or after its start; the start when omitted.
-	EndsAt string `json:"ends_at"`
+	// Optional event start; null for an ongoing group.
+	StartsAt *string `json:"starts_at"`
+	// Optional event end; requires starts_at and must be at or after it. Null when no end is set.
+	EndsAt *string `json:"ends_at"`
 	// Where the group is held.
 	Venue *string `json:"venue,omitzero"`
 	// The organisation hosting the group.
@@ -49,16 +49,16 @@ func (g *Group) GetName() string {
 	return g.Name
 }
 
-func (g *Group) GetStartsAt() string {
+func (g *Group) GetStartsAt() *string {
 	if g == nil {
-		return ""
+		return nil
 	}
 	return g.StartsAt
 }
 
-func (g *Group) GetEndsAt() string {
+func (g *Group) GetEndsAt() *string {
 	if g == nil {
-		return ""
+		return nil
 	}
 	return g.EndsAt
 }

@@ -1,7 +1,7 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v14/internal/utils"
+	"github.com/noresponsehq/go/v15/internal/utils"
 )
 
 type RiskSummaryEmail struct {

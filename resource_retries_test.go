@@ -6,8 +6,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/noresponsehq/go/v14/models/components"
-	"github.com/noresponsehq/go/v14/models/operations"
+	"github.com/noresponsehq/go/v15/models/components"
+	"github.com/noresponsehq/go/v15/models/operations"
+	"github.com/noresponsehq/go/v15/optionalnullable"
 )
 
 func TestGroupCreationKeepsItsArgumentsAndAcceptsARequestKeyOption(t *testing.T) {
@@ -20,7 +21,8 @@ func TestGroupCreationKeepsItsArgumentsAndAcceptsARequestKeyOption(t *testing.T)
 	}))
 	defer server.Close()
 	client := NewClient("nrk_test_kkkkkkkkkkkkkkkkkkkk", WithServerURL(server.URL))
-	body := components.GroupRequest{Name: "Retry test", StartsAt: "2026-12-03T09:30:00Z"}
+	start := "2026-12-03T09:30:00Z"
+	body := components.GroupRequest{Name: "Retry test", StartsAt: optionalnullable.From(&start)}
 	ctx := context.Background()
 	if _, err := client.Groups.Create(ctx, body); err == nil {
 		t.Fatal("an unavailable API returned success")

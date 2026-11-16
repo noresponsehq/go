@@ -13282,13 +13282,19 @@
             "example": "Annual shareholder meeting"
           },
           "starts_at": {
-            "type": "string",
-            "description": "When the group starts.",
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Optional event start; null for an ongoing group.",
             "example": "2026-01-01T00:00:00Z"
           },
           "ends_at": {
-            "type": "string",
-            "description": "When the group ends, at or after its start; the start when omitted.",
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Optional event end; requires starts_at and must be at or after it. Null when no end is set.",
             "example": "2026-01-02T00:00:00Z"
           },
           "venue": {
@@ -13353,7 +13359,7 @@
             "example": "2026-01-01T00:00:00Z"
           }
         },
-        "description": "A group and its screening context."
+        "description": "A workspace group for a building, organization or event. Dates are optional and do not control person retention."
       },
       "GroupList": {
         "type": "object",
@@ -13382,8 +13388,7 @@
         "type": "object",
         "additionalProperties": false,
         "required": [
-          "name",
-          "starts_at"
+          "name"
         ],
         "properties": {
           "name": {
@@ -13394,13 +13399,19 @@
             "example": "Annual shareholder meeting"
           },
           "starts_at": {
-            "type": "string",
-            "description": "When the group starts.",
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Optional event start; null for an ongoing group.",
             "example": "2026-01-01T00:00:00Z"
           },
           "ends_at": {
-            "type": "string",
-            "description": "When the group ends, at or after its start; the start when omitted.",
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Optional event end; requires starts_at and must be at or after it. Null when no end is set.",
             "example": "2026-01-02T00:00:00Z"
           },
           "venue": {
@@ -13438,7 +13449,7 @@
             "description": "Sensitive topics the screening reads posts against, at most 50."
           }
         },
-        "description": "Creates a group."
+        "description": "Creates an ongoing group or an event with optional dates."
       },
       "GroupUpdate": {
         "type": "object",
@@ -13453,13 +13464,19 @@
             "example": "Annual shareholder meeting"
           },
           "starts_at": {
-            "type": "string",
-            "description": "When the group starts.",
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Optional event start; null for an ongoing group. Omit to keep the current value; send null to clear it.",
             "example": "2026-01-01T00:00:00Z"
           },
           "ends_at": {
-            "type": "string",
-            "description": "When the group ends, at or after its start; the start when omitted.",
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Optional event end; requires starts_at and must be at or after it. Null when no end is set. Omit to keep the current value; send null to clear it.",
             "example": "2026-01-02T00:00:00Z"
           },
           "venue": {
@@ -13503,7 +13520,7 @@
             "description": "When present, the change applies only if the group is still at this version (409 group_conflict otherwise)."
           }
         },
-        "description": "Changes the fields it names; at least one besides expected_version."
+        "description": "Updates a group. Dates describe an optional event and do not control person retention."
       },
       "Handle": {
         "type": "object",
@@ -16368,7 +16385,11 @@
             "example": "Spring gala"
           },
           "group_starts_at": {
-            "type": "string",
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The other group's optional event start; null for an ongoing group.",
             "example": "2025-09-01T09:00:00Z"
           },
           "person_id": {

@@ -19,3 +19,5 @@
 # Hand-written so the quick start calls NewIdempotencyKey, not a fixed key.
 /USAGE.md
 /records_test.go
+
+/group_dates_test.go

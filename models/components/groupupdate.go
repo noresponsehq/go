@@ -1,17 +1,18 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v14/internal/utils"
+	"github.com/noresponsehq/go/v15/internal/utils"
+	"github.com/noresponsehq/go/v15/optionalnullable"
 )
 
-// GroupUpdate - Changes the fields it names; at least one besides expected_version.
+// GroupUpdate - Updates a group. Dates describe an optional event and do not control person retention.
 type GroupUpdate struct {
 	// The group's name.
 	Name *string `json:"name,omitzero"`
-	// When the group starts.
-	StartsAt *string `json:"starts_at,omitzero"`
-	// When the group ends, at or after its start; the start when omitted.
-	EndsAt *string `json:"ends_at,omitzero"`
+	// Optional event start; null for an ongoing group. Omit to keep the current value; send null to clear it.
+	StartsAt optionalnullable.OptionalNullable[string] `json:"starts_at,omitzero"`
+	// Optional event end; requires starts_at and must be at or after it. Null when no end is set. Omit to keep the current value; send null to clear it.
+	EndsAt optionalnullable.OptionalNullable[string] `json:"ends_at,omitzero"`
 	// Where the group is held.
 	Venue *string `json:"venue,omitzero"`
 	// The organisation hosting the group.
@@ -42,14 +43,14 @@ func (g *GroupUpdate) GetName() *string {
 	return g.Name
 }
 
-func (g *GroupUpdate) GetStartsAt() *string {
+func (g *GroupUpdate) GetStartsAt() optionalnullable.OptionalNullable[string] {
 	if g == nil {
 		return nil
 	}
 	return g.StartsAt
 }
 
-func (g *GroupUpdate) GetEndsAt() *string {
+func (g *GroupUpdate) GetEndsAt() optionalnullable.OptionalNullable[string] {
 	if g == nil {
 		return nil
 	}

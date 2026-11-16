@@ -23,9 +23,10 @@ func (e *OtherGroupMatchedOn) IsExact() bool {
 
 // OtherGroup - A person of another group in the same environment who shares an email or phone with this one, as that group recorded them.
 type OtherGroup struct {
-	GroupID       string `json:"group_id"`
-	GroupName     string `json:"group_name"`
-	GroupStartsAt string `json:"group_starts_at"`
+	GroupID   string `json:"group_id"`
+	GroupName string `json:"group_name"`
+	// The other group's optional event start; null for an ongoing group.
+	GroupStartsAt *string `json:"group_starts_at"`
 	// The person on that group's list.
 	PersonID string `json:"person_id"`
 	// The same workspace person explicitly belongs to this group. Membership requires an explicit person or customer reference.
@@ -58,9 +59,9 @@ func (o *OtherGroup) GetGroupName() string {
 	return o.GroupName
 }
 
-func (o *OtherGroup) GetGroupStartsAt() string {
+func (o *OtherGroup) GetGroupStartsAt() *string {
 	if o == nil {
-		return ""
+		return nil
 	}
 	return o.GroupStartsAt
 }

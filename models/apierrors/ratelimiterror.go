@@ -2,7 +2,7 @@ package apierrors
 
 import (
 	"encoding/json"
-	"github.com/noresponsehq/go/v14/models/components"
+	"github.com/noresponsehq/go/v15/models/components"
 )
 
 // RateLimitError - HTTP 429 problem document.

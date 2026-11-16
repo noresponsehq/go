@@ -6,7 +6,7 @@ What a finding is about: a direct threat to the principal or the group, intent t
 
 ```go
 import (
-	"github.com/noresponsehq/go/v14/models/components"
+	"github.com/noresponsehq/go/v15/models/components"
 )
 
 value := components.FindingCategoryDirectThreat

@@ -10,9 +10,9 @@ import (
 	"net/http"
 	"os"
 
-	noresponse "github.com/noresponsehq/go/v14"
-	"github.com/noresponsehq/go/v14/models/apierrors"
-	"github.com/noresponsehq/go/v14/models/components"
+	noresponse "github.com/noresponsehq/go/v15"
+	"github.com/noresponsehq/go/v15/models/apierrors"
+	"github.com/noresponsehq/go/v15/models/components"
 )
 
 // These examples are compiled by go test and shown on pkg.go.dev. They have

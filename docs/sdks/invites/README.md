@@ -24,8 +24,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v14"
-	"github.com/noresponsehq/go/v14/models/components"
+	noresponse "github.com/noresponsehq/go/v15"
+	"github.com/noresponsehq/go/v15/models/components"
 	"log"
 )
 
@@ -57,8 +57,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v14"
-	"github.com/noresponsehq/go/v14/models/components"
+	noresponse "github.com/noresponsehq/go/v15"
+	"github.com/noresponsehq/go/v15/models/components"
 	"log"
 )
 
@@ -94,8 +94,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v14"
-	"github.com/noresponsehq/go/v14/models/components"
+	noresponse "github.com/noresponsehq/go/v15"
+	"github.com/noresponsehq/go/v15/models/components"
 	"log"
 )
 
@@ -156,7 +156,7 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v14"
+	noresponse "github.com/noresponsehq/go/v15"
 	"log"
 )
 
@@ -214,7 +214,7 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v14"
+	noresponse "github.com/noresponsehq/go/v15"
 	"log"
 )
 
@@ -273,8 +273,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v14"
-	"github.com/noresponsehq/go/v14/models/components"
+	noresponse "github.com/noresponsehq/go/v15"
+	"github.com/noresponsehq/go/v15/models/components"
 	"log"
 )
 

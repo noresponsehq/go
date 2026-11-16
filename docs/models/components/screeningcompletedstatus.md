@@ -6,7 +6,7 @@ completed reached every person; partial left some not fully covered (partial_cov
 
 ```go
 import (
-	"github.com/noresponsehq/go/v14/models/components"
+	"github.com/noresponsehq/go/v15/models/components"
 )
 
 value := components.ScreeningCompletedStatusCompleted

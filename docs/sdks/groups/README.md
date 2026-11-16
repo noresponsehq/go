@@ -38,7 +38,7 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v14"
+	noresponse "github.com/noresponsehq/go/v15"
 	"log"
 )
 
@@ -97,9 +97,10 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v14"
-	"github.com/noresponsehq/go/v14/models/components"
-	"github.com/noresponsehq/go/v14/models/operations"
+	noresponse "github.com/noresponsehq/go/v15"
+	"github.com/noresponsehq/go/v15/optionalnullable"
+	"github.com/noresponsehq/go/v15/models/components"
+	"github.com/noresponsehq/go/v15/models/operations"
 	"log"
 )
 
@@ -112,8 +113,8 @@ func main() {
 
     res, err := s.Groups.Create(ctx, components.GroupRequest{
         Name: "Annual shareholder meeting",
-        StartsAt: "2026-01-01T00:00:00Z",
-        EndsAt: noresponse.Pointer("2026-01-02T00:00:00Z"),
+        StartsAt: optionalnullable.From(noresponse.Pointer("2026-01-01T00:00:00Z")),
+        EndsAt: optionalnullable.From(noresponse.Pointer("2026-01-02T00:00:00Z")),
         Venue: noresponse.Pointer("Example Convention Centre"),
         Host: noresponse.Pointer("Example Holdings"),
         Principals: []components.Principal{
@@ -174,7 +175,7 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v14"
+	noresponse "github.com/noresponsehq/go/v15"
 	"log"
 )
 
@@ -232,8 +233,9 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v14"
-	"github.com/noresponsehq/go/v14/models/components"
+	noresponse "github.com/noresponsehq/go/v15"
+	"github.com/noresponsehq/go/v15/optionalnullable"
+	"github.com/noresponsehq/go/v15/models/components"
 	"log"
 )
 
@@ -246,8 +248,8 @@ func main() {
 
     res, err := s.Groups.Update(ctx, "grp_01JA2Z8K6Q4V7W9XBCDEFGHJKM", components.GroupUpdate{
         Name: noresponse.Pointer("Annual shareholder meeting"),
-        StartsAt: noresponse.Pointer("2026-01-01T00:00:00Z"),
-        EndsAt: noresponse.Pointer("2026-01-02T00:00:00Z"),
+        StartsAt: optionalnullable.From(noresponse.Pointer("2026-01-01T00:00:00Z")),
+        EndsAt: optionalnullable.From(noresponse.Pointer("2026-01-02T00:00:00Z")),
         Venue: noresponse.Pointer("Example Convention Centre"),
         Host: noresponse.Pointer("Example Holdings"),
         Principals: []components.Principal{
@@ -309,7 +311,7 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v14"
+	noresponse "github.com/noresponsehq/go/v15"
 	"log"
 )
 
@@ -367,8 +369,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v14"
-	"github.com/noresponsehq/go/v14/models/operations"
+	noresponse "github.com/noresponsehq/go/v15"
+	"github.com/noresponsehq/go/v15/models/operations"
 	"log"
 )
 
@@ -428,8 +430,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v14"
-	"github.com/noresponsehq/go/v14/models/components"
+	noresponse "github.com/noresponsehq/go/v15"
+	"github.com/noresponsehq/go/v15/models/components"
 	"log"
 )
 
@@ -491,7 +493,7 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v14"
+	noresponse "github.com/noresponsehq/go/v15"
 	"log"
 )
 
@@ -550,7 +552,7 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v14"
+	noresponse "github.com/noresponsehq/go/v15"
 	"log"
 )
 
@@ -609,8 +611,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v14"
-	"github.com/noresponsehq/go/v14/models/components"
+	noresponse "github.com/noresponsehq/go/v15"
+	"github.com/noresponsehq/go/v15/models/components"
 	"log"
 )
 
@@ -672,8 +674,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v14"
-	"github.com/noresponsehq/go/v14/models/components"
+	noresponse "github.com/noresponsehq/go/v15"
+	"github.com/noresponsehq/go/v15/models/components"
 	"log"
 )
 
@@ -736,8 +738,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v14"
-	"github.com/noresponsehq/go/v14/models/components"
+	noresponse "github.com/noresponsehq/go/v15"
+	"github.com/noresponsehq/go/v15/models/components"
 	"log"
 )
 
@@ -801,8 +803,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v14"
-	"github.com/noresponsehq/go/v14/models/components"
+	noresponse "github.com/noresponsehq/go/v15"
+	"github.com/noresponsehq/go/v15/models/components"
 	"log"
 )
 
@@ -863,7 +865,7 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v14"
+	noresponse "github.com/noresponsehq/go/v15"
 	"log"
 )
 
@@ -923,8 +925,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v14"
-	"github.com/noresponsehq/go/v14/models/components"
+	noresponse "github.com/noresponsehq/go/v15"
+	"github.com/noresponsehq/go/v15/models/components"
 	"log"
 )
 
@@ -989,7 +991,7 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v14"
+	noresponse "github.com/noresponsehq/go/v15"
 	"log"
 )
 
@@ -1048,8 +1050,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v14"
-	"github.com/noresponsehq/go/v14/models/components"
+	noresponse "github.com/noresponsehq/go/v15"
+	"github.com/noresponsehq/go/v15/models/components"
 	"log"
 )
 
@@ -1109,8 +1111,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v14"
-	"github.com/noresponsehq/go/v14/models/operations"
+	noresponse "github.com/noresponsehq/go/v15"
+	"github.com/noresponsehq/go/v15/models/operations"
 	"log"
 )
 

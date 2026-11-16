@@ -6,7 +6,7 @@ Machine codes an HTTP 409 answer can carry.
 
 ```go
 import (
-	"github.com/noresponsehq/go/v14/models/components"
+	"github.com/noresponsehq/go/v15/models/components"
 )
 
 value := components.ConflictErrorCodeIdempotencyKeyReused

@@ -6,7 +6,7 @@ What the workspace did in its identity provider: revoke_sessions (signed the acc
 
 ```go
 import (
-	"github.com/noresponsehq/go/v14/models/components"
+	"github.com/noresponsehq/go/v15/models/components"
 )
 
 value := components.EnforcementActionRevokeSessions

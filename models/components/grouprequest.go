@@ -1,17 +1,18 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v14/internal/utils"
+	"github.com/noresponsehq/go/v15/internal/utils"
+	"github.com/noresponsehq/go/v15/optionalnullable"
 )
 
-// GroupRequest - Creates a group.
+// GroupRequest - Creates an ongoing group or an event with optional dates.
 type GroupRequest struct {
 	// The group's name.
 	Name string `json:"name"`
-	// When the group starts.
-	StartsAt string `json:"starts_at"`
-	// When the group ends, at or after its start; the start when omitted.
-	EndsAt *string `json:"ends_at,omitzero"`
+	// Optional event start; null for an ongoing group.
+	StartsAt optionalnullable.OptionalNullable[string] `json:"starts_at,omitzero"`
+	// Optional event end; requires starts_at and must be at or after it. Null when no end is set.
+	EndsAt optionalnullable.OptionalNullable[string] `json:"ends_at,omitzero"`
 	// Where the group is held.
 	Venue *string `json:"venue,omitzero"`
 	// The organisation hosting the group.
@@ -40,14 +41,14 @@ func (g *GroupRequest) GetName() string {
 	return g.Name
 }
 
-func (g *GroupRequest) GetStartsAt() string {
+func (g *GroupRequest) GetStartsAt() optionalnullable.OptionalNullable[string] {
 	if g == nil {
-		return ""
+		return nil
 	}
 	return g.StartsAt
 }
 
-func (g *GroupRequest) GetEndsAt() *string {
+func (g *GroupRequest) GetEndsAt() optionalnullable.OptionalNullable[string] {
 	if g == nil {
 		return nil
 	}
