@@ -1,5 +1,9 @@
 # Changelog
 
+## 15.0.4
+
+No changes detected.
+
 ## 15.0.3
 
 * `Sdk.Groups.GetPerson()`:  `response.Searches[]` **Changed**
