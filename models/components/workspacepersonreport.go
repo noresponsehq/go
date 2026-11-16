@@ -38,6 +38,8 @@ type WorkspacePersonReport struct {
 	EvidenceRestricted *bool `json:"evidence_restricted,omitzero"`
 	// The most recent retained completed or partial investigation, or a migrated result whose original per-person status is unknown. The evidence below belongs to this investigation. Read investigation history for earlier results and pending jobs.
 	EvidenceInvestigation *Investigation `json:"evidence_investigation"`
+	// An investigator's profile of this person, written from the evidence of a settled investigation. Null until an investigation completes or partially completes, and null when evidence.read is denied.
+	WrittenProfile *WrittenProfile `json:"written_profile"`
 }
 
 func (w WorkspacePersonReport) MarshalJSON() ([]byte, error) {
@@ -175,4 +177,11 @@ func (w *WorkspacePersonReport) GetEvidenceInvestigation() *Investigation {
 		return nil
 	}
 	return w.EvidenceInvestigation
+}
+
+func (w *WorkspacePersonReport) GetWrittenProfile() *WrittenProfile {
+	if w == nil {
+		return nil
+	}
+	return w.WrittenProfile
 }

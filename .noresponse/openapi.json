@@ -11644,6 +11644,14 @@
           "critical"
         ]
       },
+      "Basis": {
+        "enum": [
+          "stated",
+          "inferred",
+          "absence"
+        ],
+        "description": "stated: read from a record. inferred: reasoned from several facts. absence: every source answered and none found it."
+      },
       "Breach": {
         "type": "object",
         "additionalProperties": false,
@@ -11811,6 +11819,14 @@
           "week"
         ],
         "description": "The period each count covers: an hour, or a day or a week (from Monday) in time_zone. Hour buckets are whole UTC hours in any time zone."
+      },
+      "Certainty": {
+        "enum": [
+          "confirmed",
+          "likely",
+          "possible"
+        ],
+        "description": "confirmed: a linked record or the searched identifier states it directly. likely: a strong inference. possible: a weak inference."
       },
       "Conclusion": {
         "enum": [
@@ -18375,6 +18391,70 @@
           }
         }
       },
+      "ProfileCitation": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "kind",
+          "id"
+        ],
+        "properties": {
+          "kind": {
+            "$ref": "#/components/schemas/ProfileCitationKind",
+            "description": "record: a record in lookup.records or profiles[].record. post: an item in posts. check: an item in lookup.checks."
+          },
+          "id": {
+            "type": "string",
+            "maxLength": 200,
+            "description": "The record or post id. For a check, c followed by its 1-based position in lookup.checks.",
+            "example": "rec_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          }
+        }
+      },
+      "ProfileCitationKind": {
+        "enum": [
+          "record",
+          "post",
+          "check"
+        ],
+        "description": "record: a record in lookup.records or profiles[].record. post: an item in posts. check: an item in lookup.checks."
+      },
+      "ProfileLead": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "value",
+          "kind",
+          "why",
+          "evidence"
+        ],
+        "properties": {
+          "value": {
+            "type": "string",
+            "maxLength": 1000,
+            "description": "A value copied exactly from a linked record that the person was not searched by.",
+            "example": "jordan.example@example.net"
+          },
+          "kind": {
+            "type": "string",
+            "maxLength": 100,
+            "example": "email"
+          },
+          "why": {
+            "type": "string",
+            "maxLength": 2000,
+            "example": "A linked record holds an older address."
+          },
+          "evidence": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 100,
+            "items": {
+              "$ref": "#/components/schemas/ProfileCitation"
+            }
+          }
+        }
+      },
       "ProfileMatchState": {
         "enum": [
           "confirmed",
@@ -18382,6 +18462,55 @@
           "possible"
         ],
         "description": "How sure the screening is that a profile is the person's, from its evidence: confirmed is a handle on the person row, or two or more hard identifiers (email, phone, a supplied handle, or a fact an existing source returned); probable is one identifier beyond the name; possible is the name alone."
+      },
+      "ProfileStatement": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "topic",
+          "text",
+          "certainty",
+          "basis",
+          "alternatives",
+          "evidence"
+        ],
+        "properties": {
+          "topic": {
+            "$ref": "#/components/schemas/Topic"
+          },
+          "text": {
+            "type": "string",
+            "maxLength": 2000,
+            "example": "Lived in Lisbon in 2019."
+          },
+          "certainty": {
+            "$ref": "#/components/schemas/Certainty",
+            "description": "confirmed: a linked record or the searched identifier states it directly. likely: a strong inference. possible: a weak inference."
+          },
+          "basis": {
+            "$ref": "#/components/schemas/Basis",
+            "description": "stated: read from a record. inferred: reasoned from several facts. absence: every source answered and none found it."
+          },
+          "alternatives": {
+            "type": "array",
+            "maxItems": 20,
+            "items": {
+              "type": "string",
+              "maxLength": 1000,
+              "example": "A holiday address."
+            },
+            "description": "Other explanations to keep open for an inference."
+          },
+          "evidence": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 100,
+            "items": {
+              "$ref": "#/components/schemas/ProfileCitation"
+            },
+            "description": "Every record, post or check the statement rests on."
+          }
+        }
       },
       "Provenance": {
         "type": "string",
@@ -22407,6 +22536,22 @@
           }
         }
       },
+      "Topic": {
+        "enum": [
+          "identity",
+          "location",
+          "movement",
+          "timeline",
+          "interests",
+          "relationships",
+          "work",
+          "education",
+          "accounts",
+          "credentials",
+          "devices",
+          "absence"
+        ]
+      },
       "Transport": {
         "type": "string",
         "enum": [
@@ -23368,7 +23513,8 @@
           "findings",
           "posts",
           "media",
-          "evidence_investigation"
+          "evidence_investigation",
+          "written_profile"
         ],
         "properties": {
           "external_id": {
@@ -23487,6 +23633,17 @@
               }
             ],
             "description": "The most recent retained completed or partial investigation, or a migrated result whose original per-person status is unknown. The evidence below belongs to this investigation. Read investigation history for earlier results and pending jobs."
+          },
+          "written_profile": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/WrittenProfile"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "An investigator's profile of this person, written from the evidence of a settled investigation. Null until an investigation completes or partially completes, and null when evidence.read is denied."
           }
         }
       },
@@ -23584,6 +23741,90 @@
             "type": "boolean"
           }
         }
+      },
+      "WrittenProfile": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "status",
+          "investigation_id",
+          "queued_at",
+          "finished_at",
+          "statements",
+          "leads"
+        ],
+        "properties": {
+          "status": {
+            "$ref": "#/components/schemas/WrittenProfileStatus",
+            "description": "queued: the profile is being written. written: summary, statements and leads hold it. failed: it could not be written; error_code says why and no content is returned."
+          },
+          "investigation_id": {
+            "type": "string",
+            "maxLength": 100,
+            "description": "The investigation whose evidence the profile is written from.",
+            "example": "inv_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          },
+          "error_code": {
+            "$ref": "#/components/schemas/WrittenProfileErrorCode",
+            "description": "Present only when status is failed. no_writer: no profile writer serves this environment. refused: the model refused. not_written: the answer was not a profile, or no statement survived grounding. uncited_statement: a statement or lead cited a record the person does not hold. not_answered: the writer did not answer. worker_attempts_exhausted: the worker stopped retrying."
+          },
+          "queued_at": {
+            "type": "string",
+            "example": "2026-01-01T00:00:00Z"
+          },
+          "finished_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "example": "2026-01-01T00:00:11Z"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "summary": {
+            "type": "string",
+            "maxLength": 5000,
+            "description": "Present when written: a few plain sentences with the most useful picture first.",
+            "example": "Likely lives in Lisbon and uses one username across sites."
+          },
+          "statements": {
+            "type": "array",
+            "maxItems": 200,
+            "items": {
+              "$ref": "#/components/schemas/ProfileStatement"
+            },
+            "description": "Each fact or inference with its certainty and the evidence it cites. Statements that cited evidence the writer was not sent are dropped before storage."
+          },
+          "leads": {
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+              "$ref": "#/components/schemas/ProfileLead"
+            },
+            "description": "Values worth searching next, each held by a linked record."
+          }
+        }
+      },
+      "WrittenProfileErrorCode": {
+        "enum": [
+          "no_writer",
+          "refused",
+          "not_written",
+          "uncited_statement",
+          "not_answered",
+          "worker_attempts_exhausted"
+        ],
+        "description": "Present only when status is failed. no_writer: no profile writer serves this environment. refused: the model refused. not_written: the answer was not a profile, or no statement survived grounding. uncited_statement: a statement or lead cited a record the person does not hold. not_answered: the writer did not answer. worker_attempts_exhausted: the worker stopped retrying."
+      },
+      "WrittenProfileStatus": {
+        "enum": [
+          "queued",
+          "written",
+          "failed"
+        ],
+        "description": "queued: the profile is being written. written: summary, statements and leads hold it. failed: it could not be written; error_code says why and no content is returned."
       },
       "listPeopleBand": {
         "enum": [
