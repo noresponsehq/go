@@ -1,5 +1,12 @@
 # Changelog
 
+## 15.0.3
+
+* `Sdk.Groups.GetPerson()`:  `response.Searches[]` **Changed**
+* `Sdk.Groups.StartSearch()`:  `response` **Changed**
+* `Sdk.Groups.RunSearch()`:  `response` **Changed**
+* `Sdk.People.Get()`:  `response.Searches` **Added**
+
 ## 15.0.2
 
 * `Sdk.Assessments.Create()`:  `error.Code.Enum(evaluationUnavailable)` **Added**

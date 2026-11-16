@@ -7388,7 +7388,7 @@
           "groups"
         ],
         "summary": "Search again on a value of one of a person's records.",
-        "description": "Starts a new search on the value of one field of one of the person's records: a lookup's, a profile's or one an earlier search found. Name the record and the field; the value itself is not sent. The field's kind must be email, phone, username, person_name, password, hash, ip or domain. A domain search finds the breach rows of every email address at the domain, which must be a registrable domain or a host under one; any other domain answers 400. Nothing ever searches again by itself: a search starts only when a person asks. The search runs the breach search and the account and phone lookups that take the value's kind, under the environment's source controls, and finishes seconds later. A password or hash search counts first: it stops at counted with rows, how many breach rows hold the value, and runs only when a person runs it. Name a table, as a lookup remaining entry names it, to fetch the rows an earlier search left out, up to 100. What the search finds joins the person's lookup records as leads, each match naming the search; the person report lists the searches, each with the value and the record and field it came from, and its records are scored like the rest. Without an Idempotency-Key, starting the same open search returns it. Its estimate counts against the environment's screening_daily_cap, and one the cap cannot hold answers 409 screening_cap_exceeded. A record or field the person does not hold answers 404. Each search is audited as person.search_started. Send an Idempotency-Key to retry safely: the same key and request return the same resource in its current state while it is retained, even after work completes. Reusing the key with different input answers 409 idempotency_key_reused. Use a new key for a deliberate new operation. The investigations scope grants this operation. Explicit evidence.read restrictions override default evidence access. The groups scope is also accepted for existing integrations. The API key selects the workspace and environment.",
+        "description": "Starts a new search on the value of one field of one of the person's records: a lookup's, a profile's or one an earlier search found. Name the record and the field; the value itself is not sent. The field's kind must be email, phone, username, person_name, password, hash, ip or domain. A domain search finds the breach rows of every email address at the domain, which must be a registrable domain or a host under one; any other domain answers 400. After a workspace person's own investigation, enrichment also starts searches by itself, with requested_by enrichment, on the distinctive usernames of records more than 0.5 likely to be the person's: each value at most once per person, at most 5 searches from one search's records and 20 per person, at most 6 searches deep, within the screening cap. A record a search finds starts from the likelihood of the record it came from, divided by one plus the results the search found on that site, so a chain grows less likely with each search and stops. Group screening only suggests. The search runs the breach search and the account and phone lookups that take the value's kind, under the environment's source controls, and finishes seconds later. A password or hash search counts first: it stops at counted with rows, how many breach rows hold the value, and runs only when a person runs it. Name a table, as a lookup remaining entry names it, to fetch the rows an earlier search left out, up to 100. What the search finds joins the person's lookup records as leads, each match naming the search; the person report lists the searches, each with the value and the record and field it came from, and its records are scored like the rest. Without an Idempotency-Key, starting the same open search returns it. Its estimate counts against the environment's screening_daily_cap, and one the cap cannot hold answers 409 screening_cap_exceeded. A record or field the person does not hold answers 404. Each search is audited as person.search_started. Send an Idempotency-Key to retry safely: the same key and request return the same resource in its current state while it is retained, even after work completes. Reusing the key with different input answers 409 idempotency_key_reused. Use a new key for a deliberate new operation. The investigations scope grants this operation. Explicit evidence.read restrictions override default evidence access. The groups scope is also accepted for existing integrations. The API key selects the workspace and environment.",
         "parameters": [
           {
             "$ref": "#/components/parameters/GroupId"
@@ -17238,7 +17238,7 @@
             "items": {
               "$ref": "#/components/schemas/Search"
             },
-            "description": "The searches people started on this person's values, newest first: each names the value, and the record and field it came from. Absent when nobody searched."
+            "description": "The searches on this person's values in this group, newest first: each names the value, the record and field it came from, and the search that found that record. Absent when nothing was searched."
           },
           "other_groups": {
             "$ref": "#/components/schemas/OtherGroups",
@@ -22029,8 +22029,19 @@
             "type": "string",
             "minLength": 1,
             "maxLength": 256,
-            "description": "Who started the search.",
+            "description": "Who started the search: the member or key, or enrichment when the engine started it on a value an earlier result showed.",
             "example": "user_2abc"
+          },
+          "parent_search_id": {
+            "type": "string",
+            "pattern": "^srh_[0-7][0-9A-HJKMNP-TV-Z]{25}$",
+            "description": "The search that found the record this value came from. Absent when the record came from the person's investigation.",
+            "example": "srh_01JA2Z8K6Q4V7W9XBCDEFGHJKN"
+          },
+          "depth": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "How many searches lie between the person's investigation and this one, this one included: 1 for a value of a record the investigation found, 2 for a value of a record a depth-1 search found, and so on."
           },
           "created_at": {
             "type": "string",
@@ -22041,7 +22052,7 @@
             "example": "2026-01-01T00:00:05Z"
           }
         },
-        "description": "One search a person started on a value of one of a person's records. Nothing searches again by itself."
+        "description": "One search on a value of one of a person's records, started by a person or by enrichment."
       },
       "SearchKind": {
         "enum": [
@@ -23619,6 +23630,14 @@
           "lookup": {
             "$ref": "#/components/schemas/ScreeningLookup",
             "description": "The source records and lookup coverage retained for this result. Absent when this result contains no completed lookup."
+          },
+          "searches": {
+            "type": "array",
+            "maxItems": 10000,
+            "items": {
+              "$ref": "#/components/schemas/Search"
+            },
+            "description": "Every search on this person's values, newest first, whether a person started it or enrichment did: each names the value, the record and field it came from, and the search that found that record. Absent when nothing was searched."
           },
           "evidence_restricted": {
             "type": "boolean",
@@ -31890,6 +31909,7 @@
                       "estimated_spend": 2,
                       "spent": 2,
                       "requested_by": "usr_security_lead",
+                      "depth": 1,
                       "created_at": "2026-11-14T10:05:00Z",
                       "finished_at": "2026-11-14T10:05:04Z"
                     }

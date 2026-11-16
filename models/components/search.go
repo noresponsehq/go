@@ -1,6 +1,6 @@
 package components
 
-// Search - One search a person started on a value of one of a person's records. Nothing searches again by itself.
+// Search - One search on a value of one of a person's records, started by a person or by enrichment.
 type Search struct {
 	SearchID string `json:"search_id"`
 	// The record whose value led to the search.
@@ -29,10 +29,14 @@ type Search struct {
 	Spent int64 `json:"spent"`
 	// Why a failed search found nothing: its sources did not answer, none could be asked, or it could not run before its attempts were spent.
 	ErrorCode *ErrorCode `json:"error_code,omitzero"`
-	// Who started the search.
-	RequestedBy string  `json:"requested_by"`
-	CreatedAt   string  `json:"created_at"`
-	FinishedAt  *string `json:"finished_at,omitzero"`
+	// Who started the search: the member or key, or enrichment when the engine started it on a value an earlier result showed.
+	RequestedBy string `json:"requested_by"`
+	// The search that found the record this value came from. Absent when the record came from the person's investigation.
+	ParentSearchID *string `json:"parent_search_id,omitzero"`
+	// How many searches lie between the person's investigation and this one, this one included: 1 for a value of a record the investigation found, 2 for a value of a record a depth-1 search found, and so on.
+	Depth      *int64  `json:"depth,omitzero"`
+	CreatedAt  string  `json:"created_at"`
+	FinishedAt *string `json:"finished_at,omitzero"`
 }
 
 func (s *Search) GetSearchID() string {
@@ -138,6 +142,20 @@ func (s *Search) GetRequestedBy() string {
 		return ""
 	}
 	return s.RequestedBy
+}
+
+func (s *Search) GetParentSearchID() *string {
+	if s == nil {
+		return nil
+	}
+	return s.ParentSearchID
+}
+
+func (s *Search) GetDepth() *int64 {
+	if s == nil {
+		return nil
+	}
+	return s.Depth
 }
 
 func (s *Search) GetCreatedAt() string {

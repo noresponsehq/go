@@ -34,6 +34,8 @@ type WorkspacePersonReport struct {
 	Media []ScreeningMedia `json:"media"`
 	// What the signup check's lookups found for a person: account presence for the email, phone and usernames (the person's handles), the phone lookup, the email domain's registration and the breach search. Context and coverage for the reviewer, not a finding: nothing here sets a band or a match state.
 	Lookup *ScreeningLookup `json:"lookup,omitzero"`
+	// Every search on this person's values, newest first, whether a person started it or enrichment did: each names the value, the record and field it came from, and the search that found that record. Absent when nothing was searched.
+	Searches []Search `json:"searches,omitzero"`
 	// True when evidence.read is explicitly denied. Submitted details, coverage, job status and decisions remain available. Collected records, profiles, findings, posts, media, discovered values and free-text decision notes are withheld.
 	EvidenceRestricted *bool `json:"evidence_restricted,omitzero"`
 	// The most recent retained completed or partial investigation, or a migrated result whose original per-person status is unknown. The evidence below belongs to this investigation. Read investigation history for earlier results and pending jobs.
@@ -163,6 +165,13 @@ func (w *WorkspacePersonReport) GetLookup() *ScreeningLookup {
 		return nil
 	}
 	return w.Lookup
+}
+
+func (w *WorkspacePersonReport) GetSearches() []Search {
+	if w == nil {
+		return nil
+	}
+	return w.Searches
 }
 
 func (w *WorkspacePersonReport) GetEvidenceRestricted() *bool {
