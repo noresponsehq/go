@@ -42,6 +42,7 @@ custom := components.ConflictErrorCode("custom_value")
 | `ConflictErrorCodeEvaluationConflict`          | evaluation_conflict                            |
 | `ConflictErrorCodeEvaluationNoProposal`        | evaluation_no_proposal                         |
 | `ConflictErrorCodeEvaluationLimitReached`      | evaluation_limit_reached                       |
+| `ConflictErrorCodeEvaluationUnavailable`       | evaluation_unavailable                         |
 | `ConflictErrorCodeAlreadyMember`               | already_member                                 |
 | `ConflictErrorCodeMemberLimitReached`          | member_limit_reached                           |
 | `ConflictErrorCodeOwnerInvitePending`          | owner_invite_pending                           |

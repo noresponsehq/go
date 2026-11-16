@@ -26,6 +26,7 @@ const (
 	ConflictErrorCodeEvaluationConflict          ConflictErrorCode = "evaluation_conflict"
 	ConflictErrorCodeEvaluationNoProposal        ConflictErrorCode = "evaluation_no_proposal"
 	ConflictErrorCodeEvaluationLimitReached      ConflictErrorCode = "evaluation_limit_reached"
+	ConflictErrorCodeEvaluationUnavailable       ConflictErrorCode = "evaluation_unavailable"
 	ConflictErrorCodeAlreadyMember               ConflictErrorCode = "already_member"
 	ConflictErrorCodeMemberLimitReached          ConflictErrorCode = "member_limit_reached"
 	ConflictErrorCodeOwnerInvitePending          ConflictErrorCode = "owner_invite_pending"
@@ -45,7 +46,7 @@ func (e ConflictErrorCode) ToPointer() *ConflictErrorCode {
 func (e *ConflictErrorCode) IsExact() bool {
 	if e != nil {
 		switch *e {
-		case "idempotency_key_reused", "key_rotation_in_progress", "webhook_endpoint_limit_reached", "webhook_endpoint_unverified", "too_many_integrations", "risk_version_ahead", "key_limit_reached", "self_revocation", "outcome_conflict", "credential_conflict", "binding_conflict", "list_entry_exists", "list_limit_reached", "list_entry_too_broad", "policy_version_conflict", "review_version_conflict", "review_exists", "review_limit_reached", "export_conflict", "evaluation_conflict", "evaluation_no_proposal", "evaluation_limit_reached", "already_member", "member_limit_reached", "owner_invite_pending", "aggregate_erased_data", "group_conflict", "group_limit_reached", "screening_cap_exceeded", "screening_unavailable", "person_reference_conflict":
+		case "idempotency_key_reused", "key_rotation_in_progress", "webhook_endpoint_limit_reached", "webhook_endpoint_unverified", "too_many_integrations", "risk_version_ahead", "key_limit_reached", "self_revocation", "outcome_conflict", "credential_conflict", "binding_conflict", "list_entry_exists", "list_limit_reached", "list_entry_too_broad", "policy_version_conflict", "review_version_conflict", "review_exists", "review_limit_reached", "export_conflict", "evaluation_conflict", "evaluation_no_proposal", "evaluation_limit_reached", "evaluation_unavailable", "already_member", "member_limit_reached", "owner_invite_pending", "aggregate_erased_data", "group_conflict", "group_limit_reached", "screening_cap_exceeded", "screening_unavailable", "person_reference_conflict":
 			return true
 		}
 	}

@@ -11888,6 +11888,7 @@
           "evaluation_conflict",
           "evaluation_no_proposal",
           "evaluation_limit_reached",
+          "evaluation_unavailable",
           "already_member",
           "member_limit_reached",
           "owner_invite_pending",
@@ -31018,7 +31019,7 @@
         }
       },
       "PolicyEvaluationConflict": {
-        "description": "The policy, idempotency binding, evaluation state, proposal or provenance does not match; or the environment retains five jobs.",
+        "description": "The policy, idempotency binding, evaluation state, proposal or provenance does not match; the environment retains five jobs; or no evaluator runs in this deployment.",
         "headers": {
           "Cache-Control": {
             "schema": {
