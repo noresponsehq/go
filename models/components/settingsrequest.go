@@ -12,6 +12,8 @@ type SettingsRequest struct {
 	RefusedSources []string `json:"refused_sources,omitzero"`
 	// Replaces the daily screening cap, in minor units of USD; null removes the cap. Needs settings.write only, like retention_days.
 	ScreeningDailyCap optionalnullable.OptionalNullable[int64] `json:"screening_daily_cap,omitzero"`
+	// A change to enrichment. A field left out keeps the value in force; max_spend or deadline null removes the bound.
+	Enrichment *EnrichmentChange `json:"enrichment,omitzero"`
 	// Use account_creation or its deprecated alias signup, not both.
 	Flows *SettingsRequestFlows `json:"flows,omitzero"`
 	// Compare-and-set guard. A stale version returns 409 policy_version_conflict before any change; every settings write including retention advances the version.
@@ -49,6 +51,13 @@ func (s *SettingsRequest) GetScreeningDailyCap() optionalnullable.OptionalNullab
 		return nil
 	}
 	return s.ScreeningDailyCap
+}
+
+func (s *SettingsRequest) GetEnrichment() *EnrichmentChange {
+	if s == nil {
+		return nil
+	}
+	return s.Enrichment
 }
 
 func (s *SettingsRequest) GetFlows() *SettingsRequestFlows {

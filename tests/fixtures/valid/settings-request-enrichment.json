@@ -1,0 +1,1 @@
+{"enrichment": {"mode": "automatic", "kinds": ["username", "email", "phone"], "max_spend": 400, "deadline": null}, "change_reason": "Follow email addresses and phone numbers too"}

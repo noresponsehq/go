@@ -1,6 +1,6 @@
 package components
 
-// Settings - One environment's settings: how long its assessments are kept, and for each flow the risk thresholds that decide it and the depth a request that names none is served at, the sources it refuses, and the daily cap on screening spend. Live and test each have their own. A flow without thresholds of its own uses account_creation's (inherits_account_creation). Every change is recorded in the audit log as settings.updated, with who made it.
+// Settings - One environment's settings: how long its assessments are kept, and for each flow the risk thresholds that decide it and the depth a request that names none is served at, the sources it refuses, the daily cap on screening spend, and how enrichment searches what an investigation finds. Live and test each have their own. A flow without thresholds of its own uses account_creation's (inherits_account_creation). Every change is recorded in the audit log as settings.updated, with who made it.
 type Settings struct {
 	// The workspace id, which is also its live environment's workspace id; the test environment's is the same id with :test appended. A workspace created through the API is tnt_ and a 26-character ULID.
 	WorkspaceID string `json:"workspace_id"`
@@ -19,6 +19,8 @@ type Settings struct {
 	RefusedSources []string `json:"refused_sources"`
 	// The most the environment's screenings may spend in one UTC day, in minor units of USD (cents), 0 to 100000000; null is no cap. Default 50000. A screening whose estimated_spend exceeds the cap less the day's recorded spend and what open screenings may still spend answers 409 screening_cap_exceeded.
 	ScreeningDailyCap *int64 `json:"screening_daily_cap"`
+	// How enrichment searches the values a standalone investigation of a workspace person finds (POST /v1/investigations); group screening only suggests. Defaults: mode automatic, min_likelihood 0.5, kinds username, max_spend null and deadline null. An investigation request may override each field for that investigation. A change applies to the next search enrichment starts, investigations already run included. Enrichment also keeps to limits of its own: each value once per person (once more if that search failed), at most 5 searches from one search's records, 20 per person and 6 searches deep.
+	Enrichment Enrichment `json:"enrichment"`
 }
 
 func (s *Settings) GetWorkspaceID() string {
@@ -82,4 +84,11 @@ func (s *Settings) GetScreeningDailyCap() *int64 {
 		return nil
 	}
 	return s.ScreeningDailyCap
+}
+
+func (s *Settings) GetEnrichment() Enrichment {
+	if s == nil {
+		return Enrichment{}
+	}
+	return s.Enrichment
 }

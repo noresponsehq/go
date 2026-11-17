@@ -7388,7 +7388,7 @@
           "groups"
         ],
         "summary": "Search again on a value of one of a person's records.",
-        "description": "Starts a new search on the value of one field of one of the person's records: a lookup's, a profile's or one an earlier search found. Name the record and the field; the value itself is not sent. The field's kind must be email, phone, username, person_name, password, hash, ip or domain. A domain search finds the breach rows of every email address at the domain, which must be a registrable domain or a host under one; any other domain answers 400. After a workspace person's own investigation, enrichment also starts searches by itself, with requested_by enrichment, on the distinctive usernames of records more than 0.5 likely to be the person's: each value at most once per person (once more if that search failed), at most 5 searches from one search's records and 20 per person, at most 6 searches deep, within the screening cap; at the cap it waits and tries again later. A record a search finds starts from the likelihood of the record it came from, divided by one plus the results the search found on that site, so a chain grows less likely with each search and stops. Group screening only suggests. The search runs the breach search and the account and phone lookups that take the value's kind, under the environment's source controls, and finishes seconds later. A password or hash search counts first: it stops at counted with rows, how many breach rows hold the value, and runs only when a person runs it. Name a table, as a lookup remaining entry names it, to fetch the rows an earlier search left out, up to 100. What the search finds joins the person's lookup records as leads, each match naming the search; the person report lists the searches, each with the value and the record and field it came from, and its records are scored like the rest. Without an Idempotency-Key, starting the same open search returns it. Its estimate counts against the environment's screening_daily_cap, and one the cap cannot hold answers 409 screening_cap_exceeded. A record or field the person does not hold answers 404. Each search is audited as person.search_started. Send an Idempotency-Key to retry safely: the same key and request return the same resource in its current state while it is retained, even after work completes. Reusing the key with different input answers 409 idempotency_key_reused. Use a new key for a deliberate new operation. The investigations scope grants this operation. Explicit evidence.read restrictions override default evidence access. The groups scope is also accepted for existing integrations. The API key selects the workspace and environment.",
+        "description": "Starts a new search on the value of one field of one of the person's records: a lookup's, a profile's or one an earlier search found. Name the record and the field; the value itself is not sent. The field's kind must be email, phone, username, person_name, password, hash, ip or domain. A domain search finds the breach rows of every email address at the domain, which must be a registrable domain or a host under one; any other domain answers 400. After a workspace person's own investigation, while the environment's enrichment mode, or the investigation's override, is automatic, enrichment also starts searches by itself, with requested_by enrichment, on the distinctive values of the enrichment kinds (usernames by default; email addresses and phone numbers when named) of records more likely than min_likelihood (0.5 by default) to be the person's: each value at most once per person (once more if that search failed), at most 5 searches from one search's records and 20 per person, at most 6 searches deep, within max_spend and the deadline when set, and within the screening cap; at the screening cap it waits and tries again later. A record a search finds starts from the likelihood of the record it came from, divided by one plus the results the search found on that site, so a chain grows less likely with each search and stops. Group screening only suggests. The search runs the breach search and the account and phone lookups that take the value's kind, under the environment's source controls, and finishes seconds later. A password or hash search counts first: it stops at counted with rows, how many breach rows hold the value, and runs only when a person runs it. Name a table, as a lookup remaining entry names it, to fetch the rows an earlier search left out, up to 100. What the search finds joins the person's lookup records as leads, each match naming the search; the person report lists the searches, each with the value and the record and field it came from, and its records are scored like the rest. Without an Idempotency-Key, starting the same open search returns it. Its estimate counts against the environment's screening_daily_cap, and one the cap cannot hold answers 409 screening_cap_exceeded. A record or field the person does not hold answers 404. Each search is audited as person.search_started. Send an Idempotency-Key to retry safely: the same key and request return the same resource in its current state while it is retained, even after work completes. Reusing the key with different input answers 409 idempotency_key_reused. Use a new key for a deliberate new operation. The investigations scope grants this operation. Explicit evidence.read restrictions override default evidence access. The groups scope is also accepted for existing integrations. The API key selects the workspace and environment.",
         "parameters": [
           {
             "$ref": "#/components/parameters/GroupId"
@@ -8103,7 +8103,7 @@
           "investigations"
         ],
         "summary": "Start an investigation for a person.",
-        "description": "Starts an investigation against a retained workspace person, independently of group membership. Idempotency-Key is required: the same key and input return the same retained job in its current state without repeating billable work. Different input with that key answers 409 idempotency_key_reused; a deliberate new investigation uses a new key. The response includes Location and Retry-After. The person's retention expiry limits both execution and retained history. The API key selects the workspace and environment.",
+        "description": "Starts an investigation against a retained workspace person, independently of group membership. enrichment overrides, field by field, how the environment's enrichment setting runs after this investigation; the person's latest investigation decides the enrichment that runs on them. Idempotency-Key is required: the same key and input return the same retained job in its current state without repeating billable work. Different input with that key answers 409 idempotency_key_reused; a deliberate new investigation uses a new key. The response includes Location and Retry-After. The person's retention expiry limits both execution and retained history. The API key selects the workspace and environment.",
         "parameters": [
           {
             "$ref": "#/components/parameters/InvestigationIdempotencyKey"
@@ -12741,6 +12741,115 @@
         },
         "description": "Retained customer enforcement report rows created in [from,to), one row per account/risk_version/flow/action. A later applied report can replace failed at the original created_at; retries are not additional attempts here. applied_coverage divides reported_applied by report rows, including explicit action none; it is not independently verified execution, all requested actions, or prevented fraud. Unreported actions are unknown."
       },
+      "Enrichment": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "mode",
+          "min_likelihood",
+          "kinds",
+          "max_spend",
+          "deadline"
+        ],
+        "description": "How enrichment searches the values a standalone investigation of a workspace person finds (POST /v1/investigations); group screening only suggests. Defaults: mode automatic, min_likelihood 0.5, kinds username, max_spend null and deadline null. An investigation request may override each field for that investigation. A change applies to the next search enrichment starts, investigations already run included. Enrichment also keeps to limits of its own: each value once per person (once more if that search failed), at most 5 searches from one search's records, 20 per person and 6 searches deep.",
+        "properties": {
+          "mode": {
+            "$ref": "#/components/schemas/EnrichmentMode"
+          },
+          "min_likelihood": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 0.99,
+            "description": "Enrichment searches values only from records more likely than this to be the person's, 0 to 0.99."
+          },
+          "kinds": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "enum": [
+                "username",
+                "email",
+                "phone"
+              ]
+            },
+            "description": "The kinds of value enrichment searches: distinctive usernames, and email addresses and phone numbers, which belong to one person each."
+          },
+          "max_spend": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 100000000,
+            "description": "The most enrichment may spend on a person from one investigation, in minor units of USD (cents): each search it started after that investigation started counts its estimate or what it spent, whichever is more. At the bound enrichment starts nothing more for that investigation. null: only the environment's screening_daily_cap bounds it."
+          },
+          "deadline": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 60,
+            "maximum": 2592000,
+            "description": "How long enrichment may start searches after an investigation starts, 60 to 2592000 seconds. null: no deadline."
+          }
+        }
+      },
+      "EnrichmentChange": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "A change to enrichment. A field left out keeps the value in force; max_spend or deadline null removes the bound.",
+        "properties": {
+          "mode": {
+            "$ref": "#/components/schemas/EnrichmentMode"
+          },
+          "min_likelihood": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 0.99,
+            "description": "Enrichment searches values only from records more likely than this to be the person's, 0 to 0.99."
+          },
+          "kinds": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "enum": [
+                "username",
+                "email",
+                "phone"
+              ]
+            },
+            "description": "The kinds of value enrichment searches: distinctive usernames, and email addresses and phone numbers, which belong to one person each."
+          },
+          "max_spend": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 100000000,
+            "description": "The most enrichment may spend on a person from one investigation, in minor units of USD (cents): each search it started after that investigation started counts its estimate or what it spent, whichever is more. At the bound enrichment starts nothing more for that investigation. null: only the environment's screening_daily_cap bounds it."
+          },
+          "deadline": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 60,
+            "maximum": 2592000,
+            "description": "How long enrichment may start searches after an investigation starts, 60 to 2592000 seconds. null: no deadline."
+          }
+        }
+      },
+      "EnrichmentMode": {
+        "enum": [
+          "off",
+          "suggest",
+          "automatic"
+        ],
+        "description": "off: enrichment starts no search. suggest: enrichment starts no search by itself. automatic: after a workspace person's own investigation, and each time a search on that person finishes, enrichment starts searches by itself."
+      },
       "Environment": {
         "enum": [
           "live",
@@ -14545,6 +14654,10 @@
             "type": "string",
             "pattern": "^per_[0-7][0-9A-HJKMNP-TV-Z]{25}$",
             "example": "per_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          },
+          "enrichment": {
+            "$ref": "#/components/schemas/EnrichmentChange",
+            "description": "Overrides the environment's enrichment setting for this investigation, field by field. The override binds the Idempotency-Key with the rest of the body."
           }
         },
         "description": "Runs a new investigation against one retained workspace person."
@@ -22174,7 +22287,7 @@
         }
       },
       "Settings": {
-        "description": "One environment's settings: how long its assessments are kept, and for each flow the risk thresholds that decide it and the depth a request that names none is served at, the sources it refuses, and the daily cap on screening spend. Live and test each have their own. A flow without thresholds of its own uses account_creation's (inherits_account_creation). Every change is recorded in the audit log as settings.updated, with who made it.",
+        "description": "One environment's settings: how long its assessments are kept, and for each flow the risk thresholds that decide it and the depth a request that names none is served at, the sources it refuses, the daily cap on screening spend, and how enrichment searches what an investigation finds. Live and test each have their own. A flow without thresholds of its own uses account_creation's (inherits_account_creation). Every change is recorded in the audit log as settings.updated, with who made it.",
         "type": "object",
         "additionalProperties": false,
         "required": [
@@ -22184,7 +22297,8 @@
           "policy_version",
           "flows",
           "refused_sources",
-          "screening_daily_cap"
+          "screening_daily_cap",
+          "enrichment"
         ],
         "properties": {
           "workspace_id": {
@@ -22243,6 +22357,9 @@
             "minimum": 0,
             "maximum": 100000000,
             "description": "The most the environment's screenings may spend in one UTC day, in minor units of USD (cents), 0 to 100000000; null is no cap. Default 50000. A screening whose estimated_spend exceeds the cap less the day's recorded spend and what open screenings may still spend answers 409 screening_cap_exceeded."
+          },
+          "enrichment": {
+            "$ref": "#/components/schemas/Enrichment"
           }
         }
       },
@@ -22296,6 +22413,10 @@
             "minimum": 0,
             "maximum": 100000000,
             "description": "Replaces the daily screening cap, in minor units of USD; null removes the cap. Needs settings.write only, like retention_days."
+          },
+          "enrichment": {
+            "$ref": "#/components/schemas/EnrichmentChange",
+            "description": "Changes how enrichment runs, field by field. Needs settings.write only, like retention_days."
           },
           "flows": {
             "$ref": "#/components/schemas/SettingsRequestFlows",
@@ -28432,7 +28553,16 @@
                     }
                   },
                   "refused_sources": [],
-                  "screening_daily_cap": 50000
+                  "screening_daily_cap": 50000,
+                  "enrichment": {
+                    "mode": "automatic",
+                    "min_likelihood": 0.5,
+                    "kinds": [
+                      "username"
+                    ],
+                    "max_spend": null,
+                    "deadline": null
+                  }
                 }
               }
             }
@@ -28507,7 +28637,17 @@
                   "refused_sources": [
                     "phone"
                   ],
-                  "screening_daily_cap": null
+                  "screening_daily_cap": null,
+                  "enrichment": {
+                    "mode": "suggest",
+                    "min_likelihood": 0.7,
+                    "kinds": [
+                      "username",
+                      "email"
+                    ],
+                    "max_spend": 400,
+                    "deadline": 86400
+                  }
                 }
               }
             }

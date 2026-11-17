@@ -3776,6 +3776,52 @@
       "why": "NOR-794 the daily screening cap is 0 or more, or null for no cap"
     },
     {
+      "file": "valid/settings-request-enrichment.json",
+      "schema": "settings-request.schema.json",
+      "expect": "valid"
+    },
+    {
+      "file": "valid/investigation-request-enrichment.json",
+      "schema": "investigations.schema.json#/$defs/request",
+      "expect": "valid"
+    },
+    {
+      "file": "invalid/settings-request-enrichment-unknown-kind.json",
+      "schema": "settings-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "enum",
+          "/enrichment/kinds/0"
+        ]
+      ],
+      "why": "NOR-1542 enrichment searches usernames, email addresses and phone numbers only"
+    },
+    {
+      "file": "invalid/settings-request-empty-enrichment.json",
+      "schema": "settings-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "minProperties",
+          "/enrichment"
+        ]
+      ],
+      "why": "NOR-1542 an enrichment change names at least one field"
+    },
+    {
+      "file": "invalid/investigation-request-enrichment-certain.json",
+      "schema": "investigations.schema.json#/$defs/request",
+      "expect": "invalid",
+      "errors": [
+        [
+          "maximum",
+          "/enrichment/min_likelihood"
+        ]
+      ],
+      "why": "NOR-1542 no record is more likely than certain, so min_likelihood stays under 1"
+    },
+    {
       "file": "invalid/usage-delivery-with-flow.json",
       "schema": "usage.schema.json",
       "expect": "invalid",
