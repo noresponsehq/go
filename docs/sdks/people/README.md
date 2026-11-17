@@ -10,6 +10,7 @@ Workspace people, submitted identity, source evidence and expiry.
 * [Create](#create) - Create or reuse a workspace person.
 * [Get](#get) - Read a workspace person.
 * [Delete](#delete) - Delete a workspace person.
+* [JudgeRecord](#judgerecord) - Join one of a workspace person's records to them, or reject it.
 
 ## List
 
@@ -236,6 +237,69 @@ func main() {
 ### Response
 
 **[*operations.DeleteWorkspacePersonResponse](../../models/operations/deleteworkspacepersonresponse.md), error**
+
+### Errors
+
+| Error Type                      | Status Code                     | Content Type                    |
+| ------------------------------- | ------------------------------- | ------------------------------- |
+| apierrors.BadRequestError       | 400                             | application/problem+json        |
+| apierrors.AuthenticationError   | 401                             | application/problem+json        |
+| apierrors.PermissionDeniedError | 403                             | application/problem+json        |
+| apierrors.NotFoundError         | 404                             | application/problem+json        |
+| apierrors.ConflictError         | 409                             | application/problem+json        |
+| apierrors.RateLimitError        | 429                             | application/problem+json        |
+| apierrors.APIStatusError        | 4XX, 5XX                        | \*/\*                           |
+
+## JudgeRecord
+
+Records a verdict on one of the records the person report holds: joined makes the record the person's whatever its likelihood, and rejected keeps it a lead that leads nowhere. The verdict belongs to the person on their own: the person report and enrichment follow it, and each group keeps its own verdicts. It sticks for as long as the person's evidence holds the same record, and a later verdict on the same record replaces it. After each verdict, enrichment reads the person again under the environment's enrichment setting: it starts no search from a rejected record or from what a search of it found, and a joined record's values lead on. A record the person report does not hold answers 404. Each verdict is audited as person.record_judged. The decisions scope grants this operation. Explicit evidence.read restrictions override default evidence access. The groups scope is also accepted for existing integrations. The API key selects the workspace and environment.
+
+### Example Usage
+
+<!-- UsageSnippet language="go" operationID="judgeWorkspacePersonRecord" method="post" path="/v1/people/{person_id}/records" -->
+```go
+package main
+
+import(
+	"context"
+	"os"
+	noresponse "github.com/noresponsehq/go/v15"
+	"github.com/noresponsehq/go/v15/models/components"
+	"log"
+)
+
+func main() {
+    ctx := context.Background()
+
+    s := noresponse.New(
+        noresponse.WithSecurity(os.Getenv("NORESPONSE_API_KEY")),
+    )
+
+    res, err := s.People.JudgeRecord(ctx, "per_01JA2Z8K6Q4V7W9XBCDEFGHJKM", components.RecordVerdictRequest{
+        RecordID: "rec_3f9a1c22d4e5b6a73f9a1c22d4e5b6a7",
+        Verdict: components.VerdictRejected,
+    })
+    if err != nil {
+        log.Fatal(err)
+    }
+    if res != nil {
+        // handle response
+    }
+}
+```
+
+### Parameters
+
+| Parameter                                                                          | Type                                                                               | Required                                                                           | Description                                                                        | Example                                                                            |
+| ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| `ctx`                                                                              | [context.Context](https://pkg.go.dev/context#Context)                              | :heavy_check_mark:                                                                 | The context to use for the request.                                                |                                                                                    |
+| `personID`                                                                         | `string`                                                                           | :heavy_check_mark:                                                                 | N/A                                                                                | per_01JA2Z8K6Q4V7W9XBCDEFGHJKM                                                     |
+| `body`                                                                             | [components.RecordVerdictRequest](../../models/components/recordverdictrequest.md) | :heavy_check_mark:                                                                 | N/A                                                                                |                                                                                    |
+| `opts`                                                                             | [][operations.Option](../../models/operations/option.md)                           | :heavy_minus_sign:                                                                 | The options for this request.                                                      |                                                                                    |
+
+### Response
+
+**[*operations.JudgeWorkspacePersonRecordResponse](../../models/operations/judgeworkspacepersonrecordresponse.md), error**
 
 ### Errors
 
