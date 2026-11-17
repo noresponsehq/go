@@ -78,10 +78,10 @@
           {"field": "username", "original": "jellis", "kind": "username", "role": "handle", "value": "jellis", "distinctive": {"rating": "common", "reason": "19 bits, about one in 520 thousand usernames", "bits": 19.6}}
         ],
         "observed_at": "2026-11-14T10:01:42Z",
-        "likelihood": 0.99,
-        "agreed": ["regdate"],
+        "likelihood": 0.8,
+        "agreed": [],
         "clashed": [],
-        "joined": true
+        "joined": false
       }
     ],
     "remaining": [

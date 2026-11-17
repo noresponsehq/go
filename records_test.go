@@ -93,7 +93,7 @@ func TestGetPersonReturnsTypedRecords(t *testing.T) {
 	if birthday := field(row, "birthday"); birthday.Value != nil || birthday.Original != "07/03/1990" {
 		t.Fatalf("an ambiguous date: %+v", birthday)
 	}
-	if *row.Likelihood != 0.99 || row.Verdict != nil {
+	if *row.Likelihood != 0.8 || row.Verdict != nil {
 		t.Fatalf("row linkage: %v %v", *row.Likelihood, row.Verdict)
 	}
 	if remaining := lookup.Remaining[0]; remaining.Source.Kind != "credential_list" || remaining.By != "username" || remaining.Rows != 37 {

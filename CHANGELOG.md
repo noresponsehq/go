@@ -1,5 +1,9 @@
 # Changelog
 
+## 15.0.8
+
+No changes detected.
+
 ## 15.0.7
 
 * `Sdk.Groups.GetPerson()`:  `response.Profiles[].Record.Fields[].Distinctive` **Changed**
