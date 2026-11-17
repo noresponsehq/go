@@ -36,6 +36,8 @@ type WorkspacePersonReport struct {
 	Lookup *ScreeningLookup `json:"lookup,omitzero"`
 	// Every search on this person's values, newest first, whether a person started it or enrichment did: each names the value, the record and field it came from, and the search that found that record. Absent when nothing was searched.
 	Searches []Search `json:"searches,omitzero"`
+	// The searches enrichment would start on this person, likeliest record first, under the environment's enrichment setting for a person's own investigation. In off mode the list is empty. In suggest mode enrichment starts none of them by itself; in automatic mode it starts them as its limits allow. Empty when evidence.read is denied.
+	SuggestedSearches []SuggestedSearch `json:"suggested_searches"`
 	// True when evidence.read is explicitly denied. Submitted details, coverage, job status and decisions remain available. Collected records, profiles, findings, posts, media, discovered values and free-text decision notes are withheld.
 	EvidenceRestricted *bool `json:"evidence_restricted,omitzero"`
 	// The most recent retained completed or partial investigation, or a migrated result whose original per-person status is unknown. The evidence below belongs to this investigation. Read investigation history for earlier results and pending jobs.
@@ -172,6 +174,13 @@ func (w *WorkspacePersonReport) GetSearches() []Search {
 		return nil
 	}
 	return w.Searches
+}
+
+func (w *WorkspacePersonReport) GetSuggestedSearches() []SuggestedSearch {
+	if w == nil {
+		return []SuggestedSearch{}
+	}
+	return w.SuggestedSearches
 }
 
 func (w *WorkspacePersonReport) GetEvidenceRestricted() *bool {

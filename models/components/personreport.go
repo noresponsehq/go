@@ -22,6 +22,8 @@ type PersonReport struct {
 	Lookup *ScreeningLookup `json:"lookup,omitzero"`
 	// The searches on this person's values in this group, newest first: each names the value, the record and field it came from, and the search that found that record. Absent when nothing was searched.
 	Searches []Search `json:"searches,omitzero"`
+	// The searches enrichment would start on this person in this group, likeliest record first. Group screening follows the environment's enrichment setting, with suggest as its mode while the workspace has not set one. In off mode the list is empty. In suggest mode enrichment starts none of them by itself; in automatic mode it starts them as its limits allow. Empty when evidence.read is denied.
+	SuggestedSearches []SuggestedSearch `json:"suggested_searches"`
 	// Where else in the environment the person appears, read live from those groups: deleting one removes it here.
 	OtherGroups OtherGroups `json:"other_groups"`
 	// True when evidence.read is explicitly denied. Submitted details, coverage, job status and decisions remain available. Collected records, profiles, findings, posts, media, discovered values and free-text decision notes are withheld.
@@ -93,6 +95,13 @@ func (p *PersonReport) GetSearches() []Search {
 		return nil
 	}
 	return p.Searches
+}
+
+func (p *PersonReport) GetSuggestedSearches() []SuggestedSearch {
+	if p == nil {
+		return []SuggestedSearch{}
+	}
+	return p.SuggestedSearches
 }
 
 func (p *PersonReport) GetOtherGroups() OtherGroups {

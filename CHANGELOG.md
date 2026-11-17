@@ -1,5 +1,12 @@
 # Changelog
 
+## 15.0.9
+
+* `Sdk.People.StartSearch()`: **Added**
+* `Sdk.People.RunSearch()`: **Added**
+* `Sdk.Groups.GetPerson()`:  `response.SuggestedSearches` **Added**
+* `Sdk.People.Get()`:  `response.SuggestedSearches` **Added**
+
 ## 15.0.8
 
 No changes detected.
