@@ -14804,7 +14804,6 @@
         "additionalProperties": false,
         "required": [
           "depth",
-          "platforms",
           "person_id"
         ],
         "properties": {
@@ -14822,7 +14821,8 @@
               "pattern": "^[a-z][a-z0-9_]{0,63}$",
               "description": "A platform a screening can cover, such as instagram, x, bluesky, youtube, tiktok or github. The screening registry owns the set: a request that names a platform it does not cover answers 422. A new platform adds an id without changing this contract, so read a platform you do not know in a response as one you have not seen before, not as an error. synthetic is the deterministic connector's own platform, for exercising the product end to end with no network.",
               "example": "x"
-            }
+            },
+            "description": "The platforms to search. Leave it out for a full search: every platform a connector serves in the environment when the investigation starts, which the investigation then lists."
           },
           "person_id": {
             "type": "string",
@@ -22154,8 +22154,7 @@
         "type": "object",
         "additionalProperties": false,
         "required": [
-          "depth",
-          "platforms"
+          "depth"
         ],
         "properties": {
           "depth": {
@@ -22172,7 +22171,8 @@
               "pattern": "^[a-z][a-z0-9_]{0,63}$",
               "description": "A platform a screening can cover, such as instagram, x, bluesky, youtube, tiktok or github. The screening registry owns the set: a request that names a platform it does not cover answers 422. A new platform adds an id without changing this contract, so read a platform you do not know in a response as one you have not seen before, not as an error. synthetic is the deterministic connector's own platform, for exercising the product end to end with no network.",
               "example": "bluesky"
-            }
+            },
+            "description": "The platforms to search. Leave it out for a full search: every platform a connector serves in the environment when the screening starts, which the screening then lists."
           }
         },
         "description": "Screens the group's people no screening has reached and everyone on watch or escalated."

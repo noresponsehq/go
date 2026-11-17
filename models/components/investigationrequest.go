@@ -6,9 +6,10 @@ import (
 
 // InvestigationRequest - Runs a new investigation against one retained workspace person.
 type InvestigationRequest struct {
-	Depth     ScreeningDepth `json:"depth"`
-	Platforms []string       `json:"platforms"`
-	PersonID  string         `json:"person_id"`
+	Depth ScreeningDepth `json:"depth"`
+	// The platforms to search. Leave it out for a full search: every platform a connector serves in the environment when the investigation starts, which the investigation then lists.
+	Platforms []string `json:"platforms,omitzero"`
+	PersonID  string   `json:"person_id"`
 	// A change to enrichment. A field left out keeps the value in force; max_spend or deadline null removes the bound.
 	Enrichment *EnrichmentChange `json:"enrichment,omitzero"`
 }
@@ -33,7 +34,7 @@ func (i *InvestigationRequest) GetDepth() ScreeningDepth {
 
 func (i *InvestigationRequest) GetPlatforms() []string {
 	if i == nil {
-		return []string{}
+		return nil
 	}
 	return i.Platforms
 }
