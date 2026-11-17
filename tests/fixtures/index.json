@@ -2905,6 +2905,11 @@
       "expect": "valid"
     },
     {
+      "file": "valid/workspace-update-request-product.json",
+      "schema": "workspace-update-request.schema.json",
+      "expect": "valid"
+    },
+    {
       "file": "valid/workspace.json",
       "schema": "workspace.schema.json",
       "expect": "valid"
@@ -3013,8 +3018,44 @@
       "why": "a name has no leading or trailing space"
     },
     {
-      "file": "invalid/workspace-update-request-no-name.json",
+      "file": "invalid/workspace-update-request-empty.json",
       "schema": "workspace-update-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "minProperties",
+          ""
+        ]
+      ],
+      "why": "an update names the new name or the new product"
+    },
+    {
+      "file": "invalid/workspace-update-request-name-and-product.json",
+      "schema": "workspace-update-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "not",
+          ""
+        ]
+      ],
+      "why": "one change per request, so each is its own audit event"
+    },
+    {
+      "file": "invalid/workspace-update-request-unknown-product.json",
+      "schema": "workspace-update-request.schema.json",
+      "expect": "invalid",
+      "errors": [
+        [
+          "enum",
+          "/product"
+        ]
+      ],
+      "why": "a workspace uses identity or signup"
+    },
+    {
+      "file": "invalid/workspace-without-product.json",
+      "schema": "workspace.schema.json",
       "expect": "invalid",
       "errors": [
         [
@@ -3022,7 +3063,7 @@
           ""
         ]
       ],
-      "why": "a rename names the new name"
+      "why": "every workspace names the product it uses"
     },
     {
       "file": "invalid/member-removed.json",

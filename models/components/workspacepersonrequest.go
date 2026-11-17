@@ -16,7 +16,9 @@ type WorkspacePersonRequest struct {
 	// Where the person works.
 	Company *string `json:"company,omitzero"`
 	// Where the person lives.
-	City     *string  `json:"city,omitzero"`
+	City *string `json:"city,omitzero"`
+	// A username the person uses, with no platform. A search looks it up on every platform that finds accounts by username.
+	Username *string  `json:"username,omitzero"`
 	Handles  []Handle `json:"handles,omitzero"`
 	PersonID *string  `json:"person_id,omitzero"`
 }
@@ -72,6 +74,13 @@ func (w *WorkspacePersonRequest) GetCity() *string {
 		return nil
 	}
 	return w.City
+}
+
+func (w *WorkspacePersonRequest) GetUsername() *string {
+	if w == nil {
+		return nil
+	}
+	return w.Username
 }
 
 func (w *WorkspacePersonRequest) GetHandles() []Handle {

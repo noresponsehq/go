@@ -7829,7 +7829,7 @@
           "people"
         ],
         "summary": "List workspace people.",
-        "description": "Lists retained people in the key workspace and environment, including people in no group. Each returned person records a person.viewed audit event. Expired people are excluded before background deletion.",
+        "description": "Lists retained people in the key workspace and environment, including people in no group. Each returned person records a person.viewed audit event. Expired people are excluded before background deletion. email and phone narrow the list to people holding that exact address or number, so a client can open the person it already has instead of adding a duplicate.",
         "parameters": [
           {
             "name": "limit",
@@ -7849,6 +7849,26 @@
               "pattern": "^per_[0-7][0-9A-HJKMNP-TV-Z]{25}$"
             },
             "description": "Pass next_cursor from the prior page."
+          },
+          {
+            "name": "email",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 254
+            },
+            "description": "Return only people whose email is this address, compared without case or surrounding spaces."
+          },
+          {
+            "name": "phone",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 32
+            },
+            "description": "Return only people whose phone is this number, compared without surrounding spaces."
           }
         ],
         "responses": {
@@ -23858,6 +23878,14 @@
             "description": "Where the person lives.",
             "example": "Melbourne"
           },
+          "username": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "pattern": "^@?[^\\s@]+$",
+            "description": "A username the person uses, with no platform. A search looks it up on every platform that finds accounts by username.",
+            "example": "jordan_example"
+          },
           "handles": {
             "type": "array",
             "maxItems": 20,
@@ -23942,6 +23970,14 @@
             "maxLength": 100,
             "description": "Where the person lives.",
             "example": "Melbourne"
+          },
+          "username": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "pattern": "^@?[^\\s@]+$",
+            "description": "A username the person uses, with no platform. A search looks it up on every platform that finds accounts by username.",
+            "example": "jordan_example"
           },
           "handles": {
             "type": "array",
@@ -24094,6 +24130,14 @@
             "maxLength": 100,
             "description": "Where the person lives.",
             "example": "Melbourne"
+          },
+          "username": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "pattern": "^@?[^\\s@]+$",
+            "description": "A username the person uses, with no platform. A search looks it up on every platform that finds accounts by username.",
+            "example": "jordan_example"
           },
           "handles": {
             "allOf": [

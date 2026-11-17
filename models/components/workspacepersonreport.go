@@ -17,6 +17,8 @@ type WorkspacePersonReport struct {
 	Company *string `json:"company,omitzero"`
 	// Where the person lives.
 	City *string `json:"city,omitzero"`
+	// A username the person uses, with no platform. A search looks it up on every platform that finds accounts by username.
+	Username *string `json:"username,omitzero"`
 	// Accounts the person is known to hold, at most 20.
 	Handles   []Handle `json:"handles,omitzero"`
 	ID        string   `json:"id"`
@@ -97,6 +99,13 @@ func (w *WorkspacePersonReport) GetCity() *string {
 		return nil
 	}
 	return w.City
+}
+
+func (w *WorkspacePersonReport) GetUsername() *string {
+	if w == nil {
+		return nil
+	}
+	return w.Username
 }
 
 func (w *WorkspacePersonReport) GetHandles() []Handle {

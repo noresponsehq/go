@@ -9,6 +9,10 @@ type ListWorkspacePeopleRequest struct {
 	Limit *int64 `default:"100" queryParam:"style=form,explode=true,name=limit"`
 	// Pass next_cursor from the prior page.
 	After *string `queryParam:"style=form,explode=true,name=after"`
+	// Return only people whose email is this address, compared without case or surrounding spaces.
+	Email *string `queryParam:"style=form,explode=true,name=email"`
+	// Return only people whose phone is this number, compared without surrounding spaces.
+	Phone *string `queryParam:"style=form,explode=true,name=phone"`
 }
 
 func (l ListWorkspacePeopleRequest) MarshalJSON() ([]byte, error) {
@@ -34,6 +38,20 @@ func (l *ListWorkspacePeopleRequest) GetAfter() *string {
 		return nil
 	}
 	return l.After
+}
+
+func (l *ListWorkspacePeopleRequest) GetEmail() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Email
+}
+
+func (l *ListWorkspacePeopleRequest) GetPhone() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Phone
 }
 
 type ListWorkspacePeopleResponse struct {

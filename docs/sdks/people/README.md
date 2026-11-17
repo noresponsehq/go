@@ -16,7 +16,7 @@ Workspace people, submitted identity, source evidence and expiry.
 
 ## List
 
-Lists retained people in the key workspace and environment, including people in no group. Each returned person records a person.viewed audit event. Expired people are excluded before background deletion.
+Lists retained people in the key workspace and environment, including people in no group. Each returned person records a person.viewed audit event. Expired people are excluded before background deletion. email and phone narrow the list to people holding that exact address or number, so a client can open the person it already has instead of adding a duplicate.
 
 ### Example Usage
 
@@ -38,7 +38,7 @@ func main() {
         noresponse.WithSecurity(os.Getenv("NORESPONSE_API_KEY")),
     )
 
-    res, err := s.People.List(ctx, noresponse.Pointer[int64](100), nil)
+    res, err := s.People.List(ctx, noresponse.Pointer[int64](100), nil, nil, nil)
     if err != nil {
         log.Fatal(err)
     }
@@ -50,12 +50,14 @@ func main() {
 
 ### Parameters
 
-| Parameter                                                | Type                                                     | Required                                                 | Description                                              |
-| -------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- |
-| `ctx`                                                    | [context.Context](https://pkg.go.dev/context#Context)    | :heavy_check_mark:                                       | The context to use for the request.                      |
-| `limit`                                                  | `*int64`                                                 | :heavy_minus_sign:                                       | N/A                                                      |
-| `after`                                                  | `*string`                                                | :heavy_minus_sign:                                       | Pass next_cursor from the prior page.                    |
-| `opts`                                                   | [][operations.Option](../../models/operations/option.md) | :heavy_minus_sign:                                       | The options for this request.                            |
+| Parameter                                                                                    | Type                                                                                         | Required                                                                                     | Description                                                                                  |
+| -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `ctx`                                                                                        | [context.Context](https://pkg.go.dev/context#Context)                                        | :heavy_check_mark:                                                                           | The context to use for the request.                                                          |
+| `limit`                                                                                      | `*int64`                                                                                     | :heavy_minus_sign:                                                                           | N/A                                                                                          |
+| `after`                                                                                      | `*string`                                                                                    | :heavy_minus_sign:                                                                           | Pass next_cursor from the prior page.                                                        |
+| `email`                                                                                      | `*string`                                                                                    | :heavy_minus_sign:                                                                           | Return only people whose email is this address, compared without case or surrounding spaces. |
+| `phone`                                                                                      | `*string`                                                                                    | :heavy_minus_sign:                                                                           | Return only people whose phone is this number, compared without surrounding spaces.          |
+| `opts`                                                                                       | [][operations.Option](../../models/operations/option.md)                                     | :heavy_minus_sign:                                                                           | The options for this request.                                                                |
 
 ### Response
 

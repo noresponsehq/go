@@ -31,11 +31,13 @@ func newPeople(rootSDK *NoResponse, sdkConfig config.SDKConfiguration, hooks *ho
 }
 
 // List workspace people.
-// Lists retained people in the key workspace and environment, including people in no group. Each returned person records a person.viewed audit event. Expired people are excluded before background deletion.
-func (s *People) List(ctx context.Context, limit *int64, after *string, opts ...operations.Option) (*operations.ListWorkspacePeopleResponse, error) {
+// Lists retained people in the key workspace and environment, including people in no group. Each returned person records a person.viewed audit event. Expired people are excluded before background deletion. email and phone narrow the list to people holding that exact address or number, so a client can open the person it already has instead of adding a duplicate.
+func (s *People) List(ctx context.Context, limit *int64, after *string, email *string, phone *string, opts ...operations.Option) (*operations.ListWorkspacePeopleResponse, error) {
 	request := operations.ListWorkspacePeopleRequest{
 		Limit: limit,
 		After: after,
+		Email: email,
+		Phone: phone,
 	}
 
 	o := operations.Options{}
