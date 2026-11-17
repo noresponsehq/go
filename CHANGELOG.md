@@ -1,5 +1,11 @@
 # Changelog
 
+## 15.0.7
+
+* `Sdk.Groups.GetPerson()`:  `response.Profiles[].Record.Fields[].Distinctive` **Changed**
+* `Sdk.People.Get()`:  `response.Profiles[].Record.Fields[].Distinctive` **Changed**
+* `Sdk.Investigations.Get()`:  `response.Profiles[].Record.Fields[].Distinctive` **Changed**
+
 ## 15.0.6
 
 * `Sdk.People.JudgeRecord()`: **Added**

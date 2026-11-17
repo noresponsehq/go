@@ -18975,9 +18975,24 @@
             "maxLength": 200,
             "description": "Why, in plain words, such as \"seen 3,861,493 times in breach data\", \"in 4 breach rows\" or \"38 bits, about one in 430 billion usernames\".",
             "example": "in 4 breach rows"
+          },
+          "rows": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "How many breach rows hold the value, when they were counted. Set for a username, password, hash or person name."
+          },
+          "pwned": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "How many times the Pwned Passwords list holds the password, when it was asked. Set for a password only."
+          },
+          "bits": {
+            "type": "number",
+            "minimum": 0,
+            "description": "How surprising the username is, to one decimal place: a character model spells it about once in 2^bits usernames. Set for a username the model can spell."
           }
         },
-        "description": "How distinctive a searchable value is: an email, phone, username, password, hash, person name or IP. Absent for other values, for a field with no value, and when its rating could not be worked out, such as when a count failed."
+        "description": "How distinctive a searchable value is: an email, phone, username, password, hash, person name or IP. Absent for other values, for a field with no value, and when its rating could not be worked out, such as when a count failed. Linkage weighs a password, hash or username by these numbers: the rarer the value, the more a shared one counts."
       },
       "RecordField": {
         "type": "object",
@@ -31867,7 +31882,8 @@
                             "value": "jordan-ellis",
                             "distinctive": {
                               "rating": "distinctive",
-                              "reason": "34 bits, about one in 17 billion usernames"
+                              "reason": "34 bits, about one in 17 billion usernames",
+                              "bits": 34.2
                             }
                           },
                           {
@@ -31885,7 +31901,8 @@
                             "value": "Jordan Ellis",
                             "distinctive": {
                               "rating": "distinctive",
-                              "reason": "in 3 breach rows"
+                              "reason": "in 3 breach rows",
+                              "rows": 3
                             }
                           },
                           {
@@ -31931,7 +31948,8 @@
                             "value": "jordan_ellis",
                             "distinctive": {
                               "rating": "distinctive",
-                              "reason": "33 bits, about one in 8.6 billion usernames"
+                              "reason": "33 bits, about one in 8.6 billion usernames",
+                              "bits": 33.1
                             }
                           },
                           {
@@ -32020,7 +32038,9 @@
                             "value": "Leeds1990!",
                             "distinctive": {
                               "rating": "distinctive",
-                              "reason": "seen twice in breach data; needs about 10^9 guesses"
+                              "reason": "seen twice in breach data; needs about 10^9 guesses",
+                              "rows": 1,
+                              "pwned": 2
                             }
                           },
                           {
@@ -32031,7 +32051,8 @@
                             "detail": "bcrypt",
                             "distinctive": {
                               "rating": "distinctive",
-                              "reason": "in 1 breach row"
+                              "reason": "in 1 breach row",
+                              "rows": 1
                             }
                           },
                           {
@@ -32062,7 +32083,8 @@
                             "value": "jellis",
                             "distinctive": {
                               "rating": "common",
-                              "reason": "19 bits, about one in 520 thousand usernames"
+                              "reason": "19 bits, about one in 520 thousand usernames",
+                              "bits": 19.6
                             }
                           }
                         ],

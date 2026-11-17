@@ -20,7 +20,8 @@
       "value": "every-member.bsky.social",
       "distinctive": {
         "rating": "distinctive",
-        "reason": "102 bits, rarer than one in a quadrillion usernames"
+        "reason": "102 bits, rarer than one in a quadrillion usernames",
+        "bits": 102.3
       }
     },
     {
@@ -141,7 +142,8 @@
       "value": "everymember",
       "distinctive": {
         "rating": "distinctive",
-        "reason": "39 bits, about one in 550 billion usernames"
+        "reason": "39 bits, about one in 550 billion usernames",
+        "bits": 39.8
       }
     },
     {
@@ -152,7 +154,8 @@
       "value": "every-member-elsewhere",
       "distinctive": {
         "rating": "distinctive",
-        "reason": "98 bits, rarer than one in a quadrillion usernames"
+        "reason": "98 bits, rarer than one in a quadrillion usernames",
+        "bits": 98.8
       }
     },
     {
@@ -163,7 +166,8 @@
       "value": "crew.bsky.social",
       "distinctive": {
         "rating": "distinctive",
-        "reason": "64 bits, rarer than one in a quadrillion usernames"
+        "reason": "64 bits, rarer than one in a quadrillion usernames",
+        "bits": 64.9
       }
     },
     {
