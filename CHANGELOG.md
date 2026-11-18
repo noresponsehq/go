@@ -1,5 +1,9 @@
 # Changelog
 
+## 15.0.14
+
+No changes detected.
+
 ## 15.0.13
 
 * `Sdk.People.List()`: 
