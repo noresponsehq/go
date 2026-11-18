@@ -126,7 +126,8 @@
       "field": "lists",
       "original": "0",
       "kind": "flag",
-      "value": "false"
+      "value": "false",
+      "noise": true
     },
     {
       "field": "starter_packs",
@@ -260,7 +261,8 @@
       "field": "associated.feedgens",
       "original": "0",
       "kind": "flag",
-      "value": "false"
+      "value": "false",
+      "noise": true
     },
     {
       "field": "associated.lists.0",
@@ -272,13 +274,15 @@
       "field": "associated.lists.1",
       "original": "2",
       "kind": "text",
-      "value": "2"
+      "value": "2",
+      "noise": true
     },
     {
       "field": "associated.lists.2",
       "original": "true",
       "kind": "flag",
-      "value": "true"
+      "value": "true",
+      "noise": true
     },
     {
       "field": "pinned.at",
@@ -290,7 +294,8 @@
       "field": "pinned.likes",
       "original": "0",
       "kind": "flag",
-      "value": "false"
+      "value": "false",
+      "noise": true
     },
     {
       "field": "pinned.uri",
@@ -302,7 +307,8 @@
       "field": "verified",
       "original": "false",
       "kind": "flag",
-      "value": "false"
+      "value": "false",
+      "noise": true
     }
   ],
   "observed_at": "2026-11-08T09:59:30Z"

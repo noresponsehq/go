@@ -20,6 +20,8 @@ type RecordField struct {
 	Detail *string `json:"detail,omitzero"`
 	// How distinctive a searchable value is: an email, phone, username, password, hash, person name or IP. Absent for other values, for a field with no value, and when its rating could not be worked out, such as when a count failed. Linkage weighs a password, hash or username by these numbers: the rarer the value, the more a shared one counts.
 	Distinctive *RecordDistinctive `json:"distinctive,omitzero"`
+	// True when the value tells an investigator nothing on its own: a setting flag, a zero count, a bare number or a value with no letter or digit, in a field with no role. A field with a role is not noise. Investigation views hide noise by default; the field is still returned in full.
+	Noise *bool `json:"noise,omitzero"`
 }
 
 func (r RecordField) MarshalJSON() ([]byte, error) {
@@ -80,4 +82,11 @@ func (r *RecordField) GetDistinctive() *RecordDistinctive {
 		return nil
 	}
 	return r.Distinctive
+}
+
+func (r *RecordField) GetNoise() *bool {
+	if r == nil {
+		return nil
+	}
+	return r.Noise
 }
