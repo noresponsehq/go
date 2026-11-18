@@ -1,5 +1,11 @@
 # Changelog
 
+## 15.0.15
+
+* `Sdk.Groups.GetPerson()`:  `response.Profiles[].Match.Evidence[].Kind.Enum(suppliedUsername)` **Added**
+* `Sdk.People.Get()`:  `response.Profiles[].Match.Evidence[].Kind.Enum(suppliedUsername)` **Added**
+* `Sdk.Investigations.Get()`:  `response.Profiles[].Match.Evidence[].Kind.Enum(suppliedUsername)` **Added**
+
 ## 15.0.14
 
 No changes detected.
