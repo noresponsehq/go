@@ -1,5 +1,9 @@
 # Changelog
 
+## 15.0.16
+
+No changes detected.
+
 ## 15.0.15
 
 * `Sdk.Groups.GetPerson()`:  `response.Profiles[].Match.Evidence[].Kind.Enum(suppliedUsername)` **Added**
