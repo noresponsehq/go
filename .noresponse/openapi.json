@@ -14628,7 +14628,7 @@
           "platforms": {
             "type": "array",
             "minItems": 1,
-            "maxItems": 10000,
+            "maxItems": 20000,
             "uniqueItems": true,
             "items": {
               "type": "string",
@@ -14834,7 +14834,7 @@
           "platforms": {
             "type": "array",
             "minItems": 1,
-            "maxItems": 10000,
+            "maxItems": 20000,
             "uniqueItems": true,
             "items": {
               "type": "string",
@@ -21086,7 +21086,7 @@
           "platforms": {
             "type": "array",
             "minItems": 1,
-            "maxItems": 10000,
+            "maxItems": 20000,
             "uniqueItems": true,
             "items": {
               "type": "string",
@@ -21391,14 +21391,14 @@
           },
           "platforms": {
             "type": "array",
-            "maxItems": 10000,
+            "maxItems": 20000,
             "items": {
               "$ref": "#/components/schemas/ScreeningPlatformCoverage"
             }
           },
           "not_searched": {
             "type": "array",
-            "maxItems": 10000,
+            "maxItems": 20000,
             "uniqueItems": true,
             "items": {
               "type": "string",
@@ -22185,7 +22185,7 @@
           "platforms": {
             "type": "array",
             "minItems": 1,
-            "maxItems": 10000,
+            "maxItems": 20000,
             "uniqueItems": true,
             "items": {
               "type": "string",
