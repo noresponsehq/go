@@ -1,5 +1,18 @@
 # Changelog
 
+## 15.0.18
+
+* `Sdk.Groups.ListPeople()`:  `response.Items[].Coverage.NotAnalysedByReason[].Reason.Enum(analysisOff)` **Added**
+* `Sdk.Groups.GetPerson()`:  `response.Person.Coverage.NotAnalysedByReason[].Reason.Enum(analysisOff)` **Added**
+* `Sdk.Groups.ReviewPerson()`:  `response.Coverage.NotAnalysedByReason[].Reason.Enum(analysisOff)` **Added**
+* `Sdk.Groups.ExportPeople()`:  `response.Items[].Coverage.NotAnalysedByReason[].Reason.Enum(analysisOff)` **Added**
+* `Sdk.People.Get()`:  `response.EvidenceInvestigation.Coverage.NotAnalysedByReason[].Reason.Enum(analysisOff)` **Added**
+* `Sdk.Investigations.List()`:  `response.Items[].Coverage.NotAnalysedByReason[].Reason.Enum(analysisOff)` **Added**
+* `Sdk.Investigations.Create()`:  `response.Coverage.NotAnalysedByReason[].Reason.Enum(analysisOff)` **Added**
+* `Sdk.Investigations.Get()`:  `response.Investigation.Coverage.NotAnalysedByReason[].Reason.Enum(analysisOff)` **Added**
+* `Sdk.Investigations.Review()`:  `response.Coverage.NotAnalysedByReason[].Reason.Enum(analysisOff)` **Added**
+* `Sdk.Investigations.Cancel()`:  `response.Coverage.NotAnalysedByReason[].Reason.Enum(analysisOff)` **Added**
+
 ## 15.0.17
 
 No changes detected.

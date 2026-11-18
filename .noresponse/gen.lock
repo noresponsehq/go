@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: 25ddae46-795d-45f5-b455-3f48c41d440e
 management:
-  docChecksum: 77816f97ee2d8b0c2e325f812d78d354
+  docChecksum: dec2f55d4486bb26003e3924cd79b6d2
   docVersion: "1"
   speakeasyVersion: internal
   generationVersion: internal
-  releaseVersion: 15.0.17
-  configChecksum: b100e8277391876cdc22d5b4840d9ebf
+  releaseVersion: 15.0.18
+  configChecksum: 495fdb3a7abec5172231660ac33e1ea1
 features:
   go:
     additionalDependencies: 0.1.0
@@ -899,9 +899,9 @@ trackedFiles:
   docs/models/components/screeningmediaobservation.md:
     last_write_checksum: sha1:105b9cb9a3d68614e57e1c296e7b798e050008e6
   docs/models/components/screeningnotanalysedcount.md:
-    last_write_checksum: sha1:bb4c07d5eb392812e61e638316b54531cdb4df6f
+    last_write_checksum: sha1:185e5cbbeef3efc06257676c76c756f7f50a0f1e
   docs/models/components/screeningnotanalysedreason.md:
-    last_write_checksum: sha1:b23dbfbbeead5785bcb6336772f16698d7800822
+    last_write_checksum: sha1:f98535488227b9f17fdeb37a91f63a63da753e8a
   docs/models/components/screeningplatformcoverage.md:
     last_write_checksum: sha1:1b3a977aa2ae1f59a0bd55f2c8a254b7aba75e47
   docs/models/components/screeningplatformcoveragestatus.md:
@@ -2463,9 +2463,9 @@ trackedFiles:
   models/components/screeningmediaobservation.go:
     last_write_checksum: sha1:cab244f8b5802178e92327f95b05f32ec259d539
   models/components/screeningnotanalysedcount.go:
-    last_write_checksum: sha1:90cb304aea9fb895b68d289350367a776a241d7a
+    last_write_checksum: sha1:33e863426df481429f8f726d4e5ad0d18cc6db5f
   models/components/screeningnotanalysedreason.go:
-    last_write_checksum: sha1:a5909d03b5380d5b9405dbde73fa8daab54fb451
+    last_write_checksum: sha1:c1803b0a3ead29270bd0bdf6d91b459ce6f873ad
   models/components/screeningplatformcoverage.go:
     last_write_checksum: sha1:544c77dd5c87926c77bfdaa51ab49d7f9d740a90
   models/components/screeningplatformcoveragestatus.go:
@@ -2875,7 +2875,7 @@ trackedFiles:
   models/operations/updatesettings.go:
     last_write_checksum: sha1:df9997784870a401e81b1eaabda00777216c09f2
   noresponse.go:
-    last_write_checksum: sha1:8b464e93a3ec4149eca4cd14052b108f63bdb6c0
+    last_write_checksum: sha1:1023b1f8923ecaf4751854141c821af04ab004b9
   operations.go:
     last_write_checksum: sha1:5e5ecc3fd4ec2d7217e5fa1c5c8dc7f0e3874b01
   optionalnullable/optionalnullable.go:
