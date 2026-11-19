@@ -46,6 +46,8 @@ type WorkspacePersonReport struct {
 	EvidenceInvestigation *Investigation `json:"evidence_investigation"`
 	// An investigator's profile of this person, written from the evidence of a settled investigation. Null until an investigation completes or partially completes, and null when evidence.read is denied.
 	WrittenProfile *WrittenProfile `json:"written_profile"`
+	// What changed between each settled investigation of this person and the one before it, unreviewed first, then most significant, then newest. The first investigation records no changes. When evidence.read is denied, before and after are withheld.
+	Changes []PersonChange `json:"changes"`
 }
 
 func (w WorkspacePersonReport) MarshalJSON() ([]byte, error) {
@@ -211,4 +213,11 @@ func (w *WorkspacePersonReport) GetWrittenProfile() *WrittenProfile {
 		return nil
 	}
 	return w.WrittenProfile
+}
+
+func (w *WorkspacePersonReport) GetChanges() []PersonChange {
+	if w == nil {
+		return []PersonChange{}
+	}
+	return w.Changes
 }

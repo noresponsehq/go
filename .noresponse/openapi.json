@@ -8500,6 +8500,64 @@
           }
         ]
       }
+    },
+    "/v1/people/{person_id}/changes/{change_id}/review": {
+      "post": {
+        "operationId": "reviewWorkspacePersonChange",
+        "x-noresponse-group": "people",
+        "x-noresponse-name-override": "reviewChange",
+        "tags": [
+          "people"
+        ],
+        "summary": "Mark a change on a workspace person reviewed.",
+        "description": "Marks one change between a person's investigations reviewed, so it sorts below the unreviewed ones. Reviewing again keeps the first reviewer and time. Reviewing a change is not a decision on the person. The body is an empty object. Each review is audited as person.change_reviewed. The decisions scope grants this operation. Explicit evidence.read restrictions withhold before and after. The groups scope is also accepted for existing integrations. The API key selects the workspace and environment.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PersonId"
+          },
+          {
+            "$ref": "#/components/parameters/ChangeId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ScreeningCancelRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/PersonChangeReviewed"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidGroupRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ControlForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/WorkspaceNotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/IdempotencyConflict"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -17175,6 +17233,106 @@
         },
         "description": "Adds 1 to 500 workspace people to the group. Reuses an explicit person_id or external_id. Matching email or phone values only suggest people; automatic merging is disabled."
       },
+      "PersonChange": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "kind",
+          "significance",
+          "source",
+          "investigation_id",
+          "previous_investigation_id",
+          "created_at",
+          "reviewed_at"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^chg_[0-7][0-9A-HJKMNP-TV-Z]{25}$",
+            "example": "chg_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/PersonChangeKind",
+            "description": "account_added and account_removed: an account or profile appeared or disappeared. breach_added and breach_removed: a breach record appeared or disappeared. identifier_added and identifier_removed: an email, phone, username, name or account id on an account the person already held. field_changed: another field on such an account. finding_added: a new finding. posts_added: new posts, counted in count."
+          },
+          "significance": {
+            "$ref": "#/components/schemas/Significance",
+            "description": "One rule ranks every change: identity changes (accounts, breaches, identifiers) are high, profile fields and findings are medium, new posts are low."
+          },
+          "source": {
+            "type": "string",
+            "maxLength": 300,
+            "description": "The connector, site or platform the change came from.",
+            "example": "github"
+          },
+          "field": {
+            "type": "string",
+            "maxLength": 200,
+            "example": "email"
+          },
+          "before": {
+            "type": "string",
+            "maxLength": 10000,
+            "example": "jane@example.com"
+          },
+          "after": {
+            "type": "string",
+            "maxLength": 10000,
+            "example": "jane.doe@example.com"
+          },
+          "count": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "investigation_id": {
+            "type": "string",
+            "maxLength": 100,
+            "description": "The investigation that found the change.",
+            "example": "inv_01JA2Z8K6Q4V7W9XBCDEFGHJKN"
+          },
+          "previous_investigation_id": {
+            "type": "string",
+            "maxLength": 100,
+            "description": "The earlier investigation it was compared with.",
+            "example": "inv_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          },
+          "created_at": {
+            "type": "string",
+            "example": "2026-01-02T00:00:00Z"
+          },
+          "reviewed_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "example": "2026-01-02T00:05:00Z"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "reviewed_by": {
+            "type": "string",
+            "maxLength": 200,
+            "example": "Jane Analyst"
+          }
+        }
+      },
+      "PersonChangeKind": {
+        "enum": [
+          "account_added",
+          "account_removed",
+          "breach_added",
+          "breach_removed",
+          "identifier_added",
+          "identifier_removed",
+          "field_changed",
+          "finding_added",
+          "posts_added"
+        ],
+        "description": "account_added and account_removed: an account or profile appeared or disappeared. breach_added and breach_removed: a breach record appeared or disappeared. identifier_added and identifier_removed: an email, phone, username, name or account id on an account the person already held. field_changed: another field on such an account. finding_added: a new finding. posts_added: new posts, counted in count."
+      },
       "PersonDecided": {
         "type": "object",
         "additionalProperties": false,
@@ -22855,6 +23013,14 @@
         ],
         "description": "Per-signal outcome. A source that timed out, was blocked or errored reports blocked, unavailable or inconclusive with a reason and is listed in incomplete_sources; not_found is a definite absence."
       },
+      "Significance": {
+        "enum": [
+          "high",
+          "medium",
+          "low"
+        ],
+        "description": "One rule ranks every change: identity changes (accounts, breaches, identifiers) are high, profile fields and findings are medium, new posts are low."
+      },
       "SigningKey": {
         "type": "object",
         "additionalProperties": false,
@@ -24046,7 +24212,8 @@
           "media",
           "evidence_investigation",
           "written_profile",
-          "suggested_searches"
+          "suggested_searches",
+          "changes"
         ],
         "properties": {
           "external_id": {
@@ -24200,6 +24367,14 @@
               }
             ],
             "description": "An investigator's profile of this person, written from the evidence of a settled investigation. Null until an investigation completes or partially completes, and null when evidence.read is denied."
+          },
+          "changes": {
+            "type": "array",
+            "maxItems": 200,
+            "items": {
+              "$ref": "#/components/schemas/PersonChange"
+            },
+            "description": "What changed between each settled investigation of this person and the one before it, unreviewed first, then most significant, then newest. The first investigation records no changes. When evidence.read is denied, before and after are withheld."
           }
         }
       },
@@ -24688,6 +24863,16 @@
           "maxLength": 128,
           "pattern": "^[A-Za-z0-9._:-]{16,128}$",
           "example": "investigation-case-1042-first"
+        }
+      },
+      "ChangeId": {
+        "name": "change_id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^chg_[0-7][0-9A-HJKMNP-TV-Z]{25}$",
+          "example": "chg_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
         }
       }
     },
@@ -33133,6 +33318,34 @@
             "schema": {
               "type": "string",
               "const": "no-store"
+            }
+          }
+        }
+      },
+      "PersonChangeReviewed": {
+        "description": "The change, marked reviewed.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/PersonChange"
             }
           }
         }

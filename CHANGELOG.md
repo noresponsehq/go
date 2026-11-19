@@ -1,5 +1,10 @@
 # Changelog
 
+## 16.0.4
+
+* `Sdk.People.ReviewChange()`: **Added**
+* `Sdk.People.Get()`:  `response.Changes` **Added**
+
 ## 16.0.3
 
 No changes detected.

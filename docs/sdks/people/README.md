@@ -13,6 +13,7 @@ Workspace people, submitted identity, source evidence and expiry.
 * [JudgeRecord](#judgerecord) - Join one of a workspace person's records to them, or reject it.
 * [StartSearch](#startsearch) - Search again on a value of one of a workspace person's records.
 * [RunSearch](#runsearch) - Run a counted password or hash search on a workspace person.
+* [ReviewChange](#reviewchange) - Mark a change on a workspace person reviewed.
 
 ## List
 
@@ -429,6 +430,67 @@ func main() {
 ### Response
 
 **[*operations.RunWorkspacePersonSearchResponse](../../models/operations/runworkspacepersonsearchresponse.md), error**
+
+### Errors
+
+| Error Type                      | Status Code                     | Content Type                    |
+| ------------------------------- | ------------------------------- | ------------------------------- |
+| apierrors.BadRequestError       | 400                             | application/problem+json        |
+| apierrors.AuthenticationError   | 401                             | application/problem+json        |
+| apierrors.PermissionDeniedError | 403                             | application/problem+json        |
+| apierrors.NotFoundError         | 404                             | application/problem+json        |
+| apierrors.ConflictError         | 409                             | application/problem+json        |
+| apierrors.RateLimitError        | 429                             | application/problem+json        |
+| apierrors.APIStatusError        | 4XX, 5XX                        | \*/\*                           |
+
+## ReviewChange
+
+Marks one change between a person's investigations reviewed, so it sorts below the unreviewed ones. Reviewing again keeps the first reviewer and time. Reviewing a change is not a decision on the person. The body is an empty object. Each review is audited as person.change_reviewed. The decisions scope grants this operation. Explicit evidence.read restrictions withhold before and after. The groups scope is also accepted for existing integrations. The API key selects the workspace and environment.
+
+### Example Usage
+
+<!-- UsageSnippet language="go" operationID="reviewWorkspacePersonChange" method="post" path="/v1/people/{person_id}/changes/{change_id}/review" -->
+```go
+package main
+
+import(
+	"context"
+	"os"
+	noresponse "github.com/noresponsehq/go/v16"
+	"github.com/noresponsehq/go/v16/models/components"
+	"log"
+)
+
+func main() {
+    ctx := context.Background()
+
+    s := noresponse.New(
+        noresponse.WithSecurity(os.Getenv("NORESPONSE_API_KEY")),
+    )
+
+    res, err := s.People.ReviewChange(ctx, "per_01JA2Z8K6Q4V7W9XBCDEFGHJKM", "chg_01JA2Z8K6Q4V7W9XBCDEFGHJKM", components.ScreeningCancelRequest{})
+    if err != nil {
+        log.Fatal(err)
+    }
+    if res != nil {
+        // handle response
+    }
+}
+```
+
+### Parameters
+
+| Parameter                                                                              | Type                                                                                   | Required                                                                               | Description                                                                            | Example                                                                                |
+| -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| `ctx`                                                                                  | [context.Context](https://pkg.go.dev/context#Context)                                  | :heavy_check_mark:                                                                     | The context to use for the request.                                                    |                                                                                        |
+| `personID`                                                                             | `string`                                                                               | :heavy_check_mark:                                                                     | N/A                                                                                    | per_01JA2Z8K6Q4V7W9XBCDEFGHJKM                                                         |
+| `changeID`                                                                             | `string`                                                                               | :heavy_check_mark:                                                                     | N/A                                                                                    | chg_01JA2Z8K6Q4V7W9XBCDEFGHJKM                                                         |
+| `body`                                                                                 | [components.ScreeningCancelRequest](../../models/components/screeningcancelrequest.md) | :heavy_check_mark:                                                                     | N/A                                                                                    |                                                                                        |
+| `opts`                                                                                 | [][operations.Option](../../models/operations/option.md)                               | :heavy_minus_sign:                                                                     | The options for this request.                                                          |                                                                                        |
+
+### Response
+
+**[*operations.ReviewWorkspacePersonChangeResponse](../../models/operations/reviewworkspacepersonchangeresponse.md), error**
 
 ### Errors
 
