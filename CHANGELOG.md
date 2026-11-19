@@ -1,5 +1,11 @@
 # Changelog
 
+## 19.0.1
+
+* `Sdk.Groups.GetPerson()`:  `response` **Changed**
+* `Sdk.People.Get()`:  `response` **Changed**
+* `Sdk.Investigations.Get()`:  `response` **Changed**
+
 ## 19.0.0
 
 * `Sdk.Groups.StartScreening()`: 

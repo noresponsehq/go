@@ -14,6 +14,8 @@ type ScreeningLookup struct {
 	Records []Record `json:"records,omitzero"`
 	// For each search and source whose matched rows records leave out, how many: a breach search returns at most 20 rows of a table and 100 in all, from its first 64 tables by name. A search a person starts on one table of its source fetches the rest of that table, up to 100 rows. Absent when records hold every matched row.
 	Remaining []RecordRemaining `json:"remaining,omitzero"`
+	// Identifiers you gave that lead to different people. Absent when they agree.
+	Conflicts []RecordConflict `json:"conflicts,omitzero"`
 	// When the lookups ran.
 	LookedAt string `json:"looked_at"`
 }
@@ -55,6 +57,13 @@ func (s *ScreeningLookup) GetRemaining() []RecordRemaining {
 		return nil
 	}
 	return s.Remaining
+}
+
+func (s *ScreeningLookup) GetConflicts() []RecordConflict {
+	if s == nil {
+		return nil
+	}
+	return s.Conflicts
 }
 
 func (s *ScreeningLookup) GetLookedAt() string {

@@ -30,6 +30,8 @@ type Record struct {
 	Evidence []RecordEvidence `json:"evidence,omitzero"`
 	// How the record connects to what the investigator gave: given first, then the ids of the joined records it reached the person through, nearest last. Each step follows what found the record before the strongest agreement. A record with no link to the person has no path.
 	Path []string `json:"path,omitzero"`
+	// For a record that is not the person's, the other person it belongs with: records that share this number share strong values, such as an email or a full name with a phone, and score as one person against each other. Absent on the person's own records and on a record that matches nobody else. A value that more than 20 strangers hold groups nobody.
+	OtherPerson *int64 `json:"other_person,omitzero"`
 }
 
 func (r Record) MarshalJSON() ([]byte, error) {
@@ -125,4 +127,11 @@ func (r *Record) GetPath() []string {
 		return nil
 	}
 	return r.Path
+}
+
+func (r *Record) GetOtherPerson() *int64 {
+	if r == nil {
+		return nil
+	}
+	return r.OtherPerson
 }
