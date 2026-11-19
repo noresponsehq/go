@@ -21607,19 +21607,16 @@
           "sources": {
             "type": "integer",
             "minimum": 0,
-            "maximum": 3072,
             "description": "Sources asked: none when no source could be, as when the source is stopped or your workspace refuses it."
           },
           "answered": {
             "type": "integer",
             "minimum": 0,
-            "maximum": 3072,
             "description": "Sources that gave a definite answer."
           },
           "found": {
             "type": "integer",
             "minimum": 0,
-            "maximum": 3072,
             "description": "Sources that found the identifier."
           },
           "reason": {
@@ -21628,7 +21625,6 @@
           },
           "unanswered": {
             "type": "array",
-            "maxItems": 3072,
             "description": "Each source that did not give a definite answer, by connector, with why: the same connector id a record's source names. A source of the lane that no connector covers is counted in sources and not named here.",
             "items": {
               "$ref": "#/components/schemas/ScreeningLookupCheckUnansweredItem"

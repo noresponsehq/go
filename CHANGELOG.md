@@ -1,5 +1,9 @@
 # Changelog
 
+## 16.0.1
+
+No changes detected.
+
 ## 16.0.0
 
 * `Sdk.Erasures.Get()`:  `response.Targets[].Name` **Changed** (Breaking ⚠️)
