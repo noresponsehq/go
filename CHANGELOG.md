@@ -1,5 +1,9 @@
 # Changelog
 
+## 18.0.1
+
+No changes detected.
+
 ## 18.0.0
 
 * `Sdk.Groups.ListPeople()`: 
