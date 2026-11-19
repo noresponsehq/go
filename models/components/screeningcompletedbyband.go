@@ -1,7 +1,7 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v16/internal/utils"
+	"github.com/noresponsehq/go/v17/internal/utils"
 )
 
 // ScreeningCompletedByBand - Screened people by the band of their most severe finding.

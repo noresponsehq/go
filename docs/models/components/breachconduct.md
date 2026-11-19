@@ -6,7 +6,7 @@ What a breach table's rows record against the identifier: chargeback, one or mor
 
 ```go
 import (
-	"github.com/noresponsehq/go/v16/models/components"
+	"github.com/noresponsehq/go/v17/models/components"
 )
 
 value := components.BreachConductChargeback

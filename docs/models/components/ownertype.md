@@ -6,7 +6,7 @@ The credential namespace of the creator. An external user ID equal to an API-key
 
 ```go
 import (
-	"github.com/noresponsehq/go/v16/models/components"
+	"github.com/noresponsehq/go/v17/models/components"
 )
 
 value := components.OwnerTypeUser

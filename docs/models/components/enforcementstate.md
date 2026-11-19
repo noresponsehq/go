@@ -6,7 +6,7 @@ The account's state in the workspace's identity provider just before the action:
 
 ```go
 import (
-	"github.com/noresponsehq/go/v16/models/components"
+	"github.com/noresponsehq/go/v17/models/components"
 )
 
 value := components.EnforcementStateOnboarding

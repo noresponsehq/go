@@ -1,7 +1,7 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v16/internal/utils"
+	"github.com/noresponsehq/go/v17/internal/utils"
 )
 
 // InvestigationRequest - Runs a new investigation against one retained workspace person.

@@ -6,7 +6,7 @@ Why a failed search found nothing: its sources did not answer, none could be ask
 
 ```go
 import (
-	"github.com/noresponsehq/go/v16/models/components"
+	"github.com/noresponsehq/go/v17/models/components"
 )
 
 value := components.ErrorCodeNotAnswered

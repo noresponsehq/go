@@ -21177,7 +21177,7 @@
             "$ref": "#/components/schemas/Footprint"
           }
         },
-        "description": "A few typed facts per identifier: an assessment's risk.summary, and a screened person's lookup summary. Every fact is optional: absent means the evidence did not answer and makes no claim, while false or 0 is a definite answer."
+        "description": "A few typed facts per identifier: an assessment's risk.summary. Every fact is optional: absent means the evidence did not answer and makes no claim, while false or 0 is a definite answer."
       },
       "RiskSummaryEmail": {
         "type": "object",
@@ -21842,14 +21842,6 @@
             "items": {
               "$ref": "#/components/schemas/ScreeningLookupAnswer"
             }
-          },
-          "summary": {
-            "$ref": "#/components/schemas/RiskSummary",
-            "description": "The typed facts per identifier, as an assessment's risk.summary: accounts found, the breach summary, phone facts and the identity's footprint. Absent when nothing answered with one."
-          },
-          "details": {
-            "$ref": "#/components/schemas/RiskDetails",
-            "description": "The merged observations, as an assessment's risk.details: every account search, breach tables and names, phone names and dated events. Served only to a caller who may read evidence: a member with evidence.read, or a key with the detailed or evidence scope."
           },
           "records": {
             "type": "array",

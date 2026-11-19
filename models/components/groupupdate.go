@@ -1,8 +1,8 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v16/internal/utils"
-	"github.com/noresponsehq/go/v16/optionalnullable"
+	"github.com/noresponsehq/go/v17/internal/utils"
+	"github.com/noresponsehq/go/v17/optionalnullable"
 )
 
 // GroupUpdate - Updates a group. Dates describe an optional event and do not control person retention.

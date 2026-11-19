@@ -1,5 +1,11 @@
 # Changelog
 
+## 17.0.0
+
+* `Sdk.Groups.GetPerson()`:  `response.Lookup` **Changed** (Breaking ⚠️)
+* `Sdk.People.Get()`:  `response.Lookup` **Changed** (Breaking ⚠️)
+* `Sdk.Investigations.Get()`:  `response.Lookup` **Changed** (Breaking ⚠️)
+
 ## 16.0.9
 
 * `Sdk.People.Get()`:  `response.Groups` **Added**

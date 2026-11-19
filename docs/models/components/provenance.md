@@ -6,7 +6,7 @@ Customer-submitted input. It does not mean the customer or NoResponse verified o
 
 ```go
 import (
-	"github.com/noresponsehq/go/v16/models/components"
+	"github.com/noresponsehq/go/v17/models/components"
 )
 
 value := components.ProvenanceSubmitted

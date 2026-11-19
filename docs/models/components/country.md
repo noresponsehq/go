@@ -6,7 +6,7 @@ IP country, phone country, breach countries and policy_context.region together. 
 
 ```go
 import (
-	"github.com/noresponsehq/go/v16/models/components"
+	"github.com/noresponsehq/go/v17/models/components"
 )
 
 value := components.CountryConsistent

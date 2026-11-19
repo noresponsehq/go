@@ -6,7 +6,7 @@ Processing state, separate from evidence coverage. complete: final; nothing is s
 
 ```go
 import (
-	"github.com/noresponsehq/go/v16/models/components"
+	"github.com/noresponsehq/go/v17/models/components"
 )
 
 value := components.StatusComplete

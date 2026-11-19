@@ -6,7 +6,7 @@ email matches one address, whatever the case of its local part. email_domain mat
 
 ```go
 import (
-	"github.com/noresponsehq/go/v16/models/components"
+	"github.com/noresponsehq/go/v17/models/components"
 )
 
 value := components.ListEntryKindEmail

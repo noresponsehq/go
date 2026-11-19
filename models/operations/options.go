@@ -2,8 +2,8 @@ package operations
 
 import (
 	"errors"
-	"github.com/noresponsehq/go/v16/internal/utils"
-	"github.com/noresponsehq/go/v16/retry"
+	"github.com/noresponsehq/go/v17/internal/utils"
+	"github.com/noresponsehq/go/v17/retry"
 	"time"
 )
 

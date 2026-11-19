@@ -6,7 +6,7 @@ confirmed: a linked record or the searched identifier states it directly. likely
 
 ```go
 import (
-	"github.com/noresponsehq/go/v16/models/components"
+	"github.com/noresponsehq/go/v17/models/components"
 )
 
 value := components.CertaintyConfirmed

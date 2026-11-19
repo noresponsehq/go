@@ -1,7 +1,7 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v16/internal/utils"
+	"github.com/noresponsehq/go/v17/internal/utils"
 )
 
 type AuditStreamRequest struct {

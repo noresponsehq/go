@@ -4,7 +4,7 @@
 
 ```go
 import (
-	"github.com/noresponsehq/go/v16/models/operations"
+	"github.com/noresponsehq/go/v17/models/operations"
 )
 
 value := operations.EnvironmentTest

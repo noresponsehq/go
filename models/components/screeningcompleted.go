@@ -1,7 +1,7 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v16/internal/utils"
+	"github.com/noresponsehq/go/v17/internal/utils"
 )
 
 // ScreeningCompleted - A screening of a group finished. It counts only the people this screening set out to reach, not who they are: read the roster with GET /v1/workspaces/{workspace_id}/groups/{environment}/{group_id}/people, filtered by band, to act on them. people_screened + partial_coverage = people_total, people_flagged is the sum of by_band, no_footprint counts screened people with no flag whose accounts were not found, and no_profile_to_check those the screening had nothing to look up for on any requested platform. A cancelled screening sends no event.

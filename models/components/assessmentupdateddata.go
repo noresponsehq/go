@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/noresponsehq/go/v16/internal/utils"
+	"github.com/noresponsehq/go/v17/internal/utils"
 )
 
 type AssessmentUpdatedDataType string

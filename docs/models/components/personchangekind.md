@@ -6,7 +6,7 @@ account_added and account_removed: an account or profile appeared or disappeared
 
 ```go
 import (
-	"github.com/noresponsehq/go/v16/models/components"
+	"github.com/noresponsehq/go/v17/models/components"
 )
 
 value := components.PersonChangeKindAccountAdded

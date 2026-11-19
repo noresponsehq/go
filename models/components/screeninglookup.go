@@ -1,7 +1,7 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v16/internal/utils"
+	"github.com/noresponsehq/go/v17/internal/utils"
 )
 
 // ScreeningLookup - What the signup check's lookups found for a person: account presence for the email, phone and usernames (the person's handles), the phone lookup, the email domain's registration and the breach search. Context and coverage for the reviewer, not a finding: nothing here sets a band or a match state.
@@ -10,10 +10,6 @@ type ScreeningLookup struct {
 	Checks []ScreeningLookupCheck `json:"checks"`
 	// Each source asked, with what it answered and when. answered_at is absent while the source has not answered.
 	Answers []ScreeningLookupAnswer `json:"answers,omitzero"`
-	// A few typed facts per identifier: an assessment's risk.summary, and a screened person's lookup summary. Every fact is optional: absent means the evidence did not answer and makes no claim, while false or 0 is a definite answer.
-	Summary *RiskSummary `json:"summary,omitzero"`
-	// Merged observations behind the summary, served only to a caller who may read evidence: no provider, source, origin, raw breach record or score.
-	Details *RiskDetails `json:"details,omitzero"`
 	// What each source answered, whole, each answer once: every field of each account a connector found, and every column of each breach row the person's email or usernames matched, under the source's own names, and what each search a person started found, each match naming its search. Anyone who may read the person reads them: no extra permission applies, breach passwords and hashes included.
 	Records []Record `json:"records,omitzero"`
 	// For each search and source whose matched rows records leave out, how many: a breach search returns at most 20 rows of a table and 100 in all, from its first 64 tables by name. A search a person starts on one table of its source fetches the rest of that table, up to 100 rows. Absent when records hold every matched row.
@@ -45,20 +41,6 @@ func (s *ScreeningLookup) GetAnswers() []ScreeningLookupAnswer {
 		return nil
 	}
 	return s.Answers
-}
-
-func (s *ScreeningLookup) GetSummary() *RiskSummary {
-	if s == nil {
-		return nil
-	}
-	return s.Summary
-}
-
-func (s *ScreeningLookup) GetDetails() *RiskDetails {
-	if s == nil {
-		return nil
-	}
-	return s.Details
 }
 
 func (s *ScreeningLookup) GetRecords() []Record {

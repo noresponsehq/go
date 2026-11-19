@@ -21,7 +21,7 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v16"
+	noresponse "github.com/noresponsehq/go/v17"
 	"log"
 )
 

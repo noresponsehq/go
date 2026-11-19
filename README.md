@@ -11,7 +11,7 @@ Go 1.24+.
 ## Install
 
 ```sh
-go get github.com/noresponsehq/go/v16
+go get github.com/noresponsehq/go/v17
 ```
 
 
@@ -26,8 +26,8 @@ import (
     "log"
     "os"
 
-    noresponse "github.com/noresponsehq/go/v16"
-    "github.com/noresponsehq/go/v16/models/components"
+    noresponse "github.com/noresponsehq/go/v17"
+    "github.com/noresponsehq/go/v17/models/components"
 )
 
 func main() {
@@ -70,8 +70,8 @@ import (
 	"log"
 	"os"
 
-	noresponse "github.com/noresponsehq/go/v16"
-	"github.com/noresponsehq/go/v16/models/components"
+	noresponse "github.com/noresponsehq/go/v17"
+	"github.com/noresponsehq/go/v17/models/components"
 )
 
 func main() {
@@ -167,7 +167,7 @@ case err != nil:
 }
 ```
 
-The typed errors are `BadRequestError` (400), `AuthenticationError` (401), `PermissionDeniedError` (403), `NotFoundError` (404), `ConflictError` (409) and `RateLimitError` (429), all in `github.com/noresponsehq/go/v16/models/apierrors`. Any other status is an `*apierrors.APIStatusError`.
+The typed errors are `BadRequestError` (400), `AuthenticationError` (401), `PermissionDeniedError` (403), `NotFoundError` (404), `ConflictError` (409) and `RateLimitError` (429), all in `github.com/noresponsehq/go/v17/models/apierrors`. Any other status is an `*apierrors.APIStatusError`.
 
 ## Retries and timeouts
 

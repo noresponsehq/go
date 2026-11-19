@@ -6,7 +6,7 @@ The submitted identifier or client context field a reason concerns; absent when 
 
 ```go
 import (
-	"github.com/noresponsehq/go/v16/models/components"
+	"github.com/noresponsehq/go/v17/models/components"
 )
 
 value := components.ReasonIdentifierEmail
