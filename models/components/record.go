@@ -26,6 +26,10 @@ type Record struct {
 	Joined *bool `json:"joined,omitzero"`
 	// A reviewer's overrule (POST .../people/{person_id}/records), which decides joined whatever the likelihood and sticks for as long as a lookup finds the same record. Absent when nobody overruled it.
 	Verdict *Verdict `json:"verdict,omitzero"`
+	// Why the record has its likelihood, as the items that make it up: what found it and each value it agrees or clashes with, each with its weight in bits. The bits add up to the likelihood before rounding: likelihood = 1 / (1 + 2^-sum). Only the strongest agreement of each kind counts, and a place counts once however many of its city, region, country and address agree. Present on a person's lookup records that have any such item.
+	Evidence []RecordEvidence `json:"evidence,omitzero"`
+	// How the record connects to what the investigator gave: given first, then the ids of the joined records it reached the person through, nearest last. Each step follows what found the record before the strongest agreement. A record with no link to the person has no path.
+	Path []string `json:"path,omitzero"`
 }
 
 func (r Record) MarshalJSON() ([]byte, error) {
@@ -107,4 +111,18 @@ func (r *Record) GetVerdict() *Verdict {
 		return nil
 	}
 	return r.Verdict
+}
+
+func (r *Record) GetEvidence() []RecordEvidence {
+	if r == nil {
+		return nil
+	}
+	return r.Evidence
+}
+
+func (r *Record) GetPath() []string {
+	if r == nil {
+		return nil
+	}
+	return r.Path
 }
