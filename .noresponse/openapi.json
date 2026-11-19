@@ -17518,6 +17518,55 @@
         ],
         "description": "How sure the screening is that the accounts it read are the person's. A finding on a possible match is at most moderate, on a probable match at most high."
       },
+      "PersonGroup": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "group_id",
+          "group_name",
+          "group_starts_at",
+          "role",
+          "added_at"
+        ],
+        "properties": {
+          "group_id": {
+            "type": "string",
+            "pattern": "^grp_[0-7][0-9A-HJKMNP-TV-Z]{25}$",
+            "example": "grp_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
+          },
+          "group_name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "example": "Annual shareholder meeting"
+          },
+          "group_starts_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The group's optional event start; null for an ongoing group.",
+            "example": "2026-01-01T00:00:00Z"
+          },
+          "role": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PersonRole"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The person's role in the group: guest, crew, vendor or press, or null when it was not given."
+          },
+          "added_at": {
+            "type": "string",
+            "description": "When the person was added to the group.",
+            "example": "2026-01-01T00:00:00Z"
+          }
+        },
+        "description": "One group the person belongs to and their role in it."
+      },
       "PersonIdentity": {
         "type": "object",
         "additionalProperties": false,
@@ -24253,6 +24302,7 @@
           "created_at",
           "updated_at",
           "expires_at",
+          "groups",
           "profiles",
           "findings",
           "posts",
@@ -24336,6 +24386,13 @@
             "type": "string",
             "description": "The time the workspace retention policy removes this person, their evidence and investigation history. Shortening workspace retention can move this time earlier.",
             "example": "2026-02-01T00:00:00Z"
+          },
+          "groups": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PersonGroup"
+            },
+            "description": "Every group this person belongs to in this environment, most recently added first, with their role in each. A person can belong to any number of groups; removing them from a group or deleting the group removes it here."
           },
           "profiles": {
             "type": "array",

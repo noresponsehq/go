@@ -1,5 +1,9 @@
 # Changelog
 
+## 16.0.9
+
+* `Sdk.People.Get()`:  `response.Groups` **Added**
+
 ## 16.0.8
 
 No changes detected.

@@ -26,6 +26,8 @@ type WorkspacePersonReport struct {
 	UpdatedAt string   `json:"updated_at"`
 	// The time the workspace retention policy removes this person, their evidence and investigation history. Shortening workspace retention can move this time earlier.
 	ExpiresAt string `json:"expires_at"`
+	// Every group this person belongs to in this environment, most recently added first, with their role in each. A person can belong to any number of groups; removing them from a group or deleting the group removes it here.
+	Groups []PersonGroup `json:"groups"`
 	// The accounts this result matched, with how each was matched.
 	Profiles []ScreeningProfile `json:"profiles"`
 	// What this result flagged, most severe first, each citing its evidence.
@@ -143,6 +145,13 @@ func (w *WorkspacePersonReport) GetExpiresAt() string {
 		return ""
 	}
 	return w.ExpiresAt
+}
+
+func (w *WorkspacePersonReport) GetGroups() []PersonGroup {
+	if w == nil {
+		return []PersonGroup{}
+	}
+	return w.Groups
 }
 
 func (w *WorkspacePersonReport) GetProfiles() []ScreeningProfile {
