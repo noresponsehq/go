@@ -16,8 +16,9 @@ custom := components.EnrichmentKind("custom_value")
 
 ## Values
 
-| Name                     | Value                    |
-| ------------------------ | ------------------------ |
-| `EnrichmentKindUsername` | username                 |
-| `EnrichmentKindEmail`    | email                    |
-| `EnrichmentKindPhone`    | phone                    |
+| Name                       | Value                      |
+| -------------------------- | -------------------------- |
+| `EnrichmentKindUsername`   | username                   |
+| `EnrichmentKindEmail`      | email                      |
+| `EnrichmentKindPhone`      | phone                      |
+| `EnrichmentKindPersonName` | person_name                |

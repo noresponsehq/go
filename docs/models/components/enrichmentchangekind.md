@@ -13,8 +13,9 @@ value := components.EnrichmentChangeKindUsername
 
 ## Values
 
-| Name                           | Value                          |
-| ------------------------------ | ------------------------------ |
-| `EnrichmentChangeKindUsername` | username                       |
-| `EnrichmentChangeKindEmail`    | email                          |
-| `EnrichmentChangeKindPhone`    | phone                          |
+| Name                             | Value                            |
+| -------------------------------- | -------------------------------- |
+| `EnrichmentChangeKindUsername`   | username                         |
+| `EnrichmentChangeKindEmail`      | email                            |
+| `EnrichmentChangeKindPhone`      | phone                            |
+| `EnrichmentChangeKindPersonName` | person_name                      |

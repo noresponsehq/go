@@ -10,9 +10,10 @@ import (
 type EnrichmentChangeKind string
 
 const (
-	EnrichmentChangeKindUsername EnrichmentChangeKind = "username"
-	EnrichmentChangeKindEmail    EnrichmentChangeKind = "email"
-	EnrichmentChangeKindPhone    EnrichmentChangeKind = "phone"
+	EnrichmentChangeKindUsername   EnrichmentChangeKind = "username"
+	EnrichmentChangeKindEmail      EnrichmentChangeKind = "email"
+	EnrichmentChangeKindPhone      EnrichmentChangeKind = "phone"
+	EnrichmentChangeKindPersonName EnrichmentChangeKind = "person_name"
 )
 
 func (e EnrichmentChangeKind) ToPointer() *EnrichmentChangeKind {
@@ -29,6 +30,8 @@ func (e *EnrichmentChangeKind) UnmarshalJSON(data []byte) error {
 	case "email":
 		fallthrough
 	case "phone":
+		fallthrough
+	case "person_name":
 		*e = EnrichmentChangeKind(v)
 		return nil
 	default:
@@ -42,7 +45,7 @@ type EnrichmentChange struct {
 	Mode *EnrichmentMode `json:"mode,omitzero"`
 	// Enrichment searches values only from records more likely than this to be the person's, 0 to 0.99.
 	MinLikelihood *float64 `json:"min_likelihood,omitzero"`
-	// The kinds of value enrichment searches: distinctive usernames, and email addresses and phone numbers, which belong to one person each.
+	// The kinds of value enrichment searches: distinctive usernames, email addresses and phone numbers, which belong to one person each, and distinctive person names, searched in the breach data.
 	Kinds []EnrichmentChangeKind `json:"kinds,omitzero"`
 	// The most enrichment may spend on a person from one investigation, in minor units of USD (cents): each search it started after that investigation started counts its estimate or what it spent, whichever is more. At the bound enrichment starts nothing more for that investigation. null: only the environment's screening_daily_cap bounds it.
 	MaxSpend optionalnullable.OptionalNullable[int64] `json:"max_spend,omitzero"`

@@ -6,7 +6,7 @@ import (
 
 // ScreeningLookupCheck - What came of one lane of the lookups for one identifier.
 type ScreeningLookupCheck struct {
-	Identifier IdentifierSearchKind `json:"identifier"`
+	Identifier Identifier `json:"identifier"`
 	// An evidence lane: accounts (account presence for email and username), phone, breach, domain (the email domain's registration) and ip.
 	Lane Lane `json:"lane"`
 	// found: a source found the identifier. not_found: every source answered and none found it. partial: the sources that answered found nothing and the others did not answer. not_covered: no source answered. A lookup that failed reads partial or not_covered, not not_found.
@@ -34,9 +34,9 @@ func (s *ScreeningLookupCheck) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (s *ScreeningLookupCheck) GetIdentifier() IdentifierSearchKind {
+func (s *ScreeningLookupCheck) GetIdentifier() Identifier {
 	if s == nil {
-		return IdentifierSearchKind("")
+		return Identifier("")
 	}
 	return s.Identifier
 }

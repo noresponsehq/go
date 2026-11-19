@@ -1,5 +1,20 @@
 # Changelog
 
+## 17.0.3
+
+* `Sdk.Settings.Get()`:  `response.Enrichment.Kinds[].Enum(personName)` **Added**
+* `Sdk.Settings.Update()`: 
+  *  `request.Body.Enrichment.Kinds[].Enum(personName)` **Added**
+  *  `response.Enrichment.Kinds[].Enum(personName)` **Added**
+* `Sdk.Settings.ListHistory()`:  `response.Items[].Settings.Enrichment.Kinds[].Enum(personName)` **Added**
+* `Sdk.Settings.Restore()`:  `response.Enrichment.Kinds[].Enum(personName)` **Added**
+* `Sdk.Evaluations.Publish()`:  `response.Enrichment.Kinds[].Enum(personName)` **Added**
+* `Sdk.Groups.GetPerson()`:  `response.Lookup.Checks[].Identifier.Enum(name)` **Added**
+* `Sdk.People.Get()`:  `response.Lookup.Checks[].Identifier.Enum(name)` **Added**
+* `Sdk.Investigations.Create()`: 
+  *  `request.Body.Enrichment.Kinds[].Enum(personName)` **Added**
+* `Sdk.Investigations.Get()`:  `response.Lookup.Checks[].Identifier.Enum(name)` **Added**
+
 ## 17.0.2
 
 * `Sdk.People.Schedule()`: **Added**

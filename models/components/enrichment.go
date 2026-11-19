@@ -3,9 +3,10 @@ package components
 type EnrichmentKind string
 
 const (
-	EnrichmentKindUsername EnrichmentKind = "username"
-	EnrichmentKindEmail    EnrichmentKind = "email"
-	EnrichmentKindPhone    EnrichmentKind = "phone"
+	EnrichmentKindUsername   EnrichmentKind = "username"
+	EnrichmentKindEmail      EnrichmentKind = "email"
+	EnrichmentKindPhone      EnrichmentKind = "phone"
+	EnrichmentKindPersonName EnrichmentKind = "person_name"
 )
 
 func (e EnrichmentKind) ToPointer() *EnrichmentKind {
@@ -16,7 +17,7 @@ func (e EnrichmentKind) ToPointer() *EnrichmentKind {
 func (e *EnrichmentKind) IsExact() bool {
 	if e != nil {
 		switch *e {
-		case "username", "email", "phone":
+		case "username", "email", "phone", "person_name":
 			return true
 		}
 	}
@@ -29,7 +30,7 @@ type Enrichment struct {
 	Mode EnrichmentMode `json:"mode"`
 	// Enrichment searches values only from records more likely than this to be the person's, 0 to 0.99.
 	MinLikelihood float64 `json:"min_likelihood"`
-	// The kinds of value enrichment searches: distinctive usernames, and email addresses and phone numbers, which belong to one person each.
+	// The kinds of value enrichment searches: distinctive usernames, email addresses and phone numbers, which belong to one person each, and distinctive person names, searched in the breach data.
 	Kinds []EnrichmentKind `json:"kinds"`
 	// The most enrichment may spend on a person from one investigation, in minor units of USD (cents): each search it started after that investigation started counts its estimate or what it spent, whichever is more. At the bound enrichment starts nothing more for that investigation. null: only the environment's screening_daily_cap bounds it.
 	MaxSpend *int64 `json:"max_spend"`
