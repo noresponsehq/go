@@ -1,5 +1,9 @@
 # Changelog
 
+## 16.0.8
+
+No changes detected.
+
 ## 16.0.7
 
 No changes detected.
