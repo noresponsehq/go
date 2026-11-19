@@ -6,7 +6,7 @@ block when the score reached your block threshold (risk.block of the assessment)
 
 ```go
 import (
-	"github.com/noresponsehq/go/v17/models/components"
+	"github.com/noresponsehq/go/v18/models/components"
 )
 
 value := components.AccountDecisionAllow

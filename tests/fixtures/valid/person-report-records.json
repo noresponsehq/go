@@ -8,7 +8,6 @@
     "city": "Leeds",
     "handles": [{"platform": "x", "handle": "jordan_ellis"}],
     "match_state": "none_found",
-    "highest_band": null,
     "decision": null,
     "coverage": {
       "accounts_found": 0,
@@ -24,7 +23,6 @@
     "expires_at": "2026-12-14T10:00:00Z"
   },
   "profiles": [],
-  "findings": [],
   "posts": [],
   "media": [],
   "reviews": [],

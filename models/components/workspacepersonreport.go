@@ -1,7 +1,7 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v17/internal/utils"
+	"github.com/noresponsehq/go/v18/internal/utils"
 )
 
 // WorkspacePersonReport - Read a workspace person.
@@ -30,24 +30,20 @@ type WorkspacePersonReport struct {
 	Groups []PersonGroup `json:"groups"`
 	// The accounts this result matched, with how each was matched.
 	Profiles []ScreeningProfile `json:"profiles"`
-	// What this result flagged, most severe first, each citing its evidence.
-	Findings []ScreeningFinding `json:"findings"`
-	// All posts retained for this result, including posts that no finding cites.
+	// All posts retained for this result.
 	Posts []ScreeningPost `json:"posts"`
-	// All images and videos retained for this result, including media that no finding cites.
+	// All images and videos retained for this result.
 	Media []ScreeningMedia `json:"media"`
-	// What the signup check's lookups found for a person: account presence for the email, phone and usernames (the person's handles), the phone lookup, the email domain's registration and the breach search. Context and coverage for the reviewer, not a finding: nothing here sets a band or a match state.
+	// What the signup check's lookups found for a person: account presence for the email, phone and usernames (the person's handles), the phone lookup, the email domain's registration and the breach search. Nothing here sets a match state.
 	Lookup *ScreeningLookup `json:"lookup,omitzero"`
 	// Every search on this person's values, newest first, whether a person started it or enrichment did: each names the value, the record and field it came from, and the search that found that record. Absent when nothing was searched.
 	Searches []Search `json:"searches,omitzero"`
 	// The searches enrichment would start on this person, likeliest record first, under the environment's enrichment setting for a person's own investigation. In off mode the list is empty. In suggest mode enrichment starts none of them by itself; in automatic mode it starts them as its limits allow. Empty when evidence.read is denied.
 	SuggestedSearches []SuggestedSearch `json:"suggested_searches"`
-	// True when evidence.read is explicitly denied. Submitted details, coverage, job status and decisions remain available. Collected records, profiles, findings, posts, media, discovered values and free-text decision notes are withheld.
+	// True when evidence.read is explicitly denied. Submitted details, coverage, job status and decisions remain available. Collected records, profiles, posts, media, discovered values and free-text decision notes are withheld.
 	EvidenceRestricted *bool `json:"evidence_restricted,omitzero"`
 	// The most recent retained completed or partial investigation, or a migrated result whose original per-person status is unknown. The evidence below belongs to this investigation. Read investigation history for earlier results and pending jobs.
 	EvidenceInvestigation *Investigation `json:"evidence_investigation"`
-	// An investigator's profile of this person, written from the evidence of a settled investigation. Null until an investigation completes or partially completes, and null when evidence.read is denied.
-	WrittenProfile *WrittenProfile `json:"written_profile"`
 	// What changed between each settled investigation of this person and the one before it, unreviewed first, then most significant, then newest. The first investigation records no changes. When evidence.read is denied, before and after are withheld.
 	Changes []PersonChange `json:"changes"`
 	// The person's rerun schedule. Each due run starts a full investigation of the person, as POST /v1/investigations with no platforms does, and its changes are stored as changes. The schedule lives in the database and the worker runs it, so it survives restarts and releases; each due run starts exactly one investigation.
@@ -163,13 +159,6 @@ func (w *WorkspacePersonReport) GetProfiles() []ScreeningProfile {
 	return w.Profiles
 }
 
-func (w *WorkspacePersonReport) GetFindings() []ScreeningFinding {
-	if w == nil {
-		return []ScreeningFinding{}
-	}
-	return w.Findings
-}
-
 func (w *WorkspacePersonReport) GetPosts() []ScreeningPost {
 	if w == nil {
 		return []ScreeningPost{}
@@ -217,13 +206,6 @@ func (w *WorkspacePersonReport) GetEvidenceInvestigation() *Investigation {
 		return nil
 	}
 	return w.EvidenceInvestigation
-}
-
-func (w *WorkspacePersonReport) GetWrittenProfile() *WrittenProfile {
-	if w == nil {
-		return nil
-	}
-	return w.WrittenProfile
 }
 
 func (w *WorkspacePersonReport) GetChanges() []PersonChange {

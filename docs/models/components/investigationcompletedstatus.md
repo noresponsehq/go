@@ -4,7 +4,7 @@
 
 ```go
 import (
-	"github.com/noresponsehq/go/v17/models/components"
+	"github.com/noresponsehq/go/v18/models/components"
 )
 
 value := components.InvestigationCompletedStatusCompleted

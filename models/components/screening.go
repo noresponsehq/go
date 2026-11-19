@@ -18,9 +18,8 @@ type Screening struct {
 	// People selected when the screening started.
 	PeopleTotal int64 `json:"people_total"`
 	// People screened so far, failed ones included.
-	PeopleDone    int64 `json:"people_done"`
-	PeopleFlagged int64 `json:"people_flagged"`
-	PeopleFailed  int64 `json:"people_failed"`
+	PeopleDone   int64 `json:"people_done"`
+	PeopleFailed int64 `json:"people_failed"`
 	// People screened with some requested platform not covered; their coverage names which.
 	PeoplePartial int64 `json:"people_partial"`
 	// What the screening was estimated to cost when it started, in minor units of USD (cents): its people at its depth and platforms. Until the screening finishes, what it has not yet spent counts against the environment's screening_daily_cap.
@@ -122,13 +121,6 @@ func (s *Screening) GetPeopleDone() int64 {
 		return 0
 	}
 	return s.PeopleDone
-}
-
-func (s *Screening) GetPeopleFlagged() int64 {
-	if s == nil {
-		return 0
-	}
-	return s.PeopleFlagged
 }
 
 func (s *Screening) GetPeopleFailed() int64 {

@@ -1,10 +1,10 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v17/internal/utils"
+	"github.com/noresponsehq/go/v18/internal/utils"
 )
 
-// ScreeningLookup - What the signup check's lookups found for a person: account presence for the email, phone and usernames (the person's handles), the phone lookup, the email domain's registration and the breach search. Context and coverage for the reviewer, not a finding: nothing here sets a band or a match state.
+// ScreeningLookup - What the signup check's lookups found for a person: account presence for the email, phone and usernames (the person's handles), the phone lookup, the email domain's registration and the breach search. Nothing here sets a match state.
 type ScreeningLookup struct {
 	// Each lane each identifier was looked up in, identifiers in the order email, phone, username and lanes in the order accounts, phone, breach, domain. Every lane the person's identifiers are looked up in is listed: one that no source answered, or that no source could be asked in, is not_covered. Empty when the person has no email, phone or handle to look up.
 	Checks []ScreeningLookupCheck `json:"checks"`

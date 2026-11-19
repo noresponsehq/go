@@ -35,8 +35,6 @@ type OtherGroup struct {
 	MatchState MatchState `json:"match_state"`
 	// true when that person's latest screening had no profile to check (see the person's no_profile_to_check). Left out otherwise.
 	NoProfileToCheck *bool `json:"no_profile_to_check,omitzero"`
-	// That person's most severe band in that group, or null.
-	HighestBand *HighestBand `json:"highest_band"`
 	// The latest reviewer decision in that group, or null before any.
 	Decision *PersonDecision `json:"decision"`
 	// Who made that decision.
@@ -92,13 +90,6 @@ func (o *OtherGroup) GetNoProfileToCheck() *bool {
 		return nil
 	}
 	return o.NoProfileToCheck
-}
-
-func (o *OtherGroup) GetHighestBand() *HighestBand {
-	if o == nil {
-		return nil
-	}
-	return o.HighestBand
 }
 
 func (o *OtherGroup) GetDecision() *PersonDecision {

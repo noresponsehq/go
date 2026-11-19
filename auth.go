@@ -19,7 +19,7 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"github.com/noresponsehq/go/v17/models/components"
+	"github.com/noresponsehq/go/v18/models/components"
 )
 
 // ErrInvalidAuthContext is returned when the claims have no valid issuer and

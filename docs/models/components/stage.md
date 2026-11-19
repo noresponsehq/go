@@ -1,10 +1,12 @@
 # Stage
 
+ai_typing and analysis appear only on searches recorded before the engine stopped analysing results.
+
 ## Example Usage
 
 ```go
 import (
-	"github.com/noresponsehq/go/v17/models/components"
+	"github.com/noresponsehq/go/v18/models/components"
 )
 
 value := components.StageLookup

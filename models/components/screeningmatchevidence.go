@@ -6,7 +6,7 @@ type ScreeningMatchEvidence struct {
 	Kind ScreeningMatchEvidenceKind `json:"kind"`
 	// Where the match was seen, such as the profile field that carried it.
 	Detail *string `json:"detail,omitzero"`
-	// The resolver, collector or analyser that produced a record, by its catalogue name.
+	// The resolver or collector that produced a record, by its catalogue name.
 	Resolver string `json:"resolver"`
 }
 

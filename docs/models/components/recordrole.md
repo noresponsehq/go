@@ -6,7 +6,7 @@ Which common field a value is, where many sources share it: a join date and a bi
 
 ```go
 import (
-	"github.com/noresponsehq/go/v17/models/components"
+	"github.com/noresponsehq/go/v18/models/components"
 )
 
 value := components.RecordRoleAccountID

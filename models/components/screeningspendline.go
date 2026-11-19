@@ -2,10 +2,11 @@ package components
 
 // ScreeningSpendLine - What one implementation cost.
 type ScreeningSpendLine struct {
-	// The resolver, collector or analyser that produced a record, by its catalogue name.
-	Implementation string                 `json:"implementation"`
-	Role           ScreeningSpendLineRole `json:"role"`
-	SpendMinor     int64                  `json:"spend_minor"`
+	// The resolver or collector that produced a record, by its catalogue name.
+	Implementation string `json:"implementation"`
+	// What the implementation did. analyser appears only on spend recorded before the engine stopped analysing posts.
+	Role       ScreeningSpendLineRole `json:"role"`
+	SpendMinor int64                  `json:"spend_minor"`
 }
 
 func (s *ScreeningSpendLine) GetImplementation() string {

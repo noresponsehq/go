@@ -6,7 +6,7 @@ partial finished with some people or platforms not covered; people_failed and pe
 
 ```go
 import (
-	"github.com/noresponsehq/go/v17/models/components"
+	"github.com/noresponsehq/go/v18/models/components"
 )
 
 value := components.ScreeningStatusQueued

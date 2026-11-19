@@ -1,7 +1,7 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v17/internal/utils"
+	"github.com/noresponsehq/go/v18/internal/utils"
 )
 
 // Person - A person and where their screening and review stand.
@@ -28,8 +28,6 @@ type Person struct {
 	MatchState MatchState `json:"match_state"`
 	// true when the latest screening reached the person but the list gave nothing to look up on any requested platform, such as no handle for a platform that reads supplied handles only: nobody looked for a profile. match_state stays unscreened, every platform is in coverage.not_searched, and the person is neither none_found nor failed and does not make the screening partial. Its lookups are on its report. Left out otherwise.
 	NoProfileToCheck *bool `json:"no_profile_to_check,omitzero"`
-	// The most severe finding's band, or null when nothing was flagged.
-	HighestBand *HighestBand `json:"highest_band"`
 	// The latest reviewer decision, or null before any.
 	Decision     *PersonDecision `json:"decision"`
 	DecisionNote *string         `json:"decision_note,omitzero"`
@@ -140,13 +138,6 @@ func (p *Person) GetNoProfileToCheck() *bool {
 		return nil
 	}
 	return p.NoProfileToCheck
-}
-
-func (p *Person) GetHighestBand() *HighestBand {
-	if p == nil {
-		return nil
-	}
-	return p.HighestBand
 }
 
 func (p *Person) GetDecision() *PersonDecision {

@@ -2,8 +2,8 @@ package noresponse
 
 import (
 	"encoding/json"
-	"github.com/noresponsehq/go/v17/models/components"
-	"github.com/noresponsehq/go/v17/optionalnullable"
+	"github.com/noresponsehq/go/v18/models/components"
+	"github.com/noresponsehq/go/v18/optionalnullable"
 	"reflect"
 	"testing"
 )
@@ -37,7 +37,7 @@ func TestGroupDatesPreserveNullAndOmission(t *testing.T) {
 
 func TestRelatedOngoingGroupDecodesNullStart(t *testing.T) {
 	var group components.OtherGroup
-	if err := json.Unmarshal([]byte(`{"group_id":"grp_building","group_name":"Harbour building","group_starts_at":null,"person_id":"per_example","matched_on":["person_id"],"match_state":"unscreened","highest_band":null,"decision":null}`), &group); err != nil {
+	if err := json.Unmarshal([]byte(`{"group_id":"grp_building","group_name":"Harbour building","group_starts_at":null,"person_id":"per_example","matched_on":["person_id"],"match_state":"unscreened","decision":null}`), &group); err != nil {
 		t.Fatal(err)
 	}
 	if group.GroupStartsAt != nil {

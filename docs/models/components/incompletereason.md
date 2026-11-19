@@ -6,7 +6,7 @@ Why a lane did not settle. deferred means the lane is asynchronous and still run
 
 ```go
 import (
-	"github.com/noresponsehq/go/v17/models/components"
+	"github.com/noresponsehq/go/v18/models/components"
 )
 
 value := components.IncompleteReasonTimedOut

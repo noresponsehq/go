@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/noresponsehq/go/v17/types"
+	"github.com/noresponsehq/go/v18/types"
 )
 
 // UnionCandidate represents a candidate type during union deserialization

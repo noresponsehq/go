@@ -4,13 +4,13 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"github.com/noresponsehq/go/v17/internal/config"
-	"github.com/noresponsehq/go/v17/internal/hooks"
-	"github.com/noresponsehq/go/v17/internal/utils"
-	"github.com/noresponsehq/go/v17/models/apierrors"
-	"github.com/noresponsehq/go/v17/models/components"
-	"github.com/noresponsehq/go/v17/models/operations"
-	"github.com/noresponsehq/go/v17/retry"
+	"github.com/noresponsehq/go/v18/internal/config"
+	"github.com/noresponsehq/go/v18/internal/hooks"
+	"github.com/noresponsehq/go/v18/internal/utils"
+	"github.com/noresponsehq/go/v18/models/apierrors"
+	"github.com/noresponsehq/go/v18/models/components"
+	"github.com/noresponsehq/go/v18/models/operations"
+	"github.com/noresponsehq/go/v18/retry"
 	"net/http"
 	"net/url"
 )
@@ -1746,8 +1746,16 @@ func (s *Groups) Delete(ctx context.Context, groupID string, opts ...operations.
 }
 
 // ListPeople - List a group's people.
-// The roster in upload order, with each person's role, match state, highest finding band and decision. Filter by band (or none), decision (or undecided) and role (or unstated). The people scope grants this operation. Explicit evidence.read restrictions override default evidence access. The groups scope is also accepted for existing integrations. The API key selects the workspace and environment.
-func (s *Groups) ListPeople(ctx context.Context, request operations.ListPeopleRequest, opts ...operations.Option) (*operations.ListPeopleResponse, error) {
+// The roster in upload order, with each person's role, match state and decision. Filter by decision (or undecided) and role (or unstated). The people scope grants this operation. Explicit evidence.read restrictions override default evidence access. The groups scope is also accepted for existing integrations. The API key selects the workspace and environment.
+func (s *Groups) ListPeople(ctx context.Context, groupID string, limit *int64, after *string, decision *components.ListPeopleDecision, role *components.ListPeopleRole, opts ...operations.Option) (*operations.ListPeopleResponse, error) {
+	request := operations.ListPeopleRequest{
+		GroupID:  groupID,
+		Limit:    limit,
+		After:    after,
+		Decision: decision,
+		Role:     role,
+	}
+
 	o := operations.Options{}
 	supportedOptions := []string{
 		operations.SupportedOptionRetries,
@@ -2100,7 +2108,7 @@ func (s *Groups) ListPeople(ctx context.Context, request operations.ListPeopleRe
 }
 
 // AddPeople - Add or update a batch of people.
-// Adds 1 to 500 workspace people to this group, at most 512 KiB. An explicit person_id or external_id reuses the named workspace person. A reference-only row keeps submitted details; an identity supplied with that reference replaces those details. A shared email or phone only suggests matches and does not merge people. Each person's match, band and coverage in the group come from their latest investigation; a changed identity sets aside investigations started before the change, and prior investigation history remains available. Identities are encrypted under the workspace key. Idempotency-Key is required: the same key and body return the original import result with Idempotent-Replayed: true while its people remain retained. An expired or deleted imported person answers 404; expired or deleted match suggestions are omitted. A different body answers 409 idempotency_key_reused. A group holds at most 20000 people. The people_write scope grants this operation; groups is also accepted. Suggested matches require people-read access. The API key selects the workspace and environment.
+// Adds 1 to 500 workspace people to this group, at most 512 KiB. An explicit person_id or external_id reuses the named workspace person. A reference-only row keeps submitted details; an identity supplied with that reference replaces those details. A shared email or phone only suggests matches and does not merge people. Each person's match and coverage in the group come from their latest investigation; a changed identity sets aside investigations started before the change, and prior investigation history remains available. Identities are encrypted under the workspace key. Idempotency-Key is required: the same key and body return the original import result with Idempotent-Replayed: true while its people remain retained. An expired or deleted imported person answers 404; expired or deleted match suggestions are omitted. A different body answers 409 idempotency_key_reused. A group holds at most 20000 people. The people_write scope grants this operation; groups is also accepted. Suggested matches require people-read access. The API key selects the workspace and environment.
 func (s *Groups) AddPeople(ctx context.Context, groupID string, idempotencyKey string, body components.PersonBatchRequest, opts ...operations.Option) (*operations.AddPeopleResponse, error) {
 	request := operations.AddPeopleRequest{
 		GroupID:        groupID,
@@ -5918,7 +5926,15 @@ func (s *Groups) CancelScreening(ctx context.Context, groupID string, screeningI
 
 // ExportPeople - Export the people in a group.
 // Returns one page for export. Each returned person is durably audited as person.exported with the actor, group, person ID and request ID. Requires both people read access and exports. Explicit evidence restrictions also hide free-text decision notes. No raw evidence enters audit logs. Follow next_after until absent for a complete export. The API key selects the workspace and environment.
-func (s *Groups) ExportPeople(ctx context.Context, request operations.ExportPeopleRequest, opts ...operations.Option) (*operations.ExportPeopleResponse, error) {
+func (s *Groups) ExportPeople(ctx context.Context, groupID string, limit *int64, after *string, decision *components.ListPeopleDecision, role *components.ListPeopleRole, opts ...operations.Option) (*operations.ExportPeopleResponse, error) {
+	request := operations.ExportPeopleRequest{
+		GroupID:  groupID,
+		Limit:    limit,
+		After:    after,
+		Decision: decision,
+		Role:     role,
+	}
+
 	o := operations.Options{}
 	supportedOptions := []string{
 		operations.SupportedOptionRetries,

@@ -1,8 +1,8 @@
 package operations
 
 import (
-	"github.com/noresponsehq/go/v17/internal/utils"
-	"github.com/noresponsehq/go/v17/models/components"
+	"github.com/noresponsehq/go/v18/internal/utils"
+	"github.com/noresponsehq/go/v18/models/components"
 )
 
 type ListPeopleRequest struct {
@@ -11,8 +11,6 @@ type ListPeopleRequest struct {
 	Limit *int64 `default:"100" queryParam:"style=form,explode=true,name=limit"`
 	// Read people after this one.
 	After *string `queryParam:"style=form,explode=true,name=after"`
-	// Only people whose highest finding has this band; none for people with no finding.
-	Band *components.ListPeopleBand `queryParam:"style=form,explode=true,name=band"`
 	// Only people with this decision; undecided for none yet.
 	Decision *components.ListPeopleDecision `queryParam:"style=form,explode=true,name=decision"`
 	// Only people with this role; unstated for people whose role was not given.
@@ -49,13 +47,6 @@ func (l *ListPeopleRequest) GetAfter() *string {
 		return nil
 	}
 	return l.After
-}
-
-func (l *ListPeopleRequest) GetBand() *components.ListPeopleBand {
-	if l == nil {
-		return nil
-	}
-	return l.Band
 }
 
 func (l *ListPeopleRequest) GetDecision() *components.ListPeopleDecision {

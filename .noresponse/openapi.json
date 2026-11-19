@@ -7030,7 +7030,7 @@
           "groups"
         ],
         "summary": "List a group's people.",
-        "description": "The roster in upload order, with each person's role, match state, highest finding band and decision. Filter by band (or none), decision (or undecided) and role (or unstated). The people scope grants this operation. Explicit evidence.read restrictions override default evidence access. The groups scope is also accepted for existing integrations. The API key selects the workspace and environment.",
+        "description": "The roster in upload order, with each person's role, match state and decision. Filter by decision (or undecided) and role (or unstated). The people scope grants this operation. Explicit evidence.read restrictions override default evidence access. The groups scope is also accepted for existing integrations. The API key selects the workspace and environment.",
         "parameters": [
           {
             "$ref": "#/components/parameters/GroupId"
@@ -7053,14 +7053,6 @@
             "schema": {
               "type": "string",
               "pattern": "^per_[0-7][0-9A-HJKMNP-TV-Z]{25}$"
-            }
-          },
-          {
-            "name": "band",
-            "in": "query",
-            "description": "Only people whose highest finding has this band; none for people with no finding.",
-            "schema": {
-              "$ref": "#/components/schemas/listPeopleBand"
             }
           },
           {
@@ -7117,7 +7109,7 @@
           "groups"
         ],
         "summary": "Add or update a batch of people.",
-        "description": "Adds 1 to 500 workspace people to this group, at most 512 KiB. An explicit person_id or external_id reuses the named workspace person. A reference-only row keeps submitted details; an identity supplied with that reference replaces those details. A shared email or phone only suggests matches and does not merge people. Each person's match, band and coverage in the group come from their latest investigation; a changed identity sets aside investigations started before the change, and prior investigation history remains available. Identities are encrypted under the workspace key. Idempotency-Key is required: the same key and body return the original import result with Idempotent-Replayed: true while its people remain retained. An expired or deleted imported person answers 404; expired or deleted match suggestions are omitted. A different body answers 409 idempotency_key_reused. A group holds at most 20000 people. The people_write scope grants this operation; groups is also accepted. Suggested matches require people-read access. The API key selects the workspace and environment.",
+        "description": "Adds 1 to 500 workspace people to this group, at most 512 KiB. An explicit person_id or external_id reuses the named workspace person. A reference-only row keeps submitted details; an identity supplied with that reference replaces those details. A shared email or phone only suggests matches and does not merge people. Each person's match and coverage in the group come from their latest investigation; a changed identity sets aside investigations started before the change, and prior investigation history remains available. Identities are encrypted under the workspace key. Idempotency-Key is required: the same key and body return the original import result with Idempotent-Replayed: true while its people remain retained. An expired or deleted imported person answers 404; expired or deleted match suggestions are omitted. A different body answers 409 idempotency_key_reused. A group holds at most 20000 people. The people_write scope grants this operation; groups is also accepted. Suggested matches require people-read access. The API key selects the workspace and environment.",
         "parameters": [
           {
             "$ref": "#/components/parameters/GroupId"
@@ -7763,14 +7755,6 @@
             "schema": {
               "type": "string",
               "pattern": "^per_[0-7][0-9A-HJKMNP-TV-Z]{25}$"
-            }
-          },
-          {
-            "name": "band",
-            "in": "query",
-            "description": "Only people whose highest finding has this band; none for people with no finding.",
-            "schema": {
-              "$ref": "#/components/schemas/listPeopleBand"
             }
           },
           {
@@ -11951,14 +11935,6 @@
           "critical"
         ]
       },
-      "Basis": {
-        "enum": [
-          "stated",
-          "inferred",
-          "absence"
-        ],
-        "description": "stated: read from a record. inferred: reasoned from several facts. absence: every source answered and none found it."
-      },
       "Breach": {
         "type": "object",
         "additionalProperties": false,
@@ -12126,14 +12102,6 @@
           "week"
         ],
         "description": "The period each count covers: an hour, or a day or a week (from Monday) in time_zone. Hour buckets are whole UTC hours in any time zone."
-      },
-      "Certainty": {
-        "enum": [
-          "confirmed",
-          "likely",
-          "possible"
-        ],
-        "description": "confirmed: a linked record or the searched identifier states it directly. likely: a strong inference. possible: a weak inference."
       },
       "Conclusion": {
         "enum": [
@@ -13412,31 +13380,6 @@
           }
         }
       },
-      "FindingBand": {
-        "enum": [
-          "critical",
-          "high",
-          "moderate",
-          "low",
-          "info"
-        ],
-        "description": "How severe a finding is, most severe first."
-      },
-      "FindingCategory": {
-        "enum": [
-          "direct_threat",
-          "harm_intent",
-          "fixation",
-          "grievance",
-          "security_research",
-          "weapons",
-          "disruption",
-          "violent_extremism",
-          "harassment",
-          "movement_exposure"
-        ],
-        "description": "What a finding is about: a direct threat to the principal or the group, intent to harm without a named target, fixation on the principal, a grievance against the host, research into the venue, route or security, weapons tied to any of these, disruption or protest planning toward this group, violent extremist content or identification, prior harassment or stalking of staff or principals, or posting the principal's addresses or movements."
-      },
       "Flow": {
         "enum": [
           "account_creation",
@@ -13978,15 +13921,6 @@
           }
         },
         "description": "An account the person is known to hold."
-      },
-      "HighestBand": {
-        "enum": [
-          "critical",
-          "high",
-          "moderate",
-          "low",
-          "info"
-        ]
       },
       "HookPoint": {
         "type": "string",
@@ -14649,7 +14583,6 @@
         "type": "object",
         "additionalProperties": false,
         "required": [
-          "highest_band",
           "coverage",
           "spend",
           "decision",
@@ -14665,17 +14598,6 @@
           "deadline_at"
         ],
         "properties": {
-          "highest_band": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/HighestBand"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "The most severe finding's band, or null when nothing was flagged."
-          },
           "coverage": {
             "$ref": "#/components/schemas/ScreeningCoverage",
             "description": "What the latest screening read: accounts found, accessible, items read, the period covered and each platform's status. Zero, with no platforms, until a screening reaches the person."
@@ -14870,7 +14792,6 @@
         "additionalProperties": false,
         "required": [
           "profiles",
-          "findings",
           "posts",
           "media",
           "reviews",
@@ -14886,21 +14807,13 @@
             },
             "description": "The accounts this result matched, with how each was matched."
           },
-          "findings": {
-            "type": "array",
-            "maxItems": 500,
-            "items": {
-              "$ref": "#/components/schemas/ScreeningFinding"
-            },
-            "description": "What this result flagged, most severe first, each citing its evidence."
-          },
           "posts": {
             "type": "array",
             "maxItems": 5000,
             "items": {
               "$ref": "#/components/schemas/ScreeningPost"
             },
-            "description": "All posts retained for this result, including posts that no finding cites."
+            "description": "All posts retained for this result."
           },
           "media": {
             "type": "array",
@@ -14908,7 +14821,7 @@
             "items": {
               "$ref": "#/components/schemas/ScreeningMedia"
             },
-            "description": "All images and videos retained for this result, including media that no finding cites."
+            "description": "All images and videos retained for this result."
           },
           "reviews": {
             "type": "array",
@@ -14924,7 +14837,7 @@
           },
           "evidence_restricted": {
             "type": "boolean",
-            "description": "True when evidence.read is explicitly denied. Submitted details, coverage, job status and decisions remain available. Collected records, profiles, findings, posts, media, discovered values and free-text decision notes are withheld."
+            "description": "True when evidence.read is explicitly denied. Submitted details, coverage, job status and decisions remain available. Collected records, profiles, posts, media, discovered values and free-text decision notes are withheld."
           },
           "person": {
             "$ref": "#/components/schemas/WorkspacePerson"
@@ -16817,7 +16730,6 @@
           "person_id",
           "matched_on",
           "match_state",
-          "highest_band",
           "decision"
         ],
         "properties": {
@@ -16865,17 +16777,6 @@
           "no_profile_to_check": {
             "type": "boolean",
             "description": "true when that person's latest screening had no profile to check (see the person's no_profile_to_check). Left out otherwise."
-          },
-          "highest_band": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/HighestBand"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "That person's most severe band in that group, or null."
           },
           "decision": {
             "anyOf": [
@@ -17061,7 +16962,6 @@
           "group_id",
           "name",
           "match_state",
-          "highest_band",
           "decision",
           "coverage",
           "created_at",
@@ -17141,17 +17041,6 @@
           "no_profile_to_check": {
             "type": "boolean",
             "description": "true when the latest screening reached the person but the list gave nothing to look up on any requested platform, such as no handle for a platform that reads supplied handles only: nobody looked for a profile. match_state stays unscreened, every platform is in coverage.not_searched, and the person is neither none_found nor failed and does not make the screening partial. Its lookups are on its report. Left out otherwise."
-          },
-          "highest_band": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/HighestBand"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "The most severe finding's band, or null when nothing was flagged."
           },
           "decision": {
             "anyOf": [
@@ -17322,11 +17211,11 @@
           },
           "kind": {
             "$ref": "#/components/schemas/PersonChangeKind",
-            "description": "account_added and account_removed: an account or profile appeared or disappeared. breach_added and breach_removed: a breach record appeared or disappeared. identifier_added and identifier_removed: an email, phone, username, name or account id on an account the person already held. field_changed: another field on such an account. finding_added: a new finding. posts_added: new posts, counted in count."
+            "description": "account_added and account_removed: an account or profile appeared or disappeared. breach_added and breach_removed: a breach record appeared or disappeared. identifier_added and identifier_removed: an email, phone, username, name or account id on an account the person already held. field_changed: another field on such an account. posts_added: new posts, counted in count."
           },
           "significance": {
             "$ref": "#/components/schemas/Significance",
-            "description": "One rule ranks every change: identity changes (accounts, breaches, identifiers) are high, profile fields and findings are medium, new posts are low."
+            "description": "One rule ranks every change: identity changes (accounts, breaches, identifiers) are high, profile fields are medium, new posts are low."
           },
           "source": {
             "type": "string",
@@ -17396,10 +17285,9 @@
           "identifier_added",
           "identifier_removed",
           "field_changed",
-          "finding_added",
           "posts_added"
         ],
-        "description": "account_added and account_removed: an account or profile appeared or disappeared. breach_added and breach_removed: a breach record appeared or disappeared. identifier_added and identifier_removed: an email, phone, username, name or account id on an account the person already held. field_changed: another field on such an account. finding_added: a new finding. posts_added: new posts, counted in count."
+        "description": "account_added and account_removed: an account or profile appeared or disappeared. breach_added and breach_removed: a breach record appeared or disappeared. identifier_added and identifier_removed: an email, phone, username, name or account id on an account the person already held. field_changed: another field on such an account. posts_added: new posts, counted in count."
       },
       "PersonDecided": {
         "type": "object",
@@ -17491,97 +17379,6 @@
           "watch",
           "escalated"
         ]
-      },
-      "PersonFlagged": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": [
-          "group_id",
-          "person_id",
-          "screening_id",
-          "highest_band",
-          "match_state",
-          "flagged_at"
-        ],
-        "description": "A screening recorded a finding on a person. It says which person and how severe, not what they posted, who they are or why: GET the person report for the findings. Sent once per screening that flags the person, so a re-screen of someone on watch announces them again.",
-        "properties": {
-          "group_id": {
-            "type": "string",
-            "pattern": "^grp_[0-7][0-9A-HJKMNP-TV-Z]{25}$",
-            "description": "The person's group.",
-            "example": "grp_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
-          },
-          "person_id": {
-            "type": "string",
-            "pattern": "^per_[0-7][0-9A-HJKMNP-TV-Z]{25}$",
-            "description": "The flagged person.",
-            "example": "per_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
-          },
-          "screening_id": {
-            "type": "string",
-            "pattern": "^scn_[0-7][0-9A-HJKMNP-TV-Z]{25}$",
-            "description": "The screening that flagged them.",
-            "example": "scn_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
-          },
-          "highest_band": {
-            "$ref": "#/components/schemas/HighestBand",
-            "description": "The band of the person's most severe finding."
-          },
-          "match_state": {
-            "$ref": "#/components/schemas/PersonFlaggedMatchState",
-            "description": "How sure the screening is that the accounts it read are the person's. A finding on a possible match is at most moderate, on a probable match at most high."
-          },
-          "flagged_at": {
-            "type": "string",
-            "description": "When the screening recorded the finding; equal to the event's created_at.",
-            "example": "2026-11-20T07:41:09.000Z"
-          }
-        }
-      },
-      "PersonFlaggedEvent": {
-        "type": "object",
-        "description": "The person.flagged event.",
-        "required": [
-          "id",
-          "type",
-          "created_at",
-          "data"
-        ],
-        "properties": {
-          "id": {
-            "type": "string",
-            "pattern": "^evt_[0-9A-HJKMNP-TV-Z]{26}$",
-            "description": "The event id, equal to the NR-Webhook-Id header and across redeliveries and every endpoint the event fans out to.",
-            "example": "evt_01JA2ZB4N5P6Q7R8S9T0VWXYZ1"
-          },
-          "created_at": {
-            "type": "string",
-            "description": "When the event was created. Equal across redeliveries; the signing timestamp header is per delivery.",
-            "example": "2026-10-14T09:00:02.000Z"
-          },
-          "type": {
-            "type": "string",
-            "const": "person.flagged",
-            "description": "Always person.flagged."
-          },
-          "test": {
-            "type": "boolean",
-            "description": "Present, and true, only on an event sent by POST /v1/webhooks/{endpoint_id}/test: its data is a fixed example assessment, not one of the workspace's, so a receiver acknowledges it and applies nothing. Real events have no test member."
-          },
-          "data": {
-            "$ref": "#/components/schemas/PersonFlagged"
-          }
-        }
-      },
-      "PersonFlaggedMatchState": {
-        "enum": [
-          "confirmed",
-          "probable",
-          "possible",
-          "none_found",
-          "inaccessible"
-        ],
-        "description": "How sure the screening is that the accounts it read are the person's. A finding on a possible match is at most moderate, on a probable match at most high."
       },
       "PersonGroup": {
         "type": "object",
@@ -17758,7 +17555,6 @@
         "required": [
           "person",
           "profiles",
-          "findings",
           "posts",
           "media",
           "reviews",
@@ -17777,21 +17573,13 @@
             },
             "description": "The accounts this result matched, with how each was matched."
           },
-          "findings": {
-            "type": "array",
-            "maxItems": 500,
-            "items": {
-              "$ref": "#/components/schemas/ScreeningFinding"
-            },
-            "description": "What this result flagged, most severe first, each citing its evidence."
-          },
           "posts": {
             "type": "array",
             "maxItems": 5000,
             "items": {
               "$ref": "#/components/schemas/ScreeningPost"
             },
-            "description": "All posts retained for this result, including posts that no finding cites."
+            "description": "All posts retained for this result."
           },
           "media": {
             "type": "array",
@@ -17799,7 +17587,7 @@
             "items": {
               "$ref": "#/components/schemas/ScreeningMedia"
             },
-            "description": "All images and videos retained for this result, including media that no finding cites."
+            "description": "All images and videos retained for this result."
           },
           "reviews": {
             "type": "array",
@@ -17831,11 +17619,11 @@
           },
           "other_groups": {
             "$ref": "#/components/schemas/OtherGroups",
-            "description": "The other groups of this environment that explicitly include this workspace person, newest group first. Each group keeps its own screening, band, match state and decision. Membership requires an explicit person or customer reference."
+            "description": "The other groups of this environment that explicitly include this workspace person, newest group first. Each group keeps its own screening, match state and decision. Membership requires an explicit person or customer reference."
           },
           "evidence_restricted": {
             "type": "boolean",
-            "description": "True when evidence.read is explicitly denied. Submitted details, coverage, job status and decisions remain available. Collected records, profiles, findings, posts, media, discovered values and free-text decision notes are withheld."
+            "description": "True when evidence.read is explicitly denied. Submitted details, coverage, job status and decisions remain available. Collected records, profiles, posts, media, discovered values and free-text decision notes are withheld."
           }
         },
         "description": "Everything known about one person, and where else in the environment they appear."
@@ -19056,70 +18844,6 @@
           }
         }
       },
-      "ProfileCitation": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": [
-          "kind",
-          "id"
-        ],
-        "properties": {
-          "kind": {
-            "$ref": "#/components/schemas/ProfileCitationKind",
-            "description": "record: a record in lookup.records or profiles[].record. post: an item in posts. check: an item in lookup.checks."
-          },
-          "id": {
-            "type": "string",
-            "maxLength": 200,
-            "description": "The record or post id. For a check, c followed by its 1-based position in lookup.checks.",
-            "example": "rec_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
-          }
-        }
-      },
-      "ProfileCitationKind": {
-        "enum": [
-          "record",
-          "post",
-          "check"
-        ],
-        "description": "record: a record in lookup.records or profiles[].record. post: an item in posts. check: an item in lookup.checks."
-      },
-      "ProfileLead": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": [
-          "value",
-          "kind",
-          "why",
-          "evidence"
-        ],
-        "properties": {
-          "value": {
-            "type": "string",
-            "maxLength": 1000,
-            "description": "A value copied exactly from a linked record that the person was not searched by.",
-            "example": "jordan.example@example.net"
-          },
-          "kind": {
-            "type": "string",
-            "maxLength": 100,
-            "example": "email"
-          },
-          "why": {
-            "type": "string",
-            "maxLength": 2000,
-            "example": "A linked record holds an older address."
-          },
-          "evidence": {
-            "type": "array",
-            "minItems": 1,
-            "maxItems": 100,
-            "items": {
-              "$ref": "#/components/schemas/ProfileCitation"
-            }
-          }
-        }
-      },
       "ProfileMatchState": {
         "enum": [
           "confirmed",
@@ -19127,55 +18851,6 @@
           "possible"
         ],
         "description": "How sure the screening is that a profile is the person's, from its evidence: confirmed is a handle on the person row, or two or more hard identifiers (email, phone, a supplied handle, or a fact an existing source returned); probable is one identifier beyond the name; possible is the name alone."
-      },
-      "ProfileStatement": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": [
-          "topic",
-          "text",
-          "certainty",
-          "basis",
-          "alternatives",
-          "evidence"
-        ],
-        "properties": {
-          "topic": {
-            "$ref": "#/components/schemas/Topic"
-          },
-          "text": {
-            "type": "string",
-            "maxLength": 2000,
-            "example": "Lived in Lisbon in 2019."
-          },
-          "certainty": {
-            "$ref": "#/components/schemas/Certainty",
-            "description": "confirmed: a linked record or the searched identifier states it directly. likely: a strong inference. possible: a weak inference."
-          },
-          "basis": {
-            "$ref": "#/components/schemas/Basis",
-            "description": "stated: read from a record. inferred: reasoned from several facts. absence: every source answered and none found it."
-          },
-          "alternatives": {
-            "type": "array",
-            "maxItems": 20,
-            "items": {
-              "type": "string",
-              "maxLength": 1000,
-              "example": "A holiday address."
-            },
-            "description": "Other explanations to keep open for an inference."
-          },
-          "evidence": {
-            "type": "array",
-            "minItems": 1,
-            "maxItems": 100,
-            "items": {
-              "$ref": "#/components/schemas/ProfileCitation"
-            },
-            "description": "Every record, post or check the statement rests on."
-          }
-        }
       },
       "Provenance": {
         "type": "string",
@@ -21498,7 +21173,6 @@
           "expires_at",
           "people_total",
           "people_done",
-          "people_flagged",
           "people_failed",
           "people_partial",
           "estimated_spend",
@@ -21573,11 +21247,6 @@
             "maximum": 20000,
             "description": "People screened so far, failed ones included."
           },
-          "people_flagged": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 20000
-          },
           "people_failed": {
             "type": "integer",
             "minimum": 0,
@@ -21628,13 +21297,11 @@
           "status",
           "people_total",
           "people_screened",
-          "people_flagged",
-          "by_band",
           "no_footprint",
           "partial_coverage",
           "finished_at"
         ],
-        "description": "A screening of a group finished. It counts only the people this screening set out to reach, not who they are: read the roster with GET /v1/workspaces/{workspace_id}/groups/{environment}/{group_id}/people, filtered by band, to act on them. people_screened + partial_coverage = people_total, people_flagged is the sum of by_band, no_footprint counts screened people with no flag whose accounts were not found, and no_profile_to_check those the screening had nothing to look up for on any requested platform. A cancelled screening sends no event.",
+        "description": "A screening of a group finished. It counts only the people this screening set out to reach, not who they are: read the roster with GET /v1/workspaces/{workspace_id}/groups/{environment}/{group_id}/people to act on them. people_screened + partial_coverage = people_total, no_footprint counts screened people whose accounts were not found, and no_profile_to_check those the screening had nothing to look up for on any requested platform. A cancelled screening sends no event.",
         "properties": {
           "screening_id": {
             "type": "string",
@@ -21667,21 +21334,12 @@
           "people_screened": {
             "type": "integer",
             "minimum": 0,
-            "description": "People the screening covered, flagged or not."
-          },
-          "people_flagged": {
-            "type": "integer",
-            "minimum": 0,
-            "description": "Screened people with a finding: the sum of by_band."
-          },
-          "by_band": {
-            "$ref": "#/components/schemas/ScreeningCompletedByBand",
-            "description": "Screened people by the band of their most severe finding."
+            "description": "People the screening covered."
           },
           "no_footprint": {
             "type": "integer",
             "minimum": 0,
-            "description": "Screened people with no finding whose accounts were not found (match_state none_found). A clean result for someone with no visible accounts is not the same as a clean result for someone whose accounts were read."
+            "description": "Screened people whose accounts were not found (match_state none_found). A clean result for someone with no visible accounts is not the same as a clean result for someone whose accounts were read."
           },
           "no_profile_to_check": {
             "type": "integer",
@@ -21697,40 +21355,6 @@
             "type": "string",
             "description": "When the screening finished; equal to the event's created_at.",
             "example": "2026-11-20T08:12:44.000Z"
-          }
-        }
-      },
-      "ScreeningCompletedByBand": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": [
-          "critical",
-          "high",
-          "moderate",
-          "low",
-          "info"
-        ],
-        "description": "Screened people by the band of their most severe finding.",
-        "properties": {
-          "critical": {
-            "type": "integer",
-            "minimum": 0
-          },
-          "high": {
-            "type": "integer",
-            "minimum": 0
-          },
-          "moderate": {
-            "type": "integer",
-            "minimum": 0
-          },
-          "low": {
-            "type": "integer",
-            "minimum": 0
-          },
-          "info": {
-            "type": "integer",
-            "minimum": 0
           }
         }
       },
@@ -21801,26 +21425,6 @@
             "type": "integer",
             "minimum": 0,
             "maximum": 1000000
-          },
-          "items_not_analysed": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 1000000,
-            "description": "Items read that the analyser could not analyse. Above zero, the person is partial: a finding may be missing from them."
-          },
-          "not_analysed_by_reason": {
-            "type": "array",
-            "maxItems": 8,
-            "items": {
-              "$ref": "#/components/schemas/ScreeningNotAnalysedCount"
-            },
-            "description": "items_not_analysed split by reason, each reason once with at least one item."
-          },
-          "items_frame_only": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 1000000,
-            "description": "Videos the analyser read from their cover frame and caption alone, without their sound or later frames. They count as analysed and do not make the person partial. Left out when none."
           },
           "period_from": {
             "type": "string",
@@ -21928,99 +21532,6 @@
           "standard"
         ]
       },
-      "ScreeningFinding": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": [
-          "id",
-          "category",
-          "band",
-          "confidence",
-          "rationale",
-          "evidence",
-          "analyser",
-          "model",
-          "spend_minor",
-          "created_at"
-        ],
-        "properties": {
-          "id": {
-            "type": "string",
-            "pattern": "^fnd_[0-7][0-9A-HJKMNP-TV-Z]{25}$",
-            "example": "fnd_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
-          },
-          "category": {
-            "$ref": "#/components/schemas/FindingCategory"
-          },
-          "band": {
-            "$ref": "#/components/schemas/FindingBand"
-          },
-          "capped_from": {
-            "$ref": "#/components/schemas/FindingBand"
-          },
-          "confidence": {
-            "type": "number",
-            "minimum": 0,
-            "maximum": 1
-          },
-          "rationale": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 4000,
-            "example": "The post reports when the principal leaves the hotel."
-          },
-          "quote": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 1000,
-            "description": "The exact words of the first evidence item that the finding rests on, as the analyser quoted them.",
-            "example": "Spotted Jordan Lee leaving the hotel, they always take the side exit at seven."
-          },
-          "evidence": {
-            "type": "array",
-            "minItems": 1,
-            "maxItems": 50,
-            "uniqueItems": true,
-            "items": {
-              "type": "string",
-              "pattern": "^itm_[0-7][0-9A-HJKMNP-TV-Z]{25}$",
-              "example": "itm_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
-            },
-            "description": "The posts and media that support the finding."
-          },
-          "media_observations": {
-            "type": "array",
-            "maxItems": 50,
-            "items": {
-              "$ref": "#/components/schemas/ScreeningMediaObservation"
-            },
-            "description": "What the analyser saw in each image among evidence that the finding rests on. Unlike quote, an observation cannot be checked against the record: judge it against the image at the media item's permalink."
-          },
-          "analyser": {
-            "type": "string",
-            "pattern": "^[a-z][a-z0-9_]{0,31}$",
-            "description": "The resolver, collector or analyser that produced a record, by its catalogue name.",
-            "example": "synthetic"
-          },
-          "model": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 100,
-            "example": "synthetic-1"
-          },
-          "spend_minor": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 100000000000,
-            "description": "What the analysis cost, in US cents."
-          },
-          "created_at": {
-            "type": "string",
-            "example": "2026-01-01T00:00:00Z"
-          }
-        },
-        "description": "Something the analyser flagged. band is capped by the strongest match among the profiles of its evidence: possible at most moderate, probable at most high. capped_from is the band the analyser gave when the cap lowered it."
-      },
       "ScreeningList": {
         "type": "object",
         "additionalProperties": false,
@@ -22090,7 +21601,7 @@
             "example": "2026-01-01T00:00:00Z"
           }
         },
-        "description": "What the signup check's lookups found for a person: account presence for the email, phone and usernames (the person's handles), the phone lookup, the email domain's registration and the breach search. Context and coverage for the reviewer, not a finding: nothing here sets a band or a match state."
+        "description": "What the signup check's lookups found for a person: account presence for the email, phone and usernames (the person's handles), the phone lookup, the email domain's registration and the breach search. Nothing here sets a match state."
       },
       "ScreeningLookupAnswer": {
         "type": "object",
@@ -22244,7 +21755,7 @@
           "resolver": {
             "type": "string",
             "pattern": "^[a-z][a-z0-9_]{0,31}$",
-            "description": "The resolver, collector or analyser that produced a record, by its catalogue name.",
+            "description": "The resolver or collector that produced a record, by its catalogue name.",
             "example": "synthetic"
           }
         },
@@ -22307,10 +21818,6 @@
             "description": "For an image that is a video's cover frame, the id of that video's media item.",
             "example": "itm_01JA2Z8K6Q4V7W9XBCDEFGHJKN"
           },
-          "frame_only": {
-            "type": "boolean",
-            "description": "true on a video the analyser read from its cover frame (the image whose cover_of names it) and its caption alone. Left out otherwise."
-          },
           "text": {
             "type": "string",
             "maxLength": 4000,
@@ -22346,70 +21853,6 @@
           }
         },
         "description": "One image or video a collector read, with the post that carried it."
-      },
-      "ScreeningMediaObservation": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": [
-          "media_id",
-          "description"
-        ],
-        "properties": {
-          "media_id": {
-            "type": "string",
-            "pattern": "^itm_[0-7][0-9A-HJKMNP-TV-Z]{25}$",
-            "description": "The image, one of the finding's evidence.",
-            "example": "itm_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
-          },
-          "description": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 1000,
-            "description": "What the analyser saw in the image that supports the finding.",
-            "example": "A handwritten sign held up outside the venue."
-          },
-          "read_text": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 1000,
-            "description": "Words the analyser read in the image, as it read them. They come from the image's pixels, not from a post's text, so they are not a quote and were not checked against the record.",
-            "example": "SEE YOU ON THE 1ST"
-          }
-        },
-        "description": "What an analyser saw in one image that a finding rests on."
-      },
-      "ScreeningNotAnalysedCount": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": [
-          "reason",
-          "items"
-        ],
-        "properties": {
-          "reason": {
-            "$ref": "#/components/schemas/ScreeningNotAnalysedReason"
-          },
-          "items": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 1000000
-          }
-        },
-        "description": "How many items read were not analysed for one reason."
-      },
-      "ScreeningNotAnalysedReason": {
-        "enum": [
-          "video",
-          "image_unavailable",
-          "image_unsupported",
-          "image_limit",
-          "refused",
-          "unfinished",
-          "unverified",
-          "unspecified",
-          "analysis_off"
-        ],
-        "description": "Why an item read was not analysed. video: a video with no cover frame the analyser could read, whose caption alone is read. image_unavailable: the image could not be fetched from the platform. image_unsupported: not a JPEG, PNG, GIF or WebP image, or too large to send. image_limit: past the most images one person's analysis reads. refused: the model declined to read it. unfinished: the model cut its batch short or answered outside the schema, or the request was rejected. unverified: a finding cited it with words it does not contain or an image it did not describe. unspecified: the analyser gave no reason. analysis_off: no analyser is switched on, so the investigation found, read and typed everything without AI and analysed nothing."
       },
       "ScreeningPlatformCoverage": {
         "type": "object",
@@ -22676,7 +22119,7 @@
           "collector": {
             "type": "string",
             "pattern": "^[a-z][a-z0-9_]{0,31}$",
-            "description": "The resolver, collector or analyser that produced a record, by its catalogue name.",
+            "description": "The resolver or collector that produced a record, by its catalogue name.",
             "example": "synthetic"
           },
           "items_read": {
@@ -22773,11 +22216,12 @@
           "implementation": {
             "type": "string",
             "pattern": "^[a-z][a-z0-9_]{0,31}$",
-            "description": "The resolver, collector or analyser that produced a record, by its catalogue name.",
+            "description": "The resolver or collector that produced a record, by its catalogue name.",
             "example": "synthetic"
           },
           "role": {
-            "$ref": "#/components/schemas/ScreeningSpendLineRole"
+            "$ref": "#/components/schemas/ScreeningSpendLineRole",
+            "description": "What the implementation did. analyser appears only on spend recorded before the engine stopped analysing posts."
           },
           "spend_minor": {
             "type": "integer",
@@ -22792,7 +22236,8 @@
           "resolver",
           "collector",
           "analyser"
-        ]
+        ],
+        "description": "What the implementation did. analyser appears only on spend recorded before the engine stopped analysing posts."
       },
       "ScreeningStatus": {
         "enum": [
@@ -23332,7 +22777,7 @@
           "medium",
           "low"
         ],
-        "description": "One rule ranks every change: identity changes (accounts, breaches, identifiers) are high, profile fields and findings are medium, new posts are low."
+        "description": "One rule ranks every change: identity changes (accounts, breaches, identifiers) are high, profile fields are medium, new posts are low."
       },
       "SigningKey": {
         "type": "object",
@@ -23424,7 +22869,8 @@
           "ai_typing",
           "analysis",
           "rating"
-        ]
+        ],
+        "description": "ai_typing and analysis appear only on searches recorded before the engine stopped analysing results."
       },
       "StageTime": {
         "type": "object",
@@ -23435,7 +22881,8 @@
         ],
         "properties": {
           "stage": {
-            "$ref": "#/components/schemas/Stage"
+            "$ref": "#/components/schemas/Stage",
+            "description": "ai_typing and analysis appear only on searches recorded before the engine stopped analysing results."
           },
           "ms": {
             "type": "integer",
@@ -23537,22 +22984,6 @@
             ]
           }
         }
-      },
-      "Topic": {
-        "enum": [
-          "identity",
-          "location",
-          "movement",
-          "timeline",
-          "interests",
-          "relationships",
-          "work",
-          "education",
-          "accounts",
-          "credentials",
-          "devices",
-          "absence"
-        ]
       },
       "Transport": {
         "type": "string",
@@ -23750,7 +23181,7 @@
           },
           "event_type": {
             "type": "string",
-            "description": "The event's type, as its body's type: assessment.updated, endpoint.verification, account.deleted, workspace.deleted, webhook_endpoint.disabled, account.risk_changed, audit.event, screening.completed, person.flagged, person.decided, investigation.completed, or a type added later.",
+            "description": "The event's type, as its body's type: assessment.updated, endpoint.verification, account.deleted, workspace.deleted, webhook_endpoint.disabled, account.risk_changed, audit.event, screening.completed, person.decided, investigation.completed, or a type added later.",
             "example": "assessment.updated"
           },
           "assessment_id": {
@@ -24067,9 +23498,6 @@
             "$ref": "#/components/schemas/ScreeningCompletedEvent"
           },
           {
-            "$ref": "#/components/schemas/PersonFlaggedEvent"
-          },
-          {
             "$ref": "#/components/schemas/PersonDecidedEvent"
           },
           {
@@ -24087,7 +23515,6 @@
             "account.risk_changed": "#/components/schemas/AccountRiskChangedEvent",
             "audit.event": "#/components/schemas/AuditEventEvent",
             "screening.completed": "#/components/schemas/ScreeningCompletedEvent",
-            "person.flagged": "#/components/schemas/PersonFlaggedEvent",
             "person.decided": "#/components/schemas/PersonDecidedEvent",
             "investigation.completed": "#/components/schemas/InvestigationCompletedEvent"
           }
@@ -24156,7 +23583,7 @@
           },
           "event_type": {
             "type": "string",
-            "description": "The event's type, as its body's type: assessment.updated, endpoint.verification, account.deleted, workspace.deleted, webhook_endpoint.disabled, account.risk_changed, audit.event, screening.completed, person.flagged, person.decided, investigation.completed, or a type added later.",
+            "description": "The event's type, as its body's type: assessment.updated, endpoint.verification, account.deleted, workspace.deleted, webhook_endpoint.disabled, account.risk_changed, audit.event, screening.completed, person.decided, investigation.completed, or a type added later.",
             "example": "assessment.updated"
           }
         }
@@ -24521,11 +23948,9 @@
           "expires_at",
           "groups",
           "profiles",
-          "findings",
           "posts",
           "media",
           "evidence_investigation",
-          "written_profile",
           "suggested_searches",
           "changes",
           "schedule"
@@ -24620,21 +24045,13 @@
             },
             "description": "The accounts this result matched, with how each was matched."
           },
-          "findings": {
-            "type": "array",
-            "maxItems": 500,
-            "items": {
-              "$ref": "#/components/schemas/ScreeningFinding"
-            },
-            "description": "What this result flagged, most severe first, each citing its evidence."
-          },
           "posts": {
             "type": "array",
             "maxItems": 5000,
             "items": {
               "$ref": "#/components/schemas/ScreeningPost"
             },
-            "description": "All posts retained for this result, including posts that no finding cites."
+            "description": "All posts retained for this result."
           },
           "media": {
             "type": "array",
@@ -24642,7 +24059,7 @@
             "items": {
               "$ref": "#/components/schemas/ScreeningMedia"
             },
-            "description": "All images and videos retained for this result, including media that no finding cites."
+            "description": "All images and videos retained for this result."
           },
           "lookup": {
             "$ref": "#/components/schemas/ScreeningLookup",
@@ -24666,7 +24083,7 @@
           },
           "evidence_restricted": {
             "type": "boolean",
-            "description": "True when evidence.read is explicitly denied. Submitted details, coverage, job status and decisions remain available. Collected records, profiles, findings, posts, media, discovered values and free-text decision notes are withheld."
+            "description": "True when evidence.read is explicitly denied. Submitted details, coverage, job status and decisions remain available. Collected records, profiles, posts, media, discovered values and free-text decision notes are withheld."
           },
           "evidence_investigation": {
             "anyOf": [
@@ -24678,17 +24095,6 @@
               }
             ],
             "description": "The most recent retained completed or partial investigation, or a migrated result whose original per-person status is unknown. The evidence below belongs to this investigation. Read investigation history for earlier results and pending jobs."
-          },
-          "written_profile": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/WrittenProfile"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "An investigator's profile of this person, written from the evidence of a settled investigation. Null until an investigation completes or partially completes, and null when evidence.read is denied."
           },
           "changes": {
             "type": "array",
@@ -24805,100 +24211,6 @@
             "type": "boolean"
           }
         }
-      },
-      "WrittenProfile": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": [
-          "status",
-          "investigation_id",
-          "queued_at",
-          "finished_at",
-          "statements",
-          "leads"
-        ],
-        "properties": {
-          "status": {
-            "$ref": "#/components/schemas/WrittenProfileStatus",
-            "description": "queued: the profile is being written. written: summary, statements and leads hold it. failed: it could not be written; error_code says why and no content is returned."
-          },
-          "investigation_id": {
-            "type": "string",
-            "maxLength": 100,
-            "description": "The investigation whose evidence the profile is written from.",
-            "example": "inv_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
-          },
-          "error_code": {
-            "$ref": "#/components/schemas/WrittenProfileErrorCode",
-            "description": "Present only when status is failed. no_writer: no profile writer serves this environment. refused: the model refused. not_written: the answer was not a profile, or no statement survived grounding. uncited_statement: a statement or lead cited a record the person does not hold. not_answered: the writer did not answer. worker_attempts_exhausted: the worker stopped retrying."
-          },
-          "queued_at": {
-            "type": "string",
-            "example": "2026-01-01T00:00:00Z"
-          },
-          "finished_at": {
-            "anyOf": [
-              {
-                "type": "string",
-                "example": "2026-01-01T00:00:11Z"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "summary": {
-            "type": "string",
-            "maxLength": 5000,
-            "description": "Present when written: a few plain sentences with the most useful picture first.",
-            "example": "Likely lives in Lisbon and uses one username across sites."
-          },
-          "statements": {
-            "type": "array",
-            "maxItems": 200,
-            "items": {
-              "$ref": "#/components/schemas/ProfileStatement"
-            },
-            "description": "Each fact or inference with its certainty and the evidence it cites. Statements that cited evidence the writer was not sent are dropped before storage."
-          },
-          "leads": {
-            "type": "array",
-            "maxItems": 100,
-            "items": {
-              "$ref": "#/components/schemas/ProfileLead"
-            },
-            "description": "Values worth searching next, each held by a linked record."
-          }
-        }
-      },
-      "WrittenProfileErrorCode": {
-        "enum": [
-          "no_writer",
-          "refused",
-          "not_written",
-          "uncited_statement",
-          "not_answered",
-          "worker_attempts_exhausted"
-        ],
-        "description": "Present only when status is failed. no_writer: no profile writer serves this environment. refused: the model refused. not_written: the answer was not a profile, or no statement survived grounding. uncited_statement: a statement or lead cited a record the person does not hold. not_answered: the writer did not answer. worker_attempts_exhausted: the worker stopped retrying."
-      },
-      "WrittenProfileStatus": {
-        "enum": [
-          "queued",
-          "written",
-          "failed"
-        ],
-        "description": "queued: the profile is being written. written: summary, statements and leads hold it. failed: it could not be written; error_code says why and no content is returned."
-      },
-      "listPeopleBand": {
-        "enum": [
-          "critical",
-          "high",
-          "moderate",
-          "low",
-          "info",
-          "none"
-        ]
       },
       "listPeopleDecision": {
         "enum": [
@@ -32599,7 +31911,7 @@
         }
       },
       "PersonReportFound": {
-        "description": "The person, their matched profiles, findings and every recorded decision.",
+        "description": "The person, their matched profiles and every recorded decision.",
         "headers": {
           "Cache-Control": {
             "schema": {
@@ -32640,7 +31952,6 @@
                       }
                     ],
                     "match_state": "none_found",
-                    "highest_band": null,
                     "decision": null,
                     "coverage": {
                       "accounts_found": 0,
@@ -32672,7 +31983,6 @@
                     "expires_at": "2026-12-14T10:00:00Z"
                   },
                   "profiles": [],
-                  "findings": [],
                   "posts": [],
                   "media": [],
                   "reviews": [],
@@ -34350,55 +33660,9 @@
                       "error_code": "expired",
                       "people_total": 412,
                       "people_screened": 409,
-                      "people_flagged": 7,
-                      "by_band": {
-                        "critical": 1,
-                        "high": 2,
-                        "moderate": 1,
-                        "low": 2,
-                        "info": 1
-                      },
                       "no_footprint": 58,
                       "partial_coverage": 3,
                       "finished_at": "2026-11-20T08:12:44.000Z"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Accepted. Any 2xx within 5 seconds acknowledges the delivery; the body is ignored. A receiver that has already processed this id still answers 2xx."
-          }
-        }
-      }
-    },
-    "person.flagged": {
-      "post": {
-        "operationId": "personFlagged",
-        "summary": "A screening flagged a person.",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/WebhookEvent"
-              },
-              "examples": {
-                "flagged": {
-                  "value": {
-                    "id": "evt_01JA2ZE5N6P7Q8R9S0T1VWXYZ8",
-                    "type": "person.flagged",
-                    "created_at": "2026-11-20T07:41:09.000Z",
-                    "data": {
-                      "group_id": "grp_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
-                      "person_id": "per_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
-                      "screening_id": "scn_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
-                      "highest_band": "high",
-                      "match_state": "confirmed",
-                      "flagged_at": "2026-11-20T07:41:09.000Z"
                     }
                   }
                 }

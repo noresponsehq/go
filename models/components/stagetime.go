@@ -1,6 +1,7 @@
 package components
 
 type StageTime struct {
+	// ai_typing and analysis appear only on searches recorded before the engine stopped analysing results.
 	Stage Stage `json:"stage"`
 	Ms    int64 `json:"ms"`
 }

@@ -1,8 +1,6 @@
 package components
 
 type Investigation struct {
-	// The most severe finding's band, or null when nothing was flagged.
-	HighestBand *HighestBand `json:"highest_band"`
 	// The denominator of a screening: accounts found, how many could be read, items read and the period they span, so a clean result is distinct from a person nobody could see.
 	Coverage ScreeningCoverage `json:"coverage"`
 	// What screening cost, in US cents, in total and per implementation.
@@ -25,13 +23,6 @@ type Investigation struct {
 	FinishedAt   *string             `json:"finished_at,omitzero"`
 	ExpiresAt    string              `json:"expires_at"`
 	DeadlineAt   string              `json:"deadline_at"`
-}
-
-func (i *Investigation) GetHighestBand() *HighestBand {
-	if i == nil {
-		return nil
-	}
-	return i.HighestBand
 }
 
 func (i *Investigation) GetCoverage() ScreeningCoverage {

@@ -1,10 +1,10 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v17/internal/utils"
+	"github.com/noresponsehq/go/v18/internal/utils"
 )
 
-// ScreeningCompleted - A screening of a group finished. It counts only the people this screening set out to reach, not who they are: read the roster with GET /v1/workspaces/{workspace_id}/groups/{environment}/{group_id}/people, filtered by band, to act on them. people_screened + partial_coverage = people_total, people_flagged is the sum of by_band, no_footprint counts screened people with no flag whose accounts were not found, and no_profile_to_check those the screening had nothing to look up for on any requested platform. A cancelled screening sends no event.
+// ScreeningCompleted - A screening of a group finished. It counts only the people this screening set out to reach, not who they are: read the roster with GET /v1/workspaces/{workspace_id}/groups/{environment}/{group_id}/people to act on them. people_screened + partial_coverage = people_total, no_footprint counts screened people whose accounts were not found, and no_profile_to_check those the screening had nothing to look up for on any requested platform. A cancelled screening sends no event.
 type ScreeningCompleted struct {
 	// The screening that finished.
 	ScreeningID string `json:"screening_id"`
@@ -16,13 +16,9 @@ type ScreeningCompleted struct {
 	ErrorCode *string `json:"error_code,omitzero"`
 	// Every person the screening set out to reach: those no screening had reached.
 	PeopleTotal int64 `json:"people_total"`
-	// People the screening covered, flagged or not.
+	// People the screening covered.
 	PeopleScreened int64 `json:"people_screened"`
-	// Screened people with a finding: the sum of by_band.
-	PeopleFlagged int64 `json:"people_flagged"`
-	// Screened people by the band of their most severe finding.
-	ByBand ScreeningCompletedByBand `json:"by_band"`
-	// Screened people with no finding whose accounts were not found (match_state none_found). A clean result for someone with no visible accounts is not the same as a clean result for someone whose accounts were read.
+	// Screened people whose accounts were not found (match_state none_found). A clean result for someone with no visible accounts is not the same as a clean result for someone whose accounts were read.
 	NoFootprint int64 `json:"no_footprint"`
 	// Screened people with no profile to check: the list gave nothing to look up on any requested platform, such as no handle, so nobody looked for a profile (no_profile_to_check on the person). Not in no_footprint, and not partial: nothing failed. Their lookups are on their reports.
 	NoProfileToCheck *int64 `json:"no_profile_to_check,omitzero"`
@@ -83,20 +79,6 @@ func (s *ScreeningCompleted) GetPeopleScreened() int64 {
 		return 0
 	}
 	return s.PeopleScreened
-}
-
-func (s *ScreeningCompleted) GetPeopleFlagged() int64 {
-	if s == nil {
-		return 0
-	}
-	return s.PeopleFlagged
-}
-
-func (s *ScreeningCompleted) GetByBand() ScreeningCompletedByBand {
-	if s == nil {
-		return ScreeningCompletedByBand{}
-	}
-	return s.ByBand
 }
 
 func (s *ScreeningCompleted) GetNoFootprint() int64 {

@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/noresponsehq/go/v17/internal/utils"
+	"github.com/noresponsehq/go/v18/internal/utils"
 )
 
 type WebhookEventType string
@@ -18,7 +18,6 @@ const (
 	WebhookEventTypeAccountRiskChanged      WebhookEventType = "account.risk_changed"
 	WebhookEventTypeAuditEvent              WebhookEventType = "audit.event"
 	WebhookEventTypeScreeningCompleted      WebhookEventType = "screening.completed"
-	WebhookEventTypePersonFlagged           WebhookEventType = "person.flagged"
 	WebhookEventTypePersonDecided           WebhookEventType = "person.decided"
 	WebhookEventTypeInvestigationCompleted  WebhookEventType = "investigation.completed"
 )
@@ -33,7 +32,6 @@ type WebhookEvent struct {
 	AccountRiskChangedEvent      *AccountRiskChangedEvent      `queryParam:"inline" union:"member"`
 	AuditEventEvent              *AuditEventEvent              `queryParam:"inline" union:"member"`
 	ScreeningCompletedEvent      *ScreeningCompletedEvent      `queryParam:"inline" union:"member"`
-	PersonFlaggedEvent           *PersonFlaggedEvent           `queryParam:"inline" union:"member"`
 	PersonDecidedEvent           *PersonDecidedEvent           `queryParam:"inline" union:"member"`
 	InvestigationCompletedEvent  *InvestigationCompletedEvent  `queryParam:"inline" union:"member"`
 
@@ -109,15 +107,6 @@ func CreateWebhookEventScreeningCompleted(screeningCompleted ScreeningCompletedE
 	return WebhookEvent{
 		ScreeningCompletedEvent: &screeningCompleted,
 		Type:                    typ,
-	}
-}
-
-func CreateWebhookEventPersonFlagged(personFlagged PersonFlaggedEvent) WebhookEvent {
-	typ := WebhookEventTypePersonFlagged
-
-	return WebhookEvent{
-		PersonFlaggedEvent: &personFlagged,
-		Type:               typ,
 	}
 }
 
@@ -230,15 +219,6 @@ func (u *WebhookEvent) UnmarshalJSON(data []byte) (err error) {
 		u.ScreeningCompletedEvent = screeningCompletedEvent
 		u.Type = WebhookEventTypeScreeningCompleted
 		return nil
-	case "person.flagged":
-		personFlaggedEvent := new(PersonFlaggedEvent)
-		if err := utils.UnmarshalJSON(data, &personFlaggedEvent, "", true, nil); err != nil {
-			return fmt.Errorf("could not unmarshal `%s` into expected (Type == person.flagged) type PersonFlaggedEvent within WebhookEvent: %w", string(data), err)
-		}
-
-		u.PersonFlaggedEvent = personFlaggedEvent
-		u.Type = WebhookEventTypePersonFlagged
-		return nil
 	case "person.decided":
 		personDecidedEvent := new(PersonDecidedEvent)
 		if err := utils.UnmarshalJSON(data, &personDecidedEvent, "", true, nil); err != nil {
@@ -293,10 +273,6 @@ func (u WebhookEvent) MarshalJSON() ([]byte, error) {
 
 	if u.ScreeningCompletedEvent != nil {
 		return utils.MarshalJSON(u.ScreeningCompletedEvent, "", true)
-	}
-
-	if u.PersonFlaggedEvent != nil {
-		return utils.MarshalJSON(u.PersonFlaggedEvent, "", true)
 	}
 
 	if u.PersonDecidedEvent != nil {

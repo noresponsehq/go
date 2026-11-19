@@ -1,10 +1,12 @@
 # ScreeningSpendLineRole
 
+What the implementation did. analyser appears only on spend recorded before the engine stopped analysing posts.
+
 ## Example Usage
 
 ```go
 import (
-	"github.com/noresponsehq/go/v17/models/components"
+	"github.com/noresponsehq/go/v18/models/components"
 )
 
 value := components.ScreeningSpendLineRoleResolver

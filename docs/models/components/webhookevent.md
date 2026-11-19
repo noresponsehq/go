@@ -53,12 +53,6 @@ webhookEvent := components.CreateWebhookEventAuditEvent(components.AuditEventEve
 webhookEvent := components.CreateWebhookEventScreeningCompleted(components.ScreeningCompletedEvent{/* values here */})
 ```
 
-### PersonFlaggedEvent
-
-```go
-webhookEvent := components.CreateWebhookEventPersonFlagged(components.PersonFlaggedEvent{/* values here */})
-```
-
 ### PersonDecidedEvent
 
 ```go
@@ -93,8 +87,6 @@ switch webhookEvent.Type {
 		// webhookEvent.AuditEventEvent is populated
 	case components.WebhookEventTypeScreeningCompleted:
 		// webhookEvent.ScreeningCompletedEvent is populated
-	case components.WebhookEventTypePersonFlagged:
-		// webhookEvent.PersonFlaggedEvent is populated
 	case components.WebhookEventTypePersonDecided:
 		// webhookEvent.PersonDecidedEvent is populated
 	case components.WebhookEventTypeInvestigationCompleted:

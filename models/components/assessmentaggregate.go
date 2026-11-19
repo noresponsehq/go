@@ -1,7 +1,7 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v17/internal/utils"
+	"github.com/noresponsehq/go/v18/internal/utils"
 )
 
 type AssessmentAggregateMetric string

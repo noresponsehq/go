@@ -1,7 +1,7 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v17/internal/utils"
+	"github.com/noresponsehq/go/v18/internal/utils"
 )
 
 // ScreeningProfile - An account the screening matched to the person, how it was matched, and how much of it was read.
@@ -20,7 +20,7 @@ type ScreeningProfile struct {
 	Access Access `json:"access"`
 	// How a profile was matched to the person: the state its evidence earns, and the evidence.
 	Match ScreeningMatch `json:"match"`
-	// The resolver, collector or analyser that produced a record, by its catalogue name.
+	// The resolver or collector that produced a record, by its catalogue name.
 	Collector string `json:"collector"`
 	ItemsRead int64  `json:"items_read"`
 	// Why fewer posts were read than the screening's depth asks for while the account holds more. platform_limit: the platform shows the screening no more of them. page_limit: the pages a screening reads ran out first. rate_limited or unavailable: a later page was held back or failed; the posts before it are kept and the person is partial. Absent when the account was read to its end or to the depth.

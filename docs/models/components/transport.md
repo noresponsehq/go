@@ -6,7 +6,7 @@ Where the context was derived: backend (also when the request named no transport
 
 ```go
 import (
-	"github.com/noresponsehq/go/v17/models/components"
+	"github.com/noresponsehq/go/v18/models/components"
 )
 
 value := components.TransportBackend

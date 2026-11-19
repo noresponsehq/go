@@ -6,7 +6,7 @@ The kind of the value: one of the kinds the environment's enrichment setting nam
 
 ```go
 import (
-	"github.com/noresponsehq/go/v17/models/components"
+	"github.com/noresponsehq/go/v18/models/components"
 )
 
 value := components.SuggestedSearchKindUsername

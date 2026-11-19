@@ -1,5 +1,6 @@
 package components
 
+// ScreeningSpendLineRole - What the implementation did. analyser appears only on spend recorded before the engine stopped analysing posts.
 type ScreeningSpendLineRole string
 
 const (

@@ -1,24 +1,22 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v17/internal/utils"
+	"github.com/noresponsehq/go/v18/internal/utils"
 )
 
 // InvestigationReport - Read an investigation and its evidence.
 type InvestigationReport struct {
 	// The accounts this result matched, with how each was matched.
 	Profiles []ScreeningProfile `json:"profiles"`
-	// What this result flagged, most severe first, each citing its evidence.
-	Findings []ScreeningFinding `json:"findings"`
-	// All posts retained for this result, including posts that no finding cites.
+	// All posts retained for this result.
 	Posts []ScreeningPost `json:"posts"`
-	// All images and videos retained for this result, including media that no finding cites.
+	// All images and videos retained for this result.
 	Media []ScreeningMedia `json:"media"`
 	// Every recorded decision, oldest first.
 	Reviews []PersonReview `json:"reviews"`
-	// What the signup check's lookups found for a person: account presence for the email, phone and usernames (the person's handles), the phone lookup, the email domain's registration and the breach search. Context and coverage for the reviewer, not a finding: nothing here sets a band or a match state.
+	// What the signup check's lookups found for a person: account presence for the email, phone and usernames (the person's handles), the phone lookup, the email domain's registration and the breach search. Nothing here sets a match state.
 	Lookup *ScreeningLookup `json:"lookup,omitzero"`
-	// True when evidence.read is explicitly denied. Submitted details, coverage, job status and decisions remain available. Collected records, profiles, findings, posts, media, discovered values and free-text decision notes are withheld.
+	// True when evidence.read is explicitly denied. Submitted details, coverage, job status and decisions remain available. Collected records, profiles, posts, media, discovered values and free-text decision notes are withheld.
 	EvidenceRestricted *bool           `json:"evidence_restricted,omitzero"`
 	Person             WorkspacePerson `json:"person"`
 	Investigation      Investigation   `json:"investigation"`
@@ -40,13 +38,6 @@ func (i *InvestigationReport) GetProfiles() []ScreeningProfile {
 		return []ScreeningProfile{}
 	}
 	return i.Profiles
-}
-
-func (i *InvestigationReport) GetFindings() []ScreeningFinding {
-	if i == nil {
-		return []ScreeningFinding{}
-	}
-	return i.Findings
 }
 
 func (i *InvestigationReport) GetPosts() []ScreeningPost {

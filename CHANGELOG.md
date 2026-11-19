@@ -1,5 +1,27 @@
 # Changelog
 
+## 18.0.0
+
+* `Sdk.Groups.ListPeople()`: 
+  *  `request.Request.Band` **Removed** (Breaking ⚠️)
+  *  `response.Items[]` **Changed** (Breaking ⚠️)
+* `Sdk.Groups.GetPerson()`:  `response` **Changed** (Breaking ⚠️)
+* `Sdk.Groups.ReviewPerson()`:  `response` **Changed** (Breaking ⚠️)
+* `Sdk.Groups.ListScreenings()`:  `response.Items[].PeopleFlagged` **Removed** (Breaking ⚠️)
+* `Sdk.Groups.StartScreening()`:  `response.PeopleFlagged` **Removed** (Breaking ⚠️)
+* `Sdk.Groups.GetScreening()`:  `response.PeopleFlagged` **Removed** (Breaking ⚠️)
+* `Sdk.Groups.CancelScreening()`:  `response.PeopleFlagged` **Removed** (Breaking ⚠️)
+* `Sdk.Groups.ExportPeople()`: 
+  *  `request.Request.Band` **Removed** (Breaking ⚠️)
+  *  `response.Items[]` **Changed** (Breaking ⚠️)
+* `Sdk.People.Get()`:  `response` **Changed** (Breaking ⚠️)
+* `Sdk.People.ReviewChange()`:  `response.Kind.Enum(findingAdded)` **Removed** (Breaking ⚠️)
+* `Sdk.Investigations.List()`:  `response.Items[]` **Changed** (Breaking ⚠️)
+* `Sdk.Investigations.Create()`:  `response` **Changed** (Breaking ⚠️)
+* `Sdk.Investigations.Get()`:  `response` **Changed** (Breaking ⚠️)
+* `Sdk.Investigations.Review()`:  `response` **Changed** (Breaking ⚠️)
+* `Sdk.Investigations.Cancel()`:  `response` **Changed** (Breaking ⚠️)
+
 ## 17.0.3
 
 * `Sdk.Settings.Get()`:  `response.Enrichment.Kinds[].Enum(personName)` **Added**

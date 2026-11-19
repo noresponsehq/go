@@ -11,7 +11,7 @@ Go 1.24+.
 ## Install
 
 ```sh
-go get github.com/noresponsehq/go/v17
+go get github.com/noresponsehq/go/v18
 ```
 
 
@@ -26,8 +26,8 @@ import (
     "log"
     "os"
 
-    noresponse "github.com/noresponsehq/go/v17"
-    "github.com/noresponsehq/go/v17/models/components"
+    noresponse "github.com/noresponsehq/go/v18"
+    "github.com/noresponsehq/go/v18/models/components"
 )
 
 func main() {
@@ -70,8 +70,8 @@ import (
 	"log"
 	"os"
 
-	noresponse "github.com/noresponsehq/go/v17"
-	"github.com/noresponsehq/go/v17/models/components"
+	noresponse "github.com/noresponsehq/go/v18"
+	"github.com/noresponsehq/go/v18/models/components"
 )
 
 func main() {
@@ -167,7 +167,7 @@ case err != nil:
 }
 ```
 
-The typed errors are `BadRequestError` (400), `AuthenticationError` (401), `PermissionDeniedError` (403), `NotFoundError` (404), `ConflictError` (409) and `RateLimitError` (429), all in `github.com/noresponsehq/go/v17/models/apierrors`. Any other status is an `*apierrors.APIStatusError`.
+The typed errors are `BadRequestError` (400), `AuthenticationError` (401), `PermissionDeniedError` (403), `NotFoundError` (404), `ConflictError` (409) and `RateLimitError` (429), all in `github.com/noresponsehq/go/v18/models/apierrors`. Any other status is an `*apierrors.APIStatusError`.
 
 ## Retries and timeouts
 
@@ -253,10 +253,8 @@ http.HandleFunc("/webhooks/noresponse", func(w http.ResponseWriter, r *http.Requ
 	case components.WebhookEventTypeWebhookEndpointDisabled:
 		// Data.EndpointID failed for 72 hours and is disabled: fix it and verify it again.
 	case components.WebhookEventTypeScreeningCompleted:
-		// A screening of a group finished: event.ScreeningCompletedEvent.Data counts people by band,
-		// no footprint and partial coverage. It names no person: list the roster filtered by band.
-	case components.WebhookEventTypePersonFlagged:
-		// A screening flagged a person: event.PersonFlaggedEvent.Data has its highest band, never what was posted.
+		// A screening of a group finished: event.ScreeningCompletedEvent.Data counts the people screened,
+		// no footprint and partial coverage. It names no person: list the group's roster.
 	case components.WebhookEventTypePersonDecided:
 		// A reviewer marked the person cleared, watch or escalated; keep the latest decided_at per person.
 	case components.WebhookEventTypeAssessmentUpdated:

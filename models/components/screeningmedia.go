@@ -1,7 +1,7 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v17/internal/utils"
+	"github.com/noresponsehq/go/v18/internal/utils"
 )
 
 // ScreeningMedia - One image or video a collector read, with the post that carried it.
@@ -15,8 +15,6 @@ type ScreeningMedia struct {
 	MediaURL string `json:"media_url"`
 	// For an image that is a video's cover frame, the id of that video's media item.
 	CoverOf *string `json:"cover_of,omitzero"`
-	// true on a video the analyser read from its cover frame (the image whose cover_of names it) and its caption alone. Left out otherwise.
-	FrameOnly *bool `json:"frame_only,omitzero"`
 	// The caption or alt text.
 	Text      *string `json:"text,omitzero"`
 	ProfileID string  `json:"profile_id"`
@@ -76,13 +74,6 @@ func (s *ScreeningMedia) GetCoverOf() *string {
 		return nil
 	}
 	return s.CoverOf
-}
-
-func (s *ScreeningMedia) GetFrameOnly() *bool {
-	if s == nil {
-		return nil
-	}
-	return s.FrameOnly
 }
 
 func (s *ScreeningMedia) GetText() *string {

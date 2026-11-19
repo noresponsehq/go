@@ -9,14 +9,6 @@
     "error_code": "expired",
     "people_total": 412,
     "people_screened": 409,
-    "people_flagged": 7,
-    "by_band": {
-      "critical": 1,
-      "high": 2,
-      "moderate": 1,
-      "low": 2,
-      "info": 1
-    },
     "no_footprint": 58,
     "partial_coverage": 3,
     "finished_at": "2026-11-20T08:12:44.000Z"

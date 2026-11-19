@@ -1,7 +1,7 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v17/internal/utils"
+	"github.com/noresponsehq/go/v18/internal/utils"
 )
 
 // ListPreviewRequest - Choose an addition or a removal. The preview performs no list, account, audit, outcome or outbox write.

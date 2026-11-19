@@ -187,13 +187,7 @@
       "file": "valid/webhook-screening-completed.json",
       "schema": "webhook-event.schema.json",
       "expect": "valid",
-      "why": "NOR-793 a screening's counts by band, no footprint and partial coverage"
-    },
-    {
-      "file": "valid/webhook-person-flagged.json",
-      "schema": "webhook-event.schema.json",
-      "expect": "valid",
-      "why": "NOR-793 a person's highest band, never what was posted"
+      "why": "NOR-793 a screening's counts of no footprint and partial coverage"
     },
     {
       "file": "valid/webhook-person-decided.json",
@@ -2622,18 +2616,6 @@
       "why": "NOR-143 a workspace has a live and a test environment only"
     },
     {
-      "file": "invalid/webhook-person-flagged-post-text.json",
-      "schema": "webhook-event.schema.json",
-      "expect": "invalid",
-      "errors": [
-        [
-          "additionalProperties",
-          "/data"
-        ]
-      ],
-      "why": "NOR-793 person.flagged never carries what the person posted"
-    },
-    {
       "file": "invalid/webhook-screening-completed-cancelled.json",
       "schema": "webhook-event.schema.json",
       "expect": "invalid",
@@ -4212,43 +4194,6 @@
     {
       "file": "valid/customer-evidence-customer-export-action-request.json",
       "schema": "customer-export-action-request.schema.json",
-      "expect": "valid"
-    },
-    {
-      "file": "valid/analysis-request.json",
-      "schema": "screening-records.schema.json#/$defs/analysis_request",
-      "expect": "valid"
-    },
-    {
-      "file": "valid/analysis-result.json",
-      "schema": "screening-records.schema.json#/$defs/analysis_result",
-      "expect": "valid"
-    },
-    {
-      "file": "invalid/analysis-result-unknown-band.json",
-      "schema": "screening-records.schema.json#/$defs/analysis_result",
-      "expect": "invalid",
-      "errors": [
-        [
-          "enum",
-          "/findings/0/band"
-        ]
-      ],
-      "why": "NOR-787 a finding's band is one of the five bands"
-    },
-    {
-      "file": "valid/analyser.json",
-      "schema": "analysers.schema.json#/$defs/analyser",
-      "expect": "valid"
-    },
-    {
-      "file": "valid/analyser_list.json",
-      "schema": "analysers.schema.json#/$defs/analyser_list",
-      "expect": "valid"
-    },
-    {
-      "file": "valid/analyser_request.json",
-      "schema": "analysers.schema.json#/$defs/analyser_request",
       "expect": "valid"
     },
     {

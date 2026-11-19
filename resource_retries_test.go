@@ -6,9 +6,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/noresponsehq/go/v17/models/components"
-	"github.com/noresponsehq/go/v17/models/operations"
-	"github.com/noresponsehq/go/v17/optionalnullable"
+	"github.com/noresponsehq/go/v18/models/components"
+	"github.com/noresponsehq/go/v18/models/operations"
+	"github.com/noresponsehq/go/v18/optionalnullable"
 )
 
 func TestGroupCreationKeepsItsArgumentsAndAcceptsARequestKeyOption(t *testing.T) {

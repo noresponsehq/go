@@ -1,7 +1,7 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v17/internal/utils"
+	"github.com/noresponsehq/go/v18/internal/utils"
 )
 
 // ScreeningCoverage - The denominator of a screening: accounts found, how many could be read, items read and the period they span, so a clean result is distinct from a person nobody could see.
@@ -9,12 +9,6 @@ type ScreeningCoverage struct {
 	AccountsFound      int64 `json:"accounts_found"`
 	AccountsAccessible int64 `json:"accounts_accessible"`
 	ItemsRead          int64 `json:"items_read"`
-	// Items read that the analyser could not analyse. Above zero, the person is partial: a finding may be missing from them.
-	ItemsNotAnalysed *int64 `json:"items_not_analysed,omitzero"`
-	// items_not_analysed split by reason, each reason once with at least one item.
-	NotAnalysedByReason []ScreeningNotAnalysedCount `json:"not_analysed_by_reason,omitzero"`
-	// Videos the analyser read from their cover frame and caption alone, without their sound or later frames. They count as analysed and do not make the person partial. Left out when none.
-	ItemsFrameOnly *int64 `json:"items_frame_only,omitzero"`
 	// The oldest item read on any platform.
 	PeriodFrom *string `json:"period_from,omitzero"`
 	// The newest item read on any platform.
@@ -58,27 +52,6 @@ func (s *ScreeningCoverage) GetItemsRead() int64 {
 		return 0
 	}
 	return s.ItemsRead
-}
-
-func (s *ScreeningCoverage) GetItemsNotAnalysed() *int64 {
-	if s == nil {
-		return nil
-	}
-	return s.ItemsNotAnalysed
-}
-
-func (s *ScreeningCoverage) GetNotAnalysedByReason() []ScreeningNotAnalysedCount {
-	if s == nil {
-		return nil
-	}
-	return s.NotAnalysedByReason
-}
-
-func (s *ScreeningCoverage) GetItemsFrameOnly() *int64 {
-	if s == nil {
-		return nil
-	}
-	return s.ItemsFrameOnly
 }
 
 func (s *ScreeningCoverage) GetPeriodFrom() *string {
