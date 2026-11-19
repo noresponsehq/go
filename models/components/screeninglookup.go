@@ -8,6 +8,8 @@ import (
 type ScreeningLookup struct {
 	// Each lane each identifier was looked up in, identifiers in the order email, phone, username and lanes in the order accounts, phone, breach, domain. Every lane the person's identifiers are looked up in is listed: one that no source answered, or that no source could be asked in, is not_covered. Empty when the person has no email, phone or handle to look up.
 	Checks []ScreeningLookupCheck `json:"checks"`
+	// Each source asked, with what it answered and when. answered_at is absent while the source has not answered.
+	Answers []ScreeningLookupAnswer `json:"answers,omitzero"`
 	// A few typed facts per identifier: an assessment's risk.summary, and a screened person's lookup summary. Every fact is optional: absent means the evidence did not answer and makes no claim, while false or 0 is a definite answer.
 	Summary *RiskSummary `json:"summary,omitzero"`
 	// Merged observations behind the summary, served only to a caller who may read evidence: no provider, source, origin, raw breach record or score.
@@ -36,6 +38,13 @@ func (s *ScreeningLookup) GetChecks() []ScreeningLookupCheck {
 		return []ScreeningLookupCheck{}
 	}
 	return s.Checks
+}
+
+func (s *ScreeningLookup) GetAnswers() []ScreeningLookupAnswer {
+	if s == nil {
+		return nil
+	}
+	return s.Answers
 }
 
 func (s *ScreeningLookup) GetSummary() *RiskSummary {

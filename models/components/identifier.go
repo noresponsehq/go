@@ -4,7 +4,9 @@ type Identifier string
 
 const (
 	IdentifierEmail    Identifier = "email"
+	IdentifierPhone    Identifier = "phone"
 	IdentifierUsername Identifier = "username"
+	IdentifierName     Identifier = "name"
 )
 
 func (e Identifier) ToPointer() *Identifier {
@@ -15,7 +17,7 @@ func (e Identifier) ToPointer() *Identifier {
 func (e *Identifier) IsExact() bool {
 	if e != nil {
 		switch *e {
-		case "email", "username":
+		case "email", "phone", "username", "name":
 			return true
 		}
 	}

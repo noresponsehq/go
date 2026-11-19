@@ -19,4 +19,6 @@ custom := components.Identifier("custom_value")
 | Name                 | Value                |
 | -------------------- | -------------------- |
 | `IdentifierEmail`    | email                |
+| `IdentifierPhone`    | phone                |
 | `IdentifierUsername` | username             |
+| `IdentifierName`     | name                 |

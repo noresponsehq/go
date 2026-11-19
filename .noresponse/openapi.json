@@ -13945,7 +13945,9 @@
       "Identifier": {
         "enum": [
           "email",
-          "username"
+          "phone",
+          "username",
+          "name"
         ]
       },
       "IdentifierExpression": {
@@ -16449,7 +16451,7 @@
             "example": "wix.com"
           },
           "identifier": {
-            "$ref": "#/components/schemas/Identifier",
+            "$ref": "#/components/schemas/RiskDetailsEventIdentifier",
             "description": "The identifier searched."
           },
           "outcome": {
@@ -21034,9 +21036,15 @@
             "$ref": "#/components/schemas/FootprintFamily"
           },
           "identifier": {
-            "$ref": "#/components/schemas/Identifier"
+            "$ref": "#/components/schemas/RiskDetailsEventIdentifier"
           }
         }
+      },
+      "RiskDetailsEventIdentifier": {
+        "enum": [
+          "email",
+          "username"
+        ]
       },
       "RiskDetailsEventKind": {
         "enum": [
@@ -21777,6 +21785,14 @@
             },
             "description": "Each lane each identifier was looked up in, identifiers in the order email, phone, username and lanes in the order accounts, phone, breach, domain. Every lane the person's identifiers are looked up in is listed: one that no source answered, or that no source could be asked in, is not_covered. Empty when the person has no email, phone or handle to look up."
           },
+          "answers": {
+            "type": "array",
+            "maxItems": 2000,
+            "description": "Each source asked, with what it answered and when. answered_at is absent while the source has not answered.",
+            "items": {
+              "$ref": "#/components/schemas/ScreeningLookupAnswer"
+            }
+          },
           "summary": {
             "$ref": "#/components/schemas/RiskSummary",
             "description": "The typed facts per identifier, as an assessment's risk.summary: accounts found, the breach summary, phone facts and the identity's footprint. Absent when nothing answered with one."
@@ -21808,6 +21824,34 @@
           }
         },
         "description": "What the signup check's lookups found for a person: account presence for the email, phone and usernames (the person's handles), the phone lookup, the email domain's registration and the breach search. Context and coverage for the reviewer, not a finding: nothing here sets a band or a match state."
+      },
+      "ScreeningLookupAnswer": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "connector",
+          "identifier",
+          "outcome"
+        ],
+        "properties": {
+          "connector": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "description": "The id of the connector asked: breach for the breach search.",
+            "example": "github"
+          },
+          "identifier": {
+            "$ref": "#/components/schemas/Identifier"
+          },
+          "outcome": {
+            "$ref": "#/components/schemas/SignalOutcome"
+          },
+          "answered_at": {
+            "type": "string",
+            "example": "2026-01-01T00:00:02Z"
+          }
+        }
       },
       "ScreeningLookupCheck": {
         "type": "object",

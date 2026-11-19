@@ -1,5 +1,11 @@
 # Changelog
 
+## 16.0.5
+
+* `Sdk.Groups.GetPerson()`:  `response.Lookup.Answers` **Added**
+* `Sdk.People.Get()`:  `response.Lookup.Answers` **Added**
+* `Sdk.Investigations.Get()`:  `response.Lookup.Answers` **Added**
+
 ## 16.0.4
 
 * `Sdk.People.ReviewChange()`: **Added**

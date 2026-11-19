@@ -11,8 +11,8 @@ type RiskDetailsEvent struct {
 	Site     string               `json:"site"`
 	Category string               `json:"category"`
 	// The source-neutral kind of evidence: account_presence (an account found on a site), auth_provider (the account at your auth provider), breach (breach and credential tables), breach_abuse (abuse and fraud communities' tables) and code_hosting (a code hosting profile).
-	Family     FootprintFamily `json:"family"`
-	Identifier Identifier      `json:"identifier"`
+	Family     FootprintFamily            `json:"family"`
+	Identifier RiskDetailsEventIdentifier `json:"identifier"`
 }
 
 func (r RiskDetailsEvent) MarshalJSON() ([]byte, error) {
@@ -68,9 +68,9 @@ func (r *RiskDetailsEvent) GetFamily() FootprintFamily {
 	return r.Family
 }
 
-func (r *RiskDetailsEvent) GetIdentifier() Identifier {
+func (r *RiskDetailsEvent) GetIdentifier() RiskDetailsEventIdentifier {
 	if r == nil {
-		return Identifier("")
+		return RiskDetailsEventIdentifier("")
 	}
 	return r.Identifier
 }

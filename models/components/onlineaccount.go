@@ -36,8 +36,8 @@ type OnlineAccount struct {
 	// The platform's name, such as Adobe or GitHub.
 	Name string `json:"name"`
 	// The platform's domain, lower case: the host its logo is fetched for.
-	Domain     string     `json:"domain"`
-	Identifier Identifier `json:"identifier"`
+	Domain     string                     `json:"domain"`
+	Identifier RiskDetailsEventIdentifier `json:"identifier"`
 	// Per-signal outcome. A source that timed out, was blocked or errored reports blocked, unavailable or inconclusive with a reason and is listed in incomplete_sources; not_found is a definite absence.
 	Outcome SignalOutcome `json:"outcome"`
 	// Why a signal or source did not produce a definite found/not_found. timed_out means the source missed the request deadline; a continuation may still settle it. deferred means the (source, identifier) pair is async-only and was not attempted on the synchronous path; a continuation settles it.
@@ -81,9 +81,9 @@ func (o *OnlineAccount) GetDomain() string {
 	return o.Domain
 }
 
-func (o *OnlineAccount) GetIdentifier() Identifier {
+func (o *OnlineAccount) GetIdentifier() RiskDetailsEventIdentifier {
 	if o == nil {
-		return Identifier("")
+		return RiskDetailsEventIdentifier("")
 	}
 	return o.Identifier
 }
