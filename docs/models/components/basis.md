@@ -6,7 +6,7 @@ stated: read from a record. inferred: reasoned from several facts. absence: ever
 
 ```go
 import (
-	"github.com/noresponsehq/go/v15/models/components"
+	"github.com/noresponsehq/go/v16/models/components"
 )
 
 value := components.BasisStated

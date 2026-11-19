@@ -21,8 +21,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v15"
-	"github.com/noresponsehq/go/v15/models/components"
+	noresponse "github.com/noresponsehq/go/v16"
+	"github.com/noresponsehq/go/v16/models/components"
 	"log"
 )
 
@@ -69,8 +69,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v15"
-	"github.com/noresponsehq/go/v15/models/components"
+	noresponse "github.com/noresponsehq/go/v16"
+	"github.com/noresponsehq/go/v16/models/components"
 	"log"
 )
 

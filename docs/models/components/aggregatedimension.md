@@ -6,7 +6,7 @@ decision, recommendation and band: the first answer's. flow: the assessment's. l
 
 ```go
 import (
-	"github.com/noresponsehq/go/v15/models/components"
+	"github.com/noresponsehq/go/v16/models/components"
 )
 
 value := components.AggregateDimensionDecision

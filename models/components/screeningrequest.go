@@ -1,7 +1,7 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v15/internal/utils"
+	"github.com/noresponsehq/go/v16/internal/utils"
 )
 
 // ScreeningRequest - Screens the group's people no screening has reached and everyone on watch or escalated.

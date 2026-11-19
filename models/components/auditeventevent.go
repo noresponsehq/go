@@ -1,7 +1,7 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v15/internal/utils"
+	"github.com/noresponsehq/go/v16/internal/utils"
 )
 
 // AuditEventEvent - The audit.event event.

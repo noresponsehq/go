@@ -1,7 +1,7 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v15/optionalnullable"
+	"github.com/noresponsehq/go/v16/optionalnullable"
 )
 
 type PolicyPreviewRequestFlowsPurchase struct {

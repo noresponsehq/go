@@ -6,7 +6,7 @@ record: a record in lookup.records or profiles[].record. post: an item in posts.
 
 ```go
 import (
-	"github.com/noresponsehq/go/v15/models/components"
+	"github.com/noresponsehq/go/v16/models/components"
 )
 
 value := components.ProfileCitationKindRecord

@@ -6,7 +6,7 @@ How sure the screening is that the accounts it read are the person's. A finding 
 
 ```go
 import (
-	"github.com/noresponsehq/go/v15/models/components"
+	"github.com/noresponsehq/go/v16/models/components"
 )
 
 value := components.PersonFlaggedMatchStateConfirmed

@@ -3,10 +3,8 @@ package components
 type ErasureReceiptTargetName string
 
 const (
-	ErasureReceiptTargetNameServing              ErasureReceiptTargetName = "serving"
-	ErasureReceiptTargetNameOutbox               ErasureReceiptTargetName = "outbox"
-	ErasureReceiptTargetNameCache                ErasureReceiptTargetName = "cache"
-	ErasureReceiptTargetNameDownstreamProjection ErasureReceiptTargetName = "downstream_projection"
+	ErasureReceiptTargetNameServing ErasureReceiptTargetName = "serving"
+	ErasureReceiptTargetNameOutbox  ErasureReceiptTargetName = "outbox"
 )
 
 func (e ErasureReceiptTargetName) ToPointer() *ErasureReceiptTargetName {
@@ -17,7 +15,7 @@ func (e ErasureReceiptTargetName) ToPointer() *ErasureReceiptTargetName {
 func (e *ErasureReceiptTargetName) IsExact() bool {
 	if e != nil {
 		switch *e {
-		case "serving", "outbox", "cache", "downstream_projection":
+		case "serving", "outbox":
 			return true
 		}
 	}

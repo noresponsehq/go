@@ -1,7 +1,7 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v15/internal/utils"
+	"github.com/noresponsehq/go/v16/internal/utils"
 )
 
 // ScreeningCoverage - The denominator of a screening: accounts found, how many could be read, items read and the period they span, so a clean result is distinct from a person nobody could see.

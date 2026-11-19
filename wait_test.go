@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/noresponsehq/go/v15/models/components"
+	"github.com/noresponsehq/go/v16/models/components"
 )
 
 func TestWaitForAssessmentReturnsSettledResponse(t *testing.T) {

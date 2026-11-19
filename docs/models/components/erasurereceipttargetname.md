@@ -4,7 +4,7 @@
 
 ```go
 import (
-	"github.com/noresponsehq/go/v15/models/components"
+	"github.com/noresponsehq/go/v16/models/components"
 )
 
 value := components.ErasureReceiptTargetNameServing
@@ -16,9 +16,7 @@ custom := components.ErasureReceiptTargetName("custom_value")
 
 ## Values
 
-| Name                                           | Value                                          |
-| ---------------------------------------------- | ---------------------------------------------- |
-| `ErasureReceiptTargetNameServing`              | serving                                        |
-| `ErasureReceiptTargetNameOutbox`               | outbox                                         |
-| `ErasureReceiptTargetNameCache`                | cache                                          |
-| `ErasureReceiptTargetNameDownstreamProjection` | downstream_projection                          |
+| Name                              | Value                             |
+| --------------------------------- | --------------------------------- |
+| `ErasureReceiptTargetNameServing` | serving                           |
+| `ErasureReceiptTargetNameOutbox`  | outbox                            |

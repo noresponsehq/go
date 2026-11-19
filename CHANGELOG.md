@@ -1,5 +1,9 @@
 # Changelog
 
+## 16.0.0
+
+* `Sdk.Erasures.Get()`:  `response.Targets[].Name` **Changed** (Breaking ⚠️)
+
 ## 15.0.19
 
 * `Sdk.Groups.GetPerson()`:  `response.Profiles[].Record.Fields[].Noise` **Added**

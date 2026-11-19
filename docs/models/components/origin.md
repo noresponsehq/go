@@ -6,7 +6,7 @@ api (the default) searches the assessments your integration sent. lookup searche
 
 ```go
 import (
-	"github.com/noresponsehq/go/v15/models/components"
+	"github.com/noresponsehq/go/v16/models/components"
 )
 
 value := components.OriginAPI

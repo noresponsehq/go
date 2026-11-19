@@ -6,7 +6,7 @@ The kind of the value searched. A domain search finds the leaked rows of every e
 
 ```go
 import (
-	"github.com/noresponsehq/go/v15/models/components"
+	"github.com/noresponsehq/go/v16/models/components"
 )
 
 value := components.SearchKindEmail

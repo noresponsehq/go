@@ -1,7 +1,7 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v15/internal/utils"
+	"github.com/noresponsehq/go/v16/internal/utils"
 )
 
 // ScreeningFinding - Something the analyser flagged. band is capped by the strongest match among the profiles of its evidence: possible at most moderate, probable at most high. capped_from is the band the analyser gave when the cap lowered it.

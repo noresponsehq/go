@@ -3,7 +3,7 @@ package components
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/noresponsehq/go/v15/internal/utils"
+	"github.com/noresponsehq/go/v16/internal/utils"
 )
 
 type MemberUpdateRequestEnvironment string

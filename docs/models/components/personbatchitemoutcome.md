@@ -6,7 +6,7 @@ unchanged: the row matched a person with the same details.
 
 ```go
 import (
-	"github.com/noresponsehq/go/v15/models/components"
+	"github.com/noresponsehq/go/v16/models/components"
 )
 
 value := components.PersonBatchItemOutcomeCreated

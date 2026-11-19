@@ -1,9 +1,10 @@
 {
   "id": "0123456789abcdef0123456789abcdef",
   "kind": "account",
-  "status": "propagating",
+  "status": "completed",
   "assessments_deleted": 2,
   "requested_at": "2026-10-14T09:00:00.412Z",
+  "completed_at": "2026-10-14T09:00:00.412Z",
   "targets": [
     {
       "name": "serving",
@@ -14,14 +15,6 @@
       "name": "outbox",
       "status": "completed",
       "completed_at": "2026-10-14T09:00:00.412Z"
-    },
-    {
-      "name": "cache",
-      "status": "pending"
-    },
-    {
-      "name": "downstream_projection",
-      "status": "pending"
     }
   ],
   "backup_policy": "Backup and point-in-time recovery copies expire under the configured backup retention policy. Serving-system completion does not certify deletion from backups."
