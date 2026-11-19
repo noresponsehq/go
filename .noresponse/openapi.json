@@ -21409,9 +21409,78 @@
               "example": "instagram"
             },
             "description": "Requested platforms where the person gave the screening nothing to look up, such as no handle for a platform that reads supplied handles only. Nothing looked and nothing failed: such a platform is not in platforms, is not none_found and does not make the person partial."
+          },
+          "sources": {
+            "$ref": "#/components/schemas/ScreeningCoverageSources",
+            "description": "How many sources this search asked and how many answered, across the lookup stage (sources asked whether an account exists for an identifier) and the platform stage (profiles read on each platform). A source that answered may have found nothing; one that did not answer failed or ran out of time."
+          },
+          "timing": {
+            "$ref": "#/components/schemas/ScreeningCoverageTiming",
+            "description": "How long this search's latest attempt took, stage by stage. started_at minus the investigation's creation is the time spent queued or retrying."
           }
         },
         "description": "The denominator of a screening: accounts found, how many could be read, items read and the period they span, so a clean result is distinct from a person nobody could see."
+      },
+      "ScreeningCoverageSources": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "asked",
+          "answered",
+          "lookups",
+          "platforms"
+        ],
+        "description": "How many sources this search asked and how many answered, across the lookup stage (sources asked whether an account exists for an identifier) and the platform stage (profiles read on each platform). A source that answered may have found nothing; one that did not answer failed or ran out of time.",
+        "properties": {
+          "asked": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Lookup sources plus platforms asked."
+          },
+          "answered": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Lookup sources plus platforms that answered."
+          },
+          "lookups": {
+            "$ref": "#/components/schemas/SourceCount",
+            "description": "The sum of sources and answered over lookup.checks."
+          },
+          "platforms": {
+            "$ref": "#/components/schemas/SourceCount",
+            "description": "Entries of platforms, and those whose status is covered, none_found or inaccessible."
+          }
+        }
+      },
+      "ScreeningCoverageTiming": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "started_at",
+          "total_ms",
+          "stages"
+        ],
+        "description": "How long this search's latest attempt took, stage by stage. started_at minus the investigation's creation is the time spent queued or retrying.",
+        "properties": {
+          "started_at": {
+            "type": "string",
+            "description": "When the attempt that wrote this result started.",
+            "example": "2026-01-01T00:00:00Z"
+          },
+          "total_ms": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Milliseconds from started_at to the end of the last stage listed."
+          },
+          "stages": {
+            "type": "array",
+            "maxItems": 9,
+            "items": {
+              "$ref": "#/components/schemas/StageTime"
+            },
+            "description": "Stages finished so far, in order. The result first written lists stages up to written; the settled result lists them all."
+          }
+        }
       },
       "ScreeningDepth": {
         "enum": [
@@ -22845,6 +22914,55 @@
           "requests",
           "webhook_attempts"
         ]
+      },
+      "SourceCount": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "asked",
+          "answered"
+        ],
+        "properties": {
+          "asked": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "answered": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      },
+      "Stage": {
+        "type": "string",
+        "enum": [
+          "lookup",
+          "lookup_typing",
+          "platforms",
+          "written",
+          "late_platforms",
+          "late_lookup",
+          "ai_typing",
+          "analysis",
+          "rating"
+        ]
+      },
+      "StageTime": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "stage",
+          "ms"
+        ],
+        "properties": {
+          "stage": {
+            "$ref": "#/components/schemas/Stage"
+          },
+          "ms": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
       },
       "Status": {
         "enum": [

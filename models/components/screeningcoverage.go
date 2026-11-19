@@ -22,6 +22,10 @@ type ScreeningCoverage struct {
 	Platforms []ScreeningPlatformCoverage `json:"platforms"`
 	// Requested platforms where the person gave the screening nothing to look up, such as no handle for a platform that reads supplied handles only. Nothing looked and nothing failed: such a platform is not in platforms, is not none_found and does not make the person partial.
 	NotSearched []string `json:"not_searched,omitzero"`
+	// How many sources this search asked and how many answered, across the lookup stage (sources asked whether an account exists for an identifier) and the platform stage (profiles read on each platform). A source that answered may have found nothing; one that did not answer failed or ran out of time.
+	Sources *ScreeningCoverageSources `json:"sources,omitzero"`
+	// How long this search's latest attempt took, stage by stage. started_at minus the investigation's creation is the time spent queued or retrying.
+	Timing *ScreeningCoverageTiming `json:"timing,omitzero"`
 }
 
 func (s ScreeningCoverage) MarshalJSON() ([]byte, error) {
@@ -103,4 +107,18 @@ func (s *ScreeningCoverage) GetNotSearched() []string {
 		return nil
 	}
 	return s.NotSearched
+}
+
+func (s *ScreeningCoverage) GetSources() *ScreeningCoverageSources {
+	if s == nil {
+		return nil
+	}
+	return s.Sources
+}
+
+func (s *ScreeningCoverage) GetTiming() *ScreeningCoverageTiming {
+	if s == nil {
+		return nil
+	}
+	return s.Timing
 }

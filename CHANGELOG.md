@@ -1,5 +1,18 @@
 # Changelog
 
+## 16.0.2
+
+* `Sdk.Groups.ListPeople()`:  `response.Items[].Coverage` **Changed**
+* `Sdk.Groups.GetPerson()`:  `response.Person.Coverage` **Changed**
+* `Sdk.Groups.ReviewPerson()`:  `response.Coverage` **Changed**
+* `Sdk.Groups.ExportPeople()`:  `response.Items[].Coverage` **Changed**
+* `Sdk.People.Get()`:  `response.EvidenceInvestigation.Coverage` **Changed**
+* `Sdk.Investigations.List()`:  `response.Items[].Coverage` **Changed**
+* `Sdk.Investigations.Create()`:  `response.Coverage` **Changed**
+* `Sdk.Investigations.Get()`:  `response.Investigation.Coverage` **Changed**
+* `Sdk.Investigations.Review()`:  `response.Coverage` **Changed**
+* `Sdk.Investigations.Cancel()`:  `response.Coverage` **Changed**
+
 ## 16.0.1
 
 No changes detected.
