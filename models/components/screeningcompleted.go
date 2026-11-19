@@ -14,7 +14,7 @@ type ScreeningCompleted struct {
 	Status ScreeningCompletedStatus `json:"status"`
 	// Why a partial or failed screening stopped before reaching everyone, as the screening resource says: expired, worker_attempts_exhausted, attempts_exhausted or screening_unavailable.
 	ErrorCode *string `json:"error_code,omitzero"`
-	// Every person the screening set out to reach: those no screening had reached and those on watch or escalated.
+	// Every person the screening set out to reach: those no screening had reached.
 	PeopleTotal int64 `json:"people_total"`
 	// People the screening covered, flagged or not.
 	PeopleScreened int64 `json:"people_screened"`

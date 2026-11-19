@@ -1109,7 +1109,7 @@ func (s *Investigations) Get(ctx context.Context, investigationID string, opts .
 }
 
 // Review - Record an investigation decision.
-// Record an investigation decision. The API key determines the workspace and environment.
+// Record an investigation decision. Deprecated: decisions are leaving people and groups. The console no longer records them and no screening reads them. This route is removed in the next contract release; stop calling it. The API key determines the workspace and environment.
 func (s *Investigations) Review(ctx context.Context, investigationID string, body components.PersonReviewRequest, opts ...operations.Option) (*operations.ReviewInvestigationResponse, error) {
 	request := operations.ReviewInvestigationRequest{
 		InvestigationID: investigationID,

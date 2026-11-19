@@ -4,7 +4,7 @@ import (
 	"github.com/noresponsehq/go/v16/internal/utils"
 )
 
-// ScreeningRequest - Screens the group's people no screening has reached and everyone on watch or escalated.
+// ScreeningRequest - Screens the group's people no screening has reached.
 type ScreeningRequest struct {
 	Depth ScreeningDepth `json:"depth"`
 	// The platforms to search. Leave it out for a full search: every platform a connector serves in the environment when the screening starts, which the screening then lists.

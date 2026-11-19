@@ -1,5 +1,9 @@
 # Changelog
 
+## 16.0.3
+
+No changes detected.
+
 ## 16.0.2
 
 * `Sdk.Groups.ListPeople()`:  `response.Items[].Coverage` **Changed**
