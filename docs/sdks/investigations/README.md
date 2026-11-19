@@ -99,9 +99,6 @@ func main() {
 
     res, err := s.Investigations.Create(ctx, "investigation-case-1042-first", components.InvestigationRequest{
         Depth: components.ScreeningDepthStandard,
-        Platforms: []string{
-            "x",
-        },
         PersonID: "per_01JA2Z8K6Q4V7W9XBCDEFGHJKM",
     })
     if err != nil {

@@ -939,9 +939,6 @@ func main() {
 
     res, err := s.Groups.StartScreening(ctx, "grp_01JA2Z8K6Q4V7W9XBCDEFGHJKM", "account-acct_7f3a9c", components.ScreeningRequest{
         Depth: components.ScreeningDepthStandard,
-        Platforms: []string{
-            "bluesky",
-        },
     })
     if err != nil {
         log.Fatal(err)

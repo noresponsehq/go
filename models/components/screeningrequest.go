@@ -7,7 +7,9 @@ import (
 // ScreeningRequest - Screens the group's people no screening has reached.
 type ScreeningRequest struct {
 	Depth ScreeningDepth `json:"depth"`
-	// The platforms to search. Leave it out for a full search: every platform a connector serves in the environment when the screening starts, which the screening then lists.
+	// Deprecated: leave it out. Without it the screening is a full search: every platform a connector serves in the environment when the screening starts, which the screening then lists, each searched only with the identifiers its connector takes. A list sent here still limits the screening until a later contract release removes the field.
+	//
+	// Deprecated: This will be removed in a future release, please migrate away from it as soon as possible.
 	Platforms []string `json:"platforms,omitzero"`
 }
 

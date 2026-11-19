@@ -14900,7 +14900,8 @@
               "description": "A platform a screening can cover, such as instagram, x, bluesky, youtube, tiktok or github. The screening registry owns the set: a request that names a platform it does not cover answers 422. A new platform adds an id without changing this contract, so read a platform you do not know in a response as one you have not seen before, not as an error. synthetic is the deterministic connector's own platform, for exercising the product end to end with no network.",
               "example": "x"
             },
-            "description": "The platforms to search. Leave it out for a full search: every platform a connector serves in the environment when the investigation starts, which the investigation then lists."
+            "description": "Deprecated: leave it out. Without it the investigation is a full search: every platform a connector serves in the environment when the investigation starts, which the investigation then lists, each searched only with the identifiers its connector takes. A list sent here still limits the investigation until a later contract release removes the field.",
+            "deprecated": true
           },
           "person_id": {
             "type": "string",
@@ -22464,7 +22465,8 @@
               "description": "A platform a screening can cover, such as instagram, x, bluesky, youtube, tiktok or github. The screening registry owns the set: a request that names a platform it does not cover answers 422. A new platform adds an id without changing this contract, so read a platform you do not know in a response as one you have not seen before, not as an error. synthetic is the deterministic connector's own platform, for exercising the product end to end with no network.",
               "example": "bluesky"
             },
-            "description": "The platforms to search. Leave it out for a full search: every platform a connector serves in the environment when the screening starts, which the screening then lists."
+            "description": "Deprecated: leave it out. Without it the screening is a full search: every platform a connector serves in the environment when the screening starts, which the screening then lists, each searched only with the identifiers its connector takes. A list sent here still limits the screening until a later contract release removes the field.",
+            "deprecated": true
           }
         },
         "description": "Screens the group's people no screening has reached."

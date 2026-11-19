@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: 25ddae46-795d-45f5-b455-3f48c41d440e
 management:
-  docChecksum: 390824e748f63e011024021b3ef725b8
+  docChecksum: 4bd2305089687188ea38abe82a11d9da
   docVersion: "1"
   speakeasyVersion: internal
   generationVersion: internal
-  releaseVersion: 16.0.6
-  configChecksum: 2632fc58df3c9306aab55fbdab69fd51
+  releaseVersion: 16.0.7
+  configChecksum: c0cbf0b6380fff350b96b3d094c5992e
 features:
   go:
     additionalDependencies: 0.1.0
@@ -453,7 +453,7 @@ trackedFiles:
   docs/models/components/investigationreport.md:
     last_write_checksum: sha1:77700006bc9ec972bd4982202438f18bee362322
   docs/models/components/investigationrequest.md:
-    last_write_checksum: sha1:5110be1c37c16a820ff1b160ea4b4ea1cef4de18
+    last_write_checksum: sha1:7be5cc70b15c36b645d2c2cd2846b700332fb860
   docs/models/components/investigationslist.md:
     last_write_checksum: sha1:bc456aac2129a347e673bf98e80d3420b4835ea9
   docs/models/components/investigationstatus.md:
@@ -923,7 +923,7 @@ trackedFiles:
   docs/models/components/screeningprofile.md:
     last_write_checksum: sha1:d07d73abc735b8ff7e9c143b363fc8de9bef55a0
   docs/models/components/screeningrequest.md:
-    last_write_checksum: sha1:375cb15c06dea7ca623c93b29420d3a2d07b70af
+    last_write_checksum: sha1:016a3aa11ff25a8d209cb60314873bc1984a3151
   docs/models/components/screeningspend.md:
     last_write_checksum: sha1:0712e55f392def48f5bbb433fa19588fd9369ae4
   docs/models/components/screeningspendline.md:
@@ -1605,11 +1605,11 @@ trackedFiles:
   docs/sdks/exports/README.md:
     last_write_checksum: sha1:3aaabd55ef03c7ca64cd01a3cf6e296d4de7f752
   docs/sdks/groups/README.md:
-    last_write_checksum: sha1:235462dd9ec5717f6b247b040a62a0121dfb6ee6
+    last_write_checksum: sha1:7703cd8533b7a39145e3cc08b4bacb8e151e72c2
   docs/sdks/integrations/README.md:
     last_write_checksum: sha1:21b007bf9c6f90f514d044b2cb3f6cacfe384bc9
   docs/sdks/investigations/README.md:
-    last_write_checksum: sha1:0ad03ab3f6e6bb88963222b4574f7f3aa0261f24
+    last_write_checksum: sha1:ed1cb8fbfbf7564c066b7223884ad1aeacedfa31
   docs/sdks/invites/README.md:
     last_write_checksum: sha1:d542fd8a4dc9c6a59c6872fc97eb753b7423f5b9
   docs/sdks/keys/README.md:
@@ -2083,7 +2083,7 @@ trackedFiles:
   models/components/investigationreport.go:
     last_write_checksum: sha1:f8e001875d0042b5d414755a956f28043fed9d7b
   models/components/investigationrequest.go:
-    last_write_checksum: sha1:a5f1e760321fc2c38ce458de40f0afbf377e1a18
+    last_write_checksum: sha1:1a4fa64a2cf2c7877b7f9e3fcc82b3dfaf11fb46
   models/components/investigationslist.go:
     last_write_checksum: sha1:f18bb732d2ca5f4f46ffdf7a542a70aeffc68345
   models/components/investigationstatus.go:
@@ -2511,7 +2511,7 @@ trackedFiles:
   models/components/screeningprofile.go:
     last_write_checksum: sha1:d0b352b8d02616870f0c5c9d8943b9e2cf3f5856
   models/components/screeningrequest.go:
-    last_write_checksum: sha1:54727685b3ce391e0a597f6dd1ba9a739c842df5
+    last_write_checksum: sha1:02a82979e6133b0dde3be030b5333d0233359f56
   models/components/screeningspend.go:
     last_write_checksum: sha1:b43eb2fe1286c7f132418f28fa4281f44ec5bf14
   models/components/screeningspendline.go:
@@ -2921,7 +2921,7 @@ trackedFiles:
   models/operations/updatesettings.go:
     last_write_checksum: sha1:a58363b2ba15f46734b564578ce3af917c7a43f0
   noresponse.go:
-    last_write_checksum: sha1:a0741d7400d93681934c0d4475dbbe629193d3d0
+    last_write_checksum: sha1:8a7e2c77f80d231cfb8f3040e75869601ea37a68
   operations.go:
     last_write_checksum: sha1:8b59db6e39569b9724b9094daa7afd90e6b2c57c
   optionalnullable/optionalnullable.go:
@@ -5591,7 +5591,7 @@ examples:
         header:
           Idempotency-Key: "account-acct_7f3a9c"
       requestBody:
-        application/json: {"depth": "standard", "platforms": ["bluesky"]}
+        application/json: {"depth": "standard"}
       responses:
         "202":
           application/json: {"id": "scn_01JA2Z8K6Q4V7W9XBCDEFGHJKM", "group_id": "grp_01JA2Z8K6Q4V7W9XBCDEFGHJKM", "environment": "live", "status": "running", "depth": "standard", "platforms": ["bluesky"], "requested_by": "user_2abc", "created_at": "2026-01-01T00:00:00Z", "started_at": "2026-01-01T00:00:00Z", "finished_at": "2026-01-02T00:00:00Z", "expires_at": "2026-01-02T00:00:00Z", "people_total": 592267, "people_done": 173751, "people_flagged": 250584, "people_failed": 772063, "people_partial": 825999, "estimated_spend": 343791, "spent": 379997, "spend": {"total_minor": 816908, "by_implementation": [{"implementation": "synthetic", "role": "collector", "spend_minor": 861627}]}, "error_code": "user_cancelled"}
@@ -5871,7 +5871,7 @@ examples:
         header:
           Idempotency-Key: "investigation-case-1042-first"
       requestBody:
-        application/json: {"depth": "standard", "platforms": ["x"], "person_id": "per_01JA2Z8K6Q4V7W9XBCDEFGHJKM"}
+        application/json: {"depth": "standard", "person_id": "per_01JA2Z8K6Q4V7W9XBCDEFGHJKM"}
       responses:
         "202":
           application/json: {"highest_band": null, "coverage": {"accounts_found": 353004, "accounts_accessible": 190010, "items_read": 392044, "period_from": "2026-01-01T00:00:00Z", "period_to": "2026-01-02T00:00:00Z", "platforms": [{"platform": "bluesky", "status": "inaccessible", "accounts_found": 63025, "items_read": 718618}], "not_searched": ["instagram"], "timing": {"started_at": "2026-01-01T00:00:00Z", "total_ms": 335147, "stages": [{"stage": "late_lookup", "ms": 496778}]}}, "spend": {"total_minor": 810936, "by_implementation": []}, "decision": "cleared", "decision_note": "Source records reviewed.", "decided_by": "user_investigator", "decided_at": "2026-01-01T00:00:00Z", "id": "inv_01JA2Z8K6Q4V7W9XBCDEFGHJKM", "person_id": "per_01JA2Z8K6Q4V7W9XBCDEFGHJKM", "group_id": "grp_01JA2Z8K6Q4V7W9XBCDEFGHJKM", "status": "partial", "depth": "standard", "platforms": ["x"], "match_state": "confirmed", "error_code": "expired", "created_at": "2026-01-01T00:00:00Z", "started_at": "2026-01-01T00:00:00Z", "finished_at": "2026-01-01T00:00:00Z", "expires_at": "2026-02-01T00:00:00Z", "deadline_at": "2026-01-01T00:00:00Z"}
