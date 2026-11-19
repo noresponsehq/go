@@ -14859,20 +14859,6 @@
             "$ref": "#/components/schemas/ScreeningDepth",
             "description": "standard reads the bio and the last 100 posts of each profile."
           },
-          "platforms": {
-            "type": "array",
-            "minItems": 1,
-            "maxItems": 20000,
-            "uniqueItems": true,
-            "items": {
-              "type": "string",
-              "pattern": "^[a-z][a-z0-9_]{0,63}$",
-              "description": "A platform a screening can cover, such as instagram, x, bluesky, youtube, tiktok or github. The screening registry owns the set: a request that names a platform it does not cover answers 422. A new platform adds an id without changing this contract, so read a platform you do not know in a response as one you have not seen before, not as an error. synthetic is the deterministic connector's own platform, for exercising the product end to end with no network.",
-              "example": "x"
-            },
-            "description": "Deprecated: leave it out. Without it the investigation is a full search: every platform a connector serves in the environment when the investigation starts, which the investigation then lists, each searched only with the identifiers its connector takes. A list sent here still limits the investigation until a later contract release removes the field.",
-            "deprecated": true
-          },
           "person_id": {
             "type": "string",
             "pattern": "^per_[0-7][0-9A-HJKMNP-TV-Z]{25}$",
@@ -17755,7 +17741,7 @@
             "example": "Jane Analyst"
           }
         },
-        "description": "The person's rerun schedule. Each due run starts a full investigation of the person, as POST /v1/investigations with no platforms does, and its changes are stored as changes. The schedule lives in the database and the worker runs it, so it survives restarts and releases; each due run starts exactly one investigation."
+        "description": "The person's rerun schedule. Each due run starts a full investigation of the person, as POST /v1/investigations does, and its changes are stored as changes. The schedule lives in the database and the worker runs it, so it survives restarts and releases; each due run starts exactly one investigation."
       },
       "PersonScheduleRequest": {
         "type": "object",
@@ -22162,20 +22148,6 @@
           "depth": {
             "$ref": "#/components/schemas/ScreeningDepth",
             "description": "standard reads the bio and the last 100 posts of each profile."
-          },
-          "platforms": {
-            "type": "array",
-            "minItems": 1,
-            "maxItems": 20000,
-            "uniqueItems": true,
-            "items": {
-              "type": "string",
-              "pattern": "^[a-z][a-z0-9_]{0,63}$",
-              "description": "A platform a screening can cover, such as instagram, x, bluesky, youtube, tiktok or github. The screening registry owns the set: a request that names a platform it does not cover answers 422. A new platform adds an id without changing this contract, so read a platform you do not know in a response as one you have not seen before, not as an error. synthetic is the deterministic connector's own platform, for exercising the product end to end with no network.",
-              "example": "bluesky"
-            },
-            "description": "Deprecated: leave it out. Without it the screening is a full search: every platform a connector serves in the environment when the screening starts, which the screening then lists, each searched only with the identifiers its connector takes. A list sent here still limits the screening until a later contract release removes the field.",
-            "deprecated": true
           }
         },
         "description": "Screens the group's people no screening has reached."

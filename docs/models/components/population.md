@@ -6,7 +6,7 @@ first_answers uses anonymous counters that can include erased detail. retained_f
 
 ```go
 import (
-	"github.com/noresponsehq/go/v18/models/components"
+	"github.com/noresponsehq/go/v19/models/components"
 )
 
 value := components.PopulationFirstAnswers

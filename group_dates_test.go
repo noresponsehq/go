@@ -2,8 +2,8 @@ package noresponse
 
 import (
 	"encoding/json"
-	"github.com/noresponsehq/go/v18/models/components"
-	"github.com/noresponsehq/go/v18/optionalnullable"
+	"github.com/noresponsehq/go/v19/models/components"
+	"github.com/noresponsehq/go/v19/optionalnullable"
 	"reflect"
 	"testing"
 )

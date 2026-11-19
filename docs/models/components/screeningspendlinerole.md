@@ -6,7 +6,7 @@ What the implementation did. analyser appears only on spend recorded before the 
 
 ```go
 import (
-	"github.com/noresponsehq/go/v18/models/components"
+	"github.com/noresponsehq/go/v19/models/components"
 )
 
 value := components.ScreeningSpendLineRoleResolver

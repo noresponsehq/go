@@ -6,7 +6,7 @@ Who is in the table: site_breach, a site's own users; credential_list, a comboli
 
 ```go
 import (
-	"github.com/noresponsehq/go/v18/models/components"
+	"github.com/noresponsehq/go/v19/models/components"
 )
 
 value := components.BreachKindSiteBreach

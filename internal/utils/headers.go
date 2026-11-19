@@ -9,8 +9,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/noresponsehq/go/v18/optionalnullable"
-	"github.com/noresponsehq/go/v18/types"
+	"github.com/noresponsehq/go/v19/optionalnullable"
+	"github.com/noresponsehq/go/v19/types"
 )
 
 func PopulateHeaders(_ context.Context, req *http.Request, headers interface{}, globals interface{}) {

@@ -1,7 +1,7 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v18/internal/utils"
+	"github.com/noresponsehq/go/v19/internal/utils"
 )
 
 // Person - A person and where their screening and review stand.

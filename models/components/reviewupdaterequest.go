@@ -1,7 +1,7 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v18/optionalnullable"
+	"github.com/noresponsehq/go/v19/optionalnullable"
 )
 
 type ReviewUpdateRequest struct {

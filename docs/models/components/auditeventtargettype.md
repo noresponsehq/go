@@ -6,7 +6,7 @@ The kind of resource the change acted on.
 
 ```go
 import (
-	"github.com/noresponsehq/go/v18/models/components"
+	"github.com/noresponsehq/go/v19/models/components"
 )
 
 value := components.AuditEventTargetTypeWorkspace

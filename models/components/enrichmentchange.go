@@ -3,8 +3,8 @@ package components
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/noresponsehq/go/v18/internal/utils"
-	"github.com/noresponsehq/go/v18/optionalnullable"
+	"github.com/noresponsehq/go/v19/internal/utils"
+	"github.com/noresponsehq/go/v19/optionalnullable"
 )
 
 type EnrichmentChangeKind string

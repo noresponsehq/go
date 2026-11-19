@@ -6,7 +6,7 @@ name_gender is the records' gender against the submitted first name's usual one.
 
 ```go
 import (
-	"github.com/noresponsehq/go/v18/models/components"
+	"github.com/noresponsehq/go/v19/models/components"
 )
 
 value := components.AttributeBirthDate

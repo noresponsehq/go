@@ -1,8 +1,8 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v18/internal/utils"
-	"github.com/noresponsehq/go/v18/optionalnullable"
+	"github.com/noresponsehq/go/v19/internal/utils"
+	"github.com/noresponsehq/go/v19/optionalnullable"
 )
 
 // GroupRequest - Creates an ongoing group or an event with optional dates.

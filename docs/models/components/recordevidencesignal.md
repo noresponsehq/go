@@ -6,7 +6,7 @@ found_by: what found the record, which sets where its likelihood starts. agrees:
 
 ```go
 import (
-	"github.com/noresponsehq/go/v18/models/components"
+	"github.com/noresponsehq/go/v19/models/components"
 )
 
 value := components.RecordEvidenceSignalFoundBy

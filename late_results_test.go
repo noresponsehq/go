@@ -24,7 +24,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/noresponsehq/go/v18/models/components"
+	"github.com/noresponsehq/go/v19/models/components"
 )
 
 type lateExchange struct {

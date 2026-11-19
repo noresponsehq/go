@@ -2,7 +2,7 @@ package operations
 
 import (
 	"fmt"
-	"github.com/noresponsehq/go/v18/internal/utils"
+	"github.com/noresponsehq/go/v19/internal/utils"
 )
 
 const (
