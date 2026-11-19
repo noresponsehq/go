@@ -14823,7 +14823,7 @@
         "properties": {
           "profiles": {
             "type": "array",
-            "maxItems": 100,
+            "maxItems": 100000,
             "items": {
               "$ref": "#/components/schemas/ScreeningProfile"
             },
@@ -17656,7 +17656,7 @@
           },
           "profiles": {
             "type": "array",
-            "maxItems": 100,
+            "maxItems": 100000,
             "items": {
               "$ref": "#/components/schemas/ScreeningProfile"
             },
@@ -21515,12 +21515,12 @@
           "accounts_found": {
             "type": "integer",
             "minimum": 0,
-            "maximum": 100
+            "maximum": 100000
           },
           "accounts_accessible": {
             "type": "integer",
             "minimum": 0,
-            "maximum": 100
+            "maximum": 100000
           },
           "items_read": {
             "type": "integer",
@@ -22167,7 +22167,8 @@
           "accounts_found": {
             "type": "integer",
             "minimum": 0,
-            "maximum": 100
+            "maximum": 5,
+            "description": "Accounts found on the platform: at most 5, the best candidates the search kept."
           },
           "items_read": {
             "type": "integer",
@@ -24336,7 +24337,7 @@
           },
           "profiles": {
             "type": "array",
-            "maxItems": 100,
+            "maxItems": 100000,
             "items": {
               "$ref": "#/components/schemas/ScreeningProfile"
             },

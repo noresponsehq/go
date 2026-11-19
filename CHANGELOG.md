@@ -1,5 +1,9 @@
 # Changelog
 
+## 16.0.6
+
+No changes detected.
+
 ## 16.0.5
 
 * `Sdk.Groups.GetPerson()`:  `response.Lookup.Answers` **Added**
