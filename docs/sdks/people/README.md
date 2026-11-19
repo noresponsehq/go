@@ -14,6 +14,7 @@ Workspace people, submitted identity, source evidence and expiry.
 * [StartSearch](#startsearch) - Search again on a value of one of a workspace person's records.
 * [RunSearch](#runsearch) - Run a counted password or hash search on a workspace person.
 * [ReviewChange](#reviewchange) - Mark a change on a workspace person reviewed.
+* [Schedule](#schedule) - Schedule a workspace person's reruns.
 
 ## List
 
@@ -491,6 +492,68 @@ func main() {
 ### Response
 
 **[*operations.ReviewWorkspacePersonChangeResponse](../../models/operations/reviewworkspacepersonchangeresponse.md), error**
+
+### Errors
+
+| Error Type                      | Status Code                     | Content Type                    |
+| ------------------------------- | ------------------------------- | ------------------------------- |
+| apierrors.BadRequestError       | 400                             | application/problem+json        |
+| apierrors.AuthenticationError   | 401                             | application/problem+json        |
+| apierrors.PermissionDeniedError | 403                             | application/problem+json        |
+| apierrors.NotFoundError         | 404                             | application/problem+json        |
+| apierrors.ConflictError         | 409                             | application/problem+json        |
+| apierrors.RateLimitError        | 429                             | application/problem+json        |
+| apierrors.APIStatusError        | 4XX, 5XX                        | \*/\*                           |
+
+## Schedule
+
+Sets how often the person is investigated again: daily, weekly or monthly, counted from now, or off. Each due run starts one full investigation of the person, which the person's investigations list and whose changes the person report stores. Setting the period the schedule already has keeps its next run. The schedule lives in the database and the worker runs it, so a restart or a release neither skips nor repeats a run. Each change is audited as person.schedule_changed. The investigations scope grants this operation. The groups scope is also accepted for existing integrations. The API key selects the workspace and environment.
+
+### Example Usage
+
+<!-- UsageSnippet language="go" operationID="scheduleWorkspacePerson" method="post" path="/v1/people/{person_id}/schedule" -->
+```go
+package main
+
+import(
+	"context"
+	"os"
+	noresponse "github.com/noresponsehq/go/v17"
+	"github.com/noresponsehq/go/v17/models/components"
+	"log"
+)
+
+func main() {
+    ctx := context.Background()
+
+    s := noresponse.New(
+        noresponse.WithSecurity(os.Getenv("NORESPONSE_API_KEY")),
+    )
+
+    res, err := s.People.Schedule(ctx, "per_01JA2Z8K6Q4V7W9XBCDEFGHJKM", components.PersonScheduleRequest{
+        Period: components.SchedulePeriodWeekly,
+    })
+    if err != nil {
+        log.Fatal(err)
+    }
+    if res != nil {
+        // handle response
+    }
+}
+```
+
+### Parameters
+
+| Parameter                                                                            | Type                                                                                 | Required                                                                             | Description                                                                          | Example                                                                              |
+| ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ |
+| `ctx`                                                                                | [context.Context](https://pkg.go.dev/context#Context)                                | :heavy_check_mark:                                                                   | The context to use for the request.                                                  |                                                                                      |
+| `personID`                                                                           | `string`                                                                             | :heavy_check_mark:                                                                   | N/A                                                                                  | per_01JA2Z8K6Q4V7W9XBCDEFGHJKM                                                       |
+| `body`                                                                               | [components.PersonScheduleRequest](../../models/components/personschedulerequest.md) | :heavy_check_mark:                                                                   | N/A                                                                                  |                                                                                      |
+| `opts`                                                                               | [][operations.Option](../../models/operations/option.md)                             | :heavy_minus_sign:                                                                   | The options for this request.                                                        |                                                                                      |
+
+### Response
+
+**[*operations.ScheduleWorkspacePersonResponse](../../models/operations/scheduleworkspacepersonresponse.md), error**
 
 ### Errors
 

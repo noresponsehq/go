@@ -1,5 +1,10 @@
 # Changelog
 
+## 17.0.2
+
+* `Sdk.People.Schedule()`: **Added**
+* `Sdk.People.Get()`:  `response.Schedule` **Added**
+
 ## 17.0.1
 
 * `Sdk.Groups.GetPerson()`:  `response.Profiles[].Record` **Changed**

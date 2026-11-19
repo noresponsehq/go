@@ -8558,6 +8558,61 @@
           }
         ]
       }
+    },
+    "/v1/people/{person_id}/schedule": {
+      "post": {
+        "operationId": "scheduleWorkspacePerson",
+        "x-noresponse-group": "people",
+        "x-noresponse-name-override": "schedule",
+        "tags": [
+          "people"
+        ],
+        "summary": "Schedule a workspace person's reruns.",
+        "description": "Sets how often the person is investigated again: daily, weekly or monthly, counted from now, or off. Each due run starts one full investigation of the person, which the person's investigations list and whose changes the person report stores. Setting the period the schedule already has keeps its next run. The schedule lives in the database and the worker runs it, so a restart or a release neither skips nor repeats a run. Each change is audited as person.schedule_changed. The investigations scope grants this operation. The groups scope is also accepted for existing integrations. The API key selects the workspace and environment.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PersonId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PersonScheduleRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/PersonScheduled"
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidGroupRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ControlForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/WorkspaceNotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/IdempotencyConflict"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        },
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -15716,6 +15771,14 @@
         ],
         "description": "An evidence lane: accounts (account presence for email and username), phone, breach, domain (the email domain's registration) and ip."
       },
+      "LastError": {
+        "enum": [
+          "screening_cap_exceeded",
+          "screening_unavailable",
+          "person_not_found",
+          "idempotency_key_reused"
+        ]
+      },
       "LineType": {
         "enum": [
           "mobile",
@@ -17841,6 +17904,81 @@
           "press"
         ],
         "description": "The person's role in the group: guest (a ticket holder), crew, vendor or press. Leave it out when you do not know it: a person without one has no role, not guest. A later row naming the same person replaces it, and a change of role alone keeps the person's screening results."
+      },
+      "PersonSchedule": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "period",
+          "next_run_at",
+          "last_investigation_id",
+          "last_error",
+          "updated_at",
+          "updated_by"
+        ],
+        "properties": {
+          "period": {
+            "$ref": "#/components/schemas/SchedulePeriod"
+          },
+          "next_run_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "When the next scheduled investigation starts, within a minute. null when the schedule is off.",
+            "example": "2026-01-03T00:00:00Z"
+          },
+          "last_investigation_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^inv_[0-9A-HJKMNP-TV-Z]{26}$",
+            "description": "The investigation the schedule last started. null before its first run.",
+            "example": "inv_01JA2Z8K6Q4V7W9XBCDEFGHJKN"
+          },
+          "last_error": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/LastError"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Why the last due run started no investigation, as the problem code its start would have answered. null when the last due run started one, or none has come due. A run that started none is not retried: the schedule moves to its next period."
+          },
+          "updated_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "example": "2026-01-02T00:00:00Z"
+          },
+          "updated_by": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 200,
+            "description": "Who last set the schedule.",
+            "example": "Jane Analyst"
+          }
+        },
+        "description": "The person's rerun schedule. Each due run starts a full investigation of the person, as POST /v1/investigations with no platforms does, and its changes are stored as changes. The schedule lives in the database and the worker runs it, so it survives restarts and releases; each due run starts exactly one investigation."
+      },
+      "PersonScheduleRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "period"
+        ],
+        "properties": {
+          "period": {
+            "$ref": "#/components/schemas/SchedulePeriod"
+          }
+        },
+        "description": "The schedule to set."
       },
       "PhoneEnrichment": {
         "type": "object",
@@ -21326,6 +21464,15 @@
         ],
         "description": "A built-in capability set. Specialist roles are independent; effective access is returned by GET /v1/workspaces/{workspace_id}/capabilities."
       },
+      "SchedulePeriod": {
+        "enum": [
+          "daily",
+          "weekly",
+          "monthly",
+          "off"
+        ],
+        "description": "How often the person is investigated again: daily, weekly or monthly, counted from when the schedule was set; off runs no scheduled investigation."
+      },
       "Scope": {
         "type": "string",
         "enum": [
@@ -24378,7 +24525,8 @@
           "evidence_investigation",
           "written_profile",
           "suggested_searches",
-          "changes"
+          "changes",
+          "schedule"
         ],
         "properties": {
           "external_id": {
@@ -24547,6 +24695,9 @@
               "$ref": "#/components/schemas/PersonChange"
             },
             "description": "What changed between each settled investigation of this person and the one before it, unreviewed first, then most significant, then newest. The first investigation records no changes. When evidence.read is denied, before and after are withheld."
+          },
+          "schedule": {
+            "$ref": "#/components/schemas/PersonSchedule"
           }
         }
       },
@@ -33559,6 +33710,34 @@
           "application/json": {
             "schema": {
               "$ref": "#/components/schemas/PersonChange"
+            }
+          }
+        }
+      },
+      "PersonScheduled": {
+        "description": "The person's schedule as set.",
+        "headers": {
+          "Cache-Control": {
+            "schema": {
+              "type": "string",
+              "const": "no-store"
+            },
+            "required": true
+          },
+          "X-Request-ID": {
+            "description": "The request correlation id, 32 lowercase hexadecimal characters.",
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{32}$",
+              "example": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c"
+            },
+            "required": true
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/PersonSchedule"
             }
           }
         }
