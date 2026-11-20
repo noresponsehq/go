@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: 25ddae46-795d-45f5-b455-3f48c41d440e
 management:
-  docChecksum: a8c4aae0329e12b144564bc9b8a3c301
+  docChecksum: 9eede78046f73caafee67e412a494488
   docVersion: "1"
   speakeasyVersion: internal
   generationVersion: internal
-  releaseVersion: 19.0.2
-  configChecksum: ac6c01f5e3f3ce1529d8b11c86eabd51
+  releaseVersion: 19.0.3
+  configChecksum: f9d97a90c87cdd21370740856e68bc34
 features:
   go:
     additionalDependencies: 0.1.0
@@ -1585,7 +1585,7 @@ trackedFiles:
   docs/sdks/exports/README.md:
     last_write_checksum: sha1:a49a04ea69c9eb358aeca3910c7903def37c06b3
   docs/sdks/groups/README.md:
-    last_write_checksum: sha1:0d662ca10b84ecf3a739ed694713097defaf09dd
+    last_write_checksum: sha1:7d6b123cde92f17f8ab94818bcde80e2912a827c
   docs/sdks/integrations/README.md:
     last_write_checksum: sha1:9ab7fb7ec3d79b9b02c28effb26c454ad979804d
   docs/sdks/investigations/README.md:
@@ -1623,7 +1623,7 @@ trackedFiles:
   go.mod:
     last_write_checksum: sha1:514f23c7043c047d76f55fd17753b5696fa405c7
   groups.go:
-    last_write_checksum: sha1:32b27f0d867d9d489c20cf79d50c8cd626240ac8
+    last_write_checksum: sha1:b45a2ae25d293bd54912e020cd89b5810adf7cbb
   integrations.go:
     last_write_checksum: sha1:2937ed25f937dfc08d98fc7332eaef9f5643b00c
   internal/config/sdkconfiguration.go:
@@ -2877,7 +2877,7 @@ trackedFiles:
   models/operations/updatesettings.go:
     last_write_checksum: sha1:5ce8a7c43e874f59405d1db75f2690793ffe5e89
   noresponse.go:
-    last_write_checksum: sha1:907276f7eced3b1abc39416715b71f0eebb4d59f
+    last_write_checksum: sha1:87277cb6025cd4a141fa275f63c0e1207e853499
   operations.go:
     last_write_checksum: sha1:cfb21d9ae831a231ec18fc58da406dd23951adaf
   optionalnullable/optionalnullable.go:
