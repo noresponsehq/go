@@ -9,6 +9,10 @@ import (
 type GroupRequest struct {
 	// The group's name.
 	Name string `json:"name"`
+	// What the group's people share: an event, an organisation, a place or another attribute.
+	Type *GroupType `json:"type,omitzero"`
+	// The attribute its people share, such as the employer's or the place's name.
+	Attribute *string `json:"attribute,omitzero"`
 	// Optional event start; null for an ongoing group.
 	StartsAt optionalnullable.OptionalNullable[string] `json:"starts_at,omitzero"`
 	// Optional event end; requires starts_at and must be at or after it. Null when no end is set.
@@ -39,6 +43,20 @@ func (g *GroupRequest) GetName() string {
 		return ""
 	}
 	return g.Name
+}
+
+func (g *GroupRequest) GetType() *GroupType {
+	if g == nil {
+		return nil
+	}
+	return g.Type
+}
+
+func (g *GroupRequest) GetAttribute() *string {
+	if g == nil {
+		return nil
+	}
+	return g.Attribute
 }
 
 func (g *GroupRequest) GetStartsAt() optionalnullable.OptionalNullable[string] {

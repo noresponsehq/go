@@ -98,8 +98,8 @@ import(
 	"context"
 	"os"
 	noresponse "github.com/noresponsehq/go/v19"
-	"github.com/noresponsehq/go/v19/optionalnullable"
 	"github.com/noresponsehq/go/v19/models/components"
+	"github.com/noresponsehq/go/v19/optionalnullable"
 	"github.com/noresponsehq/go/v19/models/operations"
 	"log"
 )
@@ -113,6 +113,8 @@ func main() {
 
     res, err := s.Groups.Create(ctx, components.GroupRequest{
         Name: "Annual shareholder meeting",
+        Type: components.GroupTypeOrganisation.ToPointer(),
+        Attribute: noresponse.Pointer("Example Fund"),
         StartsAt: optionalnullable.From(noresponse.Pointer("2026-01-01T00:00:00Z")),
         EndsAt: optionalnullable.From(noresponse.Pointer("2026-01-02T00:00:00Z")),
         Venue: noresponse.Pointer("Example Convention Centre"),
@@ -248,6 +250,7 @@ func main() {
 
     res, err := s.Groups.Update(ctx, "grp_01JA2Z8K6Q4V7W9XBCDEFGHJKM", components.GroupUpdate{
         Name: noresponse.Pointer("Annual shareholder meeting"),
+        Attribute: noresponse.Pointer("Example Fund"),
         StartsAt: optionalnullable.From(noresponse.Pointer("2026-01-01T00:00:00Z")),
         EndsAt: optionalnullable.From(noresponse.Pointer("2026-01-02T00:00:00Z")),
         Venue: noresponse.Pointer("Example Convention Centre"),

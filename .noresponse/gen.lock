@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: 25ddae46-795d-45f5-b455-3f48c41d440e
 management:
-  docChecksum: 9eede78046f73caafee67e412a494488
+  docChecksum: 5b70a6063ba80e07eec65e1ae5ecd852
   docVersion: "1"
   speakeasyVersion: internal
   generationVersion: internal
-  releaseVersion: 19.0.3
-  configChecksum: f9d97a90c87cdd21370740856e68bc34
+  releaseVersion: 19.0.4
+  configChecksum: 731539b6c6a3654faabdbc028ab28a82
 features:
   go:
     additionalDependencies: 0.1.0
@@ -381,13 +381,15 @@ trackedFiles:
   docs/models/components/from.md:
     last_write_checksum: sha1:e33bf44946addc8018001c9c44df09f45361ebc0
   docs/models/components/group.md:
-    last_write_checksum: sha1:236db03625ff58734465c2e0847710345468947c
+    last_write_checksum: sha1:5b0a2fbabe3dc124869131455fcca2ff97574277
   docs/models/components/grouplist.md:
     last_write_checksum: sha1:7218fd7e49c75efd8a28e8cc0191830e1e57f8dd
   docs/models/components/grouprequest.md:
-    last_write_checksum: sha1:14850b167d4642cb14149bfe22fad9bc752b1c64
+    last_write_checksum: sha1:5fb2e75691712ae0db209c27d4d4b6b707a3aebc
+  docs/models/components/grouptype.md:
+    last_write_checksum: sha1:2280eed6b9ec7bb03207a6d141e32d5af473edd3
   docs/models/components/groupupdate.md:
-    last_write_checksum: sha1:21a7094c77e752612048e8e046533e2dce56b541
+    last_write_checksum: sha1:fe933ee7ad414c7df7c35f347d324d6d715dde7f
   docs/models/components/handle.md:
     last_write_checksum: sha1:30562918ca8f10fd3cda59dcddb9b7c23805c748
   docs/models/components/hookpoint.md:
@@ -1585,7 +1587,7 @@ trackedFiles:
   docs/sdks/exports/README.md:
     last_write_checksum: sha1:a49a04ea69c9eb358aeca3910c7903def37c06b3
   docs/sdks/groups/README.md:
-    last_write_checksum: sha1:7d6b123cde92f17f8ab94818bcde80e2912a827c
+    last_write_checksum: sha1:5068b23b08273903c37a2c8b4c25feab872b9eb6
   docs/sdks/integrations/README.md:
     last_write_checksum: sha1:9ab7fb7ec3d79b9b02c28effb26c454ad979804d
   docs/sdks/investigations/README.md:
@@ -1989,13 +1991,15 @@ trackedFiles:
   models/components/from.go:
     last_write_checksum: sha1:49cd194424eabfd4d5d97ff800fc175fd5aaf68b
   models/components/group.go:
-    last_write_checksum: sha1:17f63317df230743168640a4937c2a06fa32bffd
+    last_write_checksum: sha1:43babff961fe31dee61c3ad8f11263737b47c3bd
   models/components/grouplist.go:
     last_write_checksum: sha1:37f5db2874ee1771eed1bdf293e7c737e1a61858
   models/components/grouprequest.go:
-    last_write_checksum: sha1:0421912bb5606658a3b4f54bce20b4cce5267369
+    last_write_checksum: sha1:56bfc4d0071b4c71d832c94c83a07e61dd44d916
+  models/components/grouptype.go:
+    last_write_checksum: sha1:f5176c76bde5cd9b335ffb8ea3e4dabb74d6ea0b
   models/components/groupupdate.go:
-    last_write_checksum: sha1:98949ee981e1e1c4254d0688dc5803d1ac4070b3
+    last_write_checksum: sha1:df922da5ea942d5cd165c631cedc69519c297d67
   models/components/handle.go:
     last_write_checksum: sha1:ea67d89fe5681f49a6f4824937e7ba9305db0cbf
   models/components/hookpoint.go:
@@ -2877,7 +2881,7 @@ trackedFiles:
   models/operations/updatesettings.go:
     last_write_checksum: sha1:5ce8a7c43e874f59405d1db75f2690793ffe5e89
   noresponse.go:
-    last_write_checksum: sha1:87277cb6025cd4a141fa275f63c0e1207e853499
+    last_write_checksum: sha1:b508d7dac6627aa587f564cf4fbf572410dc60a7
   operations.go:
     last_write_checksum: sha1:cfb21d9ae831a231ec18fc58da406dd23951adaf
   optionalnullable/optionalnullable.go:
@@ -5253,7 +5257,7 @@ examples:
           limit: 20
       responses:
         "200":
-          application/json: {"items": [{"id": "grp_01JA2Z8K6Q4V7W9XBCDEFGHJKM", "environment": "live", "name": "Annual shareholder meeting", "starts_at": "2026-01-01T00:00:00Z", "ends_at": "2026-01-02T00:00:00Z", "venue": "Example Convention Centre", "host": "Example Holdings", "principals": [{"name": "Alex Principal", "aliases": ["Alex P"]}], "topics": ["executive pay"], "people": 82281, "version": 851091, "created_by": "user_2abc", "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z"}], "next_before": "grp_01JA2Z8K6Q4V7W9XBCDEFGHJKM"}
+          application/json: {"items": [{"id": "grp_01JA2Z8K6Q4V7W9XBCDEFGHJKM", "environment": "live", "name": "Annual shareholder meeting", "type": "organisation", "attribute": "Example Fund", "starts_at": "2026-01-01T00:00:00Z", "ends_at": "2026-01-02T00:00:00Z", "venue": "Example Convention Centre", "host": "Example Holdings", "principals": [{"name": "Alex Principal", "aliases": ["Alex P"]}], "topics": ["executive pay"], "people": 82281, "version": 851091, "created_by": "user_2abc", "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z"}], "next_before": "grp_01JA2Z8K6Q4V7W9XBCDEFGHJKM"}
         "400":
           application/problem+json: {"type": "https://docs.noresponse.org/errors/invalid_request", "title": "Invalid request", "status": 400, "detail": "identifiers: at least one of email, username or phone is required.", "instance": "/v1/assessments", "code": "invalid_request", "request_id": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c", "invalid_params": [{"field": "identifiers", "reason": "at least one of email, username or phone is required", "example": "new.user@example.com"}]}
         "401":
@@ -5272,10 +5276,10 @@ examples:
         header:
           Idempotency-Key: "request-01JA2Z8K6Q4V7W9XBCDEFGHJKM"
       requestBody:
-        application/json: {"name": "Annual shareholder meeting", "starts_at": "2026-01-01T00:00:00Z", "ends_at": "2026-01-02T00:00:00Z", "venue": "Example Convention Centre", "host": "Example Holdings", "principals": [{"name": "Alex Principal", "aliases": ["Alex P"]}], "topics": ["executive pay"]}
+        application/json: {"name": "Annual shareholder meeting", "type": "organisation", "attribute": "Example Fund", "starts_at": "2026-01-01T00:00:00Z", "ends_at": "2026-01-02T00:00:00Z", "venue": "Example Convention Centre", "host": "Example Holdings", "principals": [{"name": "Alex Principal", "aliases": ["Alex P"]}], "topics": ["executive pay"]}
       responses:
         "201":
-          application/json: {"id": "grp_01JA2Z8K6Q4V7W9XBCDEFGHJKM", "environment": "live", "name": "Annual shareholder meeting", "starts_at": "2026-01-01T00:00:00Z", "ends_at": "2026-01-02T00:00:00Z", "venue": "Example Convention Centre", "host": "Example Holdings", "principals": [{"name": "Alex Principal", "aliases": ["Alex P"]}], "topics": ["executive pay"], "people": 683531, "version": 926347, "created_by": "user_2abc", "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z"}
+          application/json: {"id": "grp_01JA2Z8K6Q4V7W9XBCDEFGHJKM", "environment": "live", "name": "Annual shareholder meeting", "type": "organisation", "attribute": "Example Fund", "starts_at": "2026-01-01T00:00:00Z", "ends_at": "2026-01-02T00:00:00Z", "venue": "Example Convention Centre", "host": "Example Holdings", "principals": [{"name": "Alex Principal", "aliases": ["Alex P"]}], "topics": ["executive pay"], "people": 683531, "version": 926347, "created_by": "user_2abc", "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z"}
         "400":
           application/problem+json: {"type": "https://docs.noresponse.org/errors/invalid_request", "title": "Invalid request", "status": 400, "detail": "identifiers: at least one of email, username or phone is required.", "instance": "/v1/assessments", "code": "invalid_idempotency_key", "request_id": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c", "invalid_params": [{"field": "identifiers", "reason": "at least one of email, username or phone is required", "example": "new.user@example.com"}]}
         "401":
@@ -5295,7 +5299,7 @@ examples:
           group_id: "grp_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
       responses:
         "200":
-          application/json: {"id": "grp_01JA2Z8K6Q4V7W9XBCDEFGHJKM", "environment": "live", "name": "Annual shareholder meeting", "starts_at": "2026-01-01T00:00:00Z", "ends_at": "2026-01-02T00:00:00Z", "venue": "Example Convention Centre", "host": "Example Holdings", "principals": [{"name": "Alex Principal", "aliases": ["Alex P"]}], "topics": ["executive pay"], "people": 701812, "version": 550731, "created_by": "user_2abc", "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z"}
+          application/json: {"id": "grp_01JA2Z8K6Q4V7W9XBCDEFGHJKM", "environment": "live", "name": "Annual shareholder meeting", "type": "organisation", "attribute": "Example Fund", "starts_at": "2026-01-01T00:00:00Z", "ends_at": "2026-01-02T00:00:00Z", "venue": "Example Convention Centre", "host": "Example Holdings", "principals": [{"name": "Alex Principal", "aliases": ["Alex P"]}], "topics": ["executive pay"], "people": 701812, "version": 550731, "created_by": "user_2abc", "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z"}
         "400":
           application/problem+json: {"type": "https://docs.noresponse.org/errors/invalid_request", "title": "Invalid request", "status": 400, "detail": "identifiers: at least one of email, username or phone is required.", "instance": "/v1/assessments", "code": "invalid_idempotency_key", "request_id": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c", "invalid_params": [{"field": "identifiers", "reason": "at least one of email, username or phone is required", "example": "new.user@example.com"}]}
         "401":
@@ -5314,10 +5318,10 @@ examples:
         path:
           group_id: "grp_01JA2Z8K6Q4V7W9XBCDEFGHJKM"
       requestBody:
-        application/json: {"name": "Annual shareholder meeting", "starts_at": "2026-01-01T00:00:00Z", "ends_at": "2026-01-02T00:00:00Z", "venue": "Example Convention Centre", "host": "Example Holdings", "principals": [{"name": "Alex Principal", "aliases": ["Alex P"]}], "topics": ["executive pay"]}
+        application/json: {"name": "Annual shareholder meeting", "attribute": "Example Fund", "starts_at": "2026-01-01T00:00:00Z", "ends_at": "2026-01-02T00:00:00Z", "venue": "Example Convention Centre", "host": "Example Holdings", "principals": [{"name": "Alex Principal", "aliases": ["Alex P"]}], "topics": ["executive pay"]}
       responses:
         "200":
-          application/json: {"id": "grp_01JA2Z8K6Q4V7W9XBCDEFGHJKM", "environment": "test", "name": "Annual shareholder meeting", "starts_at": "2026-01-01T00:00:00Z", "ends_at": "2026-01-02T00:00:00Z", "venue": "Example Convention Centre", "host": "Example Holdings", "principals": [{"name": "Alex Principal", "aliases": ["Alex P"]}], "topics": ["executive pay"], "people": 633815, "version": 179429, "created_by": "user_2abc", "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z"}
+          application/json: {"id": "grp_01JA2Z8K6Q4V7W9XBCDEFGHJKM", "environment": "test", "name": "Annual shareholder meeting", "type": "organisation", "attribute": "Example Fund", "starts_at": "2026-01-01T00:00:00Z", "ends_at": "2026-01-02T00:00:00Z", "venue": "Example Convention Centre", "host": "Example Holdings", "principals": [{"name": "Alex Principal", "aliases": ["Alex P"]}], "topics": ["executive pay"], "people": 633815, "version": 179429, "created_by": "user_2abc", "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z"}
         "400":
           application/problem+json: {"type": "https://docs.noresponse.org/errors/invalid_request", "title": "Invalid request", "status": 400, "detail": "identifiers: at least one of email, username or phone is required.", "instance": "/v1/assessments", "code": "invalid_idempotency_key", "request_id": "9f2c4b7a1d3e4f5a8b6c0d1e2f3a4b5c", "invalid_params": [{"field": "identifiers", "reason": "at least one of email, username or phone is required", "example": "new.user@example.com"}]}
         "401":

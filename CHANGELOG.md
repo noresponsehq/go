@@ -1,5 +1,16 @@
 # Changelog
 
+## 19.0.4
+
+* `Sdk.Groups.List()`:  `response.Items[]` **Changed**
+* `Sdk.Groups.Create()`: 
+  *  `request.Body` **Changed**
+  *  `response` **Changed**
+* `Sdk.Groups.Get()`:  `response` **Changed**
+* `Sdk.Groups.Update()`: 
+  *  `request.Body.Attribute` **Added**
+  *  `response` **Changed**
+
 ## 19.0.3
 
 No changes detected.

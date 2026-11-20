@@ -13631,6 +13631,8 @@
           "id",
           "environment",
           "name",
+          "type",
+          "attribute",
           "starts_at",
           "ends_at",
           "principals",
@@ -13656,6 +13658,18 @@
             "maxLength": 200,
             "description": "The group's name.",
             "example": "Annual shareholder meeting"
+          },
+          "type": {
+            "$ref": "#/components/schemas/GroupType",
+            "description": "What the group's people share: an event, an organisation, a place or another attribute."
+          },
+          "attribute": {
+            "type": "string",
+            "maxLength": 200,
+            "description": "The attribute its people share. Empty when none was given.",
+            "examples": [
+              "Example Fund"
+            ]
           },
           "starts_at": {
             "type": [
@@ -13774,6 +13788,18 @@
             "description": "The group's name.",
             "example": "Annual shareholder meeting"
           },
+          "type": {
+            "$ref": "#/components/schemas/GroupType",
+            "description": "What the group's people share: an event they attend, an organisation they work for, a place they share, or another attribute. Only an event group takes dates, a venue, a host, principals and topics. Defaults to event."
+          },
+          "attribute": {
+            "type": "string",
+            "maxLength": 200,
+            "description": "The attribute its people share, such as the employer's or the place's name.",
+            "examples": [
+              "Example Fund"
+            ]
+          },
           "starts_at": {
             "type": [
               "string",
@@ -13827,6 +13853,19 @@
         },
         "description": "Creates an ongoing group or an event with optional dates."
       },
+      "GroupType": {
+        "type": "string",
+        "enum": [
+          "event",
+          "organisation",
+          "place",
+          "custom"
+        ],
+        "description": "What the group's people share: an event, an organisation, a place or another attribute.",
+        "examples": [
+          "organisation"
+        ]
+      },
       "GroupUpdate": {
         "type": "object",
         "additionalProperties": false,
@@ -13838,6 +13877,14 @@
             "maxLength": 200,
             "description": "The group's name.",
             "example": "Annual shareholder meeting"
+          },
+          "attribute": {
+            "type": "string",
+            "maxLength": 200,
+            "description": "The attribute its people share. Omit to keep the current value.",
+            "examples": [
+              "Example Fund"
+            ]
           },
           "starts_at": {
             "type": [

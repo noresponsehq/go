@@ -6,6 +6,10 @@ type Group struct {
 	Environment AuditSettingsEnvironment `json:"environment"`
 	// The group's name.
 	Name string `json:"name"`
+	// What the group's people share: an event, an organisation, a place or another attribute.
+	Type GroupType `json:"type"`
+	// The attribute its people share. Empty when none was given.
+	Attribute string `json:"attribute"`
 	// Optional event start; null for an ongoing group.
 	StartsAt *string `json:"starts_at"`
 	// Optional event end; requires starts_at and must be at or after it. Null when no end is set.
@@ -47,6 +51,20 @@ func (g *Group) GetName() string {
 		return ""
 	}
 	return g.Name
+}
+
+func (g *Group) GetType() GroupType {
+	if g == nil {
+		return GroupType("")
+	}
+	return g.Type
+}
+
+func (g *Group) GetAttribute() string {
+	if g == nil {
+		return ""
+	}
+	return g.Attribute
 }
 
 func (g *Group) GetStartsAt() *string {

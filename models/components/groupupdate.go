@@ -9,6 +9,8 @@ import (
 type GroupUpdate struct {
 	// The group's name.
 	Name *string `json:"name,omitzero"`
+	// The attribute its people share. Omit to keep the current value.
+	Attribute *string `json:"attribute,omitzero"`
 	// Optional event start; null for an ongoing group. Omit to keep the current value; send null to clear it.
 	StartsAt optionalnullable.OptionalNullable[string] `json:"starts_at,omitzero"`
 	// Optional event end; requires starts_at and must be at or after it. Null when no end is set. Omit to keep the current value; send null to clear it.
@@ -41,6 +43,13 @@ func (g *GroupUpdate) GetName() *string {
 		return nil
 	}
 	return g.Name
+}
+
+func (g *GroupUpdate) GetAttribute() *string {
+	if g == nil {
+		return nil
+	}
+	return g.Attribute
 }
 
 func (g *GroupUpdate) GetStartsAt() optionalnullable.OptionalNullable[string] {

@@ -27,7 +27,7 @@ func TestGroupDatesPreserveNullAndOmission(t *testing.T) {
 		}
 	}
 	var group components.Group
-	if err := json.Unmarshal([]byte(`{"id":"grp_example","environment":"test","name":"Harbour building","starts_at":null,"ends_at":null,"principals":[],"topics":[],"people":0,"version":1,"created_by":"test","created_at":"2026-11-15T10:00:00Z","updated_at":"2026-11-15T10:00:00Z"}`), &group); err != nil {
+	if err := json.Unmarshal([]byte(`{"id":"grp_example","environment":"test","name":"Harbour building","type":"event","attribute":"","starts_at":null,"ends_at":null,"principals":[],"topics":[],"people":0,"version":1,"created_by":"test","created_at":"2026-11-15T10:00:00Z","updated_at":"2026-11-15T10:00:00Z"}`), &group); err != nil {
 		t.Fatal(err)
 	}
 	if group.StartsAt != nil || group.EndsAt != nil {
