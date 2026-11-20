@@ -6,7 +6,7 @@ How often the person is investigated again: daily, weekly or monthly, counted fr
 
 ```go
 import (
-	"github.com/noresponsehq/go/v19/models/components"
+	"github.com/noresponsehq/go/v20/models/components"
 )
 
 value := components.SchedulePeriodDaily

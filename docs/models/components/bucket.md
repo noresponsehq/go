@@ -6,7 +6,7 @@ The period each count covers: an hour, or a day or a week (from Monday) in time_
 
 ```go
 import (
-	"github.com/noresponsehq/go/v19/models/components"
+	"github.com/noresponsehq/go/v20/models/components"
 )
 
 value := components.BucketHour

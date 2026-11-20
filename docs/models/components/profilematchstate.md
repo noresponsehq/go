@@ -6,7 +6,7 @@ How sure the screening is that a profile is the person's, from the likelihood it
 
 ```go
 import (
-	"github.com/noresponsehq/go/v19/models/components"
+	"github.com/noresponsehq/go/v20/models/components"
 )
 
 value := components.ProfileMatchStateConfirmed

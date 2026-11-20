@@ -2,14 +2,13 @@
 
 ## Overview
 
-Person investigation jobs, retained results and contextual decisions.
+Person investigation jobs and retained results.
 
 ### Available Operations
 
 * [List](#list) - List investigation history.
 * [Create](#create) - Start an investigation for a person.
 * [Get](#get) - Read an investigation and its evidence.
-* [Review](#review) - Record an investigation decision.
 * [Cancel](#cancel) - Cancel an investigation
 
 ## List
@@ -25,7 +24,7 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v19"
+	noresponse "github.com/noresponsehq/go/v20"
 	"log"
 )
 
@@ -85,8 +84,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v19"
-	"github.com/noresponsehq/go/v19/models/components"
+	noresponse "github.com/noresponsehq/go/v20"
+	"github.com/noresponsehq/go/v20/models/components"
 	"log"
 )
 
@@ -137,7 +136,7 @@ func main() {
 
 ## Get
 
-Returns this investigation's status, coverage, source records, posts, media and contextual review history. Full evidence is returned by default; explicit evidence.read denial keeps submitted person details, status, coverage and decision summaries and hides collected evidence and free-text notes. The read is durably audited as person.viewed. The API key selects the workspace and environment. Missing, foreign or expired results answer 404.
+Returns this investigation's status, coverage, source records, posts and media. Full evidence is returned by default; explicit evidence.read denial keeps submitted person details, status and coverage, and hides collected evidence. The read is durably audited as person.viewed. The API key selects the workspace and environment. Missing, foreign or expired results answer 404.
 
 ### Example Usage
 
@@ -148,7 +147,7 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v19"
+	noresponse "github.com/noresponsehq/go/v20"
 	"log"
 )
 
@@ -193,68 +192,6 @@ func main() {
 | apierrors.RateLimitError        | 429                             | application/problem+json        |
 | apierrors.APIStatusError        | 4XX, 5XX                        | \*/\*                           |
 
-## Review
-
-Record an investigation decision. Deprecated: decisions are leaving people and groups. The console no longer records them and no screening reads them. This route is removed in the next contract release; stop calling it. The API key determines the workspace and environment.
-
-### Example Usage
-
-<!-- UsageSnippet language="go" operationID="reviewInvestigation" method="post" path="/v1/investigations/{investigation_id}/reviews" -->
-```go
-package main
-
-import(
-	"context"
-	"os"
-	noresponse "github.com/noresponsehq/go/v19"
-	"github.com/noresponsehq/go/v19/models/components"
-	"log"
-)
-
-func main() {
-    ctx := context.Background()
-
-    s := noresponse.New(
-        noresponse.WithSecurity(os.Getenv("NORESPONSE_API_KEY")),
-    )
-
-    res, err := s.Investigations.Review(ctx, "inv_01JA2Z8K6Q4V7W9XBCDEFGHJKM", components.PersonReviewRequest{
-        Decision: components.PersonDecisionWatch,
-        Note: noresponse.Pointer("Known to the venue team."),
-    })
-    if err != nil {
-        log.Fatal(err)
-    }
-    if res != nil {
-        // handle response
-    }
-}
-```
-
-### Parameters
-
-| Parameter                                                                        | Type                                                                             | Required                                                                         | Description                                                                      | Example                                                                          |
-| -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
-| `ctx`                                                                            | [context.Context](https://pkg.go.dev/context#Context)                            | :heavy_check_mark:                                                               | The context to use for the request.                                              |                                                                                  |
-| `investigationID`                                                                | `string`                                                                         | :heavy_check_mark:                                                               | N/A                                                                              | inv_01JA2Z8K6Q4V7W9XBCDEFGHJKM                                                   |
-| `body`                                                                           | [components.PersonReviewRequest](../../models/components/personreviewrequest.md) | :heavy_check_mark:                                                               | N/A                                                                              |                                                                                  |
-
-### Response
-
-**[*operations.ReviewInvestigationResponse](../../models/operations/reviewinvestigationresponse.md), error**
-
-### Errors
-
-| Error Type                      | Status Code                     | Content Type                    |
-| ------------------------------- | ------------------------------- | ------------------------------- |
-| apierrors.BadRequestError       | 400                             | application/problem+json        |
-| apierrors.AuthenticationError   | 401                             | application/problem+json        |
-| apierrors.PermissionDeniedError | 403                             | application/problem+json        |
-| apierrors.NotFoundError         | 404                             | application/problem+json        |
-| apierrors.ConflictError         | 409                             | application/problem+json        |
-| apierrors.RateLimitError        | 429                             | application/problem+json        |
-| apierrors.APIStatusError        | 4XX, 5XX                        | \*/\*                           |
-
 ## Cancel
 
 Stops this investigation. A completed or already cancelled investigation keeps its current result. Other investigations for the person keep running.
@@ -268,8 +205,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v19"
-	"github.com/noresponsehq/go/v19/models/components"
+	noresponse "github.com/noresponsehq/go/v20"
+	"github.com/noresponsehq/go/v20/models/components"
 	"log"
 )
 

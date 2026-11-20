@@ -4,13 +4,13 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"github.com/noresponsehq/go/v19/internal/config"
-	"github.com/noresponsehq/go/v19/internal/hooks"
-	"github.com/noresponsehq/go/v19/internal/utils"
-	"github.com/noresponsehq/go/v19/models/apierrors"
-	"github.com/noresponsehq/go/v19/models/components"
-	"github.com/noresponsehq/go/v19/models/operations"
-	"github.com/noresponsehq/go/v19/retry"
+	"github.com/noresponsehq/go/v20/internal/config"
+	"github.com/noresponsehq/go/v20/internal/hooks"
+	"github.com/noresponsehq/go/v20/internal/utils"
+	"github.com/noresponsehq/go/v20/models/apierrors"
+	"github.com/noresponsehq/go/v20/models/components"
+	"github.com/noresponsehq/go/v20/models/operations"
+	"github.com/noresponsehq/go/v20/retry"
 	"net/http"
 	"net/url"
 )
@@ -3168,7 +3168,7 @@ func (s *Groups) RemovePerson(ctx context.Context, groupID string, personID stri
 }
 
 // ReviewPerson - Record a decision on a person.
-// Marks the person's latest finished investigation cleared, watch or escalated with a note, as POST /v1/investigations/{investigation_id}/reviews does; a person with no finished investigation answers 409 group_conflict. Decisions are kept in order; the latest is the person's until a newer investigation finishes. A decision changes nothing else: no screening reads it. Deprecated: decisions are leaving people and groups. The console no longer records them and no screening reads them. This route is removed in the next contract release; stop calling it. The decisions scope grants this operation. Explicit evidence.read restrictions override default evidence access. The groups scope is also accepted for existing integrations. The API key selects the workspace and environment.
+// Marks the person's latest finished investigation cleared, watch or escalated with a note; a person with no finished investigation answers 409 group_conflict. Decisions are kept in order; the latest is the person's until a newer investigation finishes. A decision changes nothing else: no screening reads it. Deprecated: decisions are leaving people and groups. The console no longer records them and no screening reads them. This route is removed in the next contract release; stop calling it. The decisions scope grants this operation. Explicit evidence.read restrictions override default evidence access. The groups scope is also accepted for existing integrations. The API key selects the workspace and environment.
 func (s *Groups) ReviewPerson(ctx context.Context, groupID string, personID string, body components.PersonReviewRequest, opts ...operations.Option) (*operations.ReviewPersonResponse, error) {
 	request := operations.ReviewPersonRequest{
 		GroupID:  groupID,

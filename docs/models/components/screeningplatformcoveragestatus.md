@@ -6,7 +6,7 @@ covered read at least one profile; none_found looked and found no account; inacc
 
 ```go
 import (
-	"github.com/noresponsehq/go/v19/models/components"
+	"github.com/noresponsehq/go/v20/models/components"
 )
 
 value := components.ScreeningPlatformCoverageStatusCovered

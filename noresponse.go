@@ -3,11 +3,11 @@ package noresponse
 import (
 	"context"
 	"fmt"
-	"github.com/noresponsehq/go/v19/internal/config"
-	"github.com/noresponsehq/go/v19/internal/hooks"
-	"github.com/noresponsehq/go/v19/internal/utils"
-	"github.com/noresponsehq/go/v19/models/components"
-	"github.com/noresponsehq/go/v19/retry"
+	"github.com/noresponsehq/go/v20/internal/config"
+	"github.com/noresponsehq/go/v20/internal/hooks"
+	"github.com/noresponsehq/go/v20/internal/utils"
+	"github.com/noresponsehq/go/v20/models/components"
+	"github.com/noresponsehq/go/v20/retry"
 	"net/http"
 	"time"
 )
@@ -45,7 +45,7 @@ func Float64(f float64) *float64 { return &f }
 func Pointer[T any](v T) *T { return &v }
 
 // NoResponse API: Workspace people, source-grounded investigations, group screening and signup assessment recommendations.
-// NoResponse is an identity and people risk engine. Retain workspace people, investigate their identifiers, read complete source evidence and preserve investigation history. Groups organize people for screening and context-specific decisions. Account creation, login and purchase assessments use the same engine. People-read access includes evidence by default; explicit evidence restrictions retain submitted details, job status, coverage and decision summaries. Keep the API key on your server.
+// NoResponse is an identity and people risk engine. Retain workspace people, investigate their identifiers, read complete source evidence and preserve investigation history. Groups organize people for screening and context-specific decisions. Account creation, login and purchase assessments use the same engine. People-read access includes evidence by default; explicit evidence restrictions retain submitted details, job status and coverage. Keep the API key on your server.
 type NoResponse struct {
 	SDKVersion string
 	// Assessments of account creation, login and purchase.
@@ -88,7 +88,7 @@ type NoResponse struct {
 	Groups *Groups
 	// Workspace people, submitted identity, source evidence and expiry.
 	People *People
-	// Person investigation jobs, retained results and contextual decisions.
+	// Person investigation jobs and retained results.
 	Investigations *Investigations
 
 	sdkConfiguration config.SDKConfiguration
@@ -166,10 +166,10 @@ func WithTimeout(timeout time.Duration) SDKOption {
 // New creates a new instance of the SDK with the provided options
 func New(opts ...SDKOption) *NoResponse {
 	sdk := &NoResponse{
-		SDKVersion: "19.0.6",
+		SDKVersion: "20.0.0",
 		sdkConfiguration: config.SDKConfiguration{
-			UserAgent:         "noresponse-sdk/go 19.0.6",
-			SDKVersion:        "19.0.6",
+			UserAgent:         "noresponse-sdk/go 20.0.0",
+			SDKVersion:        "20.0.0",
 			GenVersion:        "internal",
 			OpenAPIDocVersion: "1",
 			ServerList:        ServerList,

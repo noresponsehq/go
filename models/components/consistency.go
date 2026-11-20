@@ -1,7 +1,7 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v19/internal/utils"
+	"github.com/noresponsehq/go/v20/internal/utils"
 )
 
 // Consistency - Cross-identifier agreement, computed from facts only. Every member is optional; absent makes no claim.

@@ -6,7 +6,7 @@ block decides block for the accounts the entry matches; allow decides allow. Blo
 
 ```go
 import (
-	"github.com/noresponsehq/go/v19/models/components"
+	"github.com/noresponsehq/go/v20/models/components"
 )
 
 value := components.ListEntryActionBlock

@@ -4,7 +4,7 @@
     "title": "NoResponse API",
     "version": "1",
     "summary": "Workspace people, source-grounded investigations, group screening and signup assessment recommendations.",
-    "description": "NoResponse is an identity and people risk engine. Retain workspace people, investigate their identifiers, read complete source evidence and preserve investigation history. Groups organize people for screening and context-specific decisions. Account creation, login and purchase assessments use the same engine. People-read access includes evidence by default; explicit evidence restrictions retain submitted details, job status, coverage and decision summaries. Keep the API key on your server.",
+    "description": "NoResponse is an identity and people risk engine. Retain workspace people, investigate their identifiers, read complete source evidence and preserve investigation history. Groups organize people for screening and context-specific decisions. Account creation, login and purchase assessments use the same engine. People-read access includes evidence by default; explicit evidence restrictions retain submitted details, job status and coverage. Keep the API key on your server.",
     "license": {
       "name": "Apache-2.0",
       "identifier": "Apache-2.0"
@@ -43,7 +43,7 @@
     },
     {
       "name": "investigations",
-      "description": "Person investigation jobs, retained results and contextual decisions."
+      "description": "Person investigation jobs and retained results."
     },
     {
       "name": "operations",
@@ -7261,7 +7261,7 @@
           "groups"
         ],
         "summary": "Record a decision on a person.",
-        "description": "Marks the person's latest finished investigation cleared, watch or escalated with a note, as POST /v1/investigations/{investigation_id}/reviews does; a person with no finished investigation answers 409 group_conflict. Decisions are kept in order; the latest is the person's until a newer investigation finishes. A decision changes nothing else: no screening reads it. Deprecated: decisions are leaving people and groups. The console no longer records them and no screening reads them. This route is removed in the next contract release; stop calling it. The decisions scope grants this operation. Explicit evidence.read restrictions override default evidence access. The groups scope is also accepted for existing integrations. The API key selects the workspace and environment.",
+        "description": "Marks the person's latest finished investigation cleared, watch or escalated with a note; a person with no finished investigation answers 409 group_conflict. Decisions are kept in order; the latest is the person's until a newer investigation finishes. A decision changes nothing else: no screening reads it. Deprecated: decisions are leaving people and groups. The console no longer records them and no screening reads them. This route is removed in the next contract release; stop calling it. The decisions scope grants this operation. Explicit evidence.read restrictions override default evidence access. The groups scope is also accepted for existing integrations. The API key selects the workspace and environment.",
         "parameters": [
           {
             "$ref": "#/components/parameters/GroupId"
@@ -8336,7 +8336,7 @@
           "investigations"
         ],
         "summary": "Read an investigation and its evidence.",
-        "description": "Returns this investigation's status, coverage, source records, posts, media and contextual review history. Full evidence is returned by default; explicit evidence.read denial keeps submitted person details, status, coverage and decision summaries and hides collected evidence and free-text notes. The read is durably audited as person.viewed. The API key selects the workspace and environment. Missing, foreign or expired results answer 404.",
+        "description": "Returns this investigation's status, coverage, source records, posts and media. Full evidence is returned by default; explicit evidence.read denial keeps submitted person details, status and coverage, and hides collected evidence. The read is durably audited as person.viewed. The API key selects the workspace and environment. Missing, foreign or expired results answer 404.",
         "parameters": [
           {
             "$ref": "#/components/parameters/InvestigationId"
@@ -8372,64 +8372,6 @@
         ]
       }
     },
-    "/v1/investigations/{investigation_id}/reviews": {
-      "post": {
-        "operationId": "reviewInvestigation",
-        "x-noresponse-group": "investigations",
-        "x-noresponse-name-override": "review",
-        "tags": [
-          "investigations"
-        ],
-        "summary": "Record an investigation decision.",
-        "description": "Record an investigation decision. Deprecated: decisions are leaving people and groups. The console no longer records them and no screening reads them. This route is removed in the next contract release; stop calling it. The API key determines the workspace and environment.",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/InvestigationId"
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/PersonReviewRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "$ref": "#/components/responses/ReviewInvestigation200"
-          },
-          "400": {
-            "$ref": "#/components/responses/InvalidControlRequest"
-          },
-          "401": {
-            "$ref": "#/components/responses/Unauthorized"
-          },
-          "403": {
-            "$ref": "#/components/responses/WorkspaceForbidden"
-          },
-          "404": {
-            "$ref": "#/components/responses/NotFound"
-          },
-          "409": {
-            "$ref": "#/components/responses/IdempotencyConflict"
-          },
-          "429": {
-            "$ref": "#/components/responses/RateLimited"
-          }
-        },
-        "security": [
-          {
-            "apiKey": []
-          }
-        ],
-        "x-noresponse-retries": {
-          "strategy": "none"
-        }
-      }
-    },
     "/v1/investigations/{investigation_id}/cancel": {
       "post": {
         "operationId": "cancelInvestigation",
@@ -8457,7 +8399,7 @@
         },
         "responses": {
           "200": {
-            "$ref": "#/components/responses/ReviewInvestigation200"
+            "$ref": "#/components/responses/CancelInvestigation200"
           },
           "400": {
             "$ref": "#/components/responses/InvalidControlRequest"
@@ -14632,7 +14574,6 @@
         "required": [
           "coverage",
           "spend",
-          "decision",
           "id",
           "person_id",
           "group_id",
@@ -14652,33 +14593,6 @@
           "spend": {
             "$ref": "#/components/schemas/ScreeningSpend",
             "description": "What the latest screening of the person cost."
-          },
-          "decision": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/PersonDecision"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "The latest reviewer decision, or null before any."
-          },
-          "decision_note": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 2000,
-            "example": "Source records reviewed."
-          },
-          "decided_by": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 256,
-            "example": "user_investigator"
-          },
-          "decided_at": {
-            "type": "string",
-            "example": "2026-01-01T00:00:00Z"
           },
           "id": {
             "type": "string",
@@ -14841,7 +14755,6 @@
           "profiles",
           "posts",
           "media",
-          "reviews",
           "person",
           "investigation"
         ],
@@ -14870,21 +14783,13 @@
             },
             "description": "All images and videos retained for this result."
           },
-          "reviews": {
-            "type": "array",
-            "maxItems": 1000,
-            "items": {
-              "$ref": "#/components/schemas/PersonReview"
-            },
-            "description": "Every recorded decision, oldest first."
-          },
           "lookup": {
             "$ref": "#/components/schemas/ScreeningLookup",
             "description": "The source records and lookup coverage retained for this result. Absent when this result contains no completed lookup."
           },
           "evidence_restricted": {
             "type": "boolean",
-            "description": "True when evidence.read is explicitly denied. Submitted details, coverage, job status and decisions remain available. Collected records, profiles, posts, media, discovered values and free-text decision notes are withheld."
+            "description": "True when evidence.read is explicitly denied. Submitted details, coverage and job status remain available. Collected records, profiles, posts, media and discovered values are withheld."
           },
           "person": {
             "$ref": "#/components/schemas/WorkspacePerson"
@@ -33060,8 +32965,8 @@
           }
         }
       },
-      "ReviewInvestigation200": {
-        "description": "Record an investigation decision.",
+      "CancelInvestigation200": {
+        "description": "The investigation after the cancel request.",
         "headers": {
           "X-Request-ID": {
             "description": "The request correlation id, 32 lowercase hexadecimal characters.",

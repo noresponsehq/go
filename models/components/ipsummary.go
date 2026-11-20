@@ -1,7 +1,7 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v19/internal/utils"
+	"github.com/noresponsehq/go/v20/internal/utils"
 )
 
 // IPSummary - Facts about the submitted IP from the offline database and this workspace's own recent assessments. Every member is optional; absent makes no claim.

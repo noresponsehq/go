@@ -6,7 +6,7 @@ What sort of value a field holds, which decides how it is cleaned, compared and 
 
 ```go
 import (
-	"github.com/noresponsehq/go/v19/models/components"
+	"github.com/noresponsehq/go/v20/models/components"
 )
 
 value := components.RecordKindEmail

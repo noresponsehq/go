@@ -6,7 +6,7 @@ ai_typing and analysis appear only on searches recorded before the engine stoppe
 
 ```go
 import (
-	"github.com/noresponsehq/go/v19/models/components"
+	"github.com/noresponsehq/go/v20/models/components"
 )
 
 value := components.StageLookup

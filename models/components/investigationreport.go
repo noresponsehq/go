@@ -1,7 +1,7 @@
 package components
 
 import (
-	"github.com/noresponsehq/go/v19/internal/utils"
+	"github.com/noresponsehq/go/v20/internal/utils"
 )
 
 // InvestigationReport - Read an investigation and its evidence.
@@ -12,11 +12,9 @@ type InvestigationReport struct {
 	Posts []ScreeningPost `json:"posts"`
 	// All images and videos retained for this result.
 	Media []ScreeningMedia `json:"media"`
-	// Every recorded decision, oldest first.
-	Reviews []PersonReview `json:"reviews"`
 	// What the signup check's lookups found for a person: account presence for the email, phone and usernames (the person's handles), the phone lookup, the email domain's registration and the breach search. Nothing here sets a match state.
 	Lookup *ScreeningLookup `json:"lookup,omitzero"`
-	// True when evidence.read is explicitly denied. Submitted details, coverage, job status and decisions remain available. Collected records, profiles, posts, media, discovered values and free-text decision notes are withheld.
+	// True when evidence.read is explicitly denied. Submitted details, coverage and job status remain available. Collected records, profiles, posts, media and discovered values are withheld.
 	EvidenceRestricted *bool           `json:"evidence_restricted,omitzero"`
 	Person             WorkspacePerson `json:"person"`
 	Investigation      Investigation   `json:"investigation"`
@@ -52,13 +50,6 @@ func (i *InvestigationReport) GetMedia() []ScreeningMedia {
 		return []ScreeningMedia{}
 	}
 	return i.Media
-}
-
-func (i *InvestigationReport) GetReviews() []PersonReview {
-	if i == nil {
-		return []PersonReview{}
-	}
-	return i.Reviews
 }
 
 func (i *InvestigationReport) GetLookup() *ScreeningLookup {

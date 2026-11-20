@@ -6,7 +6,7 @@ What matched. email, phone, supplied_handle and source_fact are hard identifiers
 
 ```go
 import (
-	"github.com/noresponsehq/go/v19/models/components"
+	"github.com/noresponsehq/go/v20/models/components"
 )
 
 value := components.ScreeningMatchEvidenceKindEmail

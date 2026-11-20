@@ -6,7 +6,7 @@ How long after the assessment's creation the change was made.
 
 ```go
 import (
-	"github.com/noresponsehq/go/v19/models/components"
+	"github.com/noresponsehq/go/v20/models/components"
 )
 
 value := components.DelayUnder10s

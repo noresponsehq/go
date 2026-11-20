@@ -1,8 +1,8 @@
 package operations
 
 import (
-	"github.com/noresponsehq/go/v19/internal/utils"
-	"github.com/noresponsehq/go/v19/models/components"
+	"github.com/noresponsehq/go/v20/internal/utils"
+	"github.com/noresponsehq/go/v20/models/components"
 )
 
 type ListCustomerExportsRequest struct {

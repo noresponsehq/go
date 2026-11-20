@@ -6,7 +6,7 @@ active: the key authenticates. expired: a rotation's overlap window has ended (e
 
 ```go
 import (
-	"github.com/noresponsehq/go/v19/models/components"
+	"github.com/noresponsehq/go/v20/models/components"
 )
 
 value := components.KeyStatusActive

@@ -29,7 +29,7 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v19"
+	noresponse "github.com/noresponsehq/go/v20"
 	"log"
 )
 
@@ -90,8 +90,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v19"
-	"github.com/noresponsehq/go/v19/models/components"
+	noresponse "github.com/noresponsehq/go/v20"
+	"github.com/noresponsehq/go/v20/models/components"
 	"log"
 )
 
@@ -153,7 +153,7 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v19"
+	noresponse "github.com/noresponsehq/go/v20"
 	"log"
 )
 
@@ -211,7 +211,7 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v19"
+	noresponse "github.com/noresponsehq/go/v20"
 	"log"
 )
 
@@ -269,8 +269,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v19"
-	"github.com/noresponsehq/go/v19/models/components"
+	noresponse "github.com/noresponsehq/go/v20"
+	"github.com/noresponsehq/go/v20/models/components"
 	"log"
 )
 
@@ -332,8 +332,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v19"
-	"github.com/noresponsehq/go/v19/models/components"
+	noresponse "github.com/noresponsehq/go/v20"
+	"github.com/noresponsehq/go/v20/models/components"
 	"log"
 )
 
@@ -396,8 +396,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v19"
-	"github.com/noresponsehq/go/v19/models/components"
+	noresponse "github.com/noresponsehq/go/v20"
+	"github.com/noresponsehq/go/v20/models/components"
 	"log"
 )
 
@@ -457,8 +457,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v19"
-	"github.com/noresponsehq/go/v19/models/components"
+	noresponse "github.com/noresponsehq/go/v20"
+	"github.com/noresponsehq/go/v20/models/components"
 	"log"
 )
 
@@ -518,8 +518,8 @@ package main
 import(
 	"context"
 	"os"
-	noresponse "github.com/noresponsehq/go/v19"
-	"github.com/noresponsehq/go/v19/models/components"
+	noresponse "github.com/noresponsehq/go/v20"
+	"github.com/noresponsehq/go/v20/models/components"
 	"log"
 )
 

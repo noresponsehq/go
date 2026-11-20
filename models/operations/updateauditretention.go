@@ -3,7 +3,7 @@ package operations
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/noresponsehq/go/v19/models/components"
+	"github.com/noresponsehq/go/v20/models/components"
 )
 
 type Environment string

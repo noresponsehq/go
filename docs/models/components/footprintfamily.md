@@ -6,7 +6,7 @@ The source-neutral kind of evidence: account_presence (an account found on a sit
 
 ```go
 import (
-	"github.com/noresponsehq/go/v19/models/components"
+	"github.com/noresponsehq/go/v20/models/components"
 )
 
 value := components.FootprintFamilyAccountPresence

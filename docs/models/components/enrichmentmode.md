@@ -6,7 +6,7 @@ off: enrichment starts no search and suggests none. suggest: enrichment starts n
 
 ```go
 import (
-	"github.com/noresponsehq/go/v19/models/components"
+	"github.com/noresponsehq/go/v20/models/components"
 )
 
 value := components.EnrichmentModeOff

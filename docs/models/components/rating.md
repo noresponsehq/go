@@ -6,7 +6,7 @@ unique: an email or phone, which belongs to one person by design. distinctive: r
 
 ```go
 import (
-	"github.com/noresponsehq/go/v19/models/components"
+	"github.com/noresponsehq/go/v20/models/components"
 )
 
 value := components.RatingUnique

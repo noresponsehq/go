@@ -6,7 +6,7 @@ anchors_disagree: records found by two of the identifiers you gave clash with ea
 
 ```go
 import (
-	"github.com/noresponsehq/go/v19/models/components"
+	"github.com/noresponsehq/go/v20/models/components"
 )
 
 value := components.RecordConflictSignalAnchorsDisagree

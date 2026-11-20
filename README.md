@@ -11,7 +11,7 @@ Go 1.24+.
 ## Install
 
 ```sh
-go get github.com/noresponsehq/go/v19
+go get github.com/noresponsehq/go/v20
 ```
 
 
@@ -26,8 +26,8 @@ import (
     "log"
     "os"
 
-    noresponse "github.com/noresponsehq/go/v19"
-    "github.com/noresponsehq/go/v19/models/components"
+    noresponse "github.com/noresponsehq/go/v20"
+    "github.com/noresponsehq/go/v20/models/components"
 )
 
 func main() {
@@ -56,7 +56,7 @@ After `investigation.completed`, use `client.Investigations.Get(ctx, investigati
 
 The API key selects the workspace and environment. This flow needs `people_write` to create a person, `investigations` to start work, and `people` to read the report. Save the investigation id and key: retry the same work with the same key; use a new key for a deliberate new investigation. A person can belong to several groups or none. Their `expires_at` comes from workspace retention.
 
-Evidence is included by default for pre-verified customers. An explicit evidence restriction keeps submitted details, status, coverage and decision summaries, and withholds collected records, profiles, posts, media and discovered identifiers. Each investigation and group keeps its own review context.
+Evidence is included by default for pre-verified customers. An explicit evidence restriction keeps submitted details, status and coverage, and withholds collected records, profiles, posts, media and discovered identifiers.
 
 ## Assess a signup
 
@@ -69,8 +69,8 @@ import (
 	"log"
 	"os"
 
-	noresponse "github.com/noresponsehq/go/v19"
-	"github.com/noresponsehq/go/v19/models/components"
+	noresponse "github.com/noresponsehq/go/v20"
+	"github.com/noresponsehq/go/v20/models/components"
 )
 
 func main() {
@@ -166,7 +166,7 @@ case err != nil:
 }
 ```
 
-The typed errors are `BadRequestError` (400), `AuthenticationError` (401), `PermissionDeniedError` (403), `NotFoundError` (404), `ConflictError` (409) and `RateLimitError` (429), all in `github.com/noresponsehq/go/v19/models/apierrors`. Any other status is an `*apierrors.APIStatusError`.
+The typed errors are `BadRequestError` (400), `AuthenticationError` (401), `PermissionDeniedError` (403), `NotFoundError` (404), `ConflictError` (409) and `RateLimitError` (429), all in `github.com/noresponsehq/go/v20/models/apierrors`. Any other status is an `*apierrors.APIStatusError`.
 
 ## Retries and timeouts
 

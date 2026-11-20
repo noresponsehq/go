@@ -4,25 +4,20 @@ type Investigation struct {
 	// The denominator of a screening: accounts found, how many could be read, items read and the period they span, so a clean result is distinct from a person nobody could see.
 	Coverage ScreeningCoverage `json:"coverage"`
 	// What screening cost, in US cents, in total and per implementation.
-	Spend ScreeningSpend `json:"spend"`
-	// The latest reviewer decision, or null before any.
-	Decision     *PersonDecision     `json:"decision"`
-	DecisionNote *string             `json:"decision_note,omitzero"`
-	DecidedBy    *string             `json:"decided_by,omitzero"`
-	DecidedAt    *string             `json:"decided_at,omitzero"`
-	ID           string              `json:"id"`
-	PersonID     string              `json:"person_id"`
-	GroupID      *string             `json:"group_id"`
-	Status       InvestigationStatus `json:"status"`
-	Depth        ScreeningDepth      `json:"depth"`
-	Platforms    []string            `json:"platforms"`
-	MatchState   *MatchState         `json:"match_state"`
-	ErrorCode    *string             `json:"error_code,omitzero"`
-	CreatedAt    string              `json:"created_at"`
-	StartedAt    *string             `json:"started_at,omitzero"`
-	FinishedAt   *string             `json:"finished_at,omitzero"`
-	ExpiresAt    string              `json:"expires_at"`
-	DeadlineAt   string              `json:"deadline_at"`
+	Spend      ScreeningSpend      `json:"spend"`
+	ID         string              `json:"id"`
+	PersonID   string              `json:"person_id"`
+	GroupID    *string             `json:"group_id"`
+	Status     InvestigationStatus `json:"status"`
+	Depth      ScreeningDepth      `json:"depth"`
+	Platforms  []string            `json:"platforms"`
+	MatchState *MatchState         `json:"match_state"`
+	ErrorCode  *string             `json:"error_code,omitzero"`
+	CreatedAt  string              `json:"created_at"`
+	StartedAt  *string             `json:"started_at,omitzero"`
+	FinishedAt *string             `json:"finished_at,omitzero"`
+	ExpiresAt  string              `json:"expires_at"`
+	DeadlineAt string              `json:"deadline_at"`
 }
 
 func (i *Investigation) GetCoverage() ScreeningCoverage {
@@ -37,34 +32,6 @@ func (i *Investigation) GetSpend() ScreeningSpend {
 		return ScreeningSpend{}
 	}
 	return i.Spend
-}
-
-func (i *Investigation) GetDecision() *PersonDecision {
-	if i == nil {
-		return nil
-	}
-	return i.Decision
-}
-
-func (i *Investigation) GetDecisionNote() *string {
-	if i == nil {
-		return nil
-	}
-	return i.DecisionNote
-}
-
-func (i *Investigation) GetDecidedBy() *string {
-	if i == nil {
-		return nil
-	}
-	return i.DecidedBy
-}
-
-func (i *Investigation) GetDecidedAt() *string {
-	if i == nil {
-		return nil
-	}
-	return i.DecidedAt
 }
 
 func (i *Investigation) GetID() string {

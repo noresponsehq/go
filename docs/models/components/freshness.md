@@ -6,7 +6,7 @@ Freshness class of the evidence behind a signal. unknown whenever no evidence wa
 
 ```go
 import (
-	"github.com/noresponsehq/go/v19/models/components"
+	"github.com/noresponsehq/go/v20/models/components"
 )
 
 value := components.FreshnessFresh
