@@ -311,5 +311,31 @@
       "noise": true
     }
   ],
-  "observed_at": "2026-11-08T09:59:30Z"
+  "observed_at": "2026-11-08T09:59:30Z",
+  "likelihood": 0.99,
+  "agreed": [
+    "name"
+  ],
+  "clashed": [],
+  "joined": true,
+  "evidence": [
+    {
+      "signal": "found_by",
+      "kind": "handle",
+      "field": "username",
+      "with": "given",
+      "bits": 6.63
+    },
+    {
+      "signal": "agrees",
+      "kind": "person_name",
+      "field": "name",
+      "with": "given",
+      "with_field": "name",
+      "bits": 3
+    }
+  ],
+  "path": [
+    "given"
+  ]
 }
