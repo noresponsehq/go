@@ -1,12 +1,12 @@
 lockVersion: 2.0.0
 id: 25ddae46-795d-45f5-b455-3f48c41d440e
 management:
-  docChecksum: e4a918a2e89c2da5ef642860fad8ad15
+  docChecksum: e2af64e190a62f6aa6cb092ae054e9c8
   docVersion: "1"
   speakeasyVersion: internal
   generationVersion: internal
-  releaseVersion: 19.0.5
-  configChecksum: 226b0c2e1056c05ac25173d985c4316d
+  releaseVersion: 19.0.6
+  configChecksum: 375027acf4b0c5b3e75971865f4e06e7
 features:
   go:
     additionalDependencies: 0.1.0
@@ -489,7 +489,7 @@ trackedFiles:
   docs/models/components/keylist.md:
     last_write_checksum: sha1:4bc1088e7d685fff4ff24488a9d889da2255a4f1
   docs/models/components/keyrequest.md:
-    last_write_checksum: sha1:7edb329cd7d4b36d8ca26e6f7a6b33c26ce1539b
+    last_write_checksum: sha1:06ad5cc66c75b61ce8ab386babea42b5996c46d6
   docs/models/components/keyrequestdeniedaction.md:
     last_write_checksum: sha1:8295bb3de957f1e55a7d6c3e49fae4e9073510c5
   docs/models/components/keyrequestscope.md:
@@ -1605,7 +1605,7 @@ trackedFiles:
   docs/sdks/operations/README.md:
     last_write_checksum: sha1:2d11e1e0366f4a6b68709cf44312b9e2ba797176
   docs/sdks/people/README.md:
-    last_write_checksum: sha1:5fc8ec0831a7d0a5bf0ae1cfc380157393d71db9
+    last_write_checksum: sha1:96b93d2b1eac1e0d7fa66e9bfd18f7058f73f6f7
   docs/sdks/requests/README.md:
     last_write_checksum: sha1:112363974db1223fb0fec19dfbb23d907171caf0
   docs/sdks/reviews/README.md:
@@ -2087,7 +2087,7 @@ trackedFiles:
   models/components/keylist.go:
     last_write_checksum: sha1:f4bed2d667055255cd1707ea33163e5705bf810d
   models/components/keyrequest.go:
-    last_write_checksum: sha1:3e19683be91445ff2e10160b86f2f446fc1e4f4c
+    last_write_checksum: sha1:b217ff78a9f11796221c4e68021d97a1a59497a1
   models/components/keyrotation.go:
     last_write_checksum: sha1:faa418dee34c74160b94402efe25baad3ee3462c
   models/components/keyrotationrequest.go:
@@ -2881,7 +2881,7 @@ trackedFiles:
   models/operations/updatesettings.go:
     last_write_checksum: sha1:5ce8a7c43e874f59405d1db75f2690793ffe5e89
   noresponse.go:
-    last_write_checksum: sha1:6e4659e16c10f98bc59795506cf715d3cb36efd4
+    last_write_checksum: sha1:605af9427f73eeb5f9e7ed6379d9c8ba505f0642
   operations.go:
     last_write_checksum: sha1:cfb21d9ae831a231ec18fc58da406dd23951adaf
   optionalnullable/optionalnullable.go:
@@ -2889,7 +2889,7 @@ trackedFiles:
   optionalnullable/optionalnullable_test.go:
     last_write_checksum: sha1:0f86a6c1731612c3d934cadb29a45804e909b316
   people.go:
-    last_write_checksum: sha1:914925f21ef14f9647cca72e2b480587280010b2
+    last_write_checksum: sha1:1cf57be667bf0089efbad27e0dad1e02cb726877
   requests.go:
     last_write_checksum: sha1:7a487befacd4694a93d85083c04a08a1e2fbfe47
   retry/config.go:

@@ -1,5 +1,9 @@
 # Changelog
 
+## 19.0.6
+
+No changes detected.
+
 ## 19.0.5
 
 No changes detected.

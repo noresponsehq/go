@@ -121,11 +121,11 @@ func (e *KeyRequestDeniedAction) UnmarshalJSON(data []byte) error {
 	}
 }
 
-// KeyRequest - Creates a key whose scopes are bounded by the issuer capabilities in this environment. Delete is owner-only. A service key outlives its creator; a personal key belongs to the authenticated member and is revoked on membership or authority changes. request_id deduplicates creation: retry returns 200 metadata without the secret; changed parameters answer 409. Team scopes members and members_manage are explicitly workspace-wide, live-only, and delegated by a current full owner. Personal credentials cannot hold management or members_manage. Legacy management includes policy publication; use settings without policy_publish for configuration preparation and retention-only edits.
+// KeyRequest - Creates a key whose scopes are bounded by the issuer capabilities in this environment. Existing group keys retain access to group routes. To issue a new key, choose the individual scopes needed for its operations. Delete is owner-only. A service key outlives its creator; a personal key belongs to the authenticated member and is revoked on membership or authority changes. request_id deduplicates creation: retry returns 200 metadata without the secret; changed parameters answer 409. Team scopes members and members_manage are explicitly workspace-wide, live-only, and delegated by a current full owner. Personal credentials cannot hold management or members_manage. Legacy management includes policy publication; use settings without policy_publish for configuration preparation and retention-only edits.
 type KeyRequest struct {
 	// The environment the key belongs to. A live key assesses with live sources; a test key answers from the deterministic simulator.
 	Environment KeyEnvironment `json:"environment"`
-	// The key's scopes, each at most once.
+	// Scopes for the new key. The legacy groups scope is reserved for existing keys.
 	Scopes []KeyRequestScope `json:"scopes"`
 	// Optional display name for this API key, at most 100 printable characters. Preserved on rotation.
 	Name *string `json:"name,omitzero"`
